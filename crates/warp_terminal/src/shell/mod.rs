@@ -14,12 +14,12 @@ use smol_str::SmolStr;
 use typed_path::{TypedPath, TypedPathBuf, WindowsPath};
 use version_compare::{Cmp, Version};
 use warp_completer::completer::{CommandExitStatus, CommandOutput};
-#[cfg(windows)]
-use warp_core::paths::base_config_dir;
-use warp_core::platform::SessionPlatform;
 use warp_util::path::{
     convert_msys2_to_windows_native_path, convert_wsl_to_windows_host_path, msys2_exe_to_root,
 };
+#[cfg(windows)]
+use wish_core::paths::base_config_dir;
+use wish_core::platform::SessionPlatform;
 
 use crate::model::escape_sequences;
 

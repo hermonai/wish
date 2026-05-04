@@ -1,13 +1,13 @@
 use enum_iterator::Sequence;
 use serde::{Deserialize, Serialize};
-use warp_core::{
+use wish_core::{
     channel::{Channel, ChannelState},
     settings::{macros::define_settings_group, SupportedPlatforms, SyncToCloud},
 };
 
 /// The app icon to use (mac-only).
 ///
-/// IMPORTANT NOTE: If you add a new icon, you will need to update the logic in WarpDockTilePlugin.m
+/// IMPORTANT NOTE: If you add a new icon, you will need to update the logic in WishDockTilePlugin.m
 /// to read the new icon and also add the icon to app/DockTilePlugin/Resources.
 #[derive(
     Default,
@@ -64,7 +64,7 @@ pub enum AppIcon {
     #[schemars(description = "Sticker")]
     Sticker,
     /// Previous default icon with solid blue background.
-    #[schemars(description = "Warp 1")]
+    #[schemars(description = "Wish 1")]
     WarpOne,
 }
 
@@ -87,7 +87,7 @@ impl std::fmt::Display for AppIcon {
             AppIcon::Original => "Original",
             AppIcon::Starburst => "Starburst",
             AppIcon::Sticker => "Sticker",
-            AppIcon::WarpOne => "Warp 1",
+            AppIcon::WarpOne => "Wish 1",
         };
         write!(f, "{value}")
     }

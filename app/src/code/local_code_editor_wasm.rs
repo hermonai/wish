@@ -7,7 +7,7 @@ use std::ops::Range;
 
 use warp_editor::{content::buffer::InitialBufferState, render::model::LineCount};
 use warp_util::file::{FileLoadError, FileSaveError};
-use warpui::{
+use wishui::{
     elements::MouseStateHandle, AppContext, Element, Entity, TypedActionView, View, ViewContext,
     ViewHandle, WindowId,
 };
@@ -18,7 +18,7 @@ use super::editor::view::CodeEditorView;
 use super::ImmediateSaveError;
 use crate::terminal::TerminalView;
 use crate::{code::editor::EditorReviewComment, code_review::comments::CommentId};
-use warp_core::ui::appearance::Appearance;
+use wish_core::ui::appearance::Appearance;
 
 pub use super::diff_viewer::DisplayMode;
 
@@ -111,7 +111,7 @@ impl View for LocalCodeEditorView {
         "LocalCodeEditorView"
     }
     fn render(&self, _app: &AppContext) -> Box<dyn Element> {
-        warpui::elements::Empty::new().finish()
+        wishui::elements::Empty::new().finish()
     }
 }
 
@@ -128,5 +128,5 @@ pub fn render_unsaved_circle_with_tooltip(
     _right_margin: f32,
     _appearance: &Appearance,
 ) -> Box<dyn Element> {
-    warpui::elements::Empty::new().finish()
+    wishui::elements::Empty::new().finish()
 }

@@ -9,15 +9,15 @@ use crate::util::time_format::format_approx_duration_from_now_utc;
 use chrono::{DateTime, Local};
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
-use warp_core::ui::color::coloru_with_opacity;
-use warp_core::ui::theme::Fill;
-use warp_core::ui::Icon;
-use warpui::elements::{ConstrainedBox, Container, Highlight, ParentElement, Shrinkable, Text};
-use warpui::fonts::{Properties, Weight};
-use warpui::prelude::{Align, CrossAxisAlignment, Flex, MainAxisAlignment, MainAxisSize};
-use warpui::scene::{CornerRadius, Radius};
-use warpui::text_layout::ClipConfig;
-use warpui::{AppContext, Element, SingletonEntity};
+use wish_core::ui::color::coloru_with_opacity;
+use wish_core::ui::theme::Fill;
+use wish_core::ui::Icon;
+use wishui::elements::{ConstrainedBox, Container, Highlight, ParentElement, Shrinkable, Text};
+use wishui::fonts::{Properties, Weight};
+use wishui::prelude::{Align, CrossAxisAlignment, Flex, MainAxisAlignment, MainAxisSize};
+use wishui::scene::{CornerRadius, Radius};
+use wishui::text_layout::ClipConfig;
+use wishui::{AppContext, Element, SingletonEntity};
 
 #[derive(Debug, Clone)]
 pub struct InlineHistoryItem {

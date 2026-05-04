@@ -13,14 +13,14 @@ use std::{
     str,
     time::Duration,
 };
-use warp_core::safe_error;
+use wish_core::safe_error;
 
 use anyhow::{anyhow, bail, ensure, Context, Result};
 use channel_versions::VersionInfo;
 use nix::unistd::{fchown, getgid};
 use nix::{errno::Errno, unistd::getuid};
-use warp_core::macos::get_bundle_path;
-use warpui::{AppContext, ModelContext, SingletonEntity};
+use wish_core::macos::get_bundle_path;
+use wishui::{AppContext, ModelContext, SingletonEntity};
 
 use crate::{
     appearance::AppearanceManager,
@@ -45,7 +45,7 @@ const OLD_EXECUTABLE_FILE_NAME: &str = "old";
 const PERMISSIONS_TMP_FILE_NAME: &str = "permission_test";
 
 fn old_executable_file_path() -> PathBuf {
-    warp_core::paths::state_dir().join(OLD_EXECUTABLE_FILE_NAME)
+    wish_core::paths::state_dir().join(OLD_EXECUTABLE_FILE_NAME)
 }
 
 /// Removes the old executable dir from the app bundle. This is necessary because after an
@@ -190,7 +190,7 @@ pub async fn cleanup(update_id: &str) {
 /// This helps prevent accumulation of old update directories from failed downloads,
 /// race conditions, or incomplete cleanups.
 pub async fn cleanup_all_except(preserve_update_id: Option<&str>) {
-    let mut autoupdate_dir = warp_core::paths::cache_dir();
+    let mut autoupdate_dir = wish_core::paths::cache_dir();
     autoupdate_dir.push("autoupdate");
 
     if !autoupdate_dir.exists() {
@@ -272,8 +272,8 @@ async fn needs_authorization(bundle_path: &Path) -> Result<bool> {
 }
 
 /// Determines if a directory is writable as part of an update. This means:
-/// * Warp can create files in the directory
-/// * Warp can modify the permissions of created files
+/// * Wish can create files in the directory
+/// * Wish can modify the permissions of created files
 async fn is_directory_writable(directory: &Path) -> Result<bool> {
     // Just because we have writability access does not mean we can set the correct owner/group.
     // Test if we can set the owner/group on a temporarily created file. If we can, then we can
@@ -308,14 +308,14 @@ async fn is_directory_writable(directory: &Path) -> Result<bool> {
 }
 
 /// Verifies that the staged bundle path has a valid macOS code signature, and that its
-/// team identifier matches Warp's team identifier.
+/// team identifier matches Wish's team identifier.
 async fn verify_code_signature(component: &str, path: &Path) -> Result<()> {
     // Verify the signature of the staged update bundle with team identifier
     let codesign_verify_output = Command::new("/usr/bin/codesign")
         .arg("-v")
         .arg(format!(
             "-R=certificate leaf[subject.OU] = \"{}\"",
-            warp_core::macos::APPLE_TEAM_ID
+            wish_core::macos::APPLE_TEAM_ID
         ))
         .arg(path)
         .output()
@@ -408,7 +408,7 @@ async fn apply_update(channel: Channel, version_info: &VersionInfo, update_id: &
         .await
         .is_ok()
     {
-        // If we performed this process already but didn't relaunch Warp, the old executable will
+        // If we performed this process already but didn't relaunch Wish, the old executable will
         // still be located in the user application data directory.  In that case, leave it there.
         log::info!("Already autoupdated without relaunching; ignoring executable from old bundle");
     } else {
@@ -664,7 +664,7 @@ async fn download_dmg(
 }
 
 fn get_download_dir(update_id: &str) -> PathBuf {
-    let mut dir = warp_core::paths::cache_dir();
+    let mut dir = wish_core::paths::cache_dir();
     dir.push("autoupdate");
     dir.push(update_id);
     dir
@@ -732,12 +732,12 @@ fn dmg_name(channel: Channel) -> String {
 
 fn app_name_prefix(channel: Channel) -> &'static str {
     match channel {
-        Channel::Stable => "Warp",
-        Channel::Preview => "WarpPreview",
-        Channel::Local => "warp",
+        Channel::Stable => "Wish",
+        Channel::Preview => "WishPreview",
+        Channel::Local => "Wish",
         Channel::Integration => "integration",
-        Channel::Dev => "WarpDev",
-        Channel::Oss => "warp-oss",
+        Channel::Dev => "WishDev",
+        Channel::Oss => "WishOss",
     }
 }
 
@@ -745,10 +745,10 @@ fn executable_name(channel: Channel) -> &'static str {
     match channel {
         Channel::Stable => "stable",
         Channel::Preview => "preview",
-        Channel::Local => "warp",
+        Channel::Local => "wish",
         Channel::Integration => "integration",
         Channel::Dev => "dev",
-        Channel::Oss => "warp-oss",
+        Channel::Oss => "wish-oss",
     }
 }
 

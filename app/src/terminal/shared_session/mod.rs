@@ -3,7 +3,7 @@ use instant::Duration;
 use serde::{Deserialize, Serialize};
 use session_sharing_protocol::common::{Role, Scrollback, ScrollbackBlock, SessionId};
 use session_sharing_protocol::sharer::SessionSourceType;
-use warpui::{id, keymap::ContextPredicate, AppContext};
+use wishui::{id, keymap::ContextPredicate, AppContext};
 
 use crate::{
     channel::{Channel, ChannelState},
@@ -249,7 +249,7 @@ impl SharedSessionScrollbackType {
 #[cfg(not(test))]
 pub fn max_session_size(ctx: &AppContext) -> Byte {
     use crate::workspaces::user_workspaces::UserWorkspaces;
-    use warpui::SingletonEntity;
+    use wishui::SingletonEntity;
 
     UserWorkspaces::as_ref(ctx)
         .current_team()
@@ -290,7 +290,7 @@ pub enum SharedSessionActionSource {
 }
 
 /// Returns the native intent URL to join a shared session.
-/// This should be used when opening the session from within Warp.
+/// This should be used when opening the session from within Wish.
 pub fn join_native_intent(session_id: &SessionId) -> String {
     format!(
         "{}://shared_session/{}",

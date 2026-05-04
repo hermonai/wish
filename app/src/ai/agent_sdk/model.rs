@@ -5,7 +5,7 @@ use crate::ai::llms::LLMPreferences;
 use comfy_table::Cell;
 use serde::Serialize;
 use warp_cli::{model::ModelCommand, GlobalOptions};
-use warpui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
+use wishui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
 
 /// Handle model-related CLI commands.
 pub fn run(
@@ -59,7 +59,7 @@ impl ModelCommandRunner {
     }
 }
 
-impl warpui::Entity for ModelCommandRunner {
+impl wishui::Entity for ModelCommandRunner {
     type Event = ();
 }
 

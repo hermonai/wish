@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use warp_core::ui::appearance::Appearance;
 use warp_editor::editor::NavigationKey;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::ChildView,
     ui_components::components::{Coords, UiComponent, UiComponentStyles},
     AppContext, Element, Entity, FocusContext, SingletonEntity, TypedActionView, View, ViewContext,

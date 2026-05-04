@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use parking_lot::FairMutex;
-use warp_core::ui::appearance::Appearance;
 use warp_terminal::model::BlockId;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     prelude::{Container, Empty, MouseStateHandle},
     scene::{CornerRadius, Radius},
     AppContext, Element, Entity, ModelHandle, SingletonEntity, TypedActionView, View, ViewContext,

@@ -32,11 +32,11 @@ use crate::workspace::PaneViewLocator;
 use session_sharing_protocol::common::SessionId;
 
 use ui_components::lightbox;
-use warpui::accessibility::AccessibilityVerbosity;
-use warpui::geometry::rect::RectF;
-use warpui::geometry::vector::Vector2F;
-use warpui::platform::Cursor;
-use warpui::{EntityId, WeakViewHandle, WindowId};
+use wishui::accessibility::AccessibilityVerbosity;
+use wishui::geometry::rect::RectF;
+use wishui::geometry::vector::Vector2F;
+use wishui::platform::Cursor;
+use wishui::{EntityId, WeakViewHandle, WindowId};
 
 use super::global_actions::{ForkFromExchange, ForkedConversationDestination};
 use super::tab_settings::{
@@ -167,6 +167,8 @@ pub enum WorkspaceAction {
     ApplyUpdate,
     LogOut,
     CopyVersion(&'static str),
+    /// Open the Wish welcome page in a new tab. Accessible from Settings → About.
+    ShowWelcomePage,
     DownloadNewVersion,
     ConfigureKeybindingSettings {
         keybinding_name: Option<String>,
@@ -256,13 +258,13 @@ pub enum WorkspaceAction {
     },
     DropTab,
     FinalizeDropTab,
-    /// Toggles the left panel. In Code Mode V1 this toggles Warp Drive.
+    /// Toggles the left panel. In Code Mode V1 this toggles Wish Drive.
     /// In Code Mode V2 this toggles the left panel which contains both the project explorer and
-    /// Warp Drive. This happens as explicit action from the user.
+    /// Wish Drive. This happens as explicit action from the user.
     ToggleLeftPanel,
-    /// Toggles directly to the Warp Drive tab of the left panel in Code Mode V2
+    /// Toggles directly to the Wish Drive tab of the left panel in Code Mode V2
     ToggleWarpDrive,
-    /// Unconditionally opens Warp Drive. This is used in the case of user lifecycle
+    /// Unconditionally opens Wish Drive. This is used in the case of user lifecycle
     /// events like new user onboarding or when the user joins a team.
     OpenWarpDrive,
     /// Toggles the right panel. This happens as an explicit action from the user.
@@ -325,7 +327,7 @@ pub enum WorkspaceAction {
     SignupAnonymousUser,
     SignInAnonymousWebUser,
     OpenLink(String),
-    /// On WASM, opens a given URL in the desktop Warp app (if installed) or redirects to download page.
+    /// On WASM, opens a given URL in the desktop Wish app (if installed) or redirects to download page.
     #[cfg(target_family = "wasm")]
     OpenLinkOnDesktop(url::Url),
     ReopenClosedSession,
@@ -497,10 +499,10 @@ pub enum WorkspaceAction {
     QueuePromptForConversation {
         prompt: String,
     },
-    /// Install the Warp CLI command to /usr/local/bin
+    /// Install the Wish CLI command to /usr/local/bin
     #[cfg(target_os = "macos")]
     InstallCLI,
-    /// Uninstall the Warp CLI command from /usr/local/bin
+    /// Uninstall the Wish CLI command from /usr/local/bin
     #[cfg(target_os = "macos")]
     UninstallCLI,
     UndoRevertInCodeReviewPane {
@@ -764,6 +766,7 @@ impl WorkspaceAction {
             AutoupdateFailureLink
             | ApplyUpdate
             | CopyVersion(_)
+            | ShowWelcomePage
             | DownloadNewVersion
             | ConfigureKeybindingSettings { .. }
             | ExportAllWarpDriveObjects

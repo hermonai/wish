@@ -6,7 +6,7 @@ use crate::terminal::model::session::{
 use typed_path::TypedPathBuf;
 use warp_completer::signatures::CommandRegistry;
 use warp_completer::{meta::SpannedItem, parsers::ParsedToken};
-use warpui::App;
+use wishui::App;
 
 use super::*;
 

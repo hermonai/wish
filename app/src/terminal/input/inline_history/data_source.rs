@@ -24,7 +24,7 @@ use crate::terminal::model::session::SessionId;
 use chrono::{DateTime, Local};
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
-use warpui::{AppContext, Entity, EntityId, ModelHandle, SingletonEntity};
+use wishui::{AppContext, Entity, EntityId, ModelHandle, SingletonEntity};
 
 #[derive(Clone, Debug)]
 pub enum AcceptHistoryItem {

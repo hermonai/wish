@@ -9,21 +9,21 @@ use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use thousands::Separable;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::Fill;
 use warp_graphql::billing::StripeSubscriptionPlan;
-use warpui::elements::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::Fill;
+use wishui::elements::{
     Align, CacheOption, ChildAnchor, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment,
     DropShadow, Expanded, Flex, FormattedTextElement, HighlightedHyperlink, Image,
     MainAxisAlignment, MainAxisSize, MouseStateHandle, OffsetPositioning, ParentAnchor,
     ParentElement, ParentOffsetBounds, Radius, Stack,
 };
-use warpui::fonts::Weight;
-use warpui::keymap::FixedBinding;
-use warpui::platform::Cursor;
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::{AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext};
+use wishui::fonts::Weight;
+use wishui::keymap::FixedBinding;
+use wishui::platform::Cursor;
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::{AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext};
 
 use crate::send_telemetry_from_ctx;
 use crate::TelemetryEvent;
@@ -43,7 +43,7 @@ pub enum CloudAgentCapacityModalVariant {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([FixedBinding::new(
         "escape",

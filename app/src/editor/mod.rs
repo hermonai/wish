@@ -7,10 +7,10 @@ mod view;
 /// They should _not_ be able to interface with the internal
 /// details of the editor (e.g. the [`Buffer`]).
 pub use view::*;
-pub use warpui::text::point::Point;
+pub use wishui::text::point::Point;
 
 use std::{cmp, ops::Range};
-use warpui::AppContext;
+use wishui::AppContext;
 
 pub fn init(app: &mut AppContext) {
     view::init(app);

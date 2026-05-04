@@ -12,11 +12,11 @@ mod macos;
 mod windows;
 
 #[cfg(any(target_os = "macos", target_os = "windows"))]
-use warp_core::channel::ChannelState;
+use wish_core::channel::ChannelState;
 #[cfg(any(target_os = "macos", target_os = "windows"))]
-use warpui::AppContext;
+use wishui::AppContext;
 
-/// Reconciles whether Warp is registered to launch at login with the user's
+/// Reconciles whether Wish is registered to launch at login with the user's
 /// current preference.
 ///
 /// Respects the existing `app_added_as_login_item` bookkeeping so a user who

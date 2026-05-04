@@ -94,7 +94,7 @@ fn login_parses() {
         panic!("Expected `warp login` command");
     };
 
-    assert!(matches!(boxed_cmd.as_ref(), CliCommand::Login));
+    assert!(matches!(boxed_cmd.as_ref(), CliCommand::Login(_)));
 }
 
 #[test]
@@ -596,7 +596,7 @@ fn artifact_upload_accepts_run_id() {
 
 #[test]
 fn artifact_help_hides_upload_but_keeps_download_visible() {
-    warp_core::features::mark_initialized();
+    wish_core::features::mark_initialized();
 
     let mut command = Args::clap_command();
     command.build();
@@ -631,7 +631,7 @@ fn artifact_help_hides_upload_but_keeps_download_visible() {
 
 #[test]
 fn run_help_hides_message_when_orchestration_v2_disabled() {
-    warp_core::features::mark_initialized();
+    wish_core::features::mark_initialized();
 
     let mut command = Args::clap_command();
     command.build();

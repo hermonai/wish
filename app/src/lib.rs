@@ -107,7 +107,7 @@ mod workspaces;
 //
 // If you feel the need to export a module so that a type or function within it
 // can be used by an integration test, you should define a new assertion function
-// in the warp::integration_testing::assertions module (or a sub-module).  These
+// in the wish::integration_testing::assertions module (or a sub-module).  These
 // functions will allow us to keep types internal to this crate and expose a
 // simpler API for integration tests to consume.
 pub mod ai_assistant;
@@ -183,14 +183,14 @@ pub mod workspace;
 pub use persistence::testing as sqlite_testing;
 
 use ::settings::{Setting, ToggleableSetting};
-pub use warp_core::errors::{report_error, report_if_error};
+pub use wish_core::errors::{report_error, report_if_error};
 
 #[cfg(feature = "plugin_host")]
 pub use plugin::{run_plugin_host, PLUGIN_HOST_FLAG};
-use warp_core::user_preferences::GetUserPreferences as _;
-use warpui::modals::{AlertDialogWithCallbacks, AppModalCallback};
-use warpui::platform::app::ApproveTerminateResult;
 use window_settings::WindowSettings;
+use wish_core::user_preferences::GetUserPreferences as _;
+use wishui::modals::{AlertDialogWithCallbacks, AppModalCallback};
+use wishui::platform::app::ApproveTerminateResult;
 use workflows::manager::WorkflowManager;
 
 use crate::ai::ambient_agents::github_auth_notifier::GitHubAuthNotifier;
@@ -265,11 +265,11 @@ use std::sync::Arc;
 use terminal::input;
 use terminal::session_settings::SessionSettings;
 use url::Url;
-use warp_core::execution_mode::{AppExecutionMode, ExecutionMode};
 use warp_managed_secrets::ManagedSecretManager;
+use wish_core::execution_mode::{AppExecutionMode, ExecutionMode};
 use workspace::sync_inputs::SyncedInputState;
 
-use warpui::{integration::TestDriver, App, AssetProvider, Event};
+use wishui::{integration::TestDriver, App, AssetProvider, Event};
 
 use self::features::FeatureFlag;
 use crate::app_state::AppState;
@@ -294,18 +294,18 @@ use crate::workspaces::user_workspaces::UserWorkspaces;
 use warp_logging::LogDestination;
 
 // Re-export the send_telemetry_from_ctx macro at the crate root level
-pub use warp_core::send_telemetry_from_app_ctx;
-pub use warp_core::send_telemetry_from_ctx;
+pub use wish_core::send_telemetry_from_app_ctx;
+pub use wish_core::send_telemetry_from_ctx;
 
 // Re-export the safe logging macros at the crate root level for backwards compatibility
-pub use warp_core::{safe_debug, safe_error, safe_info, safe_warn};
+pub use wish_core::{safe_debug, safe_error, safe_info, safe_warn};
 
 use crate::antivirus::AntivirusInfo;
 #[cfg(feature = "local_fs")]
 use warp_files::FileModel;
-use warpui::platform::TerminationMode;
-use warpui::windowing::state::ApplicationStage;
-use warpui::{AppContext, SingletonEntity, WindowId};
+use wishui::platform::TerminationMode;
+use wishui::windowing::state::ApplicationStage;
+use wishui::{AppContext, SingletonEntity, WindowId};
 
 #[derive(Clone, Copy, RustEmbed)]
 #[folder = "assets"]
@@ -342,18 +342,18 @@ fn determine_agent_source(
     }
 }
 
-/// Launch mode for how to start up Warp.
+/// Launch mode for how to start up Wish.
 #[allow(clippy::large_enum_variant)]
 pub enum LaunchMode {
     /// Run the regular GUI application.
     App {
         args: warp_cli::AppArgs,
-        /// API key for server authentication, if provided via `--api-key` or `WARP_API_KEY`.
+        /// API key for server authentication, if provided via `--api-key` or `WISH_API_KEY`.
         /// Only used on dogfood channels.
         api_key: Option<String>,
     },
 
-    /// Run the Warp command-line SDK.
+    /// Run the Wish command-line SDK.
     CommandLine {
         command: warp_cli::CliCommand,
         global_options: GlobalOptions,
@@ -442,7 +442,7 @@ impl LaunchMode {
         }
     }
 
-    /// Returns `true` if Warp should run headlessly, without a visible UI.
+    /// Returns `true` if Wish should run headlessly, without a visible UI.
     fn is_headless(&self) -> bool {
         match self {
             LaunchMode::CommandLine { command, .. } => match command {
@@ -600,6 +600,28 @@ pub fn run() -> Result<()> {
                 eprintln!("Error: Invalid session sharing server URL: {e:#}");
             }
         }
+    }
+
+    // When using Hermon backend auth (WISH_API_KEY is set or --api-key provided),
+    // automatically override the server root URL to the Hermon API endpoint. This
+    // ensures all GraphQL requests route to the Hermon backend instead of the
+    // unreachable placeholder production URL. Applies to ALL channels.
+    if args.api_key().is_some() {
+        let hermon_url = crate::server::hermon_auth::api_url();
+        if let Err(e) = ChannelState::override_server_root_url(hermon_url.clone()) {
+            eprintln!("Error: Invalid Hermon API URL: {e:#}");
+        }
+        // Also override the WebSocket URL to match (ws:// or wss:// variant)
+        let ws_scheme = if hermon_url.starts_with("https://") {
+            "wss"
+        } else {
+            "ws"
+        };
+        let ws_url = hermon_url
+            .replacen("http://", &format!("{ws_scheme}://"), 1)
+            .replacen("https://", &format!("{ws_scheme}://"), 1);
+        let ws_url = format!("{ws_url}/graphql/v2");
+        let _ = ChannelState::override_ws_server_url(ws_url);
     }
 
     if let Some(command) = args.command() {
@@ -843,7 +865,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
             // If we were able to contact an existing application instance, quit -
             // we only want to run a single instance of Warp at a time.
             Ok(_) => std::process::exit(0),
-            // If Warp isn't already running, we're good to go.
+            // If Wish isn't already running, we're good to go.
             Err(app_services::linux::StartupArgsForwardingError::NoExistingInstance) => {}
             // If we just finished an auto-update, we should continue running.
             Err(app_services::linux::StartupArgsForwardingError::IgnoredAfterAutoUpdate) => {}
@@ -866,7 +888,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
             // If we were able to contact an existing application instance, quit -
             // we only want to run a single instance of Warp at a time.
             Ok(_) => std::process::exit(0),
-            // If Warp isn't already running, we're good to go.
+            // If Wish isn't already running, we're good to go.
             Err(app_services::windows::StartupArgsForwardingError::NoExistingInstance) => {}
             // If we just finished an auto-update, we should continue running.
             Err(app_services::windows::StartupArgsForwardingError::IgnoredAfterAutoUpdate) => {}
@@ -917,13 +939,13 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
         terminal::local_tty::spawner::PtySpawner::new().context("Failed to create pty spawner")?;
 
     let mut app_builder = if launch_mode.is_headless() {
-        warpui::platform::AppBuilder::new_headless(
+        wishui::platform::AppBuilder::new_headless(
             app_callbacks(launch_mode.is_integration_test()),
             Box::new(ASSETS),
             launch_mode.take_test_driver(),
         )
     } else {
-        warpui::platform::AppBuilder::new(
+        wishui::platform::AppBuilder::new(
             app_callbacks(launch_mode.is_integration_test()),
             Box::new(ASSETS),
             launch_mode.take_test_driver(),
@@ -932,7 +954,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
 
     #[cfg(target_os = "macos")]
     {
-        use warpui::platform::mac::AppExt;
+        use wishui::platform::mac::AppExt;
 
         let activate_on_launch = !launch_mode.is_integration_test()
             || std::env::var("WARPUI_USE_REAL_DISPLAY_IN_INTEGRATION_TESTS").is_ok();
@@ -948,7 +970,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
     #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     {
         use crate::settings::ForceX11;
-        use warpui::platform::linux::{self, AppBuilderExt};
+        use wishui::platform::linux::{self, AppBuilderExt};
 
         app_builder.set_window_class(ChannelState::app_id().to_string());
 
@@ -961,7 +983,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
 
     #[cfg(target_os = "windows")]
     {
-        use warpui::platform::windows::AppBuilderExt;
+        use wishui::platform::windows::AppBuilderExt;
         app_builder.set_app_user_model_id(ChannelState::app_id().to_string());
 
         // Only use DXC for DirectX shader compilation if we're not running in a Parallels VM
@@ -969,7 +991,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
         let is_parallels_vm = crate::util::vm_detection::is_running_in_windows_parallels_vm();
         if !is_parallels_vm {
             log::info!("Using DXC for DirectX shader compilation");
-            use warpui::platform::windows::DXCPath;
+            use wishui::platform::windows::DXCPath;
 
             app_builder.use_dxc_for_directx_shader_compilation(DXCPath {
                 dxc_path: "dxcompiler.dll".to_string(),
@@ -1058,7 +1080,7 @@ fn initialize_app(
     launch_mode: &LaunchMode,
     mut timer: IntervalTimer,
     startup_toml_parse_error: Option<warpui_extras::user_preferences::Error>,
-    ctx: &mut warpui::AppContext,
+    ctx: &mut wishui::AppContext,
     _pre_sentry_errors: impl IntoIterator<Item = anyhow::Error>,
 ) -> Option<AppState> {
     // WARNING: Errors that happen here before crash_reporting::init will not be collected in
@@ -1071,9 +1093,9 @@ fn initialize_app(
         if #[cfg(feature = "integration_tests")] {
             warpui_extras::secure_storage::register_noop(&data_domain, ctx);
         } else if #[cfg(any(target_os = "linux", target_os = "freebsd"))] {
-            warpui_extras::secure_storage::register_with_fallback(&data_domain, warp_core::paths::state_dir(), ctx)
+            warpui_extras::secure_storage::register_with_fallback(&data_domain, wish_core::paths::state_dir(), ctx)
         } else if #[cfg(target_os = "windows")] {
-            warpui_extras::secure_storage::register_with_dir(&data_domain, warp_core::paths::state_dir(), ctx)
+            warpui_extras::secure_storage::register_with_dir(&data_domain, wish_core::paths::state_dir(), ctx)
         } else {
             warpui_extras::secure_storage::register(&data_domain, ctx);
         }
@@ -1084,6 +1106,36 @@ fn initialize_app(
     // before ensure_warp_watch_roots_exist() creates the new directory.
     #[cfg(target_os = "macos")]
     preview_config_migration::migrate_preview_config_dir_if_needed();
+
+    // One-time migration: rename state directory from the old "Wish-Local"
+    // identifier to the canonical "Wish" identifier on macOS. This runs before
+    // SQLite initialization so the database is found at the new location.
+    #[cfg(target_os = "macos")]
+    {
+        use wish_core::channel::Channel;
+        if ChannelState::channel() == Channel::Local {
+            let app_support = dirs::home_dir()
+                .unwrap_or_default()
+                .join("Library/Application Support");
+            let old_state_dir = app_support.join("ai.hermon.Wish-Local");
+            let new_state_dir = wish_core::paths::state_dir();
+            if old_state_dir.is_dir() && !new_state_dir.exists() {
+                if let Err(e) = std::fs::rename(&old_state_dir, &new_state_dir) {
+                    log::warn!(
+                        "Failed to migrate state directory from {:?} to {:?}: {e}",
+                        old_state_dir,
+                        new_state_dir
+                    );
+                } else {
+                    log::info!(
+                        "Migrated state directory from {:?} to {:?}",
+                        old_state_dir,
+                        new_state_dir
+                    );
+                }
+            }
+        }
+    }
 
     ensure_warp_watch_roots_exist();
     ctx.add_singleton_model(WarpManagedPathsWatcher::new);
@@ -1313,6 +1365,7 @@ fn initialize_app(
     ctx.add_singleton_model(|_| ExecutionProfileEditorManager::default());
     ctx.add_singleton_model(|_| NetworkLogPaneManager::default());
     ctx.add_singleton_model(|_| pricing::PricingInfoModel::new());
+    ctx.add_singleton_model(server::hermon_service::HermonServiceModel::new);
     ctx.add_singleton_model(|ctx| {
         // Not using the *Provider types isn't ideal, but it's worth it for the ability to move managed secrets to a separate crate.
         ManagedSecretManager::new(
@@ -1348,7 +1401,7 @@ fn initialize_app(
     remote_server::wire_auth_token_rotation(ctx);
 
     log::info!(
-        "Starting warp with channel state {} and version {:?}",
+        "Starting Wish with channel state {} and version {:?}",
         ChannelState::debug_str(),
         ChannelState::app_version()
     );
@@ -1411,7 +1464,7 @@ fn initialize_app(
 
             GPUState::handle(ctx).update(ctx, |gpu_state, ctx| {
                 gpu_state
-                    .set_has_lower_power_gpu(warpui::rendering::is_low_power_gpu_available(), ctx);
+                    .set_has_lower_power_gpu(wishui::rendering::is_low_power_gpu_available(), ctx);
             });
 
             for window_id in ctx.window_ids().collect_vec() {
@@ -1457,7 +1510,7 @@ fn initialize_app(
         let imported_config_model = ctx.add_singleton_model(ImportedConfigModel::new);
 
         if FeatureFlag::SettingsImport.is_enabled()
-            && ChannelState::channel() != warp_core::channel::Channel::Integration
+            && ChannelState::channel() != wish_core::channel::Channel::Integration
         {
             imported_config_model.update(ctx, |model, ctx| {
                 model.search_for_settings_to_import(ctx);
@@ -1659,7 +1712,7 @@ fn initialize_app(
     ctx.add_singleton_model(BlocklistAIPermissions::new);
     ctx.add_singleton_model(ai::blocklist::orchestration_events::OrchestrationEventService::new);
     ctx.add_singleton_model(ai::blocklist::task_status_sync_model::TaskStatusSyncModel::new);
-    if warp_core::features::FeatureFlag::OrchestrationV2.is_enabled() {
+    if wish_core::features::FeatureFlag::OrchestrationV2.is_enabled() {
         ctx.add_singleton_model(
             ai::blocklist::orchestration_event_streamer::OrchestrationEventStreamer::new,
         );
@@ -1667,7 +1720,7 @@ fn initialize_app(
 
     ctx.add_singleton_model(RepoOutlines::new);
     ctx.add_singleton_model(|ctx| {
-        warp_core::sync_queue::SyncQueue::<SyncTask>::new_with_rate_limit(
+        wish_core::sync_queue::SyncQueue::<SyncTask>::new_with_rate_limit(
             &ctx.background_executor(),
             Some(DEFAULT_SYNC_REQUESTS_PER_MIN),
         )
@@ -1877,8 +1930,8 @@ fn initialize_app(
     app_state
 }
 
-fn app_callbacks(is_integration_test: bool) -> warpui::platform::AppCallbacks {
-    warpui::platform::AppCallbacks {
+fn app_callbacks(is_integration_test: bool) -> wishui::platform::AppCallbacks {
+    wishui::platform::AppCallbacks {
         on_internet_reachability_changed: Some(Box::new(move |reachable, ctx| {
             NetworkStatus::handle(ctx)
                 .update(ctx, move |me, ctx| me.reachability_changed(reachable, ctx));
@@ -2311,7 +2364,7 @@ fn on_close_window_cancelled(
     }
 }
 
-fn launch(ctx: &mut warpui::AppContext, app_state: Option<AppState>, launch_mode: LaunchMode) {
+fn launch(ctx: &mut wishui::AppContext, app_state: Option<AppState>, launch_mode: LaunchMode) {
     IntervalTimer::handle(ctx).update(ctx, |timer, _ctx| {
         timer.mark_interval_end("APP_LAUNCHED");
     });

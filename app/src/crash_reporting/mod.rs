@@ -11,8 +11,8 @@ use std::ops::DerefMut;
 
 use lazy_static::lazy_static;
 use sentry::{ClientInitGuard, IntoDsn, SessionMode};
-use warp_core::channel::Channel;
-use warpui::{r#async::block_on, AppContext, SingletonEntity};
+use wish_core::channel::Channel;
+use wishui::{r#async::block_on, AppContext, SingletonEntity};
 
 use crate::antivirus::{AntivirusInfo, AntivirusInfoEvent};
 use crate::auth::anonymous_id::get_or_create_anonymous_id;
@@ -24,9 +24,9 @@ use parking_lot::{Mutex, RwLock};
 use regex::Regex;
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
-use warpui::rendering::GPUDeviceInfo;
-use warpui::windowing::state::ApplicationStage;
-use warpui::windowing::{self, StateEvent, WindowManager};
+use wishui::rendering::GPUDeviceInfo;
+use wishui::windowing::state::ApplicationStage;
+use wishui::windowing::{self, StateEvent, WindowManager};
 
 #[cfg(linux_or_windows)]
 pub use sentry_minidump::run_server as run_minidump_server;
@@ -468,7 +468,7 @@ fn set_optional_user_information(
         let anonymous_id = get_or_create_anonymous_id(ctx);
         format!("anon.{anonymous_id}")
     });
-    // Only send along emails if we're on WarpDev.
+    // Only send along emails if we're on WishDev.
     // We try to keep PII out of Sentry as much as possible.
     let email = if ChannelState::channel() == Channel::Dev {
         email

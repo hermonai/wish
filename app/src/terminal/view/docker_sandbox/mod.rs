@@ -2,12 +2,12 @@
 use std::sync::mpsc::SyncSender;
 
 #[cfg(feature = "local_tty")]
-use warpui::geometry::vector::Vector2F;
+use wishui::geometry::vector::Vector2F;
 #[cfg(feature = "local_tty")]
-use warpui::ModelHandle;
-use warpui::ViewContext;
+use wishui::ModelHandle;
+use wishui::ViewContext;
 #[cfg(not(target_family = "wasm"))]
-use warpui::{SingletonEntity, View, ViewHandle};
+use wishui::{SingletonEntity, View, ViewHandle};
 
 #[cfg(feature = "local_tty")]
 use crate::pane_group::TerminalViewResources;
@@ -37,7 +37,7 @@ use crate::terminal::remote_tty::TerminalManager as RemoteTtyTerminalManager;
 #[cfg(not(target_family = "wasm"))]
 use warp_cli::agent::Harness;
 #[cfg(not(target_family = "wasm"))]
-use warpui::r#async::FutureExt;
+use wishui::r#async::FutureExt;
 
 use super::TerminalView;
 
@@ -210,14 +210,14 @@ impl TerminalView {
         let sync_future = UpdateManager::as_ref(ctx).initial_load_complete();
         ctx.spawn(
             async move {
-                // Wait for Warp Drive initial sync so environment lookup succeeds.
+                // Wait for Wish Drive initial sync so environment lookup succeeds.
 
                 if sync_future
                     .with_timeout(WARP_DRIVE_SYNC_TIMEOUT)
                     .await
                     .is_err()
                 {
-                    return Err("Timed out waiting for Warp Drive to sync for docker sandbox");
+                    return Err("Timed out waiting for Wish Drive to sync for docker sandbox");
                 }
 
                 // Wait for the terminal session to bootstrap.

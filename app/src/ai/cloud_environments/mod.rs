@@ -16,7 +16,7 @@ use crate::{
     server::{ids::SyncId, sync_queue::QueueItem},
     workspaces::user_workspaces::UserWorkspaces,
 };
-use warpui::{AppContext, SingletonEntity as _};
+use wishui::{AppContext, SingletonEntity as _};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct GithubRepo {
@@ -83,7 +83,7 @@ impl ProvidersConfig {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-/// An AmbientAgentEnvironment represents an environment that we would run a Warp agent in.
+/// An AmbientAgentEnvironment represents an environment that we would run a Wish agent in.
 pub struct AmbientAgentEnvironment {
     /// Environment name
     #[serde(default)]

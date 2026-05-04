@@ -8,11 +8,11 @@ use warp_editor::render::{
 };
 use warp_util::user_input::UserInput;
 
-use warpui::event::ModifiersState;
-use warpui::r#async::block_on;
-use warpui::windowing::WindowManager;
-use warpui::{platform::WindowStyle, presenter::ChildView, App, Element, Entity, View, ViewHandle};
-use warpui::{SingletonEntity, TypedActionView, WindowId};
+use wishui::event::ModifiersState;
+use wishui::r#async::block_on;
+use wishui::windowing::WindowManager;
+use wishui::{platform::WindowStyle, presenter::ChildView, App, Element, Entity, View, ViewHandle};
+use wishui::{SingletonEntity, TypedActionView, WindowId};
 
 use super::{EditorViewAction, RichTextEditorConfig, RichTextEditorView};
 use crate::appearance::Appearance;
@@ -52,7 +52,7 @@ impl View for TestView {
         "TestView"
     }
 
-    fn render(&self, _app: &warpui::AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, _app: &wishui::AppContext) -> Box<dyn wishui::Element> {
         ChildView::new(&self.editor).finish()
     }
 }
@@ -136,7 +136,7 @@ async fn reset_editor_with_markdown(
 
 fn rendered_mermaid_block_range(
     editor: &RichTextEditorView,
-    ctx: &warpui::AppContext,
+    ctx: &wishui::AppContext,
 ) -> Option<std::ops::Range<CharOffset>> {
     let render_state = editor.model.as_ref(ctx).render_state().clone();
     let render_state = render_state.as_ref(ctx);
@@ -247,7 +247,7 @@ fn test_appearance_changes() {
 
         // Simulate an appearance change.
         Appearance::handle(&app).update(&mut app, |appearance, ctx| {
-            appearance.set_monospace_font_family(warpui::fonts::FamilyId(123), ctx);
+            appearance.set_monospace_font_family(wishui::fonts::FamilyId(123), ctx);
             ctx.notify()
         });
 
@@ -258,7 +258,7 @@ fn test_appearance_changes() {
             // The render model's style should be updated.
             assert_eq!(
                 model.styles().code_text.font_family,
-                warpui::fonts::FamilyId(123)
+                wishui::fonts::FamilyId(123)
             );
         });
 
@@ -473,7 +473,7 @@ fn test_link_editing() {
                 .url_editor()
                 .clone()
                 .update(ctx, |url_editor, ctx| {
-                    url_editor.user_insert("https://warp.dev", ctx);
+                    url_editor.user_insert("https://wish.hermon.ai", ctx);
                 });
 
             editor.link_editor.update(ctx, |link_editor, ctx| {
@@ -485,7 +485,7 @@ fn test_link_editing() {
         editor_view.read(&app, |editor, ctx| {
             assert_eq!(
                 editor.model.as_ref(ctx).debug_buffer(ctx),
-                "<text>Some <a_https://warp.dev>text<a>"
+                "<text>Some <a_https://wish.hermon.ai>text<a>"
             );
         });
 
@@ -516,7 +516,7 @@ fn test_link_editing() {
         editor_view.read(&app, |editor, ctx| {
             assert_eq!(
                 editor.model.as_ref(ctx).debug_buffer(ctx),
-                "<text>Some <a_https://warp.dev>text<a><a_https://example.com>new link<a>"
+                "<text>Some <a_https://wish.hermon.ai>text<a><a_https://example.com>new link<a>"
             );
         });
     });
@@ -630,7 +630,7 @@ fn test_link_editing_disabled_for_multiselect() {
                 .url_editor()
                 .clone()
                 .update(ctx, |url_editor, ctx| {
-                    url_editor.user_insert("https://warp.dev", ctx);
+                    url_editor.user_insert("https://wish.hermon.ai", ctx);
                 });
 
             editor.link_editor.update(ctx, |link_editor, ctx| {

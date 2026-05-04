@@ -34,8 +34,8 @@ use anyhow::Result;
 use command::r#async::Command;
 use command::Stdio;
 use futures::future::join_all;
-use warp_core::report_error;
-use warpui::r#async::FutureExt as _;
+use wish_core::report_error;
+use wishui::r#async::FutureExt as _;
 
 use crate::ai::agent_sdk::retry::with_bounded_retry;
 use crate::ai::ambient_agents::AmbientAgentTaskId;

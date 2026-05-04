@@ -2,10 +2,12 @@
 //!
 //! For non-bundled builds, the generator is invoked at runtime. For bundled builds, the config
 //! is embedded at compile time via the build script.
-use warp_core::channel::ChannelConfig;
+use wish_core::channel::ChannelConfig;
 
 /// The name of the config generator binary, expected to be on PATH.
-const CONFIG_BIN_NAME: &str = "warp-channel-config";
+/// Note: the OSS binary (wish-oss) does not use this; it hardcodes its config.
+/// This is only needed for internal channel builds that use the local/dev/stable binaries.
+const CONFIG_BIN_NAME: &str = "wish-channel-config";
 
 #[macro_export]
 #[cfg(windows)]

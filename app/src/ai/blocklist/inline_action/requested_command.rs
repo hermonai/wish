@@ -7,12 +7,12 @@ use std::cmp::{Ordering, PartialEq};
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::Icon;
 use warp_editor::render::element::VerticalExpansionBehavior;
-use warpui::elements::{ConstrainedBox, ScrollbarWidth};
-use warpui::ui_components::components::UiComponent as _;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::Icon;
+use wishui::elements::{ConstrainedBox, ScrollbarWidth};
+use wishui::ui_components::components::UiComponent as _;
+use wishui::{
     elements::{
         Align, Border, ChildView, Clipped, Container, CornerRadius, CrossAxisAlignment, Expanded,
         Flex, MainAxisSize, MouseStateHandle, OffsetPositioning, ParentElement, Radius,
@@ -24,7 +24,7 @@ use warpui::{
 };
 
 use crate::ai::agent::{AIAgentActionResult, AIAgentActionType};
-use warpui::{EntityId, EventContext};
+use wishui::{EntityId, EventContext};
 
 use crate::ai::agent::RequestCommandOutputResult;
 use crate::ai::agent::{icons, AIAgentActionResultType};
@@ -120,7 +120,7 @@ lazy_static! {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([
         FixedBinding::new(
@@ -238,7 +238,7 @@ pub struct RequestedCommandView {
     header_mouse_state: MouseStateHandle,
     is_editing: bool,
 
-    // A requested command can either be copied directly off of one citation (such as a Warp Drive
+    // A requested command can either be copied directly off of one citation (such as a Wish Drive
     // object), derived from one or more citations, or be unrelated to any citations.
     // A given citation should only appear once per block.
     copied_from_citation: Option<AIAgentCitation>,
@@ -1545,9 +1545,9 @@ impl View for RequestedCommandView {
                 OffsetPositioning::offset_from_save_position_element(
                     Self::get_position_id_for_accept_split_button(&self.position_id_prefix),
                     vec2f(0., 8.),
-                    warpui::elements::PositionedElementOffsetBounds::WindowByPosition,
-                    warpui::elements::PositionedElementAnchor::BottomRight,
-                    warpui::elements::ChildAnchor::TopRight,
+                    wishui::elements::PositionedElementOffsetBounds::WindowByPosition,
+                    wishui::elements::PositionedElementAnchor::BottomRight,
+                    wishui::elements::ChildAnchor::TopRight,
                 ),
             );
         }

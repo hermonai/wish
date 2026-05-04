@@ -12,9 +12,9 @@
 use std::path::PathBuf;
 
 use pathfinder_geometry::vector::vec2f;
-use warp_core::features::FeatureFlag;
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::features::FeatureFlag;
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::{
         Align, Border, ChildAnchor, ChildView, ClippedScrollStateHandle, ClippedScrollable,
         ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Element, Flex, Hoverable,
@@ -46,7 +46,7 @@ use crate::{
     workspace::ToastStack,
     workspaces::user_workspaces::UserWorkspaces,
 };
-use warp_core::send_telemetry_from_ctx;
+use wish_core::send_telemetry_from_ctx;
 
 pub(crate) mod commit;
 pub(crate) mod pr;
@@ -70,7 +70,7 @@ pub fn init(ctx: &mut AppContext) {
     ctx.register_fixed_bindings(vec![FixedBinding::new(
         "escape",
         GitDialogAction::Cancel,
-        warpui::id!("GitDialog"),
+        wishui::id!("GitDialog"),
     )]);
 }
 
@@ -134,7 +134,7 @@ fn show_toast(msg: impl Into<String>, ctx: &mut ViewContext<GitDialog>) {
 ///
 /// Folds the parent feature flag, the user's dedicated per-feature AI toggle
 /// (which itself requires active AI / auth / remote-session org policy to
-/// allow AI), and an enterprise check with the same Warp-plan exception and
+/// allow AI), and an enterprise check with the same Wish-plan exception and
 /// dogfood override as `share_block_modal.rs::should_send_title_gen_request`.
 ///
 /// When this returns `false`, call sites skip AI entirely: commit.rs opens
@@ -372,7 +372,7 @@ fn render_file_changes_box(
                 ScrollbarWidth::Auto,
                 theme.nonactive_ui_detail().into(),
                 theme.active_ui_detail().into(),
-                warpui::elements::Fill::None,
+                wishui::elements::Fill::None,
             )
             .finish(),
         )

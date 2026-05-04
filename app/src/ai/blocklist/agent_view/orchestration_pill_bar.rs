@@ -11,15 +11,15 @@ use std::collections::{hash_map::DefaultHasher, HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 
 use pathfinder_color::ColorU;
-use warp_core::ui::{appearance::Appearance, theme::WarpTheme};
-use warpui::elements::{
+use wish_core::ui::{appearance::Appearance, theme::WarpTheme};
+use wishui::elements::{
     ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Element, Empty, Flex, Hoverable,
     MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius, Stack, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::platform::Cursor;
-use warpui::text_layout::ClipConfig;
-use warpui::{AppContext, Entity, ModelHandle, SingletonEntity, View, ViewContext};
+use wishui::fonts::{Properties, Weight};
+use wishui::platform::Cursor;
+use wishui::text_layout::ClipConfig;
+use wishui::{AppContext, Entity, ModelHandle, SingletonEntity, View, ViewContext};
 
 use crate::ai::agent::conversation::{AIConversation, AIConversationId};
 use crate::ai::blocklist::agent_view::orchestration_conversation_links::parent_conversation_id;
@@ -29,7 +29,7 @@ use crate::features::FeatureFlag;
 use crate::pane_group::pane::view::PaneHeaderAction;
 use crate::terminal::view::TerminalAction;
 use crate::ui_components::icons::Icon;
-use warp_core::ui::theme::color::internal_colors;
+use wish_core::ui::theme::color::internal_colors;
 
 const PILL_HEIGHT: f32 = 22.;
 const PILL_RADIUS: f32 = PILL_HEIGHT / 2.;
@@ -105,7 +105,7 @@ pub struct OrchestrationPillBar {
     /// `MouseStateHandle::default()` in the render hot path is *not*
     /// equivalent: the next render after a mouse-down would produce yet
     /// another fresh handle, losing the down-state before mouse-up arrives
-    /// and silently swallowing the click (per the WarpUI mouse-state rule).
+    /// and silently swallowing the click (per the WishUI mouse-state rule).
     mouse_states: RefCell<HashMap<AIConversationId, MouseStateHandle>>,
 }
 
@@ -340,7 +340,7 @@ fn render_pill(
     let avatar_glyph = spec.avatar_glyph;
 
     // `Hoverable::new`'s build closure is `FnOnce` (see
-    // `crates/warpui_core/src/elements/hoverable.rs`). We can therefore move
+    // `crates/wishui-core/src/elements/hoverable.rs`). We can therefore move
     // `label` into the closure by value rather than cloning it on every
     // build.
     Hoverable::new(mouse_state, move |hover_state| {
@@ -351,13 +351,13 @@ fn render_pill(
             )
         } else if hover_state.is_hovered() || hover_state.is_clicked() {
             (
-                warp_core::ui::theme::color::internal_colors::neutral_3(theme),
-                warp_core::ui::theme::color::internal_colors::text_main(theme, theme.background()),
+                wish_core::ui::theme::color::internal_colors::neutral_3(theme),
+                wish_core::ui::theme::color::internal_colors::text_main(theme, theme.background()),
             )
         } else {
             (
-                warp_core::ui::theme::color::internal_colors::neutral_2(theme),
-                warp_core::ui::theme::color::internal_colors::text_main(theme, theme.background()),
+                wish_core::ui::theme::color::internal_colors::neutral_2(theme),
+                wish_core::ui::theme::color::internal_colors::text_main(theme, theme.background()),
             )
         };
 
@@ -528,7 +528,7 @@ const CRUMB_HORIZONTAL_PADDING: f32 = 6.;
 /// `parent_crumb_mouse_state` must be a `MouseStateHandle` owned by the caller
 /// (e.g. on a TerminalView field) so hover and click events persist across
 /// renders. Inline `MouseStateHandle::default()` would zero state every frame
-/// and silently break clicks (per the WarpUI mouse-state guidance).
+/// and silently break clicks (per the WishUI mouse-state guidance).
 pub fn render_orchestration_breadcrumbs(
     agent_view_controller: &AgentViewController,
     parent_crumb_mouse_state: MouseStateHandle,

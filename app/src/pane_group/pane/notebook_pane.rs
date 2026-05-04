@@ -2,7 +2,7 @@ use anyhow::Context;
 use std::sync::Arc;
 use url::Url;
 
-use warpui::{AppContext, ModelHandle, SingletonEntity, ViewContext, ViewHandle};
+use wishui::{AppContext, ModelHandle, SingletonEntity, ViewContext, ViewHandle};
 
 use crate::{
     app_state::{LeafContents, NotebookPaneSnapshot},
@@ -178,7 +178,7 @@ pub(super) fn subscribe_to_link_model(
     ctx.subscribe_to_model(handle, move |pane_group, _, event, ctx| match event {
         LinkEvent::OpenFileNotebook { path, session } => {
             // Opening local files is delegated to the parent workspace.
-            ctx.emit(crate::pane_group::Event::OpenFileInWarp {
+            ctx.emit(crate::pane_group::Event::OpenFileInWish {
                 path: path.clone(),
                 session: session.clone(),
             })
@@ -205,7 +205,7 @@ pub(super) fn subscribe_to_link_model(
             target,
             line_col,
         } => {
-            // Emit event to workspace to handle opening in Warp
+            // Emit event to workspace to handle opening in Wish
             ctx.emit(crate::pane_group::Event::OpenFileWithTarget {
                 path: path.clone(),
                 target: target.clone(),

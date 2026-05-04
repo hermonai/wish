@@ -110,14 +110,14 @@ use itertools::Itertools;
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use rand::{distributions::Alphanumeric, Rng};
-use warp_core::{
+use wish_core::{
     channel::{Channel, ChannelState},
     features::FeatureFlag,
     safe_error, safe_info,
     sync_queue::SyncQueue,
     ui::theme::color::internal_colors,
 };
-use warpui::{
+use wishui::{
     clipboard::ClipboardContent,
     elements::{
         new_scrollable::{
@@ -139,16 +139,16 @@ use warpui::{
     units::Pixels,
     AppContext, Entity, SingletonEntity, TypedActionView, View, ViewContext, ViewHandle, WindowId,
 };
-use warpui::{
+use wishui::{
     elements::{Clipped, MainAxisSize, Shrinkable},
     text_layout::{default_compute_baseline_position, ClipConfig},
 };
-use warpui::{
+use wishui::{
     elements::{Hoverable, SavePosition},
     platform::Cursor,
     ui_components::components::UiComponent,
 };
-use warpui::{
+use wishui::{
     fonts::{Properties, Weight},
     r#async::SpawnedFutureHandle,
     ModelHandle, WeakViewHandle,
@@ -237,7 +237,7 @@ pub fn render_file_navigation_button<F>(
     on_click: F,
 ) -> Box<dyn Element>
 where
-    F: Fn(&mut warpui::EventContext<'_>) + 'static,
+    F: Fn(&mut wishui::EventContext<'_>) + 'static,
 {
     let ui_builder = appearance.ui_builder().clone();
     let icon_color = appearance
@@ -264,9 +264,9 @@ where
             .build()
             .finish()
     })
-    .with_tooltip_position(warpui::ui_components::button::ButtonTooltipPosition::BelowLeft)
+    .with_tooltip_position(wishui::ui_components::button::ButtonTooltipPosition::BelowLeft)
     .build()
-    .on_click(move |ctx: &mut warpui::EventContext<'_>, _, _| {
+    .on_click(move |ctx: &mut wishui::EventContext<'_>, _, _| {
         on_click(ctx);
     });
 
@@ -3954,7 +3954,7 @@ impl CodeReviewView {
 
         let header_text = "Loading open changes...";
         let loading_icon = Icon::Loading
-            .to_warpui_icon(warp_core::ui::theme::Fill::Solid(
+            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
                 internal_colors::neutral_6(theme),
             ))
             .finish();
@@ -4092,7 +4092,7 @@ impl CodeReviewView {
                 Container::new(
                     ConstrainedBox::new(
                         Icon::AlertTriangle
-                            .to_warpui_icon(warp_core::ui::theme::Fill::Solid(
+                            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
                                 internal_colors::neutral_6(theme),
                             ))
                             .finish(),
@@ -4150,7 +4150,7 @@ impl CodeReviewView {
                         .with_text_and_icon_label(TextAndIcon::new(
                             TextAndIconAlignment::IconFirst,
                             " Retry".to_string(),
-                            Icon::Refresh.to_warpui_icon(warp_core::ui::theme::Fill::Solid(
+                            Icon::Refresh.to_warpui_icon(wish_core::ui::theme::Fill::Solid(
                                 theme.main_text_color(theme.background()).into(),
                             )),
                             MainAxisSize::Min,
@@ -4202,7 +4202,7 @@ impl CodeReviewView {
                 Container::new(
                     ConstrainedBox::new(
                         Icon::FolderClosed
-                            .to_warpui_icon(warp_core::ui::theme::Fill::Solid(
+                            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
                                 internal_colors::neutral_6(theme),
                             ))
                             .finish(),
@@ -4282,7 +4282,7 @@ impl CodeReviewView {
                 Container::new(
                     ConstrainedBox::new(
                         Icon::FolderClosed
-                            .to_warpui_icon(warp_core::ui::theme::Fill::Solid(
+                            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
                                 internal_colors::neutral_6(theme),
                             ))
                             .finish(),
@@ -4386,7 +4386,7 @@ impl CodeReviewView {
         state: &LoadedState,
         appearance: &Appearance,
         is_in_split_pane: bool,
-        app: &warpui::AppContext,
+        app: &wishui::AppContext,
     ) -> Box<dyn Element> {
         let top_section = Flex::column()
             .with_cross_axis_alignment(CrossAxisAlignment::Start)
@@ -4451,7 +4451,7 @@ impl CodeReviewView {
                 Container::new(
                     ConstrainedBox::new(
                         Icon::Diff
-                            .to_warpui_icon(warp_core::ui::theme::Fill::Solid(
+                            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
                                 internal_colors::neutral_6(theme),
                             ))
                             .finish(),
@@ -4778,7 +4778,7 @@ impl CodeReviewView {
 
         // Add file icon
         let file_icon = Icon::File
-            .to_warpui_icon(warp_core::ui::theme::Fill::Solid(
+            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
                 internal_colors::neutral_6(theme),
             ))
             .finish();
@@ -4802,7 +4802,7 @@ impl CodeReviewView {
                     appearance.ui_font_size(),
                 )
                 .with_color(
-                    warp_core::ui::theme::Fill::Solid(internal_colors::neutral_6(theme)).into(),
+                    wish_core::ui::theme::Fill::Solid(internal_colors::neutral_6(theme)).into(),
                 )
                 .with_line_height_ratio(appearance.line_height_ratio())
                 .with_style(Properties::default().weight(Weight::Semibold))
@@ -4826,7 +4826,7 @@ impl CodeReviewView {
                 )
                 .with_style(Properties::default().weight(Weight::Bold))
                 .with_color(
-                    warp_core::ui::theme::Fill::Solid(internal_colors::neutral_6(theme)).into(),
+                    wish_core::ui::theme::Fill::Solid(internal_colors::neutral_6(theme)).into(),
                 )
                 .finish(),
             )
@@ -4881,7 +4881,7 @@ impl CodeReviewView {
             axis_config,
             appearance.theme().nonactive_ui_detail().into(),
             appearance.theme().active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .with_vertical_scrollbar(ScrollableAppearance::new(ScrollbarWidth::Auto, false))
         .with_propagate_mousewheel_if_not_handled(true)
@@ -4940,7 +4940,7 @@ impl CodeReviewView {
                         .with_corner_radius(CornerRadius::with_all(Radius::Pixels(4.)));
 
                     if mouse_state.is_hovered() {
-                        container = container.with_background(warp_core::ui::theme::Fill::Solid(
+                        container = container.with_background(wish_core::ui::theme::Fill::Solid(
                             internal_colors::neutral_3(appearance.theme()),
                         ))
                     }
@@ -4961,7 +4961,7 @@ impl CodeReviewView {
             },
             appearance.theme().nonactive_ui_detail().into(),
             appearance.theme().active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .with_vertical_scrollbar(ScrollableAppearance::new(ScrollbarWidth::Auto, false))
         .finish();
@@ -5221,9 +5221,9 @@ impl CodeReviewView {
                     // We effectively make this an absolutely positioned header.
                     OffsetPositioning::offset_from_parent(
                         vec2f(0., scroll_offset_from_top.offset_from_start().as_f32()),
-                        warpui::elements::ParentOffsetBounds::ParentByPosition,
-                        warpui::elements::ParentAnchor::TopMiddle,
-                        warpui::elements::ChildAnchor::TopMiddle,
+                        wishui::elements::ParentOffsetBounds::ParentByPosition,
+                        wishui::elements::ParentAnchor::TopMiddle,
+                        wishui::elements::ChildAnchor::TopMiddle,
                     ),
                 );
             }
@@ -5492,7 +5492,7 @@ impl CodeReviewView {
                     Text::new("•", appearance.ui_font_family(), appearance.ui_font_size())
                         .with_style(Properties::default().weight(Weight::Bold))
                         .with_color(
-                            warp_core::ui::theme::Fill::Solid(internal_colors::neutral_6(
+                            wish_core::ui::theme::Fill::Solid(internal_colors::neutral_6(
                                 appearance.theme(),
                             ))
                             .into(),
@@ -5520,7 +5520,7 @@ impl CodeReviewView {
             .with_horizontal_padding(8.)
             .with_vertical_padding(4.)
             .with_border(
-                Border::all(1.).with_border_fill(warp_core::ui::theme::Fill::Solid(
+                Border::all(1.).with_border_fill(wish_core::ui::theme::Fill::Solid(
                     internal_colors::neutral_4(appearance.theme()),
                 )),
             )
@@ -5817,7 +5817,7 @@ impl CodeReviewView {
             },
             appearance.theme().nonactive_ui_detail().into(),
             appearance.theme().active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .with_vertical_scrollbar(ScrollableAppearance::new(ScrollbarWidth::Auto, false))
         .finish();
@@ -6649,7 +6649,7 @@ impl CodeReviewView {
     fn restore_cursor_position(
         editor: &CodeEditorView,
         selections: Vec<SelectionOffsets>,
-        ctx: &mut warpui::ViewContext<CodeEditorView>,
+        ctx: &mut wishui::ViewContext<CodeEditorView>,
     ) {
         if let Ok(selections_vec1) = Vec1::try_from_vec(selections) {
             editor.model.update(ctx, |model, ctx| {
@@ -7803,7 +7803,7 @@ impl BackingView for CodeReviewView {
                     target_os = "windows"
                 )
             )) {
-                // Find the workspace to show the Warp-native modal
+                // Find the workspace to show the Wish-native modal
                 if let Some(workspace) = ctx
                     .views_of_type::<Workspace>(ctx.window_id())
                     .and_then(|workspaces| workspaces.first().cloned())

@@ -14,7 +14,7 @@ use std::{
 };
 
 use anyhow::{anyhow, Context, Result};
-use warpui::r#async::executor::Background;
+use wishui::r#async::executor::Background;
 
 use crate::plugin::host::runners::PluginRunners;
 
@@ -31,7 +31,7 @@ use super::{
 use logging::initialize_logging;
 
 pub fn run() -> Result<()> {
-    warpui::r#async::block_on(async move {
+    wishui::r#async::block_on(async move {
         let executor = Arc::new(Background::default());
 
         // Initialize a client connection to the warp app process.
@@ -115,7 +115,7 @@ fn plugin_paths() -> Vec<PathBuf> {
         .collect()
 }
 
-/// Returns `true` if the directory at the given path is directory containing JS source for a Warp plugin.
+/// Returns `true` if the directory at the given path is directory containing JS source for a Wish plugin.
 fn is_plugin_dir(path: &Path) -> bool {
     if !path.is_dir() {
         return false;

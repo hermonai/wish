@@ -15,10 +15,6 @@ use pathfinder_geometry::{
     rect::RectF,
     vector::{vec2f, Vector2F},
 };
-use warp_core::ui::{
-    appearance::Appearance,
-    theme::{color::internal_colors, Fill},
-};
 use warp_editor::{
     editor::EditorView,
     render::{
@@ -31,7 +27,11 @@ use warp_editor::{
         },
     },
 };
-use warpui::{
+use wish_core::ui::{
+    appearance::Appearance,
+    theme::{color::internal_colors, Fill},
+};
+use wishui::{
     elements::{
         new_scrollable::{NewScrollableElement, ScrollableAxis},
         Align, Axis, Border, ChildAnchor, ConstrainedBox, Container, CornerRadius, Empty, F32Ext,
@@ -56,8 +56,8 @@ use crate::{
     },
     view_components::action_button::{ActionButtonTheme, SecondaryTheme},
 };
-use warp_core::features::FeatureFlag;
-use warpui::elements::{Hoverable, MouseStateHandle};
+use wish_core::features::FeatureFlag;
+use wishui::elements::{Hoverable, MouseStateHandle};
 
 pub const GUTTER_WIDTH: f32 = 94.;
 const VERTICAL_DIFF_HUNK_INDICATOR_WIDTH: f32 = 3.;
@@ -915,7 +915,7 @@ impl<V: EditorView> EditorWrapper<V> {
         };
 
         let icon = ConstrainedBox::new(
-            warpui::elements::Icon::new(
+            wishui::elements::Icon::new(
                 expansion_type.icon().into(),
                 line_number_config.text_color,
             )
@@ -971,7 +971,7 @@ impl<V: EditorView> EditorWrapper<V> {
 
             let container = Container::new(
                 ConstrainedBox::new(
-                    warpui::elements::Icon::new(gutter_button.icon().into(), icon_color).finish(),
+                    wishui::elements::Icon::new(gutter_button.icon().into(), icon_color).finish(),
                 )
                 .with_width(icon_size)
                 .with_height(icon_size)
@@ -1011,7 +1011,7 @@ impl<V: EditorView> EditorWrapper<V> {
         });
 
         if enabled {
-            button = button.with_cursor(warpui::platform::Cursor::PointingHand);
+            button = button.with_cursor(wishui::platform::Cursor::PointingHand);
 
             if let Some(on_click_action) = on_click_action {
                 let action = on_click_action.clone();

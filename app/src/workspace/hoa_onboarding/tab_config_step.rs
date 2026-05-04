@@ -1,12 +1,12 @@
 use std::path::Path;
 
-use warpui::elements::{
+use wishui::elements::{
     Container, CrossAxisAlignment, Flex, MouseStateHandle, ParentElement, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::geometry::vector::Vector2F;
-use warpui::Element;
-use warpui::EventContext;
+use wishui::fonts::{Properties, Weight};
+use wishui::geometry::vector::Vector2F;
+use wishui::Element;
+use wishui::EventContext;
 
 use crate::appearance::Appearance;
 use crate::tab_configs::session_config::SessionType;

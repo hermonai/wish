@@ -11,37 +11,37 @@ use crate::ui_components::icons::Icon as UiIcon;
 use crate::workspace::WorkspaceAction;
 use channel_versions::overrides::TargetOS;
 use parking_lot::RwLock;
-use warp_core::semantic_selection::SemanticSelection;
-use warp_core::ui::theme::WarpTheme;
-use warpui::elements::{
+use wish_core::semantic_selection::SemanticSelection;
+use wish_core::ui::theme::WarpTheme;
+use wishui::elements::{
     CrossAxisAlignment, Icon, MainAxisAlignment, MainAxisSize, MouseStateHandle, SelectableArea,
     SelectionHandle, Text,
 };
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::{
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::{
     elements::{Border, Container, Flex, ParentElement},
     AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext,
 };
 
 use super::render::{HORIZONTAL_TEXT_MARGIN, SSH_DOCS_URL, SUBSHELL_DOCS_URL};
-use super::settings::WarpifySettings;
-use super::{render, subshell_bootstrap_success_block_bytes, WarpificationSource};
+use super::settings::WishifySettings;
+use super::{render, subshell_bootstrap_success_block_bytes, WishificationSource};
 
 const VERTICAL_TEXT_MARGIN: f32 = 16.;
 
 #[derive(Debug, Clone)]
-pub enum WarpifySuccessBlockEvent {
-    OpenWarpifySettings,
+pub enum WishifySuccessBlockEvent {
+    OpenWishifySettings,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub enum WarpifySuccessBlockAction {
-    ClearAutoWarpifySnippet,
-    OpenWarpifySettings,
+pub enum WishifySuccessBlockAction {
+    ClearAutoWishifySnippet,
+    OpenWishifySettings,
     OpenUrl(String),
 }
 
-struct AutoWarpifySnippet {
+struct AutoWishifySnippet {
     /// On subshell initialization, this will contain the output grid to display,
     /// containing info like how to auto-warpify the subshell.
     output_grid: Cow<'static, str>,
@@ -55,24 +55,24 @@ struct AutoWarpifySnippet {
     can_write_to_rc: bool,
 }
 
-pub struct WarpifySuccessBlock {
-    source: WarpificationSource,
+pub struct WishifySuccessBlock {
+    source: WishificationSource,
     spawning_command: String,
     learn_more_link_mouse_states: MouseStateHandle,
-    auto_warpify_snippet: Option<AutoWarpifySnippet>,
+    auto_warpify_snippet: Option<AutoWishifySnippet>,
 }
 
-impl WarpifySuccessBlock {
+impl WishifySuccessBlock {
     #[allow(clippy::new_without_default)]
     pub fn new(
-        source: WarpificationSource,
+        source: WishificationSource,
         spawning_command: String,
         subshell_info: Option<SubshellInitializationInfo>,
         shell: Shell,
         disable_tmux: bool,
         ctx: &mut ViewContext<Self>,
     ) -> Self {
-        ctx.subscribe_to_model(&WarpifySettings::handle(ctx), move |_, _, _, ctx| {
+        ctx.subscribe_to_model(&WishifySettings::handle(ctx), move |_, _, _, ctx| {
             ctx.notify();
         });
 
@@ -114,11 +114,11 @@ impl WarpifySuccessBlock {
             })
         };
         let auto_warpify_snippet = auto_warpify_snippet.map(|(output_grid, can_write_to_rc)| {
-            AutoWarpifySnippet {
+            AutoWishifySnippet {
                 description: (if !output_grid.is_empty() {
-                    "Run the following to automatically Warpify in the future:"
+                    "Run the following to automatically Wishify in the future:"
                 } else {
-                    "In remote subshells, Warp runs commands in the background to power completions, syntax highlighting, and other features."
+                    "In remote subshells, Wish runs commands in the background to power completions, syntax highlighting, and other features."
                 }).into(),
                 output_grid: output_grid.into(),
                 selection_handle: Default::default(),
@@ -156,7 +156,7 @@ impl WarpifySuccessBlock {
 
     pub fn render_title_ui(&self, theme: &WarpTheme, appearance: &Appearance) -> Box<dyn Element> {
         let header_contents = render::build_header_row(
-            "Session Warpified",
+            "Session Wishified",
             Icon::new(UiIcon::Warp.into(), theme.active_ui_detail()),
             theme,
             appearance,
@@ -185,8 +185,8 @@ impl WarpifySuccessBlock {
 
     fn render_learn_more_link(&self, appearance: &Appearance) -> Box<dyn Element> {
         let url = match self.source {
-            WarpificationSource::Ssh => SSH_DOCS_URL,
-            WarpificationSource::Subshell => SUBSHELL_DOCS_URL,
+            WishificationSource::Ssh => SSH_DOCS_URL,
+            WishificationSource::Subshell => SUBSHELL_DOCS_URL,
         };
 
         let font_family_id = appearance.monospace_font_family();
@@ -198,7 +198,7 @@ impl WarpifySuccessBlock {
                 None,
                 Some(Box::new({
                     move |ctx| {
-                        ctx.dispatch_typed_action(WarpifySuccessBlockAction::OpenUrl(
+                        ctx.dispatch_typed_action(WishifySuccessBlockAction::OpenUrl(
                             url.to_owned(),
                         ));
                     }
@@ -215,7 +215,7 @@ impl WarpifySuccessBlock {
             .finish()
     }
 
-    /// Fired when a block ends and we are not in a Warpified session.
+    /// Fired when a block ends and we are not in a Wishified session.
     pub fn on_warpified_session_complete(&mut self, ctx: &mut ViewContext<Self>) {
         self.clear_auto_warpify_snippet(ctx);
     }
@@ -252,7 +252,7 @@ impl WarpifySuccessBlock {
                         code_snippet.to_string(),
                     ));
 
-                    ctx.dispatch_typed_action(WarpifySuccessBlockAction::ClearAutoWarpifySnippet);
+                    ctx.dispatch_typed_action(WishifySuccessBlockAction::ClearAutoWishifySnippet);
                 }
             })),
             Some(Box::new({
@@ -267,7 +267,7 @@ impl WarpifySuccessBlock {
         let semantic_selection = SemanticSelection::as_ref(app);
         let selected_text = auto_warpify_snippet.selected_text.clone();
 
-        // TODO(Simon): Implement full selection and copying functionality for the WarpifySuccessBlock.
+        // TODO(Simon): Implement full selection and copying functionality for the WishifySuccessBlock.
         // Look to the `EnvVarCollectionBlock` for the existing implementation paradigm. We don't
         // yet have a robust way of ensuring that every aspect of text selection is implemented
         // properly, so be extra careful not to miss any details!
@@ -308,15 +308,15 @@ impl WarpifySuccessBlock {
     }
 }
 
-impl Entity for WarpifySuccessBlock {
-    type Event = WarpifySuccessBlockEvent;
+impl Entity for WishifySuccessBlock {
+    type Event = WishifySuccessBlockEvent;
 }
 
-pub const WARPIFY_SUCCESS_BLOCK_VISIBLE_KEY: &str = "WarpifySuccessBlockVisible";
+pub const WARPIFY_SUCCESS_BLOCK_VISIBLE_KEY: &str = "WishifySuccessBlockVisible";
 
-impl View for WarpifySuccessBlock {
+impl View for WishifySuccessBlock {
     fn ui_name() -> &'static str {
-        "WarpifySuccessBlock"
+        "WishifySuccessBlock"
     }
 
     fn render(&self, app: &AppContext) -> Box<dyn Element> {
@@ -341,18 +341,18 @@ impl View for WarpifySuccessBlock {
     }
 }
 
-impl TypedActionView for WarpifySuccessBlock {
-    type Action = WarpifySuccessBlockAction;
+impl TypedActionView for WishifySuccessBlock {
+    type Action = WishifySuccessBlockAction;
 
     fn handle_action(&mut self, action: &Self::Action, ctx: &mut ViewContext<Self>) {
         match action {
-            WarpifySuccessBlockAction::OpenWarpifySettings => {
-                ctx.emit(WarpifySuccessBlockEvent::OpenWarpifySettings);
+            WishifySuccessBlockAction::OpenWishifySettings => {
+                ctx.emit(WishifySuccessBlockEvent::OpenWishifySettings);
             }
-            WarpifySuccessBlockAction::OpenUrl(url) => {
+            WishifySuccessBlockAction::OpenUrl(url) => {
                 ctx.open_url(url);
             }
-            WarpifySuccessBlockAction::ClearAutoWarpifySnippet => {
+            WishifySuccessBlockAction::ClearAutoWishifySnippet => {
                 self.clear_auto_warpify_snippet(ctx);
             }
         }

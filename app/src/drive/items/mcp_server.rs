@@ -6,7 +6,7 @@ use crate::{
     drive::{index::DriveIndexAction, CloudObjectTypeAndId, DriveObjectType},
     themes::theme::Fill,
 };
-use warpui::{elements::MouseStateHandle, AppContext, Element};
+use wishui::{elements::MouseStateHandle, AppContext, Element};
 
 #[derive(Clone)]
 pub struct WarpDriveMCPServer {

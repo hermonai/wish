@@ -1,14 +1,14 @@
-use warpui::fonts::{Properties, Style, Weight};
-use warpui::platform::Cursor;
-use warpui::ui_components::button::ButtonVariant;
-use warpui::{elements::Element, AppContext, View};
-use warpui::{Entity, SingletonEntity, TypedActionView, ViewContext};
+use wishui::fonts::{Properties, Style, Weight};
+use wishui::platform::Cursor;
+use wishui::ui_components::button::ButtonVariant;
+use wishui::{elements::Element, AppContext, View};
+use wishui::{Entity, SingletonEntity, TypedActionView, ViewContext};
 
 use crate::appearance::Appearance;
 use crate::ui_components::buttons::close_button;
 use crate::ui_components::dialog::{dialog_styles, Dialog};
-use warpui::elements::{Container, MouseStateHandle, Text};
-use warpui::ui_components::components::UiComponent;
+use wishui::elements::{Container, MouseStateHandle, Text};
+use wishui::ui_components::components::UiComponent;
 
 const EDIT_ANYWAY_CTA_LABEL: &str = "Edit anyway";
 const CANCEL_CTA_LABEL: &str = "Cancel";

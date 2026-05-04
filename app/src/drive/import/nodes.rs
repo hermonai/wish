@@ -15,7 +15,7 @@ use std::{
     ops::{Add, AddAssign, SubAssign},
     path::{Path, PathBuf},
 };
-use warpui::{
+use wishui::{
     elements::{
         Align, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex, Hoverable,
         MouseStateHandle, ParentElement, Radius, Shrinkable,

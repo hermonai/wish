@@ -9,8 +9,8 @@ use parking_lot::FairMutex;
 use serde::Serialize;
 use std::io;
 use std::sync::Arc;
-use warpui::{Entity, ModelContext, SingletonEntity};
 use websocket::{Message, Sink, Stream, WebSocket, WebsocketMessage as _};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 const CREATE_SESSION_ENDPOINT: &str = "ws://127.0.0.1:3030/create";
 
@@ -152,7 +152,7 @@ impl EventLoop {
 
     /// Writes the ZSH init shell script to the "PTY", mimicking how we send the init shell script
     /// when there is a local pty:
-    /// <https://github.com/warpdotdev/warp-internal/blob/747da2df83f2caa97e781ce284ceb226fb97a66c/app/src/terminal/local_tty/unix.rs#L338-L347>.
+    /// <https://github.com/hermonai/wish-internal/blob/747da2df83f2caa97e781ce284ceb226fb97a66c/app/src/terminal/local_tty/unix.rs#L338-L347>.
     async fn write_zsh_init_shell_script(sink: &mut impl Sink) -> anyhow::Result<()> {
         let zsh_init_shell_script = init_shell_script_for_shell(ShellType::Zsh, &crate::ASSETS);
         sink.send(Message::new_binary(

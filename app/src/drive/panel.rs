@@ -1,5 +1,5 @@
 use futures::Future;
-use warpui::{
+use wishui::{
     elements::{Align, Flex, Hoverable, MouseStateHandle, ParentElement, SavePosition, Shrinkable},
     presenter::ChildView,
     windowing::{StateEvent, WindowManager},
@@ -40,10 +40,10 @@ pub const MAX_SIDEBAR_WIDTH_RATIO: f32 = 0.75;
 
 pub const WARP_DRIVE_POSITION_ID: &str = "warp_drive";
 
-/// The sidebar that houses Warp Drive.
+/// The sidebar that houses Wish Drive.
 /// `DrivePanel` is different from `DriveIndex` in that it is responsible for
-/// how Warp Drive interacts with the workspace and the rest of the app, whereas
-/// `DriveIndex` is the main warp drive view and responsible for the internals of Warp Drive.
+/// how Wish Drive interacts with the workspace and the rest of the app, whereas
+/// `DriveIndex` is the main warp drive view and responsible for the internals of Wish Drive.
 pub struct DrivePanel {
     index_view: ViewHandle<DriveIndex>,
     mouse_state_handles: MouseStateHandles,
@@ -603,14 +603,14 @@ impl DrivePanel {
         })
     }
 
-    /// This functions scrolls the relevant Warp Drive item into view.
+    /// This functions scrolls the relevant Wish Drive item into view.
     pub fn scroll_item_into_view(&mut self, item_id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
         self.index_view.update(ctx, |index, ctx| {
             index.scroll_item_into_view(item_id, ctx);
         })
     }
 
-    /// This functions sets the index of a focused Warp Drive item.
+    /// This functions sets the index of a focused Wish Drive item.
     pub fn set_focused_index(&mut self, focused_index: Option<usize>, ctx: &mut ViewContext<Self>) {
         self.index_view.update(ctx, |index, ctx| {
             index.set_focused_index(focused_index, true, ctx);
@@ -683,7 +683,7 @@ impl View for DrivePanel {
         }
     }
 
-    fn render(&self, _app: &warpui::AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, _app: &wishui::AppContext) -> Box<dyn wishui::Element> {
         let body = Hoverable::new(
             self.mouse_state_handles.focus_panel_mouse_state.clone(),
             |_| {
@@ -705,7 +705,7 @@ impl View for DrivePanel {
 
         let mut col = Flex::column();
         col.add_child(Shrinkable::new(1., body).finish());
-        col.with_main_axis_size(warpui::elements::MainAxisSize::Max)
+        col.with_main_axis_size(wishui::elements::MainAxisSize::Max)
             .finish()
     }
 }

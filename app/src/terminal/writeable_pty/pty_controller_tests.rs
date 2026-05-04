@@ -24,7 +24,7 @@ impl PtyController {
                 let _ = tx.send(());
             })),
         });
-        let _ = warpui::r#async::block_on(rx);
+        let _ = wishui::r#async::block_on(rx);
     }
 }
 

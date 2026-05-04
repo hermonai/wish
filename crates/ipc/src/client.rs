@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use futures::{channel::oneshot, future::FutureExt, io::BufReader, AsyncRead, AsyncWrite};
-use warpui::r#async::executor::Background;
+use wishui::r#async::executor::Background;
 
 use crate::{platform::client::connect_client, protocol::Request};
 

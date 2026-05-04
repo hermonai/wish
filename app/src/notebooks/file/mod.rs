@@ -7,8 +7,8 @@ use std::{
 use pathfinder_geometry::vector::vec2f;
 use warp_util::path::user_friendly_path;
 #[cfg(feature = "local_fs")]
-use warpui::clipboard::ClipboardContent;
-use warpui::{
+use wishui::clipboard::ClipboardContent;
+use wishui::{
     accessibility::{AccessibilityContent, WarpA11yRole},
     elements::{
         Align, Container, CrossAxisAlignment, DispatchEventResult, Empty, EventHandler, Flex,
@@ -64,12 +64,12 @@ use super::{
 use crate::code::editor_management::CodeSource;
 #[cfg(feature = "local_fs")]
 use crate::util::openable_file_type::FileTarget;
-use warp_core::ui::icons::ICON_DIMENSIONS;
 use warp_editor::model::CoreEditorModel;
 #[cfg(feature = "local_fs")]
 use warp_files::{FileModel, FileModelEvent};
 #[cfg(feature = "local_fs")]
 use warp_util::file::FileId;
+use wish_core::ui::icons::ICON_DIMENSIONS;
 
 pub use crate::util::openable_file_type::is_markdown_file;
 
@@ -80,7 +80,7 @@ pub enum MarkdownDisplayMode {
     Raw,
 }
 
-/// View for a read-only notebook backed by a file, rather than Warp Drive.
+/// View for a read-only notebook backed by a file, rather than Wish Drive.
 pub struct FileNotebookView {
     /// The location of the open file. This is cached for displaying the title and breadcrumbs.
     location: Option<FileLocation>,
@@ -214,7 +214,7 @@ impl FileState {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_editable_bindings([
         EditableBinding::new(
@@ -1024,7 +1024,7 @@ impl BackingView for FileNotebookView {
             let title_text = render_pane_header_title_text(
                 title,
                 appearance,
-                warpui::text_layout::ClipConfig::start(),
+                wishui::text_layout::ClipConfig::start(),
             );
 
             view::HeaderContent::Custom {
@@ -1047,7 +1047,7 @@ impl BackingView for FileNotebookView {
                 title,
                 title_secondary: None,
                 title_style: None,
-                title_clip_config: warpui::text_layout::ClipConfig::start(),
+                title_clip_config: wishui::text_layout::ClipConfig::start(),
                 title_max_width: None,
                 left_of_title: None,
                 right_of_title: None,

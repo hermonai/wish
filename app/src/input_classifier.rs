@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use input_classifier::{HeuristicClassifier, InputClassifier};
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 pub struct InputClassifierModel {
     pub classifier: Arc<dyn InputClassifier>,
@@ -51,9 +51,9 @@ impl SingletonEntity for InputClassifierModel {}
 
 #[cfg(feature = "nld_fasttext_model")]
 /// Returns true iff the NLD classifier model is enabled.
-pub fn is_nld_classifier_enabled(ctx: &warpui::AppContext) -> bool {
-    use warp_core::user_preferences::GetUserPreferences as _;
-    use warp_core::{channel::ChannelState, features::FeatureFlag};
+pub fn is_nld_classifier_enabled(ctx: &wishui::AppContext) -> bool {
+    use wish_core::user_preferences::GetUserPreferences as _;
+    use wish_core::{channel::ChannelState, features::FeatureFlag};
 
     if ChannelState::channel().is_dogfood() {
         // The `EnableNLDClassifierModel` can be used to force enable / disable

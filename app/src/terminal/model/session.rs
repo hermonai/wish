@@ -26,7 +26,7 @@ use version_compare::Version;
 use warp_completer::completer::{
     CommandExitStatus, CommandOutput, PathSeparators, TopLevelCommandCaseSensitivity,
 };
-use warpui::{platform::OperatingSystem, Entity, ModelContext, SingletonEntity};
+use wishui::{platform::OperatingSystem, Entity, ModelContext, SingletonEntity};
 
 #[cfg(feature = "local_tty")]
 use crate::features::FeatureFlag;
@@ -69,8 +69,8 @@ pub enum ReadHistoryContentsError {
     AsyncFsError(std::io::Error),
 }
 
-// SessionId is defined in warp_core and re-exported here for backward compatibility.
-pub use warp_core::SessionId;
+// SessionId is defined in wish_core and re-exported here for backward compatibility.
+pub use wish_core::SessionId;
 
 /// Information about the sessions within a given terminal pane/top-level
 /// shell.
@@ -355,7 +355,7 @@ impl Sessions {
         if FeatureFlag::SshRemoteServer.is_enabled()
             && matches!(
                 session_info.session_type,
-                BootstrapSessionType::WarpifiedRemote
+                BootstrapSessionType::WishifiedRemote
             )
         {
             if let Some(host_id) = RemoteServerManager::as_ref(ctx).host_id_for_session(session_id)
@@ -503,7 +503,7 @@ impl Sessions {
 impl From<SessionType> for command_corrections::SessionType {
     fn from(session_type: SessionType) -> Self {
         match session_type {
-            SessionType::WarpifiedRemote { .. } => command_corrections::SessionType::Remote,
+            SessionType::WishifiedRemote { .. } => command_corrections::SessionType::Remote,
             SessionType::Local => command_corrections::SessionType::Local,
         }
     }
@@ -512,7 +512,7 @@ impl From<SessionType> for command_corrections::SessionType {
 impl From<&SessionType> for command_corrections::SessionType {
     fn from(session_type: &SessionType) -> Self {
         match session_type {
-            SessionType::WarpifiedRemote { .. } => command_corrections::SessionType::Remote,
+            SessionType::WishifiedRemote { .. } => command_corrections::SessionType::Remote,
             SessionType::Local => command_corrections::SessionType::Local,
         }
     }
@@ -619,7 +619,7 @@ impl SessionInfo {
                 || matches!(&is_legacy_ssh_session, IsLegacySSHSession::Yes { .. }),
         );
 
-        let spawning_session_id = if matches!(session_type, BootstrapSessionType::WarpifiedRemote)
+        let spawning_session_id = if matches!(session_type, BootstrapSessionType::WishifiedRemote)
             || subshell_info.is_some()
         {
             active_block_session_id
@@ -667,7 +667,7 @@ impl SessionInfo {
                 {
                     BootstrapSessionType::Local
                 } else {
-                    BootstrapSessionType::WarpifiedRemote
+                    BootstrapSessionType::WishifiedRemote
                 }
             }
             Err(e) => {
@@ -683,7 +683,7 @@ impl SessionInfo {
         _is_warpified_ssh_session: bool,
     ) -> BootstrapSessionType {
         // When the `remote_tty` feature is enabled--the session is always considered remote.
-        BootstrapSessionType::WarpifiedRemote
+        BootstrapSessionType::WishifiedRemote
     }
 
     /// Returns a fully populated [`SessionInfo`] containing data derived from the given
@@ -831,33 +831,33 @@ impl SessionInfo {
 /// which happens *after* the session is bootstrapped.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BootstrapSessionType {
-    /// The session host is the same host where Warp is running.
+    /// The session host is the same host where Wish is running.
     Local,
 
-    /// The session host is a different host from where Warp is running.
-    WarpifiedRemote,
+    /// The session host is a different host from where Wish is running.
+    WishifiedRemote,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SessionType {
-    /// The session host is the same host where Warp is running.
+    /// The session host is the same host where Wish is running.
     Local,
 
-    /// The session host is a different host from where Warp is running.
-    /// Note that we only know this for sure when we Warpify a block.
+    /// The session host is a different host from where Wish is running.
+    /// Note that we only know this for sure when we Wishify a block.
     ///
     /// `host_id` is `Some` when the remote server feature flag is enabled and
     /// `RemoteServerManager` has completed the connection handshake. It is
     /// `None` when the feature flag is off or the connection hasn't been
     /// established yet.
-    WarpifiedRemote { host_id: Option<warp_core::HostId> },
+    WishifiedRemote { host_id: Option<wish_core::HostId> },
 }
 
 impl From<BootstrapSessionType> for SessionType {
     fn from(bst: BootstrapSessionType) -> Self {
         match bst {
             BootstrapSessionType::Local => SessionType::Local,
-            BootstrapSessionType::WarpifiedRemote => SessionType::WarpifiedRemote { host_id: None },
+            BootstrapSessionType::WishifiedRemote => SessionType::WishifiedRemote { host_id: None },
         }
     }
 }
@@ -924,11 +924,11 @@ impl Session {
         self.session_type.lock().clone()
     }
 
-    /// Updates the `host_id` on a `WarpifiedRemote` session type after the
+    /// Updates the `host_id` on a `WishifiedRemote` session type after the
     /// remote server handshake completes (or clears it on disconnect).
-    pub fn set_remote_host_id(&self, host_id: Option<warp_core::HostId>) {
+    pub fn set_remote_host_id(&self, host_id: Option<wish_core::HostId>) {
         let mut st = self.session_type.lock();
-        if let SessionType::WarpifiedRemote { host_id: ref mut h } = *st {
+        if let SessionType::WishifiedRemote { host_id: ref mut h } = *st {
             *h = host_id;
         }
     }
@@ -976,7 +976,7 @@ impl Session {
     }
 
     pub fn is_subshell_or_ssh(&self) -> bool {
-        matches!(self.session_type(), SessionType::WarpifiedRemote { .. })
+        matches!(self.session_type(), SessionType::WishifiedRemote { .. })
             || self.is_legacy_ssh_session()
             || self.subshell_info().is_some()
     }
@@ -1397,7 +1397,7 @@ impl Session {
                 self.read_history_for_local_session(is_kaspersky_running)
                     .await
             }
-            BootstrapSessionType::WarpifiedRemote => self.read_history_for_remote_session().await,
+            BootstrapSessionType::WishifiedRemote => self.read_history_for_remote_session().await,
         }
     }
 
@@ -1522,7 +1522,7 @@ impl Display for Session {
     }
 }
 
-/// Returns the hostname for the local machine where Warp is running.
+/// Returns the hostname for the local machine where Wish is running.
 pub fn get_local_hostname() -> Result<String> {
     cfg_if::cfg_if! {
         if #[cfg(not(target_family = "wasm"))] {
@@ -1631,7 +1631,7 @@ pub mod testing {
 
         pub fn with_ssh_socket_path(mut self, socket_path: PathBuf) -> Self {
             if let BootstrapSessionType::Local = self.session_type {
-                self.session_type = BootstrapSessionType::WarpifiedRemote;
+                self.session_type = BootstrapSessionType::WishifiedRemote;
             }
             self.is_legacy_ssh_session = IsLegacySSHSession::Yes { socket_path };
             self
@@ -1694,7 +1694,7 @@ pub mod testing {
 
         pub fn test_remote() -> Self {
             let info = SessionInfo::new_for_test()
-                .with_session_type(BootstrapSessionType::WarpifiedRemote)
+                .with_session_type(BootstrapSessionType::WishifiedRemote)
                 .with_shell_type(ShellType::Bash); // We only support UNIX-based remote sessions.
             let session_type = SessionType::from(info.session_type.clone());
             Self {

@@ -27,10 +27,10 @@ use anyhow::Context;
 use chrono::Utc;
 use itertools::Itertools;
 use lsp::supported_servers::LSPServerType;
-use warp_core::features::FeatureFlag;
+use wish_core::features::FeatureFlag;
 #[cfg(feature = "local_fs")]
-use warpui::windowing::WindowManager;
-use warpui::{AppContext, Entity, ModelContext, SingletonEntity};
+use wishui::windowing::WindowManager;
+use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 #[cfg(feature = "local_fs")]
 use crate::code::language_server_shutdown_manager::LanguageServerShutdownManager;
@@ -45,7 +45,7 @@ use crate::{view_components::DismissibleToast, workspace::ToastStack};
 #[cfg(feature = "local_fs")]
 use lsp::LspEvent;
 #[cfg(feature = "local_fs")]
-use warp_core::channel::ChannelState;
+use wish_core::channel::ChannelState;
 
 use ai::project_context::model::{ProjectContextModel, ProjectContextModelEvent};
 
@@ -790,7 +790,7 @@ impl PersistedWorkspace {
     /// This ensures that the codebase index is up-to-date before the conversation begins.
     fn trigger_incremental_sync_for_conversation(
         &mut self,
-        terminal_view_id: warpui::EntityId,
+        terminal_view_id: wishui::EntityId,
         ctx: &mut ModelContext<Self>,
     ) {
         if !UserWorkspaces::as_ref(ctx).is_codebase_context_enabled(ctx) {

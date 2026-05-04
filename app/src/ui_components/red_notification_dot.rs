@@ -1,7 +1,7 @@
 use crate::appearance::Appearance;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::theme::AnsiColorIdentifier;
-use warpui::{
+use wish_core::ui::theme::AnsiColorIdentifier;
+use wishui::{
     elements::{
         ChildAnchor, ConstrainedBox, Container, CornerRadius, Empty, Fill, OffsetPositioning,
         ParentAnchor, ParentElement as _, ParentOffsetBounds, Radius, Stack,

@@ -2,8 +2,8 @@ use crate::ai::llms::{is_using_api_key_for_provider, DisableReason, LLMId, LLMIn
 use crate::menu::{MenuItem, MenuItemFields, MenuTooltipPosition};
 use itertools::Itertools;
 use std::sync::Arc;
-use warp_core::ui::Icon;
-use warpui::{
+use wish_core::ui::Icon;
+use wishui::{
     elements::{
         ConstrainedBox, Container, CrossAxisAlignment, Empty, Flex, ParentElement, SavePosition,
         Shrinkable, Text,

@@ -3,10 +3,11 @@ use serde::{de, Deserialize, Serialize};
 use std::{
     collections::{HashMap, HashSet},
     sync::{Arc, OnceLock},
+    time::Duration,
 };
-use warp_core::ui::icons::Icon;
-use warp_core::user_preferences::GetUserPreferences;
-use warpui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};
+use wish_core::ui::icons::Icon;
+use wish_core::user_preferences::GetUserPreferences;
+use wishui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};
 
 use crate::{
     auth::{
@@ -88,6 +89,7 @@ pub enum LLMProvider {
     OpenAI,
     Anthropic,
     Google,
+    Ollama,
     Xai,
     Unknown,
 }
@@ -99,6 +101,7 @@ impl LLMProvider {
             LLMProvider::OpenAI => Some(Icon::OpenAILogo),
             LLMProvider::Anthropic => Some(Icon::ClaudeLogo),
             LLMProvider::Google => Some(Icon::GeminiLogo),
+            LLMProvider::Ollama => None,
             LLMProvider::Xai => None,
             LLMProvider::Unknown => None,
         }
@@ -110,6 +113,7 @@ impl LLMProvider {
 pub enum LLMModelHost {
     DirectApi,
     AwsBedrock,
+    LocalOllama,
     #[serde(other)]
     Unknown,
 }
@@ -427,6 +431,149 @@ fn default_computer_use_llms() -> AvailableLLMs {
         }],
         preferred_codex_model_id: None,
     }
+}
+
+const DEFAULT_OLLAMA_BASE_URL: &str = "http://127.0.0.1:11434";
+const WISH_OLLAMA_URL_ENV: &str = "WISH_OLLAMA_URL";
+const OLLAMA_HOST_ENV: &str = "OLLAMA_HOST";
+
+#[derive(Debug, Deserialize)]
+struct OllamaTagsResponse {
+    models: Vec<OllamaModel>,
+}
+
+#[derive(Debug, Deserialize)]
+struct OllamaModel {
+    name: String,
+    #[serde(default)]
+    remote_model: Option<String>,
+    #[serde(default)]
+    remote_host: Option<String>,
+}
+
+impl OllamaModel {
+    fn is_local(&self) -> bool {
+        self.remote_model.is_none() && self.remote_host.is_none()
+    }
+}
+
+fn normalized_ollama_base_url(raw: &str) -> String {
+    let trimmed = raw.trim().trim_end_matches('/');
+    if trimmed.is_empty() {
+        DEFAULT_OLLAMA_BASE_URL.to_owned()
+    } else if trimmed.starts_with("http://") || trimmed.starts_with("https://") {
+        trimmed.to_owned()
+    } else {
+        format!("http://{trimmed}")
+    }
+}
+
+fn ollama_base_url() -> String {
+    std::env::var(WISH_OLLAMA_URL_ENV)
+        .or_else(|_| std::env::var(OLLAMA_HOST_ENV))
+        .map(|url| normalized_ollama_base_url(&url))
+        .unwrap_or_else(|_| DEFAULT_OLLAMA_BASE_URL.to_owned())
+}
+
+fn ollama_llm_info(model_name: String) -> LLMInfo {
+    let mut host_configs = HashMap::new();
+    host_configs.insert(
+        LLMModelHost::LocalOllama,
+        RoutingHostConfig {
+            enabled: true,
+            model_routing_host: LLMModelHost::LocalOllama,
+        },
+    );
+
+    LLMInfo {
+        display_name: model_name.clone(),
+        base_model_name: model_name.clone(),
+        id: format!("ollama:{model_name}").into(),
+        reasoning_level: None,
+        usage_metadata: LLMUsageMetadata {
+            request_multiplier: 1,
+            credit_multiplier: None,
+        },
+        description: Some("Local Ollama".to_owned()),
+        disable_reason: None,
+        vision_supported: false,
+        spec: Some(LLMSpec {
+            cost: 0.0,
+            quality: 0.5,
+            speed: 0.5,
+        }),
+        provider: LLMProvider::Ollama,
+        host_configs,
+        discount_percentage: None,
+        context_window: LLMContextWindow::default(),
+    }
+}
+
+fn local_ollama_models_from_names(
+    names: impl IntoIterator<Item = String>,
+) -> Option<ModelsByFeature> {
+    let mut names: Vec<String> = names
+        .into_iter()
+        .map(|name| name.trim().to_owned())
+        .filter(|name| !name.is_empty())
+        .collect();
+    names.sort();
+    names.dedup();
+
+    let infos: Vec<LLMInfo> = names.into_iter().map(ollama_llm_info).collect();
+    let default_id = infos.first()?.id.clone();
+    let preferred_codex_model_id = Some(default_id.clone());
+
+    let agent_mode = AvailableLLMs::new(
+        default_id.clone(),
+        infos.clone(),
+        preferred_codex_model_id.clone(),
+    )
+    .ok()?;
+    let coding =
+        AvailableLLMs::new(default_id.clone(), infos.clone(), preferred_codex_model_id).ok()?;
+    let cli_agent =
+        AvailableLLMs::new(default_id.clone(), infos.clone(), Some(default_id.clone())).ok()?;
+    let computer_use = AvailableLLMs::new(default_id, infos, None).ok()?;
+
+    Some(ModelsByFeature {
+        agent_mode,
+        coding,
+        cli_agent: Some(cli_agent),
+        computer_use: Some(computer_use),
+    })
+}
+
+async fn fetch_local_ollama_models() -> anyhow::Result<Option<ModelsByFeature>> {
+    let base_url = ollama_base_url();
+    let tags_url = format!("{base_url}/api/tags");
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_millis(1500))
+        .build()?;
+
+    let response = match client.get(&tags_url).send().await {
+        Ok(response) => response,
+        Err(err) => {
+            log::info!("Local Ollama model discovery unavailable at {tags_url}: {err}");
+            return Ok(None);
+        }
+    };
+
+    if !response.status().is_success() {
+        log::warn!(
+            "Local Ollama model discovery returned {} from {tags_url}",
+            response.status()
+        );
+        return Ok(None);
+    }
+
+    let response: OllamaTagsResponse = response.json().await?;
+    let model_names = response
+        .models
+        .into_iter()
+        .filter(OllamaModel::is_local)
+        .map(|model| model.name);
+    Ok(local_ollama_models_from_names(model_names))
 }
 
 impl Default for ModelsByFeature {
@@ -892,17 +1039,21 @@ impl LLMPreferences {
 
     /// No auth required (i.e. to populate the pre-login onboarding picker).
     fn refresh_public_models(&self, ctx: &mut ModelContext<Self>) {
-        let ai_api_client = ServerApiProvider::as_ref(ctx).get_ai_client();
         ctx.spawn(
-            async move { ai_api_client.get_free_available_models(None).await },
+            async move { fetch_local_ollama_models().await },
             |me, result, ctx| match result {
-                Ok(update) => {
+                Ok(Some(update)) => {
                     if update != me.models_by_feature {
                         me.on_server_update(update, ctx);
                     }
                 }
+                Ok(None) => {
+                    log::info!(
+                        "No local Ollama models discovered; keeping existing local model choices"
+                    );
+                }
                 Err(e) => {
-                    report_error!(e.context("Failed to fetch free-tier LLMs from server"));
+                    log::warn!("Failed to discover local Ollama models: {e:#}");
                 }
             },
         );

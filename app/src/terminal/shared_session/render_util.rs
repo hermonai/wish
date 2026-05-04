@@ -2,11 +2,11 @@ use crate::{
     appearance::Appearance,
     ui_components::avatar::{Avatar, AvatarContent},
 };
-use warpui::{elements::CornerRadius, fonts::Weight};
+use wishui::{elements::CornerRadius, fonts::Weight};
 
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use warpui::{
+use wishui::{
     elements::{
         ChildAnchor, Fill, Hoverable, MouseStateHandle, OffsetPositioning, ParentAnchor,
         ParentElement, ParentOffsetBounds, Radius, Stack,

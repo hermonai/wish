@@ -6,7 +6,7 @@ use url::Url;
 use uuid::Uuid;
 
 #[cfg(target_family = "wasm")]
-use warp_core::context_flag::ContextFlag;
+use wish_core::context_flag::ContextFlag;
 
 #[derive(Debug)]
 /// Represents an intent parsed from a web url
@@ -128,7 +128,7 @@ impl WebIntent {
                         }
                         let action_type = segments[1];
                         // Allowlist of valid actions,
-                        // since we shouldn't expose all Warp actions as web URLs.
+                        // since we shouldn't expose all Wish actions as web URLs.
                         const ALLOWED_ACTIONS: &[&str] = &["open-repo", "focus_cloud_mode"];
                         if !ALLOWED_ACTIONS.contains(&action_type) {
                             return Err(anyhow!("Unknown action type in url: {}", action_type));

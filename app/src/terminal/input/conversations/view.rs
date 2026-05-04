@@ -3,8 +3,8 @@
 use std::collections::HashSet;
 use std::sync::LazyLock;
 
-use warpui::elements::ChildView;
-use warpui::{Element, Entity, ModelHandle, SingletonEntity, View, ViewContext, ViewHandle};
+use wishui::elements::ChildView;
+use wishui::{Element, Entity, ModelHandle, SingletonEntity, View, ViewContext, ViewHandle};
 
 use crate::ai::active_agent_views_model::ActiveAgentViewsModel;
 use crate::ai::blocklist::agent_view::AgentViewController;
@@ -200,7 +200,7 @@ impl View for InlineConversationMenuView {
         "InlineConversationMenuView"
     }
 
-    fn render(&self, _app: &warpui::AppContext) -> Box<dyn Element> {
+    fn render(&self, _app: &wishui::AppContext) -> Box<dyn Element> {
         ChildView::new(&self.menu_view).finish()
     }
 }

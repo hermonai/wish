@@ -15,7 +15,7 @@ use crate::{
     settings::{AISettings, AgentModeCodingPermissionsType, AgentModeCommandExecutionPredicate},
     workspaces::{user_workspaces::UserWorkspaces, workspace::AiAutonomySettings},
 };
-use warp_core::execution_mode::AppExecutionMode;
+use wish_core::execution_mode::AppExecutionMode;
 
 use crate::ai::mcp::mcp_provider_from_file_path;
 #[cfg(not(target_family = "wasm"))]
@@ -24,10 +24,10 @@ use crate::ai::mcp::TemplatableMCPServerManager;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use warp_completer::parsers::simple::decompose_command;
-use warp_core::user_preferences::GetUserPreferences;
-use warp_core::{features::FeatureFlag, settings::Setting};
 use warp_util::path::EscapeChar;
-use warpui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};
+use wish_core::user_preferences::GetUserPreferences;
+use wish_core::{features::FeatureFlag, settings::Setting};
+use wishui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};
 
 use super::BlocklistAIHistoryModel;
 
@@ -637,7 +637,7 @@ impl BlocklistAIPermissions {
         self.can_read_files(Some(conversation_id), paths, terminal_view_id, ctx)
     }
 
-    /// Returns whether or not Warp can auto-read the given files (e.g. for codebase indexing).
+    /// Returns whether or not Wish can auto-read the given files (e.g. for codebase indexing).
     pub fn can_read_files(
         &self,
         conversation_id: Option<&AIConversationId>,

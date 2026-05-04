@@ -5,7 +5,7 @@ use std::fs;
 use std::path::PathBuf;
 
 use repo_metadata::repositories::DetectedRepositories;
-use warpui::{App, EntityId};
+use wishui::{App, EntityId};
 
 use crate::pane_group::WorkingDirectoriesModel;
 

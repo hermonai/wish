@@ -3,8 +3,8 @@ use crate::editor::EditorView;
 use itertools::Itertools;
 use std::collections::HashSet;
 use unindent::Unindent;
-use warpui::platform::WindowStyle;
-use warpui::{App, ViewHandle};
+use wishui::platform::WindowStyle;
+use wishui::{App, ViewHandle};
 
 /// Helper function for testing vim mode commands.
 /// This creates an editor with the given content and enters Vim Normal mode,
@@ -294,11 +294,11 @@ fn test_vim_number_repeat_line_motion() {
         // Lay out the window so that up and down motions work.
         // Layout code starts here.
         let window_id = app.read(|ctx| editor.window_id(ctx));
-        let mut presenter = warpui::presenter::Presenter::new(window_id);
+        let mut presenter = wishui::presenter::Presenter::new(window_id);
 
         let mut updated = HashSet::new();
         updated.insert(app.root_view_id(window_id).unwrap());
-        let invalidation = warpui::WindowInvalidation {
+        let invalidation = wishui::WindowInvalidation {
             updated,
             ..Default::default()
         };
@@ -374,11 +374,11 @@ fn test_vim_number_repeat_character_motion() {
         // Lay out the window so that up and down motions work.
         // Layout code starts here.
         let window_id = app.read(|ctx| editor.window_id(ctx));
-        let mut presenter = warpui::presenter::Presenter::new(window_id);
+        let mut presenter = wishui::presenter::Presenter::new(window_id);
 
         let mut updated = HashSet::new();
         updated.insert(app.root_view_id(window_id).unwrap());
-        let invalidation = warpui::WindowInvalidation {
+        let invalidation = wishui::WindowInvalidation {
             updated,
             ..Default::default()
         };
@@ -2393,11 +2393,11 @@ fn test_vim_begin_line_above() {
         // Lay out the window so that up and down motions work.
         // Layout code starts here.
         let window_id = app.read(|ctx| editor.window_id(ctx));
-        let mut presenter = warpui::presenter::Presenter::new(window_id);
+        let mut presenter = wishui::presenter::Presenter::new(window_id);
 
         let mut updated = HashSet::new();
         updated.insert(app.root_view_id(window_id).unwrap());
-        let invalidation = warpui::WindowInvalidation {
+        let invalidation = wishui::WindowInvalidation {
             updated,
             ..Default::default()
         };
@@ -7624,10 +7624,10 @@ fn test_vim_visual_selection_with_newlines() {
 
         // Ensure layout so vertical motions (j/k) use real geometry for goal columns.
         let window_id = app.read(|ctx| editor.window_id(ctx));
-        let mut presenter = warpui::presenter::Presenter::new(window_id);
+        let mut presenter = wishui::presenter::Presenter::new(window_id);
         let mut updated = std::collections::HashSet::new();
         updated.insert(app.root_view_id(window_id).unwrap());
-        let invalidation = warpui::WindowInvalidation {
+        let invalidation = wishui::WindowInvalidation {
             updated,
             ..Default::default()
         };
@@ -7672,10 +7672,10 @@ fn test_vim_visual_selection_with_newlines() {
 
         // Re-layout for new content
         let window_id = app.read(|ctx| editor.window_id(ctx));
-        let mut presenter = warpui::presenter::Presenter::new(window_id);
+        let mut presenter = wishui::presenter::Presenter::new(window_id);
         let mut updated = std::collections::HashSet::new();
         updated.insert(app.root_view_id(window_id).unwrap());
-        let invalidation = warpui::WindowInvalidation {
+        let invalidation = wishui::WindowInvalidation {
             updated,
             ..Default::default()
         };

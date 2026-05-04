@@ -1,6 +1,6 @@
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::theme::Fill;
-use warpui::{
+use wish_core::ui::theme::Fill;
+use wishui::{
     elements::{Align, Container, CrossAxisAlignment, Dismiss, Flex, ParentElement, Stack},
     keymap::FixedBinding,
     platform::Cursor,
@@ -17,10 +17,10 @@ use crate::ui_components::{
     dialog::{dialog_styles, Dialog},
 };
 
-use warpui::fonts::Weight;
+use wishui::fonts::Weight;
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([
         FixedBinding::new(
@@ -52,7 +52,7 @@ pub enum SummarizationCancelDialogAction {
     Continue,
 }
 
-use warpui::elements::MouseStateHandle;
+use wishui::elements::MouseStateHandle;
 
 #[derive(Default)]
 pub struct SummarizationCancelDialog {
@@ -70,7 +70,7 @@ impl View for SummarizationCancelDialog {
         "SummarizationCancelDialog"
     }
 
-    fn on_focus(&mut self, _focus_ctx: &warpui::FocusContext, ctx: &mut ViewContext<Self>) {
+    fn on_focus(&mut self, _focus_ctx: &wishui::FocusContext, ctx: &mut ViewContext<Self>) {
         // Ensure this dialog takes focus away from the terminal editor
         ctx.focus_self();
     }
@@ -125,7 +125,7 @@ impl View for SummarizationCancelDialog {
             .finish();
 
         // Close header with Icon::X and ESC pill
-        let esc_keystroke = warpui::keymap::Keystroke::parse("escape").expect("Valid keystroke");
+        let esc_keystroke = wishui::keymap::Keystroke::parse("escape").expect("Valid keystroke");
         let close_header = Flex::row()
             .with_cross_axis_alignment(CrossAxisAlignment::Center)
             .with_children([
@@ -197,11 +197,11 @@ impl View for SummarizationCancelDialog {
         let mut stack = Stack::new();
         stack.add_positioned_child(
             dialog_dismiss,
-            warpui::elements::OffsetPositioning::offset_from_parent(
+            wishui::elements::OffsetPositioning::offset_from_parent(
                 vec2f(0., 0.),
-                warpui::elements::ParentOffsetBounds::WindowByPosition,
-                warpui::elements::ParentAnchor::Center,
-                warpui::elements::ChildAnchor::Center,
+                wishui::elements::ParentOffsetBounds::WindowByPosition,
+                wishui::elements::ParentAnchor::Center,
+                wishui::elements::ChildAnchor::Center,
             ),
         );
 

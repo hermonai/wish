@@ -5,7 +5,7 @@ use crate::search::mixer::{DataSourceRunErrorWrapper, SyncDataSource};
 use crate::terminal::History;
 use fuzzy_match::FuzzyMatchResult;
 use std::collections::HashSet;
-use warpui::{AppContext, SingletonEntity};
+use wishui::{AppContext, SingletonEntity};
 
 const MAX_RESULTS: usize = 50;
 
@@ -118,6 +118,6 @@ impl SyncDataSource for CommandDataSource {
     }
 }
 
-impl warpui::Entity for CommandDataSource {
+impl wishui::Entity for CommandDataSource {
     type Event = ();
 }

@@ -1,9 +1,9 @@
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::color::coloru_with_opacity;
-use warp_core::ui::theme::{Fill, WarpTheme};
-use warpui::color::ColorU;
-use warpui::elements::{ConstrainedBox, Container, CornerRadius, Radius};
-use warpui::Element;
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::color::coloru_with_opacity;
+use wish_core::ui::theme::{Fill, WarpTheme};
+use wishui::color::ColorU;
+use wishui::elements::{ConstrainedBox, Container, CornerRadius, Radius};
+use wishui::Element;
 
 use crate::ai::agent::conversation::ConversationStatus;
 use crate::ai::agent_conversations_model::AgentRunDisplayStatus;

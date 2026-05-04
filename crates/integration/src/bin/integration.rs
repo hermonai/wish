@@ -5,8 +5,8 @@ use clap::Parser;
 use integration::test::*;
 use integration::Builder;
 use warp_cli::WorkerCommand;
-use warp_core::channel::{Channel, ChannelConfig, ChannelState, OzConfig, WarpServerConfig};
-use warp_core::AppId;
+use wish_core::channel::{Channel, ChannelConfig, ChannelState, HermonConfig, WishServerConfig};
+use wish_core::AppId;
 
 /// The Warp integration test runner.
 #[derive(Debug, Default, Parser, Clone)]
@@ -30,13 +30,13 @@ pub fn main() -> Result<()> {
                 "dev",
                 "warp",
                 if cfg!(target_os = "macos") {
-                    "Warp-Integration"
+                    "Wish-Integration"
                 } else {
                     "WarpIntegration"
                 },
             ),
             logfile_name: "warp_integration.log".into(),
-            server_config: WarpServerConfig {
+            server_config: WishServerConfig {
                 firebase_auth_api_key: "".into(),
                 // Use an IP in the IANA testing range, with the TCP discard port, to
                 // black-hole server traffic.
@@ -44,10 +44,10 @@ pub fn main() -> Result<()> {
                 rtc_server_url: "ws://192.0.2.0:9/graphql/v2".into(),
                 session_sharing_server_url: None,
             },
-            oz_config: OzConfig {
+            hermon_config: HermonConfig {
                 // Use an IP in the IANA testing range, with the TCP discard port, to
                 // black-hole server traffic.
-                oz_root_url: "http://192.0.2.0:9".into(),
+                hermon_root_url: "http://192.0.2.0:9".into(),
                 workload_audience_url: None,
             },
             telemetry_config: None,
@@ -67,7 +67,7 @@ pub fn main() -> Result<()> {
                 // GUI application), do so.  This must occur before init_logging, as the
                 // terminal server sets up its own logger, and attempting to set a second
                 // logger leads to a panic.
-                warp::terminal::local_tty::server::run_terminal_server(args);
+                wish::terminal::local_tty::server::run_terminal_server(args);
                 return Ok(());
             }
             // This is a catch-all to handle the plugin host, which the integration test crate doesn't have a feature flag for.
@@ -105,7 +105,7 @@ pub fn main() -> Result<()> {
     }
 
     #[cfg_attr(not(unix), allow(unreachable_code))]
-    warp::run_integration_test(driver)
+    wish::run_integration_test(driver)
 }
 
 /// Type of a function that produces an integration test builder.

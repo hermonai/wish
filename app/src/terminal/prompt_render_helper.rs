@@ -12,10 +12,10 @@ use settings::Setting as _;
 
 use std::fmt;
 use std::num::NonZeroUsize;
-use warp_core::semantic_selection::SemanticSelection;
-use warpui::elements::{DispatchEventResult, SelectionHandle};
-use warpui::ModelAsRef;
-use warpui::{
+use wish_core::semantic_selection::SemanticSelection;
+use wishui::elements::{DispatchEventResult, SelectionHandle};
+use wishui::ModelAsRef;
+use wishui::{
     elements::{Container, Element, EventHandler, SavePosition, SelectableArea, Text},
     fonts::{Properties, Weight},
     presenter::ChildView,
@@ -39,7 +39,7 @@ use crate::terminal::model::session::Sessions;
 use crate::terminal::view::PADDING_LEFT as TERMINAL_VIEW_PADDING_LEFT;
 
 use crate::terminal::model::ObfuscateSecrets;
-use warpui::units::Pixels;
+use wishui::units::Pixels;
 
 /// How long we're willing to wait after precmd for a marker-based prompt to appear before we
 /// display an empty prompt grid in the input.
@@ -66,7 +66,7 @@ pub fn should_render_ps1_prompt(terminal_model: &TerminalModel, app: &AppContext
     let session_settings = SessionSettings::as_ref(app);
 
     // In the context of session sharing, these values may differ from the local settings i.e.
-    // if the sharer is using PS1 and the viewer is not (using Warp prompt in non-SLP mode).
+    // if the sharer is using PS1 and the viewer is not (using Wish prompt in non-SLP mode).
     // In this case, we still want to render the prompt on the same line (PS1 should ALWAYS be
     // rendered on the same line).
     // Note that the product behavior for session sharing is normally to respect the local settings
@@ -85,7 +85,7 @@ pub fn should_render_prompt_on_same_line(
 ) -> bool {
     // We render the prompt on the same line, in the input editor, if:
     // 1. The user is using a custom prompt (PS1)
-    // 2. The user has the same line prompt setting enabled for their Warp prompt.
+    // 2. The user has the same line prompt setting enabled for their Wish prompt.
 
     // If universal developer input is enabled, ignore PS1 rendering logic
     if is_universal_developer_input {
@@ -256,12 +256,12 @@ impl PromptRenderHelper {
                     RemoteServerSetupState::Checking => "Starting shell...".to_string(),
                     RemoteServerSetupState::Installing {
                         progress_percent: Some(p),
-                    } => format!("Installing Warp SSH Extension... ({p}%)"),
+                    } => format!("Installing Wish SSH Extension... ({p}%)"),
                     RemoteServerSetupState::Installing {
                         progress_percent: None,
-                    } => "Installing Warp SSH Extension...".to_string(),
+                    } => "Installing Wish SSH Extension...".to_string(),
                     RemoteServerSetupState::Updating => {
-                        "Updating Warp SSH Extension...".to_string()
+                        "Updating Wish SSH Extension...".to_string()
                     }
                     RemoteServerSetupState::Initializing => "Initializing...".to_string(),
                     RemoteServerSetupState::Ready => "Starting shell...".to_string(),

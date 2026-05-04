@@ -1,4 +1,4 @@
-use warpui::{App, ModelHandle};
+use wishui::{App, ModelHandle};
 
 use crate::content::{
     buffer::{AutoScrollBehavior, Buffer, BufferEditAction, BufferSelectAction, EditOrigin},

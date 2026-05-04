@@ -1,12 +1,12 @@
 use pathfinder_color::ColorU;
-use warp_core::ui::theme::{phenomenon::PhenomenonStyle, Fill};
-use warpui::elements::{
+use wish_core::ui::theme::{phenomenon::PhenomenonStyle, Fill};
+use wishui::elements::{
     Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex, MainAxisSize,
     MouseStateHandle, ParentElement, Radius, Stack,
 };
-use warpui::ui_components::checkbox::Checkbox;
-use warpui::ui_components::components::UiComponentStyles;
-use warpui::Element;
+use wishui::ui_components::checkbox::Checkbox;
+use wishui::ui_components::components::UiComponentStyles;
+use wishui::Element;
 
 use crate::appearance::Appearance;
 use crate::ui_components::icons::Icon;

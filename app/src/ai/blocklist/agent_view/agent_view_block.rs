@@ -1,7 +1,7 @@
 use pathfinder_color::ColorU;
 use settings::Setting;
-use warp_core::ui::{appearance::Appearance, Icon};
-use warpui::{
+use wish_core::ui::{appearance::Appearance, Icon};
+use wishui::{
     elements::{
         ConstrainedBox, Container, CrossAxisAlignment, Empty, Flex, Hoverable, MainAxisSize,
         MouseStateHandle, ParentElement, Shrinkable, Text,
@@ -197,7 +197,7 @@ impl View for AgentViewEntryBlock {
         "EnterAgentBlock"
     }
 
-    fn render(&self, app: &warpui::AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, app: &wishui::AppContext) -> Box<dyn wishui::Element> {
         if self.agent_view_controller.as_ref(app).is_fullscreen() {
             return Empty::new().finish();
         }

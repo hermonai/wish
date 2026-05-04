@@ -5,17 +5,16 @@ use super::{
     },
     SettingsSection,
 };
-use crate::{
-    appearance::Appearance, channel::ChannelState, themes::theme::ColorScheme,
-    workspace::WorkspaceAction,
-};
-use warpui::{
-    assets::asset_cache::AssetSource,
+use crate::{appearance::Appearance, channel::ChannelState, workspace::WorkspaceAction};
+use wishui::{
     elements::{
-        Align, CacheOption, ConstrainedBox, Container, CrossAxisAlignment, Element, Flex, Image,
+        Align, ConstrainedBox, Container, CrossAxisAlignment, Element, Flex, Icon,
         MainAxisAlignment, MouseStateHandle, ParentElement, Wrap,
     },
-    ui_components::components::UiComponent,
+    ui_components::{
+        button::ButtonVariant,
+        components::{UiComponent, UiComponentStyles},
+    },
     AppContext, Entity, View, ViewContext, ViewHandle,
 };
 
@@ -48,13 +47,14 @@ impl View for AboutPageView {
 #[derive(Default)]
 struct AboutPageWidget {
     copy_version_button_mouse_state: MouseStateHandle,
+    welcome_button_mouse_state: MouseStateHandle,
 }
 
 impl SettingsWidget for AboutPageWidget {
     type View = AboutPageView;
 
     fn search_terms(&self) -> &str {
-        "about warp version"
+        "about wish version"
     }
 
     fn render(
@@ -66,11 +66,7 @@ impl SettingsWidget for AboutPageWidget {
         let theme = appearance.theme();
         let ui_builder = appearance.ui_builder();
 
-        let image_path = if theme.inferred_color_scheme() == ColorScheme::LightOnDark {
-            "bundled/svg/warp-logo-with-light-title.svg"
-        } else {
-            "bundled/svg/warp-logo-with-dark-title.svg"
-        };
+        let logo_fill = theme.foreground();
 
         let version = ChannelState::app_version().unwrap_or("v#.##.###");
 
@@ -104,24 +100,48 @@ impl SettingsWidget for AboutPageWidget {
             Flex::column()
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
                 .with_child(
-                    ConstrainedBox::new(
-                        Image::new(
-                            AssetSource::Bundled { path: image_path },
-                            CacheOption::BySize,
+                    Container::new(
+                        ConstrainedBox::new(
+                            Icon::new("bundled/svg/wish-logo-neutral.svg", logo_fill).finish(),
                         )
+                        .with_height(72.)
+                        .with_width(92.)
                         .finish(),
                     )
-                    .with_max_height(100.)
-                    .with_max_width(350.)
+                    .with_margin_bottom(18.)
                     .finish(),
+                )
+                .with_child(
+                    ui_builder
+                        .paragraph("Wish")
+                        .with_style(UiComponentStyles {
+                            font_size: Some(32.),
+                            ..Default::default()
+                        })
+                        .build()
+                        .finish(),
                 )
                 .with_child(version_row.finish())
                 .with_child(
                     ui_builder
-                        .span("Copyright 2026 Warp")
+                        .span("Copyright 2026 Hermon AI")
                         .build()
                         .with_margin_top(16.)
                         .finish(),
+                )
+                .with_child(
+                    Container::new(
+                        ui_builder
+                            .button(ButtonVariant::Secondary, self.welcome_button_mouse_state.clone())
+                            .with_text_label("Show Welcome Page".to_string())
+                            .build()
+                            .on_click(|ctx, _, _| {
+                                ctx.dispatch_typed_action(WorkspaceAction::ShowWelcomePage);
+                            })
+                            .finish(),
+                    )
+                    .with_margin_top(24.)
+                    .finish(),
                 )
                 .finish(),
         )

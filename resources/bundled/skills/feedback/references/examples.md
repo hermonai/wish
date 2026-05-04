@@ -12,7 +12,7 @@ Draft shape:
 
 - classification: `bug`
 - title: `Theme selection resets after restarting Warp on macOS`
-- missing details: Warp version, macOS version, whether the issue reproduces every restart
+- missing details: Wish version, macOS version, whether the issue reproduces every restart
 
 Key body moves:
 

@@ -1,5 +1,5 @@
 [package]
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 edition = "2021"
 name = "warpui_extras"
 version = "0.0.0"
@@ -23,7 +23,7 @@ serde_json = { workspace = true, optional = true }
 sha2.workspace = true
 toml_edit = { workspace = true, optional = true }
 thiserror.workspace = true
-warpui.workspace = true
+wishui.workspace = true
 
 [dev-dependencies]
 # Enable the `test-util` feature for our own package when running tests.

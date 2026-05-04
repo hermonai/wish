@@ -170,7 +170,7 @@ fn match_data_countable_zero_is_not_truthy() {
 
 #[test]
 fn subpage_display_names_are_correct() {
-    assert_eq!(SettingsSection::WarpAgent.to_string(), "Warp Agent");
+    assert_eq!(SettingsSection::WarpAgent.to_string(), "Wish Agent");
     assert_eq!(SettingsSection::AgentProfiles.to_string(), "Profiles");
     assert_eq!(SettingsSection::AgentMCPServers.to_string(), "MCP servers");
     assert_eq!(SettingsSection::Knowledge.to_string(), "Knowledge");
@@ -198,7 +198,7 @@ fn subpage_display_names_are_correct() {
 
 #[test]
 fn subpage_from_str_parses_display_names() {
-    // Both the legacy "Oz" name and the new "Warp Agent" display name must
+    // Both the legacy "Oz" name and the new "Wish Agent" display name must
     // resolve to SettingsSection::WarpAgent so existing deep links, persisted
     // telemetry strings, and external callers continue to work after the
     // user-facing rename (see specs/GH1063/product.md, Behavior #8).
@@ -207,7 +207,7 @@ fn subpage_from_str_parses_display_names() {
         Ok(SettingsSection::WarpAgent)
     );
     assert_eq!(
-        SettingsSection::from_str("Warp Agent"),
+        SettingsSection::from_str("Wish Agent"),
         Ok(SettingsSection::WarpAgent)
     );
     assert_eq!(
@@ -748,7 +748,7 @@ fn collapsed_umbrella_with_filtered_subpages_uses_first_visible_subpage() {
     let nav_items = realistic_nav_items();
 
     let stops = build_nav_stops(&nav_items, |section| {
-        // Hide WarpAgent (first AI subpage); keep the rest.
+        // Hide WishAgent (first AI subpage); keep the rest.
         section != SettingsSection::WarpAgent
     });
 

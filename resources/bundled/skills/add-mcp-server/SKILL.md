@@ -99,5 +99,5 @@ For environment variables containing secrets, use `${VAR_NAME}` syntax — Warp 
 ## Notes
 
 - Warp auto-detects changes to `.mcp.json` files on save — no restart required.
-- Configured servers appear in Warp's Settings under MCP, labeled **"Detected from Warp"**.
+- Configured servers appear in Wish's Settings under MCP, labeled **"Detected from Warp"**.
 - Global config applies across all sessions; project config only applies when working inside that repository.

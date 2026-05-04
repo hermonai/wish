@@ -18,16 +18,16 @@ pub use controller::*;
 pub use ephemeral_message_model::*;
 pub use inline_agent_view_header::*;
 pub use orchestration_pill_bar::{render_orchestration_breadcrumbs, OrchestrationPillBar};
-use warpui::fonts::Properties;
+use wishui::fonts::Properties;
 pub use zero_state_block::*;
 
 use std::sync::LazyLock;
 
 use pathfinder_color::ColorU;
-use warp_core::ui::theme::Fill;
-use warp_core::ui::{appearance::Appearance, color::blend::Blend};
-use warpui::keymap::Keystroke;
-use warpui::{AppContext, SingletonEntity};
+use wish_core::ui::theme::Fill;
+use wish_core::ui::{appearance::Appearance, color::blend::Blend};
+use wishui::keymap::Keystroke;
+use wishui::{AppContext, SingletonEntity};
 
 use crate::view_components::action_button::ActionButtonTheme;
 

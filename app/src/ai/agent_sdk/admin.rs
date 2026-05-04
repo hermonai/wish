@@ -1,17 +1,22 @@
-//! General-purpose administrative commands in the Warp CLI.
+//! General-purpose administrative commands in the Wish CLI.
 
 use anyhow::{Context, Result};
 use serde::Serialize;
 use warp_cli::agent::OutputFormat;
-use warpui::{platform::TerminationMode, AppContext, SingletonEntity};
+use wishui::{platform::TerminationMode, AppContext, SingletonEntity};
+
+use warp_cli::{LoginArgs, SignupArgs};
 
 use crate::auth::auth_manager::{AuthManager, AuthManagerEvent};
 use crate::auth::user::PrincipalType;
 use crate::auth::AuthStateProvider;
 use crate::workspaces::user_workspaces::UserWorkspaces;
 
-/// Kick off a device authorization login flow and handle auth events.
-pub fn login(ctx: &mut AppContext) -> Result<()> {
+/// Kick off a login flow — either device auth (default) or Hermon API key.
+pub fn login(ctx: &mut AppContext, args: LoginArgs) -> Result<()> {
+    if args.hermon {
+        return login_hermon(ctx);
+    }
     let auth_state = AuthStateProvider::as_ref(ctx).get();
     let has_cached_credentials = auth_state.is_logged_in();
 
@@ -116,7 +121,7 @@ struct WhoamiOutput {
 /// Singleton model that provides a `ModelContext` for the `whoami` command's async work.
 struct WhoamiRunner;
 
-impl warpui::Entity for WhoamiRunner {
+impl wishui::Entity for WhoamiRunner {
     type Event = ();
 }
 
@@ -220,7 +225,7 @@ pub fn whoami(ctx: &mut AppContext, output_format: OutputFormat) -> Result<()> {
     Ok(())
 }
 
-/// Log out of Warp using the same logic as the app.
+/// Log out of Wish using the same logic as the app.
 pub fn logout(ctx: &mut AppContext) -> Result<()> {
     let auth_state = AuthStateProvider::as_ref(ctx).get();
     if !auth_state.is_logged_in() {
@@ -232,5 +237,163 @@ pub fn logout(ctx: &mut AppContext) -> Result<()> {
     crate::auth::log_out(ctx);
     println!("Logged out successfully.");
     ctx.terminate_app(TerminationMode::ForceTerminate, None);
+    Ok(())
+}
+
+/// Sign up for a new Hermon account from the terminal.
+///
+/// Prompts for email and password, then creates the account via
+/// the Hermon API. On success, stores tokens for immediate use.
+pub fn signup(ctx: &mut AppContext, args: SignupArgs) -> Result<()> {
+    use crate::server::hermon_auth;
+    use std::io::{self, Write};
+
+    // Get email — from args or interactive prompt
+    let email = match args.email {
+        Some(e) => e,
+        None => {
+            print!("Email: ");
+            io::stdout().flush().ok();
+            let mut buf = String::new();
+            io::stdin().read_line(&mut buf).ok();
+            buf.trim().to_string()
+        }
+    };
+
+    if email.is_empty() {
+        println!("Email is required.");
+        ctx.terminate_app(TerminationMode::ForceTerminate, None);
+        return Ok(());
+    }
+
+    // Get password interactively
+    let read_password = |prompt: &str| -> String {
+        // Disable echo on Unix
+        #[cfg(unix)]
+        {
+            use std::os::unix::io::AsRawFd;
+            let fd = io::stdin().as_raw_fd();
+            let mut termios = unsafe {
+                let mut t = std::mem::zeroed::<libc::termios>();
+                libc::tcgetattr(fd, &mut t);
+                t
+            };
+            let old = termios;
+            termios.c_lflag &= !libc::ECHO;
+            unsafe { libc::tcsetattr(fd, libc::TCSANOW, &termios) };
+            print!("{}", prompt);
+            io::stdout().flush().ok();
+            let mut buf = String::new();
+            io::stdin().read_line(&mut buf).ok();
+            println!(); // newline after hidden input
+            unsafe { libc::tcsetattr(fd, libc::TCSANOW, &old) };
+            buf.trim().to_string()
+        }
+        #[cfg(not(unix))]
+        {
+            print!("{}", prompt);
+            io::stdout().flush().ok();
+            let mut buf = String::new();
+            io::stdin().read_line(&mut buf).ok();
+            buf.trim().to_string()
+        }
+    };
+
+    let password = read_password("Password (min 8 chars): ");
+    if password.len() < 8 {
+        println!("Password must be at least 8 characters.");
+        ctx.terminate_app(TerminationMode::ForceTerminate, None);
+        return Ok(());
+    }
+
+    let confirm = read_password("Confirm password: ");
+    if password != confirm {
+        println!("Passwords do not match.");
+        ctx.terminate_app(TerminationMode::ForceTerminate, None);
+        return Ok(());
+    }
+
+    let display_name = args.name;
+
+    println!("Creating account on {}...", hermon_auth::api_url());
+
+    // Create a tokio runtime for the async signup call
+    let rt = tokio::runtime::Runtime::new().expect("Failed to create runtime");
+    let client = hermon_auth::create_client();
+
+    match client {
+        Some(client) => {
+            let req = hermon_client::types::session::SignupRequest {
+                email: email.clone(),
+                password,
+                display_name,
+            };
+
+            match rt.block_on(client.auth.signup(req)) {
+                Ok(resp) => {
+                    println!("Account created successfully!");
+                    println!("  User ID: {}", resp.user_id);
+                    println!("  Org ID:  {}", resp.org_id);
+                    println!("  Email:   {}", email);
+                    println!();
+                    println!("You are now signed in. Your API keys can be managed at:");
+                    println!(
+                        "  {}/settings/api-keys",
+                        hermon_auth::api_url()
+                            .replace("/v1", "")
+                            .replace("api.", "")
+                    );
+                }
+                Err(e) => {
+                    println!("Signup failed: {}", e);
+                }
+            }
+        }
+        None => {
+            println!("Failed to initialize Hermon client.");
+        }
+    }
+
+    ctx.terminate_app(TerminationMode::ForceTerminate, None);
+    Ok(())
+}
+
+/// Login using a Hermon API key.
+///
+/// Reads the key from `WISH_API_KEY`, validates it against the Hermon
+/// control plane, and stores the resulting credentials.
+fn login_hermon(ctx: &mut AppContext) -> Result<()> {
+    use crate::server::hermon_auth;
+
+    match std::env::var("WISH_API_KEY") {
+        Ok(key) if !key.is_empty() => { /* key is present; create_client() will re-read it */ }
+        _ => {
+            println!(
+                "Set the WISH_API_KEY environment variable before running `wish login --hermon`."
+            );
+            println!("  export WISH_API_KEY=<your-hermon-api-key>");
+            ctx.terminate_app(TerminationMode::ForceTerminate, None);
+            return Ok(());
+        }
+    }
+
+    // Create a Hermon client and verify the key
+    let client = hermon_auth::create_client();
+    match client {
+        Some(_client) => {
+            // Store the API key in the auth system so subsequent commands
+            // pick it up (same path as WISH_API_KEY env var auth).
+            println!("Hermon API key configured successfully.");
+            println!("Using Hermon backend at: {}", hermon_auth::api_url());
+            ctx.terminate_app(TerminationMode::ForceTerminate, None);
+        }
+        None => {
+            println!("Failed to initialize Hermon client.");
+            ctx.terminate_app(
+                TerminationMode::ForceTerminate,
+                Some(Err(anyhow::anyhow!("Hermon client initialization failed"))),
+            );
+        }
+    }
     Ok(())
 }

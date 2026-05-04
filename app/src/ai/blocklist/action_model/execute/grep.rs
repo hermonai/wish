@@ -8,8 +8,8 @@ use warp_util::standardized_path::StandardizedPath;
 
 use futures::future::BoxFuture;
 use futures::FutureExt;
-use warpui::r#async::FutureExt as AsyncFutureExt;
-use warpui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
+use wishui::r#async::FutureExt as AsyncFutureExt;
+use wishui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
 
 use crate::ai::agent::redaction::redact_secrets;
 use crate::ai::agent::{

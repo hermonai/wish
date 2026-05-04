@@ -7,7 +7,7 @@ use crate::ui_components::blended_colors;
 use lsp::supported_servers::LSPServerType;
 use std::path::PathBuf;
 
-use warpui::{
+use wishui::{
     elements::{
         Border, ChildView, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Expanded,
         Flex, MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius, Shrinkable,

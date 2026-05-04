@@ -1,5 +1,5 @@
 use ordered_float::OrderedFloat;
-use warpui::{
+use wishui::{
     elements::{
         ConstrainedBox, Container, CrossAxisAlignment, Flex, Highlight, MainAxisAlignment,
         MainAxisSize, ParentElement, Text,

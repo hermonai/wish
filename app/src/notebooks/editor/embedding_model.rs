@@ -7,7 +7,7 @@ use warp_editor::{
     editor::EmbeddedItemModel,
 };
 use warp_util::user_input::UserInput;
-use warpui::{
+use wishui::{
     elements::{
         Align, Border, Container, CrossAxisAlignment, Empty, Flex, MainAxisAlignment,
         MouseStateHandle, ParentElement, Shrinkable,

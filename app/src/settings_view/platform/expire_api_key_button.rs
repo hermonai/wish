@@ -1,6 +1,6 @@
 use crate::server::{ids::ApiKeyUid, server_api::auth::AuthClient};
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::MouseStateHandle, ui_components::components::UiComponent, AppContext, Element,
     Entity, SingletonEntity, TypedActionView, View, ViewContext,
 };

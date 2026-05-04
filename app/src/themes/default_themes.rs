@@ -1,6 +1,6 @@
 use asset_macro::bundled_or_fetched_asset;
 use pathfinder_color::ColorU;
-use warp_core::ui::{
+use wish_core::ui::{
     color::{blend::Blend, coloru_with_opacity, OPAQUE},
     theme::{
         color::CustomDetails, AnsiColor, AnsiColors, Details, Fill, HorizontalGradient, Image,
@@ -581,7 +581,7 @@ pub(super) fn sent_referral_reward() -> WarpTheme {
             source: bundled_or_fetched_asset!("jpg/sent_referral_reward_bg.jpg"),
             opacity: 100,
         }),
-        Some("Warp Referral".to_string()),
+        Some("Wish Referral".to_string()),
     )
 }
 

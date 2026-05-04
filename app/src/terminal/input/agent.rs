@@ -23,10 +23,10 @@ use crate::{
     terminal::{settings::TerminalSettings, view::TerminalAction},
     BlocklistAIHistoryModel,
 };
-use warp_core::settings::Setting;
-use warp_core::ui::theme::color::internal_colors;
-use warpui::elements::Expanded;
-use warpui::{
+use wish_core::settings::Setting;
+use wish_core::ui::theme::color::internal_colors;
+use wishui::elements::Expanded;
+use wishui::{
     elements::{
         Align, AnchorPair, Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment,
         DispatchEventResult, DropTarget, Element, Empty, EventHandler, Flex, Hoverable,
@@ -658,7 +658,7 @@ impl Input {
 
 pub mod styles {
     use pathfinder_color::ColorU;
-    use warp_core::ui::theme::WarpTheme;
+    use wish_core::ui::theme::WarpTheme;
 
     use crate::ui_components::blended_colors;
 

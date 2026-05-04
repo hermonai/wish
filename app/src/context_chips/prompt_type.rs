@@ -1,4 +1,4 @@
-use warpui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
+use wishui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
 
 use crate::{
     menu::{MenuItem, MenuItemFields},
@@ -170,7 +170,7 @@ impl PromptType {
         }
     }
 
-    /// The separator for the Warp prompt.
+    /// The separator for the Wish prompt.
     pub fn separator(&self, ctx: &AppContext) -> WarpPromptSeparator {
         match self {
             Self::Dynamic { prompt } => prompt.as_ref(ctx).separator(),

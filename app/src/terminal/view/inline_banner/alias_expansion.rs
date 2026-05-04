@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::{MouseStateHandle, Text},
     Element,
 };
@@ -91,7 +91,7 @@ pub fn render_alias_expansion_banner(
         InlineBannerStyle::VeryLowPriority,
         appearance,
         InlineBannerContent {
-            title: "Warp can auto-expand aliases.".into(),
+            title: "Wish can auto-expand aliases.".into(),
             buttons,
             content: Some(content),
             close_button: Some(close_button),

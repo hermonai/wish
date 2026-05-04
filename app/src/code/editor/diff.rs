@@ -9,13 +9,13 @@ use pathfinder_color::ColorU;
 use rangemap::RangeMap;
 use similar::{ChangeTag, DiffOp, TextDiff};
 use string_offset::CharOffset;
-use warp_core::ui::theme::Fill;
 use warp_editor::{
     content::{edit::TemporaryBlock, version::BufferVersion},
     multiline::{AnyMultilineString, MultilineStr, MultilineString, LF},
     render::model::{Decoration, LineCount, LineDecoration},
 };
-use warpui::{Entity, ModelContext};
+use wish_core::ui::theme::Fill;
+use wishui::{Entity, ModelContext};
 
 use super::super::DiffResult;
 
@@ -23,7 +23,7 @@ use crate::{
     appearance::Appearance,
     code::editor::{line::EditorLineLocation, line_iterator::LineIterator},
 };
-use warp_core::ui::theme::AnsiColorIdentifier;
+use wish_core::ui::theme::AnsiColorIdentifier;
 
 const OVERLAY_ALPHA: u8 = 56;
 const INLINE_OVERLAY_ALPHA: u8 = 71;

@@ -3,14 +3,14 @@ use std::{path::PathBuf, sync::Arc};
 use pathfinder_color::ColorU;
 use serde::Serialize;
 use strum_macros::EnumIter;
-use warp_core::ui::{
+use wish_core::ui::{
     color::hex_color::HexColorError as UiHexColorError,
     theme::{AnsiColors, WarpTheme},
 };
 
 use async_trait::async_trait;
 use thiserror::Error;
-use warpui::{fonts::FontInfo, keymap::Keystroke, DisplayIdx};
+use wishui::{fonts::FontInfo, keymap::Keystroke, DisplayIdx};
 
 use crate::{
     interval_timer::IntervalTimer,
@@ -43,7 +43,7 @@ pub enum ThemeError {
 
 #[derive(Clone, Error, Debug)]
 pub enum HotkeyError {
-    #[error("A hotkey window opens in a way Warp does not support")]
+    #[error("A hotkey window opens in a way Wish does not support")]
     UnsupportedWindowType,
     #[error("There are multiple hotkeys configured")]
     MultipleHotkeys,
@@ -393,7 +393,7 @@ pub trait ParseableConfig: PartialEq + Sized + Send {
     /// Reads the file at the given path into the struct implementing ParseableConfig.
     async fn from_file(path: PathBuf) -> Result<Vec<Self>, ConfigError>;
 
-    /// Creates a Warp-readable `Config`. Sets corresponding errors if values have
+    /// Creates a Wish-readable `Config`. Sets corresponding errors if values have
     /// not been configured from the default.
     fn parse(self, fonts: &[FontInfo]) -> Config;
 

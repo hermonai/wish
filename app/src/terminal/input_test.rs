@@ -60,7 +60,7 @@ use crate::terminal::model::session::{BootstrapSessionType, SessionInfo};
 use crate::terminal::model::terminal_model::BlockIndex;
 use ai::index::full_source_code_embedding::manager::CodebaseIndexManager;
 use chrono::Local;
-use warpui::text::SelectionType;
+use wishui::text::SelectionType;
 
 use crate::terminal::shell::ShellType;
 use crate::test_util::settings::initialize_settings_for_tests;
@@ -84,8 +84,8 @@ use unindent::Unindent;
 
 #[cfg(feature = "voice_input")]
 use voice_input::VoiceInputToggledFrom;
-use warpui::platform::WindowStyle;
-use warpui::{App, ReadModel, UpdateView};
+use wishui::platform::WindowStyle;
+use wishui::{App, ReadModel, UpdateView};
 
 use crate::terminal::universal_developer_input::UniversalDeveloperInputButtonBarEvent;
 
@@ -1509,7 +1509,7 @@ fn test_tab_completion_with_spaces() {
 
         let history_file_commands = vec![
             "cd Documents/zed".to_string(),
-            "curl https://app.warp.dev".to_string(),
+            "curl https://wish.hermon.ai".to_string(),
             "cargo check\ncargo run".to_string(),
         ];
         let terminal =
@@ -1743,7 +1743,7 @@ fn test_tab_completion() {
 
         let history_file_commands = vec![
             "cd Documents/zed".to_string(),
-            "curl https://app.warp.dev".to_string(),
+            "curl https://wish.hermon.ai".to_string(),
             "cargo check\ncargo run".to_string(),
         ];
         let terminal =
@@ -1998,7 +1998,7 @@ fn test_tab_completion_with_selection() {
 
         let history_file_commands = vec![
             "cd Documents/zed".to_string(),
-            "curl https://app.warp.dev".to_string(),
+            "curl https://wish.hermon.ai".to_string(),
             "cargo check\ncargo run".to_string(),
         ];
         let terminal =
@@ -3548,7 +3548,7 @@ fn test_cursor_movement() {
 
         let history_file_commands = vec![
             "cd Documents/zed".to_string(),
-            "curl https://app.warp.dev".to_string(),
+            "curl https://wish.hermon.ai".to_string(),
             "cargo check\ncargo run".to_string(),
         ];
         let terminal =
@@ -4295,7 +4295,7 @@ fn test_last_word_insertions() {
 
         // last word insertion looks for preceding whitespace character
         let history_file_commands = vec![
-            "https://app.warp.dev".to_string(),
+            "https://wish.hermon.ai".to_string(),
             "cargo check\ncargo run --features".to_string(),
         ];
         let terminal =
@@ -4332,7 +4332,7 @@ fn test_last_word_insertions() {
             input.insert_last_word_previous_command(ctx);
         });
         input.read(&app, |input, ctx| {
-            assert_eq!(input.buffer_text(ctx), "git https://app.warp.dev");
+            assert_eq!(input.buffer_text(ctx), "git https://wish.hermon.ai");
         });
 
         // Insert is temporary, undo goes back to initial state before first insertion

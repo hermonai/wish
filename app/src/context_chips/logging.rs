@@ -101,7 +101,7 @@ impl PromptChipLogger {
 
     #[cfg(not(target_family = "wasm"))]
     fn init_runtime() -> Self {
-        if !warp_core::channel::ChannelState::enable_debug_features() {
+        if !wish_core::channel::ChannelState::enable_debug_features() {
             return Self::Disabled;
         }
 
@@ -134,7 +134,7 @@ impl PromptChipLogger {
 #[cfg(not(target_family = "wasm"))]
 pub(crate) fn log_file_path() -> anyhow::Result<PathBuf> {
     let log_directory = warp_logging::log_directory()?;
-    let channel_logfile_name = warp_core::channel::ChannelState::logfile_name();
+    let channel_logfile_name = wish_core::channel::ChannelState::logfile_name();
     Ok(log_directory.join(prompt_chip_log_filename(&channel_logfile_name)))
 }
 

@@ -13,18 +13,18 @@ use crate::util::time_format::format_approx_duration_from_now;
 use ordered_float::OrderedFloat;
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::color::{blend::Blend, coloru_with_opacity};
-use warp_core::ui::icons::Icon;
-use warp_core::ui::theme::color::internal_colors;
-use warpui::elements::{
+use wish_core::ui::color::{blend::Blend, coloru_with_opacity};
+use wish_core::ui::icons::Icon;
+use wish_core::ui::theme::color::internal_colors;
+use wishui::elements::{
     AnchorPair, Container, CrossAxisAlignment, Expanded, Fill, Flex, Highlight, MainAxisSize,
     MouseStateHandle, OffsetPositioning, OffsetType, ParentElement, ParentOffsetBounds,
     PositioningAxis, Stack, Text, XAxisAnchor, YAxisAnchor,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::ui_components::button::ButtonTooltipPosition;
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::{AppContext, Element, Gradient, SingletonEntity};
+use wishui::fonts::{Properties, Weight};
+use wishui::ui_components::button::ButtonTooltipPosition;
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::{AppContext, Element, Gradient, SingletonEntity};
 
 /// Information about which action to take once the conversation item is accepted.
 #[derive(Debug)]

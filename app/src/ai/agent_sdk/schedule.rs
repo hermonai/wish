@@ -8,8 +8,8 @@ use warp_cli::schedule::{
 };
 use warp_cli::{agent::OutputFormat, GlobalOptions};
 use warp_graphql::queries::get_scheduled_agent_history::ScheduledAgentHistory;
-use warpui::platform::TerminationMode;
-use warpui::{AppContext, SingletonEntity};
+use wishui::platform::TerminationMode;
+use wishui::{AppContext, SingletonEntity};
 
 use crate::ai::ambient_agents::scheduled::{
     CloudScheduledAmbientAgent, ScheduledAgentManager, ScheduledAmbientAgent, UpdateScheduleParams,

@@ -15,8 +15,8 @@ use ai::index::full_source_code_embedding::manager::{
 use futures::{channel::oneshot, future::join_all};
 use repo_metadata::repositories::{DetectedRepositories, RepoDetectionSource};
 use warp_completer::completer::CommandExitStatus;
-use warp_core::{command::ExitCode, safe_info, safe_warn};
-use warpui::{r#async::FutureExt, ModelContext, ModelSpawner, SingletonEntity};
+use wish_core::{command::ExitCode, safe_info, safe_warn};
+use wishui::{r#async::FutureExt, ModelContext, ModelSpawner, SingletonEntity};
 
 use super::{terminal::TerminalDriver, AgentDriverError};
 use warp_cli::agent::Harness;

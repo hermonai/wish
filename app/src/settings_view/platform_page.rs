@@ -21,8 +21,8 @@ use crate::{
 use chrono::{DateTime, Utc};
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use std::collections::HashMap;
-use warp_core::features::FeatureFlag;
-use warpui::{
+use wish_core::features::FeatureFlag;
+use wishui::{
     elements::{
         Align, Border, ChildView, ConstrainedBox, Container, CrossAxisAlignment, Element, Empty,
         Expanded, Flex, FormattedTextElement, HighlightedHyperlink, MainAxisSize, MouseStateHandle,
@@ -38,7 +38,7 @@ use warpui::{
 
 const MODAL_WIDTH: f32 = 460.;
 const MODAL_HEIGHT: f32 = 320.;
-const API_KEY_DOCS_URL: &str = "https://docs.warp.dev/reference/cli/api-keys";
+const API_KEY_DOCS_URL: &str = "https://wish.hermon.ai/docs/reference/cli/api-keys";
 
 #[derive(Clone, Copy)]
 pub enum PlatformPageViewEvent {
@@ -141,7 +141,7 @@ impl PlatformPageView {
                         right: 24.,
                     }),
                     font_size: Some(16.),
-                    font_weight: Some(warpui::fonts::Weight::Bold),
+                    font_weight: Some(wishui::fonts::Weight::Bold),
                     ..Default::default()
                 })
                 .with_body_style(UiComponentStyles {
@@ -378,7 +378,7 @@ impl PlatformPageWidget {
         appearance: &Appearance,
     ) -> Box<dyn Element> {
         let text = vec![
-            FormattedTextFragment::plain_text("Create and manage API keys to allow other Oz cloud agents to access your Warp account.\nFor more information, visit the "),
+            FormattedTextFragment::plain_text("Create and manage API keys to allow other Hermon cloud agents to access your Wish account.\nFor more information, visit the "),
             FormattedTextFragment::hyperlink("Documentation.", API_KEY_DOCS_URL),
         ];
 
@@ -669,7 +669,7 @@ impl PlatformPageWidget {
                     .with_child(
                         Container::new(
                             Text::new(
-                                "Create a key to manage external access to Warp",
+                                "Create a key to manage external access to Wish",
                                 appearance.ui_font_family(),
                                 CONTENT_FONT_SIZE,
                             )

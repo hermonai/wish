@@ -15,7 +15,7 @@ use futures::FutureExt as _;
 use serde::{Deserialize, Serialize};
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
-use warpui::{AppContext, SingletonEntity as _};
+use wishui::{AppContext, SingletonEntity as _};
 
 use super::shell::DirectShellStarter;
 use crate::{
@@ -31,8 +31,8 @@ use crate::terminal::local_shell::LocalShellState;
 /// doesn't need to be per-instance.
 pub const DOCKER_SANDBOX_HOME_DIR: &str = "/home/agent";
 
-/// Prefix for generated container names: `warp-sandbox-<id>`.
-const DOCKER_SANDBOX_NAME_PREFIX: &str = "warp-sandbox";
+/// Prefix for generated container names: `wish-sandbox-<id>`.
+const DOCKER_SANDBOX_NAME_PREFIX: &str = "wish-sandbox";
 
 /// Root directory on the host under which Docker-sandbox scratch files
 /// (bash init scripts, empty workspace mount points) live.
@@ -46,14 +46,14 @@ const DOCKER_SANDBOX_NAME_PREFIX: &str = "warp-sandbox";
 ///
 /// Layout: `<cache_dir>/docker-sandbox/{init,workspace}/<sandbox_id>/`.
 fn docker_sandbox_host_root() -> PathBuf {
-    warp_core::paths::cache_dir().join("docker-sandbox")
+    wish_core::paths::cache_dir().join("docker-sandbox")
 }
 
 /// Resolves the absolute path to the `sbx` CLI binary using the Warp
 /// process's `PATH`.
 ///
-/// Warp's process `PATH` is minimal and often misses user-shell-installed
-/// tools (e.g. homebrew on Apple Silicon when Warp is launched from Finder,
+/// Wish's process `PATH` is minimal and often misses user-shell-installed
+/// tools (e.g. homebrew on Apple Silicon when Wish is launched from Finder,
 /// or `~/.local/bin`). Prefer [`resolve_sbx_path_from_user_shell`], which
 /// captures the PATH from the user's interactive login shell, the same way
 /// MCP servers and LSP resolve binaries.

@@ -1,8 +1,8 @@
 //! Module to attribute AI-generated requested commands
-//! to known documents (e.g. Warp Drive objects).
+//! to known documents (e.g. Wish Drive objects).
 
-use warpui::AppContext;
-use warpui::SingletonEntity;
+use wishui::AppContext;
+use wishui::SingletonEntity;
 
 use crate::env_vars::EnvVarCollection;
 use crate::env_vars::EnvVarValue;
@@ -32,7 +32,7 @@ pub(crate) fn is_command_copied_from_document(
 }
 
 /// Returns true iff the `command` is directly copied from the
-/// Warp Drive object identified by `object_uid`.
+/// Wish Drive object identified by `object_uid`.
 fn is_command_copied_from_warp_drive_object(
     command: &str,
     object_uid: &str,

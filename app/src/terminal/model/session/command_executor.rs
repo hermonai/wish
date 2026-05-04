@@ -20,7 +20,7 @@ use anyhow::Result;
 use async_channel::{Receiver, Sender};
 use async_trait::async_trait;
 use warp_completer::completer::CommandOutput;
-use warpui::ModelContext;
+use wishui::ModelContext;
 
 use crate::terminal::{
     event::ExecutedExecutorCommandEvent, model::session::Sessions, shell::Shell,
@@ -151,7 +151,7 @@ fn new_command_executor_for_local_tty_session(
     use remote_server_executor::RemoteServerCommandExecutor;
     use settings::Setting as _;
     use tmux_executor::TmuxCommandExecutor;
-    use warpui::SingletonEntity as _;
+    use wishui::SingletonEntity as _;
     use wsl_command_executor::WslCommandExecutor;
 
     use crate::{
@@ -313,7 +313,7 @@ fn new_command_executor_for_local_tty_session(
                 }
             }
         }
-        BootstrapSessionType::WarpifiedRemote
+        BootstrapSessionType::WishifiedRemote
             if is_legacy_ssh_session
                 && !FeatureFlag::InBandGeneratorsForSSH.is_enabled()
                 && !force_use_in_band_generators =>

@@ -19,8 +19,8 @@ use ai::skills::{
 use command::blocking::Command;
 use command::r#async::Command as AsyncCommand;
 use warp_cli::skill::SkillSpec;
-use warpui::AppContext;
-use warpui::SingletonEntity as _;
+use wishui::AppContext;
+use wishui::SingletonEntity as _;
 
 use super::SkillManager;
 use crate::warp_managed_paths_watcher::warp_managed_skill_dirs;

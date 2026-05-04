@@ -14,8 +14,8 @@ use session_sharing_protocol::common::{
     OrderedTerminalEvent, OrderedTerminalEventType, Scrollback, ScrollbackBlock, WindowSize,
 };
 use std::sync::Arc;
-use warpui::units::Lines;
-use warpui::{App, ViewHandle};
+use wishui::units::Lines;
+use wishui::{App, ViewHandle};
 
 fn ordered_terminal_event_from_bytes(
     bytes: impl Into<Vec<u8>>,

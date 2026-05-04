@@ -8,9 +8,9 @@ use crate::ai::outline::{OutlineStatus, RepoOutlines};
 use crate::workspace::ActiveSession;
 #[cfg(not(target_family = "wasm"))]
 use std::path::Path;
-use warpui::AppContext;
+use wishui::AppContext;
 #[cfg(not(target_family = "wasm"))]
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 
 /// Checks if the code symbols (outline) are currently being indexed for the active directory.
 /// Returns true if the outline is in a pending state, false otherwise.

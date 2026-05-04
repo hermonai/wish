@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::{Border, ConstrainedBox, Container, CornerRadius, Flex, ParentElement, Radius},
     fonts::Weight,
     ui_components::components::{UiComponent, UiComponentStyles},

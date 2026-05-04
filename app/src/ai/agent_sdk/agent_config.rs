@@ -7,7 +7,7 @@ use crate::server::server_api::ServerApiProvider;
 use warp_cli::agent::ListAgentConfigsArgs;
 use warp_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
 use warp_graphql::queries::user_repo_auth_status::UserRepoAuthStatusEnum;
-use warpui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
+use wishui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
 
 const MAX_LINE_WIDTH: usize = 90;
 const MAX_AUTH_ATTEMPTS: u32 = 8;
@@ -217,7 +217,7 @@ impl AgentConfigRunner {
         if repo.is_some() {
             println!("Fetching agent skills from the specified repository...");
         } else {
-            println!("Fetching agent skills from your Warp environments...");
+            println!("Fetching agent skills from your Wish environments...");
         }
 
         let list_future = async move { ai_client.list_agents(repo).await };
@@ -304,7 +304,7 @@ impl AgentConfigRunner {
     }
 }
 
-impl warpui::Entity for AgentConfigRunner {
+impl wishui::Entity for AgentConfigRunner {
     type Event = ();
 }
 

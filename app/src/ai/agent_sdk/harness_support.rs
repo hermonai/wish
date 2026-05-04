@@ -10,8 +10,8 @@ use warp_cli::harness_support::{
     ReportArtifactCommand, TaskStatus,
 };
 use warp_cli::GlobalOptions;
-use warp_core::features::FeatureFlag;
-use warpui::{platform::TerminationMode, AppContext, ModelHandle, SingletonEntity};
+use wish_core::features::FeatureFlag;
+use wishui::{platform::TerminationMode, AppContext, ModelHandle, SingletonEntity};
 
 use super::common::set_ambient_task_context_from_run_id;
 use crate::ai::ambient_agents::AmbientAgentTaskId;
@@ -206,7 +206,7 @@ fn finish_task(
 /// Singleton model for running async harness-support operations.
 struct HarnessSupportRunner;
 
-impl warpui::Entity for HarnessSupportRunner {
+impl wishui::Entity for HarnessSupportRunner {
     type Event = ();
 }
 

@@ -11,8 +11,8 @@ use std::{
 };
 use temporary_block::RenderableTemporaryBlock;
 use vim::vim::VimMode;
-use warp_core::ui::theme::Fill as ThemeFill;
-use warpui::{
+use wish_core::ui::theme::Fill as ThemeFill;
+use wishui::{
     AfterLayoutContext, AppContext, Element, Event, EventContext, LayoutContext, ModelHandle,
     PaintContext, SizeConstraint, WeakViewHandle,
     color::ColorU,
@@ -85,7 +85,7 @@ pub enum VerticalExpansionBehavior {
 /// An element that renders rich text, with no additional UI or decorations.
 ///
 /// This element caches the positions listed in [`super::model::saved_positions::SavedPositions`],
-/// and the parent view can overlay UI controls on top of them using a [`warpui::elements::Stack`].
+/// and the parent view can overlay UI controls on top of them using a [`wishui::elements::Stack`].
 ///
 /// It additionally reserves horizontal gutters, which are considered in-bounds for content hit
 /// testing.
@@ -1077,7 +1077,7 @@ impl<V: EditorView> Element for RichTextElement<V> {
             return;
         };
         ctx.scene
-            .start_layer(warpui::ClipBounds::BoundedBy(clip_bounds));
+            .start_layer(wishui::ClipBounds::BoundedBy(clip_bounds));
         // Save the clipped content layer z-index for hover detection.
         self.content_z_index = Some(ctx.scene.z_index());
 
@@ -1236,7 +1236,7 @@ impl<V: EditorView> NewScrollableElement for RichTextElement<V> {
         })
     }
 
-    fn scroll(&mut self, delta: warpui::units::Pixels, axis: Axis, ctx: &mut EventContext) {
+    fn scroll(&mut self, delta: wishui::units::Pixels, axis: Axis, ctx: &mut EventContext) {
         if let Some(action) = V::Action::scroll(delta, axis) {
             ctx.dispatch_typed_action(action);
         }
@@ -1257,7 +1257,7 @@ impl<V: EditorView> ScrollableElement for RichTextElement<V> {
         Some(self.vertical_scroll_data(app))
     }
 
-    fn scroll(&mut self, delta: warpui::units::Pixels, ctx: &mut EventContext) {
+    fn scroll(&mut self, delta: wishui::units::Pixels, ctx: &mut EventContext) {
         if let Some(action) = V::Action::scroll(delta, Axis::Vertical) {
             ctx.dispatch_typed_action(action);
         }

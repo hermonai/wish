@@ -1,12 +1,12 @@
 use crate::appearance::Appearance;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
-use warpui::elements::{
+use wishui::elements::{
     ChildAnchor, ChildView, MouseStateHandle, OffsetPositioning, ParentAnchor, ParentElement,
     ParentOffsetBounds, Stack,
 };
-use warpui::platform::Cursor;
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::{AppContext, Element, EventContext, View, ViewHandle};
+use wishui::platform::Cursor;
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::{AppContext, Element, EventContext, View, ViewHandle};
 
 use super::buttons::{highlight, icon_button};
 use super::icons::Icon;
@@ -87,7 +87,7 @@ where
     button_with_menu
 }
 
-/// Variant with surface_1 hover background for Warp Drive items
+/// Variant with surface_1 hover background for Wish Drive items
 #[allow(clippy::too_many_arguments)]
 pub fn icon_button_with_context_menu_drive<F, V: View>(
     icon: Icon,
@@ -104,7 +104,7 @@ where
 {
     let button = icon_button(appearance, icon, is_menu_open, mouse_state_handle)
         .with_hovered_styles(
-            warpui::ui_components::components::UiComponentStyles::default()
+            wishui::ui_components::components::UiComponentStyles::default()
                 .set_background(appearance.theme().surface_1().into())
                 .set_border_color(appearance.theme().surface_3().into()),
         )
@@ -123,7 +123,7 @@ where
     button_with_menu
 }
 
-/// Variant with surface_1 hover background for Warp Drive items (highlighted)
+/// Variant with surface_1 hover background for Wish Drive items (highlighted)
 pub fn highlight_icon_button_with_context_menu_drive<F, V: View>(
     icon: Icon,
     on_click_action: F,
@@ -141,7 +141,7 @@ where
         appearance,
     )
     .with_hovered_styles(
-        warpui::ui_components::components::UiComponentStyles::default()
+        wishui::ui_components::components::UiComponentStyles::default()
             .set_background(appearance.theme().surface_1().into())
             .set_border_color(appearance.theme().surface_3().into()),
     );

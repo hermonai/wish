@@ -41,14 +41,14 @@ use ai::skills::SkillReference;
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use ui_components::{button, Component as _, Options as _};
-use warp_core::ui::theme::color::internal_colors;
 #[allow(unused_imports)]
 use warp_util::path::{common_path, CleanPathResult};
-use warpui::elements::new_scrollable::SingleAxisConfig;
-use warpui::elements::{
+use wish_core::ui::theme::color::internal_colors;
+use wishui::elements::new_scrollable::SingleAxisConfig;
+use wishui::elements::{
     ChildAnchor, NewScrollable, OffsetPositioning, ParentAnchor, ParentOffsetBounds, Stack,
 };
-use warpui::EntityId;
+use wishui::EntityId;
 
 use crate::ai::blocklist::block::{
     CollapsibleElementState, CollapsibleExpansionState, FinishReason, ImportedCommentGroup,
@@ -110,7 +110,7 @@ use crate::{
 };
 use itertools::Itertools;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
-use warp_core::channel::ChannelState;
+use wish_core::channel::ChannelState;
 
 use super::common::{
     format_elapsed_seconds, render_debug_footer, render_failed_output, render_informational_footer,
@@ -127,7 +127,7 @@ use super::{
     render_citation_chips, todos::render_completed_todo_items, WithContentItemSpacing,
     CONTENT_ITEM_VERTICAL_MARGIN,
 };
-use warpui::{
+use wishui::{
     elements::{
         Align, Border, ChildView, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment,
         Empty, Expanded, Fill, Flex, FormattedTextElement, Hoverable, MainAxisAlignment,
@@ -259,7 +259,7 @@ pub(super) fn render(props: Props, app: &AppContext) -> Box<dyn Element> {
                 let mut action_index = 0;
 
                 fn open_code_block_action(source: CodeSource) -> AIBlockAction {
-                    AIBlockAction::OpenCodeInWarp { source }
+                    AIBlockAction::OpenCodeInWish { source }
                 }
 
                 fn copy_code_action(snippet: String) -> AIBlockAction {
@@ -1704,7 +1704,7 @@ fn render_read_skill(
                 skill.provider,
                 skill_icon_override,
                 move |ctx| {
-                    ctx.dispatch_typed_action(AIBlockAction::OpenCodeInWarp {
+                    ctx.dispatch_typed_action(AIBlockAction::OpenCodeInWish {
                         source: source.clone(),
                     });
                 },
@@ -1808,7 +1808,7 @@ fn render_read_files(
             skill.provider,
             skill_icon_override,
             move |ctx| {
-                ctx.dispatch_typed_action(AIBlockAction::OpenCodeInWarp {
+                ctx.dispatch_typed_action(AIBlockAction::OpenCodeInWish {
                     source: source.clone(),
                 });
             },
@@ -2012,7 +2012,7 @@ fn render_stopped_output(props: Props, app: &AppContext) -> Box<dyn Element> {
                 .set_background(internal_colors::fg_overlay_3(theme).into()),
         );
 
-        let resume_button = warpui::ui_components::button::Button::new(
+        let resume_button = wishui::ui_components::button::Button::new(
             props.state_handles.resume_conversation_handle.clone(),
             button_styles,
             Some(hovered_styles),
@@ -2199,7 +2199,7 @@ fn render_suggest_new_conversation(
             ),
             SuggestNewConversationResult::Rejected => (
                 "Continuing current conversation",
-                warpui::elements::Icon::new(
+                wishui::elements::Icon::new(
                     Icon::FlipForward.into(),
                     internal_colors::neutral_6(theme),
                 )
@@ -3336,7 +3336,7 @@ pub fn action_icon<V: View>(
     action_model: &ModelHandle<BlocklistAIActionModel>,
     ai_block_model: &dyn AIBlockModel<View = V>,
     app: &AppContext,
-) -> warpui::elements::Icon {
+) -> wishui::elements::Icon {
     let appearance = Appearance::as_ref(app);
     let status = action_model.as_ref(app).get_action_status(action_id);
     match status {

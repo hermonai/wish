@@ -5,12 +5,12 @@ use pathfinder_geometry::vector::vec2f;
 use ui_components::{
     button, button::Button as ButtonComponent, Component, MouseEventHandler, Options as _,
 };
-use warp_core::ui::{
+use wish_core::ui::{
     appearance::Appearance,
     color::{coloru_with_opacity, contrast::relative_luminance},
     theme::{phenomenon::PhenomenonStyle, Fill},
 };
-use warpui::{
+use wishui::{
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, DropShadow, Flex,
         MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius, Rect,

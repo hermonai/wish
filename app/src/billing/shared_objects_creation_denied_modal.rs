@@ -7,15 +7,15 @@ use crate::ui_components::icons::Icon;
 use crate::workspaces::user_workspaces::UserWorkspaces;
 use crate::workspaces::workspace::CustomerType;
 use std::default::Default;
-use warp_core::ui::appearance::Appearance;
-use warpui::fonts::Weight;
-use warpui::keymap::FixedBinding;
-use warpui::presenter::ChildView;
-use warpui::ui_components::components::{Coords, UiComponentStyles};
-use warpui::AppContext;
-use warpui::SingletonEntity;
-use warpui::ViewHandle;
-use warpui::{Element, Entity, TypedActionView, View, ViewContext};
+use wish_core::ui::appearance::Appearance;
+use wishui::fonts::Weight;
+use wishui::keymap::FixedBinding;
+use wishui::presenter::ChildView;
+use wishui::ui_components::components::{Coords, UiComponentStyles};
+use wishui::AppContext;
+use wishui::SingletonEntity;
+use wishui::ViewHandle;
+use wishui::{Element, Entity, TypedActionView, View, ViewContext};
 
 use super::shared_objects_creation_denied_body::{
     SharedObjectsCreationDeniedBody, SharedObjectsCreationDeniedBodyEvent,
@@ -39,7 +39,7 @@ pub enum SharedObjectsCreationDeniedModalEvent {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([FixedBinding::new(
         "escape",

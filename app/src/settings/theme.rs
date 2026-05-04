@@ -1,4 +1,4 @@
-use warpui::{platform::SystemTheme, AppContext};
+use wishui::{platform::SystemTheme, AppContext};
 
 use crate::themes::theme::{RespectSystemTheme, SelectedSystemThemes, ThemeKind};
 use settings::{

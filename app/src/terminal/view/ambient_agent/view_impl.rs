@@ -8,9 +8,9 @@ use warp_terminal::model::BlockId;
 use crate::ai::agent::conversation::{AIConversationId, ConversationStatus};
 use crate::ai::agent::display_user_query_with_mode;
 use crate::ai::AIRequestUsageModel;
-use warp_core::features::FeatureFlag;
-use warp_core::send_telemetry_from_ctx;
-use warpui::prelude::{Empty, Vector2F};
+use wish_core::features::FeatureFlag;
+use wish_core::send_telemetry_from_ctx;
+use wishui::prelude::{Empty, Vector2F};
 
 use crate::ai::ambient_agents::telemetry::{CloudAgentTelemetryEvent, CloudModeEntryPoint};
 use crate::ai::blocklist::{agent_view::AgentViewEntryOrigin, BlocklistAIHistoryModel};
@@ -23,9 +23,9 @@ use crate::terminal::view::TerminalView;
 use crate::terminal::CLIAgent;
 use crate::workspace::view::cloud_agent_capacity_modal::CloudAgentCapacityModalVariant;
 use crate::workspaces::user_workspaces::UserWorkspaces;
-use warp_core::ui::appearance::Appearance;
-use warpui::elements::Align;
-use warpui::{AppContext, Element, EntityId, SingletonEntity, ViewContext};
+use wish_core::ui::appearance::Appearance;
+use wishui::elements::Align;
+use wishui::{AppContext, Element, EntityId, SingletonEntity, ViewContext};
 
 use super::loading_screen::{
     render_cloud_mode_cancelled_screen, render_cloud_mode_error_screen,

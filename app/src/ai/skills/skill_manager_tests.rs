@@ -5,9 +5,9 @@ use repo_metadata::{repositories::DetectedRepositories, DirectoryWatcher, RepoMe
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use tempfile::TempDir;
-use warp_core::channel::ChannelState;
-use warpui::App;
 use watcher::HomeDirectoryWatcher;
+use wish_core::channel::ChannelState;
+use wishui::App;
 
 // ============================================================================
 // Tests for get_skills_for_working_directory subdirectory scoping

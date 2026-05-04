@@ -1,7 +1,7 @@
 use command::blocking::Command;
 use std::env;
 use std::process::Stdio;
-use warpui::integration::RERUN_EXIT_CODE;
+use wishui::integration::RERUN_EXIT_CODE;
 
 const MAX_TEST_RUNS: usize = 10;
 
@@ -23,7 +23,7 @@ pub fn run_integration_test(name: &str) -> Result<(), String> {
             k == "PATH"
                 // Propagate any Rust-related variables.
                 || k.starts_with("RUST_")
-                // Propagate any Warp-specific variables.
+                // Propagate any Wish-specific variables.
                 || k.starts_with("WARP_")
                 || k.starts_with("WARPUI_")
                 // Propagate any wgpu-specific variables.

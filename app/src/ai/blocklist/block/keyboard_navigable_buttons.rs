@@ -1,6 +1,6 @@
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::color::internal_colors;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::color::internal_colors;
+use wishui::{
     elements::{
         ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Empty, Flex,
         MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius, Shrinkable, Text,
@@ -21,7 +21,7 @@ const MARGIN_BETWEEN_BUTTONS: f32 = 4.;
 const HAS_OPTIONS: &str = "HasOptions";
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([
         FixedBinding::new(
@@ -59,7 +59,7 @@ pub enum KeyboardNavigableButtonsAction {
 
 pub enum KeyboardNavigableButtonsEvent {}
 
-pub type ButtonBuilder = Box<dyn Fn(bool, &warpui::AppContext) -> Button>;
+pub type ButtonBuilder = Box<dyn Fn(bool, &wishui::AppContext) -> Button>;
 pub type OnButtonClickFn = Box<dyn Fn(&mut ViewContext<KeyboardNavigableButtons>)>;
 
 pub struct KeyboardNavigableButtonBuilder {
@@ -70,7 +70,7 @@ pub struct KeyboardNavigableButtonBuilder {
 
 impl KeyboardNavigableButtonBuilder {
     pub fn new(
-        button_builder: impl Fn(bool, &warpui::AppContext) -> Button + 'static,
+        button_builder: impl Fn(bool, &wishui::AppContext) -> Button + 'static,
         on_selected: impl Fn(&mut ViewContext<KeyboardNavigableButtons>) + 'static,
     ) -> Self {
         Self {
@@ -83,7 +83,7 @@ impl KeyboardNavigableButtonBuilder {
 /// Creates a simple navigation button with standard styling.
 /// This is a convenience function for the common case of a text-only button
 /// that dispatches an action when clicked.
-pub fn simple_navigation_button<A: warpui::Action + Clone + 'static>(
+pub fn simple_navigation_button<A: wishui::Action + Clone + 'static>(
     text_label: String,
     mouse_state: MouseStateHandle,
     action: A,
@@ -227,7 +227,7 @@ fn build_rich_navigation_label(
 /// Creates a keyboard-navigable button with a rich two-line label: a title
 /// (with an optional trailing "Recommended" badge) plus an optional muted
 /// sub-label underneath.
-pub fn rich_navigation_button<A: warpui::Action + Clone + 'static>(
+pub fn rich_navigation_button<A: wishui::Action + Clone + 'static>(
     text_label: String,
     sub_label: Option<String>,
     recommended: bool,
@@ -306,7 +306,7 @@ impl View for KeyboardNavigableButtons {
         "KeyboardNavigableButtons"
     }
 
-    fn render(&self, app: &warpui::AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, app: &wishui::AppContext) -> Box<dyn wishui::Element> {
         let mut content = Flex::column().with_cross_axis_alignment(CrossAxisAlignment::Stretch);
         for (index, button_builder) in self.button_builders.iter().enumerate() {
             let is_selected = index == self.selected_button_index();
@@ -336,7 +336,7 @@ impl View for KeyboardNavigableButtons {
         content.finish()
     }
 
-    fn keymap_context(&self, _app: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, _app: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
         if !self.button_builders.is_empty() {
             context.set.insert(HAS_OPTIONS);

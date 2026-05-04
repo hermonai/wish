@@ -5,12 +5,12 @@ use chrono::{DateTime, Utc};
 use derivative::Derivative;
 use pathfinder_geometry::vector::vec2f;
 use serde::{Deserialize, Serialize};
-use warp_core::{
+use warp_graphql::{object_permissions::AccessLevel, scalars::time::ServerTimestamp};
+use wish_core::{
     features::FeatureFlag,
     ui::{Icon, appearance::Appearance, theme::Fill},
 };
-use warp_graphql::{object_permissions::AccessLevel, scalars::time::ServerTimestamp};
-use warpui_core::{
+use wishui_core::{
     Element,
     elements::{
         Align, ChildAnchor, ConstrainedBox, Hoverable, MouseStateHandle, OffsetPositioning,
@@ -545,7 +545,7 @@ pub struct CloudObjectMetadata {
     pub trashed_ts: Option<ServerTimestamp>,
     pub folder_id: Option<SyncId>,
     /// Welcome objects are created on the server when a user first receives
-    /// access to Warp Drive as part of onboarding.
+    /// access to Wish Drive as part of onboarding.
     pub is_welcome_object: bool,
     pub last_editor_uid: Option<String>,
     pub creator_uid: Option<String>,

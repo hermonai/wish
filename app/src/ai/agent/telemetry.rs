@@ -1,5 +1,5 @@
 use serde::Serialize;
-use warpui::{AppContext, SingletonEntity};
+use wishui::{AppContext, SingletonEntity};
 
 use crate::ai::llms::LLMId;
 use crate::CloudModel;

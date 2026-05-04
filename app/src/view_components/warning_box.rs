@@ -1,13 +1,13 @@
 //! A reusable warning callout component with optional action button.
 
-use warp_core::ui::color::blend::Blend;
-use warpui::color::ColorU;
-use warpui::elements::{
+use wish_core::ui::color::blend::Blend;
+use wishui::color::ColorU;
+use wishui::elements::{
     Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Element, Expanded, Flex,
     Hoverable, MainAxisSize, MouseStateHandle, ParentElement, Radius, Text,
 };
-use warpui::platform::Cursor;
-use warpui::EventContext;
+use wishui::platform::Cursor;
+use wishui::EventContext;
 
 use crate::appearance::Appearance;
 use crate::themes::theme::Fill as ThemeFill;

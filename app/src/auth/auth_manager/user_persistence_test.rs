@@ -93,9 +93,9 @@ fn test_windows_user_persistence() {
     };
     use crate::ServerApiProvider;
     use chrono::DateTime;
-    use warp_core::channel::ChannelState;
-    use warpui::{App, SingletonEntity};
     use warpui_extras::secure_storage;
+    use wish_core::channel::ChannelState;
+    use wishui::{App, SingletonEntity};
 
     App::test((), |mut app| async move {
         app.add_singleton_model(|_ctx| ServerApiProvider::new_for_test());
@@ -104,7 +104,7 @@ fn test_windows_user_persistence() {
         app.add_singleton_model(|ctx| {
             secure_storage::register_with_dir(
                 ChannelState::data_domain().as_str(),
-                warp_core::paths::state_dir(),
+                wish_core::paths::state_dir(),
                 ctx,
             );
             AuthManager::new_for_test(ctx)

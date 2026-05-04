@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use warpui::{
+use wishui::{
     async_assert, integration::TestStep, windowing::WindowManager, SingletonEntity, WindowId,
 };
 

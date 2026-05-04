@@ -3,8 +3,8 @@ use std::sync::LazyLock;
 
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::{
         ConstrainedBox, Container, CrossAxisAlignment, Flex, MainAxisAlignment, MainAxisSize,
         MouseStateHandle, ParentElement,
@@ -23,12 +23,12 @@ use crate::{
     ui_components::icons::Icon,
 };
 
-use warpui::elements::ChildAnchor;
-use warpui::elements::Hoverable;
-use warpui::elements::OffsetPositioning;
-use warpui::elements::ParentAnchor;
-use warpui::elements::ParentOffsetBounds;
-use warpui::elements::Stack;
+use wishui::elements::ChildAnchor;
+use wishui::elements::Hoverable;
+use wishui::elements::OffsetPositioning;
+use wishui::elements::ParentAnchor;
+use wishui::elements::ParentOffsetBounds;
+use wishui::elements::Stack;
 
 const PROVIDER_BUTTON_ICON_SIZE: f32 = 14.;
 const PROVIDER_BUTTON_ICON_TEXT_GAP: f32 = 8.;
@@ -93,7 +93,7 @@ pub fn render_ai_follow_up_icon(
                 .tool_tip("Follow up with existing conversation".to_owned())
                 .with_style(UiComponentStyles {
                     font_size: Some(12.),
-                    background: Some(warpui::elements::Fill::Solid(tooltip_background)),
+                    background: Some(wishui::elements::Fill::Solid(tooltip_background)),
                     font_color: Some(appearance.theme().background().into_solid()),
                     ..Default::default()
                 });

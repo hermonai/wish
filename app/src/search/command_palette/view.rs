@@ -16,16 +16,16 @@ use crate::themes::theme::WarpTheme;
 use crate::view_components::DismissibleToast;
 use crate::ToastStack;
 use lazy_static::lazy_static;
-use warp_core::send_telemetry_from_app_ctx;
 use warp_util::path::LineAndColumnArg;
+use wish_core::send_telemetry_from_app_ctx;
 
 use crate::search::action::search_item::MatchedBinding;
 use itertools::Itertools;
-use warpui::elements::DispatchEventResult;
-use warpui::elements::EventHandler;
-use warpui::event::KeyState;
-use warpui::platform::keyboard::KeyCode;
-use warpui::FocusContext;
+use wishui::elements::DispatchEventResult;
+use wishui::elements::EventHandler;
+use wishui::event::KeyState;
+use wishui::platform::keyboard::KeyCode;
+use wishui::FocusContext;
 
 use crate::search::command_palette::zero_state::{self, Event as ZeroStateEvent, ZeroState};
 use crate::search::data_source::QueryResult;
@@ -41,14 +41,14 @@ use crate::search::command_palette::data_sources::DataSourceStore;
 use crate::server::ids::SyncId;
 use crate::session_management::SessionSource;
 use crate::workspace::{active_terminal_in_window, ForkedConversationDestination, WorkspaceAction};
-use warpui::elements::{
+use wishui::elements::{
     Align, Border, ChildView, Clipped, ClippedScrollStateHandle, ClippedScrollable, ConstrainedBox,
     Container, CornerRadius, Dismiss, Empty, Fill, Flex, ParentElement, Radius, SavePosition,
     Shrinkable,
 };
-use warpui::keymap::BindingId;
-use warpui::units::{IntoPixels, Pixels};
-use warpui::{
+use wishui::keymap::BindingId;
+use wishui::units::{IntoPixels, Pixels};
+use wishui::{
     AppContext, Element, Entity, EntityId, ModelHandle, SingletonEntity, TypedActionView,
     ViewContext, ViewHandle, WindowId,
 };
@@ -101,7 +101,7 @@ pub enum Event {
     InvokeEnvironmentVariables { id: SyncId },
     /// Open a notebook identified by `id`.
     OpenNotebook { id: SyncId },
-    /// View the relevant object in the Warp Drive sidebar.
+    /// View the relevant object in the Wish Drive sidebar.
     ViewInWarpDrive { id: CloudObjectTypeAndId },
     /// Open a file at the given path.
     OpenFile {
@@ -170,7 +170,7 @@ impl TypedActionView for View {
     }
 }
 
-impl warpui::View for View {
+impl wishui::View for View {
     fn ui_name() -> &'static str {
         "CommandPaletteView"
     }
@@ -1000,11 +1000,11 @@ impl View {
         self.close(ctx, Some(result_action.result_type()));
     }
 
-    /// Dispatches `action` to the correct window and [`warpui::View`] by using the current state of
+    /// Dispatches `action` to the correct window and [`wishui::View`] by using the current state of
     /// the [`BindingSource`] model.
     fn dispatch_typed_action_on_view(
         &self,
-        action: &dyn warpui::Action,
+        action: &dyn wishui::Action,
         ctx: &mut ViewContext<Self>,
     ) {
         send_telemetry_from_ctx!(

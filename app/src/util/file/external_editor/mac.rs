@@ -9,7 +9,7 @@ use cocoa::{
     foundation::{NSAutoreleasePool, NSString},
 };
 use command::r#async::Command;
-use warpui::{platform::mac::make_nsstring, ApplicationBundleInfo};
+use wishui::{platform::mac::make_nsstring, ApplicationBundleInfo};
 
 use super::*;
 

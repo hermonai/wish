@@ -20,11 +20,11 @@ use crate::interval_timer::IntervalTimer;
 use crate::launch_configs::launch_config;
 use crate::linear::LinearIssueWork;
 use crate::notebooks::manager::NotebookSource;
+use crate::settings::AISettings;
 use crate::settings::apply_onboarding_settings;
 use crate::settings::cloud_preferences_syncer::{
     CloudPreferencesSyncer, CloudPreferencesSyncerEvent,
 };
-use crate::settings::AISettings;
 use crate::workspace::tab_settings::TabSettings;
 use onboarding::{
     AgentOnboardingEvent, AgentOnboardingView, OnboardingIntention, SelectedSettings,
@@ -35,69 +35,69 @@ use crate::report_if_error;
 use crate::server::cloud_objects::update_manager::UpdateManager;
 use crate::server::experiments::is_free_user_no_ai_experiment_active;
 use crate::server::ids::SyncId;
-use crate::server::server_api::auth::UserAuthenticationError;
 use crate::server::server_api::ServerApiProvider;
+use crate::server::server_api::auth::UserAuthenticationError;
 use crate::server::telemetry::LaunchConfigUiLocation;
 use crate::settings::QuakeModeSettings;
 use crate::settings::ThemeSettings;
-use crate::settings_view::flags;
-use crate::settings_view::mcp_servers_page::MCPServersSettingsPage;
 use crate::settings_view::OpenTeamsSettingsModalArgs;
 use crate::settings_view::SettingsSection;
+use crate::settings_view::flags;
+use crate::settings_view::mcp_servers_page::MCPServersSettingsPage;
 use crate::terminal::available_shells::AvailableShell;
 use crate::terminal::general_settings::GeneralSettings;
 use crate::terminal::keys_settings::KeysSettings;
 use crate::terminal::shell::ShellType;
-use crate::terminal::view::{cell_size_and_padding, TerminalAction};
+use crate::terminal::view::{TerminalAction, cell_size_and_padding};
 use crate::themes::onboarding_theme_picker_themes;
 use crate::themes::theme::{AnsiColorIdentifier, Blend, Fill, ThemeKind, WarpThemeConfig};
 use crate::uri::OpenMCPSettingsArgs;
 use crate::util::bindings::{self, is_binding_pty_compliant};
-use crate::util::traffic_lights::{traffic_light_data, TrafficLightData, TrafficLightMouseStates};
+use crate::util::traffic_lights::{TrafficLightData, TrafficLightMouseStates, traffic_light_data};
 use crate::view_components::DismissibleToast;
 use crate::window_settings::WindowSettings;
-use crate::workspace::hoa_onboarding::mark_hoa_onboarding_completed;
 use crate::workspace::WorkspaceAction;
+use crate::workspace::hoa_onboarding::mark_hoa_onboarding_completed;
 use crate::workspaces::team_tester::TeamTesterStatus;
 use crate::workspaces::update_manager::TeamUpdateManager;
 use crate::workspaces::user_workspaces::{UserWorkspaces, UserWorkspacesEvent};
+use crate::{ChannelState, features::FeatureFlag};
+use crate::{GlobalResourceHandles, GlobalResourceHandlesProvider, send_telemetry_from_app_ctx};
 use crate::{
+    UpdateQuakeModeEventArg,
     app_state::{AppState, PaneUuid, WindowSnapshot},
     autoupdate::{RequestType, UpdateReady},
     changelog_model::ChangelogRequestType,
     pane_group::{NewTerminalOptions, PanesLayout},
     send_telemetry_from_ctx,
     server::{server_api::ServerTime, telemetry::TelemetryEvent},
-    UpdateQuakeModeEventArg,
 };
 use crate::{
     auth::auth_override_warning_modal::{AuthOverrideWarningModal, AuthOverrideWarningModalEvent},
     auth::auth_view_modal::{AuthView, AuthViewVariant},
     server::server_api::ServerApi,
-    workspace::{view::OnboardingTutorial, PaneViewLocator, Workspace},
+    workspace::{PaneViewLocator, Workspace, view::OnboardingTutorial},
 };
-use crate::{features::FeatureFlag, ChannelState};
-use crate::{send_telemetry_from_app_ctx, GlobalResourceHandles, GlobalResourceHandlesProvider};
 use anyhow::Result;
 use cfg_if::cfg_if;
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use parking_lot::Mutex;
 use pathfinder_geometry::rect::RectF;
-use pathfinder_geometry::vector::{vec2f, Vector2F};
+use pathfinder_geometry::vector::{Vector2F, vec2f};
 use serde::{Deserialize, Serialize};
 use session_sharing_protocol::common::SessionId;
 use settings::Setting as _;
 use std::path::Path;
-use std::sync::mpsc::SyncSender;
 use std::sync::Arc;
+use std::sync::mpsc::SyncSender;
 use std::{collections::HashMap, path::PathBuf};
 use url::Url;
-use warp_core::context_flag::ContextFlag;
-use warp_core::user_preferences::GetUserPreferences as _;
-use warpui::clipboard::ClipboardContent;
-use warpui::keymap::{EditableBinding, FixedBinding};
-use warpui::windowing::WindowManager;
+use wish_core::context_flag::ContextFlag;
+use wish_core::user_preferences::GetUserPreferences as _;
+use wishui::clipboard::ClipboardContent;
+use wishui::keymap::{EditableBinding, FixedBinding};
+use wishui::windowing::WindowManager;
 
 use crate::ai::llms::{LLMPreferences, LLMPreferencesEvent};
 use crate::ai::onboarding::{
@@ -106,23 +106,23 @@ use crate::ai::onboarding::{
 use crate::pricing::{PricingInfoModel, PricingInfoModelEvent};
 use warp_graphql::billing::StripeSubscriptionPlan;
 
-use warpui::elements::{
+use wishui::elements::{
     Border, ChildAnchor, OffsetPositioning, ParentAnchor, ParentElement, ParentOffsetBounds, Stack,
 };
-use warpui::rendering::OnGPUDeviceSelected;
-use warpui::{id, AddWindowOptions, DisplayId, SingletonEntity};
-use warpui::{
-    platform::{WindowBounds, WindowStyle},
-    presenter::ChildView,
+use wishui::rendering::OnGPUDeviceSelected;
+use wishui::{AddWindowOptions, DisplayId, DisplayIdx, SingletonEntity, id};
+use wishui::{
     AppContext, Element, Entity, EntityId, TypedActionView, View, ViewContext, ViewHandle,
     WindowId,
+    platform::{WindowBounds, WindowStyle},
+    presenter::ChildView,
 };
-use warpui::{FocusContext, NextNewWindowsHasThisWindowsBoundsUponClose};
+use wishui::{FocusContext, NextNewWindowsHasThisWindowsBoundsUponClose};
 
 #[cfg(target_family = "wasm")]
 use crate::auth::web_handoff::{WebHandoffEvent, WebHandoffView};
 
-const WINDOW_TITLE: &str = "Warp";
+const WINDOW_TITLE: &str = "Wish";
 
 lazy_static! {
     static ref FALLBACK_WINDOW_SIZE: Vector2F = vec2f(800.0, 600.0);
@@ -771,6 +771,19 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
 
         // Check whether user has enabled session restoration.
         if *GeneralSettings::as_ref(ctx).restore_session {
+            let persisted_normal_window_count = app_state
+                .windows
+                .iter()
+                .filter(|window| !window.quake_mode)
+                .count();
+            if persisted_normal_window_count > 0 && app_state.active_window_index.is_none() {
+                log::warn!(
+                    "Ignoring persisted Wish window state because no active window was saved; \
+                     opening a fresh window instead"
+                );
+                return;
+            }
+
             let mut active_index = None;
             let mut normal_window_count = 0;
             for (idx, window) in app_state.windows.iter().enumerate() {
@@ -794,7 +807,7 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
                         AddWindowOptions {
                             window_style: WindowStyle::Pin,
                             window_bounds: WindowBounds::ExactPosition(frame_args.window_bounds),
-                            title: Some("Warp".to_owned()),
+                            title: Some("Wish".to_owned()),
                             fullscreen_state: window.fullscreen_state,
                             background_blur_radius_pixels,
                             background_blur_texture,
@@ -836,8 +849,8 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
                     } else {
                         ctx.add_window(
                             AddWindowOptions {
-                                window_bounds: WindowBounds::new(window.bounds),
-                                title: Some("Warp".to_owned()),
+                                window_bounds: restored_window_bounds(window, ctx),
+                                title: Some("Wish".to_owned()),
                                 fullscreen_state: window.fullscreen_state,
                                 background_blur_radius_pixels,
                                 background_blur_texture,
@@ -888,8 +901,8 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
                     .expect("Window should exist at idx");
                 ctx.add_window(
                     AddWindowOptions {
-                        window_bounds: WindowBounds::new(window.bounds),
-                        title: Some("Warp".to_owned()),
+                        window_bounds: restored_window_bounds(window, ctx),
+                        title: Some("Wish".to_owned()),
                         fullscreen_state: window.fullscreen_state,
                         background_blur_radius_pixels,
                         background_blur_texture,
@@ -912,6 +925,47 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
             }
         }
     }
+}
+
+fn restored_window_bounds(window: &WindowSnapshot, ctx: &AppContext) -> WindowBounds {
+    let Some(bounds) = window.bounds else {
+        return WindowBounds::Default;
+    };
+
+    if !restored_bounds_are_visible(bounds, ctx) {
+        log::warn!("Ignoring restored Wish window bounds outside visible displays: {bounds:?}");
+        return WindowBounds::Default;
+    }
+
+    WindowBounds::new(Some(bounds))
+}
+
+fn restored_bounds_are_visible(bounds: RectF, ctx: &AppContext) -> bool {
+    if bounds.width() <= 0. || bounds.height() <= 0. {
+        return false;
+    }
+
+    let mut saw_display_bounds = false;
+    for display_idx in 0..ctx.windows().display_count() {
+        let display_idx = if display_idx == 0 {
+            DisplayIdx::Primary
+        } else {
+            DisplayIdx::External(display_idx - 1)
+        };
+
+        if let Some(display_bounds) = ctx.windows().bounds_for_display_idx(display_idx) {
+            saw_display_bounds = true;
+            if bounds.intersects(display_bounds) {
+                return true;
+            }
+        }
+    }
+
+    if !saw_display_bounds {
+        return bounds.intersects(ctx.windows().active_display_bounds());
+    }
+
+    false
 }
 
 fn path_if_directory(path: &Path) -> Option<&Path> {
@@ -1261,7 +1315,7 @@ fn default_window_options(window_settings: &WindowSettings, ctx: &AppContext) ->
     AddWindowOptions {
         window_style,
         window_bounds: next_bounds,
-        title: Some("Warp".to_owned()),
+        title: Some("Wish".to_owned()),
         background_blur_radius_pixels: Some(*window_settings.background_blur_radius),
         background_blur_texture: *window_settings.background_blur_texture,
         on_gpu_driver_selected: on_gpu_driver_selected_callback(),
@@ -1446,12 +1500,12 @@ fn toggle_quake_mode_window(global_resource_handles: &GlobalResourceHandles, ctx
                 AddWindowOptions {
                     window_style: WindowStyle::Pin,
                     window_bounds: WindowBounds::ExactPosition(config.window_bounds),
-                    title: Some("Warp".to_owned()),
+                    title: Some("Wish".to_owned()),
                     background_blur_radius_pixels: Some(*window_settings.background_blur_radius),
                     background_blur_texture: *window_settings.background_blur_texture,
                     // Ignore the quake window for positioning the next window
                     anchor_new_windows_from_closed_position:
-                        warpui::NextNewWindowsHasThisWindowsBoundsUponClose::No,
+                        wishui::NextNewWindowsHasThisWindowsBoundsUponClose::No,
                     on_gpu_driver_selected: on_gpu_driver_selected_callback(),
                     window_instance: Some(ChannelState::app_id().to_string() + "-hotkey"),
                     ..Default::default()
@@ -1518,11 +1572,11 @@ fn toggle_quake_mode_window(global_resource_handles: &GlobalResourceHandles, ctx
     };
 }
 
-/// This action will show or hide all of Warp's windows except the quake window
+/// This action will show or hide all of Wish's windows except the quake window
 ///
-/// - If Warp is active and has any windows, hide those windows.
-/// - If Warp is hidden, show all windows.
-/// - If Warp is active but has 0 normal windows, create a new window with a new session.
+/// - If Wish is active and has any windows, hide those windows.
+/// - If Wish is hidden, show all windows.
+/// - If Wish is active but has 0 normal windows, create a new window with a new session.
 fn show_or_hide_non_quake_mode_windows(_: &(), ctx: &mut AppContext) {
     let quake_window_id = get_quake_mode_state(ctx).map(|state| state.window_id);
     let non_quake_mode_window_ids = ctx
@@ -1718,6 +1772,10 @@ pub struct RootView {
 }
 
 impl RootView {
+    fn should_start_in_workspace_without_login() -> bool {
+        !FeatureFlag::ForceLogin.is_enabled()
+    }
+
     pub fn new(
         global_resource_handles: GlobalResourceHandles,
         workspace_setting: NewWorkspaceSource,
@@ -1770,6 +1828,12 @@ impl RootView {
                     if FeatureFlag::ForceLogin.is_enabled() {
                         // ForceLogin is true for Preview
                         AuthOnboardingState::Auth(workspace_args.into())
+                    } else if Self::should_start_in_workspace_without_login() {
+                        // Wish should be useful as a local development environment without
+                        // requiring backend credentials at launch. Cloud-backed services still
+                        // request auth at the point of use through their existing gated-feature
+                        // flows.
+                        AuthOnboardingState::Terminal(workspace_args.create_workspace(ctx))
                     } else if should_show_pre_login_onboarding {
                         let workspace_args_box: Box<WorkspaceArgs> = workspace_args.into();
                         let onboarding_view = Self::create_agent_onboarding_view(ctx);
@@ -1780,10 +1844,6 @@ impl RootView {
                             onboarding_view,
                             target: AuthOnboardingTarget::Workspace(workspace_args_box),
                         }
-                    } else if FeatureFlag::SkipFirebaseAnonymousUser.is_enabled() {
-                        // When SkipFirebaseAnonymousUser is enabled, skip the login screen
-                        // entirely and go directly into the workspace.
-                        AuthOnboardingState::Terminal(workspace_args.create_workspace(ctx))
                     } else {
                         AuthOnboardingState::Auth(workspace_args.into())
                     }
@@ -2243,20 +2303,23 @@ impl RootView {
                 // auto-opened for discoverability.
                 if matches!(selected_settings, SelectedSettings::Terminal { .. }) {
                     AISettings::handle(ctx).update(ctx, |settings, ctx| {
-                        report_if_error!(settings
-                            .has_auto_opened_conversation_list
-                            .set_value(true, ctx));
+                        report_if_error!(
+                            settings
+                                .has_auto_opened_conversation_list
+                                .set_value(true, ctx)
+                        );
                     });
                 }
 
                 let is_logged_in = AuthStateProvider::as_ref(ctx).get().is_logged_in();
                 // If the user isn't logged in, only require login if the applied
-                // settings need an account (AI or Warp Drive enabled).
+                // settings need an account (AI or Wish Drive enabled).
                 let ai_enabled = selected_settings.is_ai_enabled();
                 let warp_drive_enabled = selected_settings.is_warp_drive_enabled();
                 // With old onboarding, we ask user to log in before onboarding, so don't do it after onboarding completes.
                 let requires_login = !is_logged_in
                     && (ai_enabled || warp_drive_enabled)
+                    && FeatureFlag::ForceLogin.is_enabled()
                     && FeatureFlag::OpenWarpNewSettingsModes.is_enabled();
 
                 if requires_login {
@@ -3066,7 +3129,15 @@ impl RootView {
                     }
                 }
                 UserAuthenticationError::Unexpected(err) => {
-                    log::error!("Encountered unexpected error when trying to fetch user: {err:#}");
+                    if ChannelState::server_root_url().starts_with("http://localhost") {
+                        log::warn!(
+                            "Unable to fetch user from local Hermon backend; continuing offline: {err:#}"
+                        );
+                    } else {
+                        log::error!(
+                            "Encountered unexpected error when trying to fetch user: {err:#}"
+                        );
+                    }
                 }
                 UserAuthenticationError::InvalidStateParameter => {}
                 UserAuthenticationError::MissingStateParameter => {}
@@ -3231,12 +3302,12 @@ impl RootView {
     #[cfg(feature = "voice_input")]
     fn maybe_stop_active_voice_input(
         &mut self,
-        key_code: &warpui::platform::keyboard::KeyCode,
+        key_code: &wishui::platform::keyboard::KeyCode,
         ctx: &mut ViewContext<Self>,
     ) -> bool {
         use crate::settings::AISettings;
         use voice_input::{VoiceInput, VoiceInputState, VoiceInputToggledFrom};
-        use warpui::event::KeyState;
+        use wishui::event::KeyState;
 
         // Check that the released key matches the configured voice input toggle key.
         let ai_settings = AISettings::as_ref(ctx);
@@ -3422,10 +3493,10 @@ impl View for RootView {
 
         cfg_if::cfg_if! {
             if #[cfg(feature = "voice_input")] {
-                use warpui::elements::{EventHandler, DispatchEventResult};
+                use wishui::elements::{EventHandler, DispatchEventResult};
                 EventHandler::new(stack.finish())
                     .on_modifier_state_changed(|ctx, _app, key_code, key_state| {
-                        if matches!(key_state, warpui::event::KeyState::Released) {
+                        if matches!(key_state, wishui::event::KeyState::Released) {
                             ctx.dispatch_action("root_view:maybe_stop_active_voice_input", *key_code);
                         }
                         DispatchEventResult::PropagateToParent
@@ -3437,7 +3508,7 @@ impl View for RootView {
         }
     }
 
-    fn keymap_context(&self, app: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, app: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
         if quake_mode_window_is_open() {
             context.set.insert(flags::QUAKE_WINDOW_OPEN_FLAG);

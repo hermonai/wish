@@ -1,16 +1,16 @@
 #[cfg(test)]
-use warpui::App;
+use wishui::App;
 
 #[cfg(test)]
 pub fn initialize_settings_for_tests(app: &mut App) {
-    use warp_core::execution_mode::ExecutionMode;
+    use wish_core::execution_mode::ExecutionMode;
     initialize_settings_for_tests_with_mode(app, ExecutionMode::App, false);
 }
 
 #[cfg(test)]
 pub fn initialize_settings_for_tests_with_mode(
     app: &mut App,
-    mode: warp_core::execution_mode::ExecutionMode,
+    mode: wish_core::execution_mode::ExecutionMode,
     is_sandboxed: bool,
 ) {
     use crate::{
@@ -30,7 +30,7 @@ pub fn initialize_settings_for_tests_with_mode(
             general_settings::GeneralSettings, keys_settings::KeysSettings,
             ligature_settings::LigatureSettings, safe_mode_settings::SafeModeSettings,
             session_settings::SessionSettings, settings::TerminalSettings,
-            shared_session::settings::SharedSessionSettings, warpify::settings::WarpifySettings,
+            shared_session::settings::SharedSessionSettings, warpify::settings::WishifySettings,
             BlockListSettings,
         },
         undo_close::UndoCloseSettings,
@@ -38,7 +38,7 @@ pub fn initialize_settings_for_tests_with_mode(
         window_settings::WindowSettings,
         workspace::tab_settings::TabSettings,
     };
-    use warp_core::{execution_mode::AppExecutionMode, semantic_selection::SemanticSelection};
+    use wish_core::{execution_mode::AppExecutionMode, semantic_selection::SemanticSelection};
     app.add_singleton_model(|ctx| AppExecutionMode::new(mode, is_sandboxed, ctx));
 
     app.update(init_and_register_user_preferences);
@@ -84,7 +84,7 @@ pub fn initialize_settings_for_tests_with_mode(
     ScrollSettings::register(app);
     SelectionSettings::register(app);
     app.update(|ctx| {
-        WarpifySettings::register(ctx);
+        WishifySettings::register(ctx);
     });
     SessionSettings::register(app);
     SshSettings::register(app);

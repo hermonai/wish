@@ -20,10 +20,10 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::time::Duration;
 use uuid::Uuid;
-use warp_core::features::FeatureFlag;
 use warp_multi_agent_api as api;
-use warpui::r#async::Timer;
-use warpui::{
+use wish_core::features::FeatureFlag;
+use wishui::r#async::Timer;
+use wishui::{
     Entity, EntityId, GetSingletonModelHandle, ModelContext, SingletonEntity, UpdateModel,
 };
 
@@ -315,7 +315,7 @@ impl OrchestrationEventStreamer {
     fn ensure_self_run_id_watched(
         &mut self,
         conversation_id: AIConversationId,
-        ctx: &warpui::AppContext,
+        ctx: &wishui::AppContext,
     ) -> bool {
         let (run_id, is_child) = {
             let history = BlocklistAIHistoryModel::as_ref(ctx);
@@ -660,7 +660,7 @@ impl OrchestrationEventStreamer {
     fn self_run_id(
         &self,
         conversation_id: AIConversationId,
-        ctx: &warpui::AppContext,
+        ctx: &wishui::AppContext,
     ) -> Option<String> {
         BlocklistAIHistoryModel::as_ref(ctx)
             .conversation(&conversation_id)
@@ -672,7 +672,7 @@ impl OrchestrationEventStreamer {
     fn is_parent_agent_conversation(
         &self,
         conversation_id: AIConversationId,
-        ctx: &warpui::AppContext,
+        ctx: &wishui::AppContext,
     ) -> bool {
         let Some(stream) = self.streams.get(&conversation_id) else {
             return false;
@@ -699,7 +699,7 @@ impl OrchestrationEventStreamer {
     fn is_remote_run_view(
         &self,
         conversation_id: AIConversationId,
-        ctx: &warpui::AppContext,
+        ctx: &wishui::AppContext,
     ) -> bool {
         BlocklistAIHistoryModel::as_ref(ctx)
             .conversation(&conversation_id)
@@ -711,7 +711,7 @@ impl OrchestrationEventStreamer {
     /// this process (an open agent view or an agent_sdk driver) AND the
     /// conversation has a real role to consume events for. Passive views
     /// of agent runs hosted elsewhere are excluded regardless of state.
-    fn is_eligible(&self, conversation_id: AIConversationId, ctx: &warpui::AppContext) -> bool {
+    fn is_eligible(&self, conversation_id: AIConversationId, ctx: &wishui::AppContext) -> bool {
         if !self.has_active_consumer(conversation_id) {
             return false;
         }

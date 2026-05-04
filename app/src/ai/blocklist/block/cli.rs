@@ -4,30 +4,30 @@ use settings::Setting as _;
 use std::sync::Arc;
 use std::time::Duration;
 use std::{cmp::Ordering, rc::Rc};
-use warp_core::features::FeatureFlag;
-use warp_core::report_error;
-use warp_core::ui::theme::color::internal_colors;
-use warpui::elements::new_scrollable::SingleAxisConfig;
-use warpui::elements::{
+use wish_core::features::FeatureFlag;
+use wish_core::report_error;
+use wish_core::ui::theme::color::internal_colors;
+use wishui::elements::new_scrollable::SingleAxisConfig;
+use wishui::elements::{
     ClippedScrollStateHandle, ConstrainedBox, Empty, Fill, FormattedTextElement, Highlight,
     HighlightedHyperlink, Hoverable, MainAxisAlignment, MainAxisSize, NewScrollable, SavePosition,
     SelectableArea, SizeConstraintCondition, SizeConstraintSwitch,
 };
-use warpui::fonts::Weight;
-use warpui::platform::{Cursor, OperatingSystem};
-use warpui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
+use wishui::fonts::Weight;
+use wishui::platform::{Cursor, OperatingSystem};
+use wishui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
 
 use lazy_static::lazy_static;
 use pathfinder_geometry::vector::vec2f;
 
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
-use warp_core::semantic_selection::SemanticSelection;
-use warp_core::ui::appearance::Appearance;
 use warp_editor::{
     content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
 };
-use warpui::r#async::Timer;
-use warpui::{
+use wish_core::semantic_selection::SemanticSelection;
+use wish_core::ui::appearance::Appearance;
+use wishui::r#async::Timer;
+use wishui::{
     clipboard::ClipboardContent,
     elements::{
         Border, ChildAnchor, ChildView, Container, CornerRadius, CrossAxisAlignment, DropShadow,
@@ -145,7 +145,7 @@ const HAS_PENDING_NON_TRANSFER_CONTROL_ACTION_CONTEXT_KEY: &str =
 const BLOCKED_ACTION_MESSAGE_FOR_TRANSFER_CONTROL: &str = "Agent is asking you to take control.";
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::{macros::*, FixedBinding};
+    use wishui::keymap::{macros::*, FixedBinding};
 
     app.register_fixed_bindings([
         FixedBinding::new(
@@ -964,7 +964,7 @@ impl View for CLISubagentView {
         "CLISubagentView"
     }
 
-    fn render(&self, app: &warpui::AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, app: &wishui::AppContext) -> Box<dyn wishui::Element> {
         let terminal_model = self.terminal_model.lock();
         let Some(block) = terminal_model.block_list().block_with_id(&self.block_id) else {
             return Empty::new().finish();
@@ -1399,7 +1399,7 @@ impl View for CLISubagentView {
         result.finish()
     }
 
-    fn keymap_context(&self, app: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, app: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
 
         let terminal_model = self.terminal_model.lock();
@@ -1522,7 +1522,7 @@ impl TypedActionView for CLISubagentView {
                     .write(ClipboardContent::plain_text(debug_id.clone()));
             }
             CLISubagentAction::OpenFeedbackDocs => {
-                ctx.open_url("https://docs.warp.dev/support-and-billing/sending-us-feedback");
+                ctx.open_url("https://wish.hermon.ai/docs/support-and-billing/sending-us-feedback");
             }
         }
     }
@@ -1569,7 +1569,7 @@ fn render_action(action: AIAgentActionType, app: &AppContext) -> Option<Box<dyn 
 
     let icon = Container::new(
         ConstrainedBox::new(
-            warpui::elements::Icon::new(icon.into(), internal_colors::neutral_5(theme)).finish(),
+            wishui::elements::Icon::new(icon.into(), internal_colors::neutral_5(theme)).finish(),
         )
         .with_width(icon_size(app))
         .with_height(icon_size(app))
@@ -1611,7 +1611,7 @@ fn render_web_search(query: Option<String>, app: &AppContext) -> Box<dyn Element
 
     let icon = Container::new(
         ConstrainedBox::new(
-            warpui::elements::Icon::new(Icon::Search.into(), internal_colors::neutral_5(theme))
+            wishui::elements::Icon::new(Icon::Search.into(), internal_colors::neutral_5(theme))
                 .finish(),
         )
         .with_width(icon_size(app))

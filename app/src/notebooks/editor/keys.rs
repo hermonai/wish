@@ -1,6 +1,6 @@
 //! Utilities for notebook keybindings.
 
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use crate::{
     settings_view::keybindings::{KeybindingChangedEvent, KeybindingChangedNotifier},
@@ -15,7 +15,7 @@ pub struct NotebookKeybindings {
     // looking up a keybinding requires a [`AppContext`], so it can't be done when
     // rendering.
     //
-    // Inspired by https://github.com/warpdotdev/warp-internal/pull/5676 (see the `Workspace` view)
+    // Inspired by https://github.com/hermonai/wish-internal/pull/5676 (see the `Workspace` view)
     run_commands_keybinding: Option<String>,
 }
 

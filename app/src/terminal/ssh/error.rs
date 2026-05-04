@@ -1,30 +1,30 @@
 use crate::appearance::Appearance;
-use crate::terminal::model::ansi::WarpificationUnavailableReason;
+use crate::terminal::model::ansi::WishificationUnavailableReason;
 use crate::terminal::warpify;
 use crate::terminal::warpify::render::apply_spacing_styles;
 use crate::terminal::warpify::render::build_description_row;
-use crate::terminal::warpify::settings::WarpifySettings;
+use crate::terminal::warpify::settings::WishifySettings;
 use crate::ui_components::icons::Icon as UiIcon;
 use markdown_parser::FormattedText;
 use markdown_parser::FormattedTextFragment;
 use markdown_parser::FormattedTextLine;
-use warp_core::channel::ChannelState;
-use warp_core::ui::theme::WarpTheme;
-use warpui::elements::HighlightedHyperlink;
-use warpui::elements::Hoverable;
-use warpui::elements::Icon;
-use warpui::elements::MainAxisAlignment;
-use warpui::elements::MainAxisSize;
-use warpui::elements::MouseStateHandle;
-use warpui::keymap::FixedBinding;
-use warpui::platform::Cursor;
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::UiComponent;
-use warpui::ui_components::components::UiComponentStyles;
-use warpui::AppContext;
-use warpui::BlurContext;
-use warpui::FocusContext;
-use warpui::{
+use wish_core::channel::ChannelState;
+use wish_core::ui::theme::WarpTheme;
+use wishui::elements::HighlightedHyperlink;
+use wishui::elements::Hoverable;
+use wishui::elements::Icon;
+use wishui::elements::MainAxisAlignment;
+use wishui::elements::MainAxisSize;
+use wishui::elements::MouseStateHandle;
+use wishui::keymap::FixedBinding;
+use wishui::platform::Cursor;
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::UiComponent;
+use wishui::ui_components::components::UiComponentStyles;
+use wishui::AppContext;
+use wishui::BlurContext;
+use wishui::FocusContext;
+use wishui::{
     elements::{Border, Container, CrossAxisAlignment, Flex, ParentElement},
     Element, Entity, SingletonEntity, TypedActionView, View, ViewContext,
 };
@@ -35,13 +35,13 @@ const UNSUPPORTED_TMUX_VERSION_ERROR: &str =
     "The tmux version available on the remote machine is below 3.0. Please install tmux 3.0 or greater using a different method and try again.";
 const TMUX_FAILED_ERROR: &str =
     "tmux failed to execute on the remote machine. Please re-install tmux and try again.";
-const WARPIFY_TIMEOUT_ERROR: &str = "Warpifying the session hit a timeout.";
+const WARPIFY_TIMEOUT_ERROR: &str = "Wishifying the session hit a timeout.";
 const UNSUPPORTED_SHELL_ERROR: &str =
     "Unsupported shell. Please set bash, zsh, or fish as your default shell and try again.";
 const TMUX_INSTALL_FAILED_ERROR: &str =
     "The tmux install hit an unexpected error. Please install tmux manually and try again.";
 
-const SSH_GITHUB_ISSUE_URL: &str = "https://github.com/warpdotdev/Warp/issues/new?assignees=&labels=Bugs,SSH-tmux&projects=&template=03_ssh_tmux.yml";
+const SSH_GITHUB_ISSUE_URL: &str = "https://github.com/hermonai/wish/issues/new/choose";
 
 fn get_ssh_github_issue_url(title: &str) -> String {
     let url = if let Some(version) = ChannelState::app_version() {
@@ -55,59 +55,59 @@ fn get_ssh_github_issue_url(title: &str) -> String {
     format!("{url}&title={title}")
 }
 
-impl WarpificationUnavailableReason {
+impl WishificationUnavailableReason {
     fn error_message(&self) -> &'static str {
         match self {
-            WarpificationUnavailableReason::TmuxNotInstalled { .. } => TMUX_NOT_INSTALLED_ERROR,
-            WarpificationUnavailableReason::UnsupportedTmuxVersion { .. } => {
+            WishificationUnavailableReason::TmuxNotInstalled { .. } => TMUX_NOT_INSTALLED_ERROR,
+            WishificationUnavailableReason::UnsupportedTmuxVersion { .. } => {
                 UNSUPPORTED_TMUX_VERSION_ERROR
             }
-            WarpificationUnavailableReason::TmuxFailed => TMUX_FAILED_ERROR,
-            WarpificationUnavailableReason::Timeout { .. } => WARPIFY_TIMEOUT_ERROR,
-            WarpificationUnavailableReason::UnsupportedShell { .. } => UNSUPPORTED_SHELL_ERROR,
-            WarpificationUnavailableReason::TmuxInstallFailed { .. } => TMUX_INSTALL_FAILED_ERROR,
+            WishificationUnavailableReason::TmuxFailed => TMUX_FAILED_ERROR,
+            WishificationUnavailableReason::Timeout { .. } => WARPIFY_TIMEOUT_ERROR,
+            WishificationUnavailableReason::UnsupportedShell { .. } => UNSUPPORTED_SHELL_ERROR,
+            WishificationUnavailableReason::TmuxInstallFailed { .. } => TMUX_INSTALL_FAILED_ERROR,
         }
     }
 
     fn error_title(&self) -> &'static str {
         match self {
-            WarpificationUnavailableReason::TmuxNotInstalled { .. } => "tmux Not Installed",
-            WarpificationUnavailableReason::UnsupportedTmuxVersion { .. } => {
+            WishificationUnavailableReason::TmuxNotInstalled { .. } => "tmux Not Installed",
+            WishificationUnavailableReason::UnsupportedTmuxVersion { .. } => {
                 "Unsupported Tmux Version"
             }
-            WarpificationUnavailableReason::TmuxFailed => "tmux Failed",
-            WarpificationUnavailableReason::Timeout {
+            WishificationUnavailableReason::TmuxFailed => "tmux Failed",
+            WishificationUnavailableReason::Timeout {
                 is_tmux_install, ..
             } => {
                 if *is_tmux_install {
                     "tmux Install Timeout"
                 } else {
-                    "SSH Warpify Timeout"
+                    "SSH Wishify Timeout"
                 }
             }
-            WarpificationUnavailableReason::UnsupportedShell { .. } => "Unsupported Shell",
-            WarpificationUnavailableReason::TmuxInstallFailed { .. } => "tmux Install Failed",
+            WishificationUnavailableReason::UnsupportedShell { .. } => "Unsupported Shell",
+            WishificationUnavailableReason::TmuxInstallFailed { .. } => "tmux Install Failed",
         }
     }
 }
 
 #[derive(Debug, Clone)]
 pub enum SshErrorBlockEvent {
-    ContinueWithoutWarpification,
-    WarpifyWithoutTmux,
+    ContinueWithoutWishification,
+    WishifyWithoutTmux,
 }
 
 #[derive(Debug, Clone)]
 pub enum SshErrorBlockAction {
-    ContinueWithoutWarpification,
-    WarpifyWithoutTmux,
+    ContinueWithoutWishification,
+    WishifyWithoutTmux,
     OpenUrl(String),
     AddSshHostToDenylist(String),
     Focus,
 }
 
 pub struct SshErrorBlock {
-    error_reason: WarpificationUnavailableReason,
+    error_reason: WishificationUnavailableReason,
     ssh_host: Option<String>,
     warpify_without_tmux_button_mouse_state: MouseStateHandle,
     continue_button_mouse_state: MouseStateHandle,
@@ -118,22 +118,22 @@ pub struct SshErrorBlock {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([
         FixedBinding::new(
             "enter",
-            SshErrorBlockAction::WarpifyWithoutTmux,
+            SshErrorBlockAction::WishifyWithoutTmux,
             id!(SshErrorBlock::ui_name()),
         ),
         FixedBinding::new(
             "escape",
-            SshErrorBlockAction::ContinueWithoutWarpification,
+            SshErrorBlockAction::ContinueWithoutWishification,
             id!(SshErrorBlock::ui_name()),
         ),
         FixedBinding::new(
             "ctrl-c",
-            SshErrorBlockAction::ContinueWithoutWarpification,
+            SshErrorBlockAction::ContinueWithoutWishification,
             id!(SshErrorBlock::ui_name()),
         ),
     ]);
@@ -141,7 +141,7 @@ pub fn init(app: &mut AppContext) {
 
 impl SshErrorBlock {
     #[allow(clippy::new_without_default)]
-    pub fn new(error_reason: WarpificationUnavailableReason, ssh_host: Option<String>) -> Self {
+    pub fn new(error_reason: WishificationUnavailableReason, ssh_host: Option<String>) -> Self {
         Self {
             error_reason,
             ssh_host,
@@ -162,8 +162,8 @@ impl SshErrorBlock {
     fn should_show_report_to_warp_button(&self) -> bool {
         matches!(
             self.error_reason,
-            WarpificationUnavailableReason::Timeout { .. }
-                | WarpificationUnavailableReason::TmuxInstallFailed { .. }
+            WishificationUnavailableReason::Timeout { .. }
+                | WishificationUnavailableReason::TmuxInstallFailed { .. }
         )
     }
 
@@ -174,7 +174,7 @@ impl SshErrorBlock {
         appearance: &Appearance,
     ) -> Box<dyn Element> {
         let header_contents = warpify::render::build_header_row(
-            "Error Warpifying session",
+            "Error Wishifying session",
             Icon::new(UiIcon::AlertTriangle.into(), theme.ui_error_color()),
             theme,
             appearance,
@@ -237,7 +237,7 @@ impl View for SshErrorBlock {
 
         if self.should_show_report_to_warp_button() {
             let report_issue_text = build_description_row(FormattedText::new([FormattedTextLine::Line(vec![
-                    FormattedTextFragment::plain_text("We are actively working on improving the stability of SSH in Warp. Please consider "),
+                    FormattedTextFragment::plain_text("We are actively working on improving the stability of SSH in Wish. Please consider "),
                     FormattedTextFragment::hyperlink("filing an issue", get_ssh_github_issue_url(self.error_reason.error_title())),
                     FormattedTextFragment::plain_text(" on GitHub so we can better identify the problem."),
                 ])]),
@@ -258,7 +258,7 @@ impl View for SshErrorBlock {
                             ButtonVariant::Accent,
                             self.warpify_without_tmux_button_mouse_state.clone(),
                         )
-                        .with_centered_text_label("Warpify without TMUX".into())
+                        .with_centered_text_label("Wishify without TMUX".into())
                         .with_style(UiComponentStyles {
                             font_size: Some(appearance.monospace_font_size()),
                             ..Default::default()
@@ -266,7 +266,7 @@ impl View for SshErrorBlock {
                         .build()
                         .with_cursor(Cursor::PointingHand)
                         .on_click(move |ctx, _, _| {
-                            ctx.dispatch_typed_action(SshErrorBlockAction::WarpifyWithoutTmux)
+                            ctx.dispatch_typed_action(SshErrorBlockAction::WishifyWithoutTmux)
                         })
                         .finish(),
                 )
@@ -279,7 +279,7 @@ impl View for SshErrorBlock {
                         ButtonVariant::Secondary,
                         self.continue_button_mouse_state.clone(),
                     )
-                    .with_centered_text_label("Continue without Warpification".into())
+                    .with_centered_text_label("Continue without Wishification".into())
                     .with_style(UiComponentStyles {
                         font_size: Some(appearance.monospace_font_size()),
                         ..Default::default()
@@ -287,7 +287,7 @@ impl View for SshErrorBlock {
                     .build()
                     .with_cursor(Cursor::PointingHand)
                     .on_click(move |ctx, _, _| {
-                        ctx.dispatch_typed_action(SshErrorBlockAction::ContinueWithoutWarpification)
+                        ctx.dispatch_typed_action(SshErrorBlockAction::ContinueWithoutWishification)
                     })
                     .finish(),
             );
@@ -331,21 +331,21 @@ impl TypedActionView for SshErrorBlock {
 
     fn handle_action(&mut self, action: &Self::Action, ctx: &mut ViewContext<Self>) {
         match action {
-            SshErrorBlockAction::WarpifyWithoutTmux => {
-                ctx.emit(SshErrorBlockEvent::WarpifyWithoutTmux)
+            SshErrorBlockAction::WishifyWithoutTmux => {
+                ctx.emit(SshErrorBlockEvent::WishifyWithoutTmux)
             }
-            SshErrorBlockAction::ContinueWithoutWarpification => {
-                ctx.emit(SshErrorBlockEvent::ContinueWithoutWarpification)
+            SshErrorBlockAction::ContinueWithoutWishification => {
+                ctx.emit(SshErrorBlockEvent::ContinueWithoutWishification)
             }
             SshErrorBlockAction::OpenUrl(url) => {
                 ctx.open_url(url);
             }
             SshErrorBlockAction::AddSshHostToDenylist(ssh_host) => {
-                let settings = WarpifySettings::handle(ctx);
+                let settings = WishifySettings::handle(ctx);
                 settings.update(ctx, |warpify, ctx| {
                     warpify.denylist_ssh_host(ssh_host, ctx);
                 });
-                ctx.emit(SshErrorBlockEvent::ContinueWithoutWarpification);
+                ctx.emit(SshErrorBlockEvent::ContinueWithoutWishification);
                 ctx.notify()
             }
             SshErrorBlockAction::Focus => {

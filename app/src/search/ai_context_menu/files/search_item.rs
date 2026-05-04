@@ -8,8 +8,8 @@ use crate::search::ai_context_menu::mixer::AIContextMenuSearchableAction;
 use crate::search::ai_context_menu::styles;
 use crate::search::item::SearchItem;
 use crate::search::result_renderer::ItemHighlightState;
-use warpui::elements::{ConstrainedBox, Container, Icon};
-use warpui::{AppContext, Element};
+use wishui::elements::{ConstrainedBox, Container, Icon};
+use wishui::{AppContext, Element};
 
 use crate::search::files::icon::icon_from_file_path;
 use crate::ui_components::render_file_search_row::{render_file_search_row, FileSearchRowOptions};

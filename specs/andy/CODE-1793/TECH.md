@@ -8,7 +8,7 @@ CLI coding agents have their own native clipboard-image paste. The keystroke for
 Relevant code:
 - `app/src/terminal/view.rs:14156` — `TerminalView::paste`. When the input box isn't focused/visible (true during a long-running command like `claude`/`codex`/`opencode`), this reads the clipboard as text and writes it to the PTY, optionally wrapping it in bracketed paste.
 - `app/src/terminal/view.rs:7601` — `TerminalView::read_from_clipboard` → `clipboard_content_with_escaped_paths` at `app/src/util/clipboard.rs:8`. Converts `ClipboardContent.paths` into a shell-escaped space-joined string; falls back to `plain_text` when there are no paths. Image data on `ClipboardContent.images` is ignored on this path.
-- `crates/warpui/src/windowing/winit/windows/clipboard.rs:36` — Windows `read()`. `arboard`'s `file_list()` only returns paths when the clipboard carries `CF_HDROP`; screenshot-tool captures do not.
+- `crates/wishui/src/windowing/winit/windows/clipboard.rs:36` — Windows `read()`. `arboard`'s `file_list()` only returns paths when the clipboard carries `CF_HDROP`; screenshot-tool captures do not.
 - `crates/warp_util/src/path.rs:218` — `ShellFamily::escape`. Uses backtick escapes for PowerShell; the escaped string isn't the form CLI agents recognize as an image path.
 - `app/src/terminal/cli_agent_sessions/mod.rs:296` — `CLIAgentSessionsModel::session(view_id)` gives the active CLI agent (if any) for a terminal.
 - `app/src/terminal/cli_agent.rs:108` — `CLIAgent` enum.

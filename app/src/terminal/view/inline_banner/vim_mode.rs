@@ -1,4 +1,4 @@
-use warpui::{elements::MouseStateHandle, Element};
+use wishui::{elements::MouseStateHandle, Element};
 
 use crate::{appearance::Appearance, terminal::view::TerminalAction};
 
@@ -46,7 +46,7 @@ pub fn render_vim_mode_banner(
         InlineBannerStyle::LowPriority,
         appearance,
         InlineBannerContent {
-            title: "Enable Warp's Vim keybindings?".to_string(),
+            title: "Enable Wish's Vim keybindings?".to_string(),
             buttons,
             close_button: Some(close_button),
             ..Default::default()

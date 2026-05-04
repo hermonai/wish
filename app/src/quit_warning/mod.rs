@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use settings::ToggleableSetting as _;
 use std::fmt::Write;
-use warpui::{
+use wishui::{
     modals::{AlertDialogWithCallbacks, AppModalCallback, ModalButton},
     AppContext, EntityId, SingletonEntity, ViewContext, WeakViewHandle, WindowId,
 };
@@ -435,7 +435,7 @@ impl<'a> QuitWarningDialog<'a> {
             QuitScope::Tabs(tabs) if tabs.len() == 1 => "Close tab?",
             QuitScope::Tabs(_) => "Close tabs?",
             QuitScope::Window(_) => "Close window?",
-            QuitScope::App => "Quit Warp?",
+            QuitScope::App => "Quit Wish?",
             QuitScope::EditorTab { .. } => "Save changes?",
         };
 
@@ -470,7 +470,7 @@ impl<'a> QuitWarningDialog<'a> {
             not(target_family = "wasm"),
             any(target_os = "linux", target_os = "freebsd", windows)
         )) {
-            // Find a window to show the Warp-native modal in. If there is no active window, use
+            // Find a window to show the Wish-native modal in. If there is no active window, use
             // one of the windows with a running process.
             let window_id_to_focus = ctx
                 .windows()

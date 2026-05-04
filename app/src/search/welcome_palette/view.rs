@@ -6,17 +6,17 @@ use std::sync::Arc;
 use chrono::Utc;
 use itertools::Itertools as _;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::context_flag::ContextFlag;
-use warp_core::features::FeatureFlag;
-use warpui::elements::{
+use wish_core::context_flag::ContextFlag;
+use wish_core::features::FeatureFlag;
+use wishui::elements::{
     Border, ChildView, Clipped, ClippedScrollStateHandle, ClippedScrollable, ConstrainedBox,
     Container, CornerRadius, Fill, Flex, MainAxisAlignment, MainAxisSize, MouseStateHandle,
     ParentElement, Radius, SavePosition, Shrinkable,
 };
-use warpui::platform::Cursor;
-use warpui::ui_components::button::{ButtonVariant, TextAndIcon, TextAndIconAlignment};
-use warpui::ui_components::components::UiComponent as _;
-use warpui::{
+use wishui::platform::Cursor;
+use wishui::ui_components::button::{ButtonVariant, TextAndIcon, TextAndIconAlignment};
+use wishui::ui_components::components::UiComponent as _;
+use wishui::{
     units::{IntoPixels, Pixels},
     AppContext, Element, Entity, FocusContext, ModelHandle, SingletonEntity, TypedActionView,
     ViewContext, ViewHandle,
@@ -89,7 +89,7 @@ pub enum Event {
     OpenNotebook {
         id: SyncId,
     },
-    /// View the relevant object in the Warp Drive sidebar.
+    /// View the relevant object in the Wish Drive sidebar.
     ViewInWarpDrive {
         id: CloudObjectTypeAndId,
     },
@@ -161,7 +161,7 @@ impl TypedActionView for WelcomePalette {
     }
 }
 
-impl warpui::View for WelcomePalette {
+impl wishui::View for WelcomePalette {
     fn ui_name() -> &'static str {
         "WelcomePalette"
     }
@@ -832,11 +832,11 @@ impl WelcomePalette {
         }
     }
 
-    /// Dispatches `action` to the correct window and [`warpui::View`] by using the current state of
+    /// Dispatches `action` to the correct window and [`wishui::View`] by using the current state of
     /// the [`BindingSource`] model.
     fn dispatch_typed_action_on_view(
         &self,
-        action: &dyn warpui::Action,
+        action: &dyn wishui::Action,
         ctx: &mut ViewContext<Self>,
     ) {
         send_telemetry_from_ctx!(

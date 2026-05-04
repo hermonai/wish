@@ -1,7 +1,7 @@
 //! Components for the notebook header.
 
-use warp_core::features::FeatureFlag;
-use warpui::{
+use wish_core::features::FeatureFlag;
+use wishui::{
     elements::{
         Container, CrossAxisAlignment, Flex, Highlight, MainAxisAlignment, MainAxisSize,
         MouseStateHandle, ParentElement, Shrinkable,
@@ -30,7 +30,7 @@ use crate::{
 use super::{super::active_notebook_data::ActiveNotebookData, NotebookAction, EDIT_BUTTON_MARGIN};
 
 /// Component to show details about a notebook:
-/// * Interactive breadcrumbs for its location within Warp Drive
+/// * Interactive breadcrumbs for its location within Wish Drive
 /// * The current editor of the notebook
 /// * Grab-the-baton UI controls
 pub struct DetailsBar {

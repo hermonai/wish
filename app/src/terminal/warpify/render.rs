@@ -4,19 +4,19 @@ use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::{Fill, WarpTheme};
-use warpui::elements::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::{Fill, WarpTheme};
+use wishui::elements::{
     Align, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex, FormattedTextElement,
     HighlightedHyperlink, Icon, MouseStateHandle, ParentElement, Radius, Rect, Shrinkable, Stack,
     Text,
 };
-use warpui::fonts::{FamilyId, Properties, Weight};
-use warpui::ui_components::components::UiComponent as _;
-use warpui::ui_components::components::UiComponentStyles;
-use warpui::{AppContext, Element, EventContext, PaintContext, SingletonEntity as _};
+use wishui::fonts::{FamilyId, Properties, Weight};
+use wishui::ui_components::components::UiComponent as _;
+use wishui::ui_components::components::UiComponentStyles;
+use wishui::{AppContext, Element, EventContext, PaintContext, SingletonEntity as _};
 
-use super::settings::WarpifySettings;
+use super::settings::WishifySettings;
 use super::SubshellSource;
 
 /// The flag font size varies with the monospace font width, but if it gets too big it will start
@@ -32,8 +32,8 @@ const WARP_DRIVE_ENV_VAR_COLLECTION_ICON_COLOR: u32 = 0xC464FFFF;
 const ICON_MARGIN: f32 = 4.;
 const TERMINAL_ICON: &str = "bundled/svg/terminal.svg";
 pub const HORIZONTAL_TEXT_MARGIN: f32 = 20.;
-pub const SSH_DOCS_URL: &str = "https://docs.warp.dev/terminal/warpify/ssh";
-pub const SUBSHELL_DOCS_URL: &str = "https://docs.warp.dev/terminal/warpify/subshells";
+pub const SSH_DOCS_URL: &str = "https://wish.hermon.ai/docs/terminal/warpify/ssh";
+pub const SUBSHELL_DOCS_URL: &str = "https://wish.hermon.ai/docs/terminal/warpify/subshells";
 
 /// Errored blocks have a red stripe, and subshells have a gray one.
 pub const LEFT_STRIPE_WIDTH: f32 = 5.;
@@ -161,7 +161,7 @@ pub fn description_row(text: &str, theme: &WarpTheme, appearance: &Appearance) -
     .finish()
 }
 
-/// Renders a "Never Warpify this host" link or nothing.
+/// Renders a "Never Wishify this host" link or nothing.
 pub fn render_never_warpify_ssh_link(
     ssh_host: &Option<String>,
     app: &AppContext,
@@ -173,16 +173,16 @@ pub fn render_never_warpify_ssh_link(
         return None;
     };
 
-    let settings = WarpifySettings::handle(app);
+    let settings = WishifySettings::handle(app);
     if settings.as_ref(app).is_ssh_host_denylisted(ssh_host) {
-        // Should only happen if user manually attempts to Warpify a denylisted host.
+        // Should only happen if user manually attempts to Wishify a denylisted host.
         return None;
     }
 
     let link = appearance
         .ui_builder()
         .link(
-            "Never Warpify this host".into(),
+            "Never Wishify this host".into(),
             None,
             Some(Box::new({
                 let ssh_host = ssh_host.clone();
@@ -231,7 +231,7 @@ pub fn draw_flag_pole(
 /// Implementation should match `[draw_subshell_flag_pole]`.
 pub fn render_subshell_flag_pole(
     max_height: f32,
-    fill: impl Into<warpui::elements::Fill>,
+    fill: impl Into<wishui::elements::Fill>,
 ) -> Box<dyn Element> {
     ConstrainedBox::new(Rect::new().with_background(fill.into()).finish())
         .with_width(LEFT_STRIPE_WIDTH)

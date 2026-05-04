@@ -5,8 +5,8 @@ use crate::{
     render::model::{BlockItem, RenderState, RichTextStyles, bounds, viewport::ViewportItem},
 };
 use pathfinder_color::ColorU;
-use warpui::elements::ListIndentLevel;
-use warpui::{
+use wishui::elements::ListIndentLevel;
+use wishui::{
     AppContext, Element, SizeConstraint, WeakViewHandle,
     elements::{
         Align, Border, ConstrainedBox, Container, CornerRadius, Hoverable, Icon, MouseStateHandle,
@@ -112,8 +112,8 @@ impl RenderableBlock for RenderableTaskList {
     fn layout(
         &mut self,
         model: &RenderState,
-        ctx: &mut warpui::LayoutContext,
-        app: &warpui::AppContext,
+        ctx: &mut wishui::LayoutContext,
+        app: &wishui::AppContext,
     ) {
         self.task_list_icon.layout(
             SizeConstraint::strict(vec2f(self.icon_size, self.icon_size)),
@@ -142,7 +142,7 @@ impl RenderableBlock for RenderableTaskList {
             })
     }
 
-    fn paint(&mut self, model: &RenderState, ctx: &mut RenderContext, app: &warpui::AppContext) {
+    fn paint(&mut self, model: &RenderState, ctx: &mut RenderContext, app: &wishui::AppContext) {
         let content = model.content();
         let task_list = extract_block!(self.viewport_item, content, (block, BlockItem::TaskList{ paragraph: inner, ..}) => block.task_list(inner));
         let text_styling = &model.styles().base_text;
@@ -174,8 +174,8 @@ impl RenderableBlock for RenderableTaskList {
     fn dispatch_event(
         &mut self,
         _model: &crate::render::model::RenderState,
-        event: &warpui::event::DispatchedEvent,
-        ctx: &mut warpui::EventContext,
+        event: &wishui::event::DispatchedEvent,
+        ctx: &mut wishui::EventContext,
         app: &AppContext,
     ) -> bool {
         self.task_list_icon.dispatch_event(event, ctx, app)

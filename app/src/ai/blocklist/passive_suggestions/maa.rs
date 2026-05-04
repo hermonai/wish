@@ -27,9 +27,9 @@ use ai::agent::action::{AIAgentActionType, FileEdit};
 use ai::diff_validation::ParsedDiff;
 use chrono::{DateTime, Utc};
 use parking_lot::FairMutex;
-use warp_core::features::FeatureFlag;
-use warpui::r#async::SpawnedFutureHandle;
-use warpui::{Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
+use wish_core::features::FeatureFlag;
+use wishui::r#async::SpawnedFutureHandle;
+use wishui::{Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "local_fs")] {
@@ -39,8 +39,8 @@ cfg_if::cfg_if! {
         use crate::util::link_detection::{detect_file_paths, DetectedLinkType};
         use crate::util::openable_file_type::is_binary_file;
         use ai::agent::FileLocations;
-        use warpui::AppContext;
-        use warpui::r#async::FutureExt as AsyncFutureExt;
+        use wishui::AppContext;
+        use wishui::r#async::FutureExt as AsyncFutureExt;
         use itertools::Itertools;
     }
 }

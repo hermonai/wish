@@ -8,7 +8,7 @@ use crate::terminal::TerminalView;
 use crate::workspace::ActiveSession;
 use fuzzy_match::FuzzyMatchResult;
 use itertools::Itertools;
-use warpui::{AppContext, Entity, SingletonEntity};
+use wishui::{AppContext, Entity, SingletonEntity};
 
 const MAX_RESULTS: usize = 20;
 const ZERO_STATE_BASE_SCORE: i64 = 1000;

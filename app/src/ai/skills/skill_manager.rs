@@ -16,10 +16,10 @@ use ai::skills::{
     get_provider_for_path, parse_bundled_skill, provider_rank, ParsedSkill, SkillProvider,
     SkillReference,
 };
-use warp_core::{
+use wish_core::{
     channel::ChannelState, features::FeatureFlag, report_error, safe_warn, ui::icons::Icon,
 };
-use warpui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
+use wishui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
 
 /// Activation condition for a bundled skill.
 #[derive(Debug, Clone)]
@@ -419,7 +419,7 @@ impl SkillManager {
 
     /// Load skill definitions bundled with Warp.
     async fn load_bundled_skills() -> HashMap<String, BundledSkill> {
-        let Some(resources_dir) = warp_core::paths::bundled_resources_dir() else {
+        let Some(resources_dir) = wish_core::paths::bundled_resources_dir() else {
             return HashMap::new();
         };
         let skills_dir = resources_dir.join("bundled").join("skills");
@@ -441,7 +441,7 @@ impl SkillManager {
 
     /// Load Figma-specific bundled skills from the `figma/` subdirectory.
     async fn load_figma_skills() -> HashMap<String, BundledSkill> {
-        let Some(resources_dir) = warp_core::paths::bundled_resources_dir() else {
+        let Some(resources_dir) = wish_core::paths::bundled_resources_dir() else {
             return HashMap::new();
         };
         let figma_skills_dir = resources_dir
@@ -551,7 +551,7 @@ fn build_bundled_skill_context() -> HashMap<String, String> {
     .collect();
 
     if let Some(schema_path) =
-        warp_core::paths::bundled_resources_dir().map(|dir| dir.join("settings_schema.json"))
+        wish_core::paths::bundled_resources_dir().map(|dir| dir.join("settings_schema.json"))
     {
         context.insert(
             "settings_schema_path".to_owned(),

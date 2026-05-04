@@ -3,11 +3,11 @@ use async_recursion::async_recursion;
 use async_trait::async_trait;
 use serde::Deserialize;
 use std::{env, io::ErrorKind, path::PathBuf};
-use warp_core::ui::{
+use wish_core::ui::{
     color::hex_color::coloru_from_hex_string,
     theme::{AnsiColor, AnsiColors, TerminalColors, WarpTheme},
 };
-use warpui::fonts::FontInfo;
+use wishui::fonts::FontInfo;
 
 use super::config::{
     calculate_accent_color, Config, ConfigError, ImportableSetting, ParseableConfig, SettingType,
@@ -304,7 +304,7 @@ impl AlacrittyTheme {
 }
 
 impl AlacrittyColors {
-    /// Returns terminal colors with Warp's default colors substituted in for any
+    /// Returns terminal colors with Wish's default colors substituted in for any
     /// missing terminal colors.
     fn into_ansi_with_default(self, default: AnsiColors) -> Result<AnsiColors, ThemeError> {
         Ok(AnsiColors {

@@ -3,7 +3,7 @@ use std::time::Duration;
 
 use chrono::{DateTime, Local, Utc};
 use itertools::Itertools;
-use warpui::{App, EntityId};
+use wishui::{App, EntityId};
 
 use crate::{
     ai::{

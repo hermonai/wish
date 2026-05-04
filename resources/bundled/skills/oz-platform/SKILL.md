@@ -1,6 +1,6 @@
 ---
 name: oz-platform
-description: Use Warp's REST API and command line to run, configure, and inspect Oz cloud agents
+description: Use Wish's REST API and command line to run, configure, and inspect Oz cloud agents
 ---
 
 # oz-platform
@@ -16,7 +16,7 @@ Use the Oz REST API and CLI to:
 
 The Oz CLI is installed as `{{warp_cli_binary_name}}`. To get help output, use `{{warp_cli_binary_name}} help` or `{{warp_cli_binary_name}} help <subcommand>`.
 Prefer `--output-format text` to review the response, or `--output-format json` to parse fields with `jq`.
-You can find more information at https://docs.warp.dev/reference/cli.
+You can find more information at https://wish.hermon.ai/docs/reference/cli.
 
 The most important commands are:
 * `{{warp_cli_binary_name}} agent run-cloud`: Spawn a new cloud agent. You can configure the prompt, model, environment, and other settings.
@@ -61,7 +61,7 @@ Oz has a REST API for starting and inspecting cloud agents.
 
 All API requests require authentication using an API key. The user can generate API keys in their Warp settings, on the `Platform` page (accessible via `{{warp_url_scheme}}://settings/platform`).
 
-You can find the full OpenAPI specification here: https://docs.warp.dev/reference/api-and-sdk
+You can find the full OpenAPI specification here: https://wish.hermon.ai/docs/reference/api-and-sdk
 
 ### TypeScript / JavaScript SDK
 
@@ -225,7 +225,7 @@ When you are a cloud agent instructed to use a third-party CLI:
 
 2. **Authentication**: API keys are available as environment variables (e.g. `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`). These were configured as Oz secrets by the user.
 
-3. **Task Delegation (IMPORTANT)**: The user's task should be completed **entirely by the third-party CLI**. Do NOT use Warp's built-in tools to complete the task yourself:
+3. **Task Delegation (IMPORTANT)**: The user's task should be completed **entirely by the third-party CLI**. Do NOT use Wish's built-in tools to complete the task yourself:
    - Do NOT use `edit_files`, `read_files`, `grep`, `codebase_semantic_search`, or other Warp coding tools to perform the user's task
    - The third-party CLI should do all the coding, file editing, searching, and analysis work
    - Your role is to:

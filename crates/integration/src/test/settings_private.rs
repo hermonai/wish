@@ -6,7 +6,7 @@
 use std::collections::HashMap;
 
 use settings::Setting as _;
-use warp::{
+use wish::{
     features::FeatureFlag,
     integration_testing::{
         step::new_step_with_default_assertions,
@@ -14,21 +14,21 @@ use warp::{
     },
     settings::{CodeSettings, DebugSettings, FontSettings},
 };
-use warpui::{async_assert, async_assert_eq, integration::TestStep, SingletonEntity};
+use wishui::{async_assert, async_assert_eq, integration::TestStep, SingletonEntity};
 
 use super::{new_builder, Builder};
 
 /// Helper: read the TOML settings file from disk and return its contents.
 /// Returns an empty string if the file does not exist.
 fn read_toml_file() -> String {
-    let path = warp::settings::user_preferences_toml_file_path();
+    let path = wish::settings::user_preferences_toml_file_path();
     std::fs::read_to_string(path).unwrap_or_default()
 }
 
 /// Helper: read the JSON user preferences file from disk and return its contents.
 /// Returns an empty string if the file does not exist.
 fn read_json_prefs_file() -> String {
-    let path = warp::settings::user_preferences_file_path();
+    let path = wish::settings::user_preferences_file_path();
     std::fs::read_to_string(path).unwrap_or_default()
 }
 

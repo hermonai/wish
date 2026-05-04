@@ -6,30 +6,30 @@ use lsp::{
     LanguageId, LanguageServerId, LspManagerModel, LspManagerModelEvent, LspServerModel,
     LspState as LspModelState,
 };
-use warp_core::send_telemetry_from_ctx;
+use wish_core::send_telemetry_from_ctx;
 
 use crate::code::lsp_telemetry::{LspControlActionType, LspEnablementSource, LspTelemetryEvent};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::theme::color::internal_colors;
-use warp_core::ui::theme::{Fill as ThemeFill, WarpTheme};
-use warp_core::ui::{appearance::Appearance, Icon};
-use warpui::elements::{
+use wish_core::ui::theme::color::internal_colors;
+use wish_core::ui::theme::{Fill as ThemeFill, WarpTheme};
+use wish_core::ui::{appearance::Appearance, Icon};
+use wishui::elements::{
     ChildAnchor, ChildView, Dismiss, Empty, Hoverable, MainAxisSize, MouseStateHandle,
     ParentAnchor, ParentOffsetBounds, Rect, Shrinkable,
 };
-use warpui::platform::Cursor;
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::{
+use wishui::platform::Cursor;
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::{
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Fill, Flex,
         MainAxisAlignment, OffsetPositioning, Padding, ParentElement, Radius, Stack,
     },
     AppContext, Element, Entity, ModelHandle, SingletonEntity, View, WeakModelHandle,
 };
-use warpui::{TypedActionView, ViewContext, ViewHandle};
+use wishui::{TypedActionView, ViewContext, ViewHandle};
 
-use warp_core::ui::theme::AnsiColorIdentifier;
+use wish_core::ui::theme::AnsiColorIdentifier;
 
 #[cfg(feature = "local_fs")]
 use crate::ai::persisted_workspace::PersistedWorkspaceEvent;

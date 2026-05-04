@@ -1,0 +1,195 @@
+# WISH.md
+
+This file provides guidance when working with code in the Wish repository. Wish is Hermon AI's agentic development environment and terminal.
+
+## Development Commands
+
+### Build and Run
+- `cargo run` - Build and run Wish locally
+- `./script/run` - Run wish-oss in dev channel
+- `cargo build --bin oss` - Build the OSS binary
+- `cargo build --bin dev` - Build the dev binary
+- `cargo build --bin stable` - Build the stable binary
+
+### Running with local hermon server
+To connect to a local Hermon backend instance:
+
+```bash
+# Dev/Local channel auto-connects to http://localhost:8080
+./script/run
+
+# Override explicitly
+HERMON_API_URL=http://localhost:8080 WISH_API_KEY=hk_your_key ./script/run
+```
+
+Environment variables:
+- `HERMON_API_URL` - Hermon backend URL (dev default: `http://localhost:8080`, stable default: `https://api.hermon.ai`)
+- `WISH_API_KEY` - Hermon API key for auth (`hk_...` prefix)
+- `WISH_CHANNEL` - Channel override: `local`, `dev`, `stable`, `preview`, `oss`
+
+### Channels and Binaries
+- **oss** (`./target/debug/wish-oss`) — OSS channel, all debug features enabled
+- **dev** (`./target/debug/dev`) — Dev channel, connects to local hermon by default
+- **stable** (`./target/debug/stable`) — Production channel, connects to api.hermon.ai
+- **preview** (`./target/debug/preview`) — Preview channel with preview features + force-login
+
+### Config Directories
+- `~/.wish/` — Shared Wish config for all desktop channels (migrated from legacy `~/.warp/`)
+- `~/.wish/code/` — Wishcode product config
+- `~/.wish/cli/` — Wish CLI product config
+
+### Testing
+- `cargo nextest run --no-fail-fast --workspace --exclude command-signatures-v2` - Run tests with nextest
+- `cargo nextest run -p warp_completer --features v2` - Run completer tests with v2 features
+- `cargo test --doc` - Run doc tests
+- `cargo test` - Run standard tests for individual packages
+
+### Linting and Formatting
+- `./script/presubmit` - Run all presubmit checks (fmt, clippy, tests)
+- `cargo fmt` - Format code
+- `cargo clippy --workspace --all-targets --all-features --tests -- -D warnings` - Run clippy
+- `./script/run-clang-format.py -r --extensions 'c,h,cpp,m' ./crates/wishui/src/ ./app/src/` - Format C/C++/Obj-C code
+- `find . -name "*.wgsl" -exec wgslfmt --check {} +` - Check WGSL shader formatting
+
+### Platform Setup
+- `./script/bootstrap` - Platform-specific setup (calls platform-specific bootstrap scripts)
+- `./script/install_cargo_build_deps` - Install Cargo build dependencies
+- `./script/install_cargo_test_deps` - Install Cargo test dependencies
+
+## Architecture Overview
+
+This is a Rust-based terminal emulator and agentic development environment with a custom UI framework called **WishUI**.
+
+### Key Components
+
+**WishUI Framework** (`crates/wishui/`, `crates/wishui-core/`):
+- Custom UI framework with Entity-Component-Handle pattern
+- Global `App` object owns all views/models (entities)
+- Views hold `ViewHandle<T>` references to other views
+- `AppContext` provides temporary access to handles during render/events
+- Elements describe visual layout (Flutter-inspired)
+- Actions system for event handling
+- MouseStateHandle must be created once during construction, and then referenced/cloned anywhere we're using mouse input to track mouse changes. Inline `MouseStateHandle::default()` while rendering will cause no mouse interactions to work.
+
+**Main App** (`app/`):
+- Terminal emulation and shell management (`terminal/`)
+- AI integration including Agent Mode (`ai/`)
+- Cloud synchronization and Drive features (`drive/`)
+- Authentication and user management (`auth/`)
+- Settings and preferences (`settings/`)
+- Workspace and session management (`workspace/`)
+
+**Core Libraries**:
+- `crates/wish_core/` - Core utilities and platform abstractions
+- `crates/editor/` - Text editing functionality
+- `crates/wishui/` and `crates/wishui-core/` - Custom UI framework
+- `crates/ipc/` - Inter-process communication
+- `crates/graphql/` - GraphQL client and schema
+
+### Key Architectural Patterns
+
+1. **Entity-Handle System**: Views reference other views via handles, not direct ownership
+2. **Modular Structure**: Workspace contains multiple workspace configurations, each with terminals, notebooks, etc.
+3. **Cross-Platform**: Native implementations for macOS, Windows, Linux, plus WASM target
+4. **AI Integration**: Built-in AI assistant with context awareness and codebase indexing
+5. **Cloud Sync**: Objects can be synchronized across devices via the inherited Drive architecture
+
+### Development Guidelines
+
+**Workspace Structure**:
+- This is a Cargo workspace with 60+ member crates
+- Main binary is in `app/`, UI framework in `crates/wishui/`
+- Platform-specific code is conditionally compiled
+- Integration tests are in `crates/integration/`
+
+**Coding Style Preferences**:
+- Avoid unnecessary type annotations, especially in closure params.
+- Avoid using too many Rust path qualifiers and use imports for concision. Place import statements at the top of the file as per convention.
+  An exception to this is inside cfg-guarded code branches. In those cases, you can either embed the import into the relevant scope or just use an absolute path for one-offs.
+- If a function takes a context parameter (`AppContext`, `ViewContext`, or `ModelContext`), it should be named `ctx` and go last. The one exception is for
+  functions that take a closure parameter, in which case the closure should be last.
+- Always remove unused parameters completely rather than prefixing them with `_`. Update the function signature and all call sites accordingly.
+- Prefer inline format arguments in macros like `println!`, `eprintln!`, and `format!` (for example, `eprintln!("{message}")` instead of `eprintln!("{}", message)`) to satisfy Clippy's `uninlined_format_args` lint.
+- Do not remove existing comments when making unrelated changes. Only remove or modify a comment if the logic it describes has changed.
+
+**Terminal Model Locking**:
+- Be extremely careful when calling `model.lock()` on the terminal model (`TerminalModel`). Acquiring multiple locks on the same model from different call sites can cause a deadlock, resulting in a UI freeze (beach ball on macOS).
+- Before adding a new `model.lock()` call, verify that no caller in the current call stack already holds the lock.
+- Prefer passing already-locked model references down the call stack rather than acquiring new locks.
+- If you must lock the model, keep the lock scope as short as possible and avoid calling other functions that might also attempt to lock.
+
+**Testing**:
+- Use `cargo nextest` for parallel test execution
+- Integration tests use custom framework in `integration/`
+- Tests should be run via presubmit script before submitting
+- Unit tests should be placed in separate files using the naming convention `${filename}_tests.rs` or `mod_test.rs`
+- Test files should be included at the end of their corresponding module with:
+  ```rust
+  #[cfg(test)]
+  #[path = "filename_tests.rs"]  // or "mod_test.rs"
+  mod tests;
+  ```
+
+**Pull Request Workflow**:
+- **ALWAYS** run cargo fmt and cargo clippy (the versions specified in ./script/presubmit) before opening a PR or pushing updates to an existing PR branch
+- Those commands must pass completely before creating or updating a pull request
+- Specifically, ensure `cargo fmt` and `cargo clippy` checks pass
+- If they fail, fix all issues before proceeding with the PR
+- This applies to:
+  - Opening new pull requests
+  - Pushing new commits to existing PR branches
+  - Any branch updates that will be reviewed
+ - When opening PRs, use the PR template at `.github/pull_request_template.md`
+ - Add changelog entries when appropriate using the format at the bottom of the PR template. Use the following prefixes (without the `{{}}` brackets):
+   - `CHANGELOG-NEW-FEATURE:` for new, relatively sizable features (use sparingly - these may get marketing/docs)
+   - `CHANGELOG-IMPROVEMENT:` for new functionality of existing features
+   - `CHANGELOG-BUG-FIX:` for fixes related to known bugs or regressions
+   - `CHANGELOG-IMAGE:` for GCP-hosted image URLs
+   - Leave changelog lines blank or remove them if no changelog entry is needed
+
+**Database**:
+- Uses Diesel ORM with SQLite
+- Migrations in `crates/persistence/migrations/`
+- Schema defined in `crates/persistence/src/schema.rs`
+
+**GraphQL**:
+- Schema and client code generation from `crates/warp_graphql_schema/api/schema.graphql`
+- TypeScript types generated for frontend integration
+
+### Feature Flags
+
+Wish uses compile-time feature flags with a small runtime plumbing layer inherited from upstream Warp.
+
+How to add a feature flag:
+- Add a new variant to `wish_core/src/features.rs` in the `FeatureFlag` enum
+- (Optional) Enable it by default for dogfood builds by listing it in `DOGFOOD_FLAGS`
+- Gate code paths with `FeatureFlag::YourFlag.is_enabled()`
+- For preview or release rollout, add to `PREVIEW_FLAGS` or `RELEASE_FLAGS` respectively (as appropriate)
+
+Best practices:
+- **Prefer runtime checks over cfg directives**: Prefer `FeatureFlag::YourFlag.is_enabled()` over `#[cfg(...)]` compile-time directives so flags can be toggled without recompilation and are easier to clean up later. Use `#[cfg(...)]` only when the code cannot compile without them (for example, platform-specific code or dependencies that do not exist when the feature is disabled).
+- Keep flags high-level and product-focused rather than per-call-site
+- Remove the flag and dead branches after launch has stabilized
+- For UI sections that expose a new feature, hide the UI behind the same flag
+
+Example:
+```rust
+#[derive(Sequence)]
+pub enum FeatureFlag {
+    YourNewFeature,
+}
+
+// Default-on for dogfood builds
+pub const DOGFOOD_FLAGS: &[FeatureFlag] = &[
+    FeatureFlag::YourNewFeature,
+];
+
+// Use in code
+if FeatureFlag::YourNewFeature.is_enabled() {
+    // gated behavior
+}
+```
+
+### Exhaustive Matching
+
+When adding/editing match statements, avoid using the wildcard _ when at all possible. Exhaustive matching is helpful for ensuring that all variants are handled, especially when adding new variants to enums in the future.

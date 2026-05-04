@@ -3,11 +3,11 @@ use std::collections::{HashMap, HashSet};
 use anyhow::Error;
 use serde::{Deserialize, Serialize};
 use settings_value::SettingsValue;
-use warp_core::{
+use wish_core::{
     define_settings_group,
     settings::{RespectUserSyncSetting, Setting, SupportedPlatforms, SyncToCloud},
 };
-use warpui::{AppContext, ModelContext, SingletonEntity};
+use wishui::{AppContext, ModelContext, SingletonEntity};
 
 use crate::{
     cloud_object::{
@@ -30,7 +30,7 @@ define_settings_group!(WorkflowAliases, settings: [
 ]);
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, schemars::JsonSchema, SettingsValue)]
-#[schemars(description = "A shortcut alias for a Warp Drive workflow.")]
+#[schemars(description = "A shortcut alias for a Wish Drive workflow.")]
 pub struct WorkflowAlias {
     #[schemars(description = "The alias text that triggers this workflow.")]
     pub alias: String,

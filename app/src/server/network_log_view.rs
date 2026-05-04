@@ -11,7 +11,7 @@
 use warp_editor::content::buffer::InitialBufferState;
 use warp_editor::render::element::VerticalExpansionBehavior;
 use warp_util::path::LineAndColumnArg;
-use warpui::{
+use wishui::{
     elements::{ChildView, MouseStateHandle},
     text_layout::ClipConfig,
     ui_components::components::UiComponent,

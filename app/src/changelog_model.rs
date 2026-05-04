@@ -3,7 +3,7 @@ use std::{collections::HashMap, fmt, sync::Arc};
 use channel_versions::{Changelog, MarkdownSection};
 use itertools::Itertools;
 use markdown_parser::{parse_markdown, FormattedText};
-use warpui::{
+use wishui::{
     assets::asset_cache::{AssetCache, AssetSource},
     image_cache::ImageType,
     Entity, ModelContext, SingletonEntity,
@@ -134,7 +134,7 @@ impl ChangelogModel {
             _ => return,
         };
 
-        // For WarpPreview, add a section at the beginning describing
+        // For WishPreview, add a section at the beginning describing
         // preview-exclusive flags.
         if ChannelState::channel() == Channel::Preview && !PREVIEW_FLAGS.is_empty() {
             let preview_flags_vec: Vec<String> = PREVIEW_FLAGS

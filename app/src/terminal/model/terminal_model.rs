@@ -26,7 +26,7 @@ pub use crate::terminal::history::HistoryEntry;
 
 use super::ansi::{
     FinishUpdateValue, InputBufferValue, Mode, PendingHook, TmuxInstallFailedInfo,
-    WarpificationUnavailableReason,
+    WishificationUnavailableReason,
 };
 use super::block::{
     AgentInteractionMetadata, Block, BlockId, BlockMetadata, BlockSize, BlocklistEnvVarMetadata,
@@ -62,9 +62,9 @@ use crate::terminal::shell::{ShellName, ShellType};
 
 use crate::terminal::model::secrets::ObfuscateSecrets;
 use session_sharing_protocol::sharer::SessionSourceType;
-use warp_core::report_error;
+use wish_core::report_error;
 #[cfg(not(target_family = "wasm"))]
-use warpui::util::save_as_file;
+use wishui::util::save_as_file;
 
 use async_channel::Sender;
 use base64::Engine;
@@ -82,14 +82,14 @@ use std::ops::{Range, RangeInclusive};
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Arc;
-use warp_core::features::FeatureFlag;
-use warp_core::semantic_selection::SemanticSelection;
 pub use warp_terminal::model::BlockIndex;
 use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
-use warpui::assets::asset_cache::Asset;
-use warpui::image_cache::ImageType;
-use warpui::r#async::executor::Background;
-use warpui::AppContext;
+use wish_core::features::FeatureFlag;
+use wish_core::semantic_selection::SemanticSelection;
+use wishui::assets::asset_cache::Asset;
+use wishui::image_cache::ImageType;
+use wishui::r#async::executor::Background;
+use wishui::AppContext;
 
 /// Max size of the window title stack.
 const TITLE_STACK_MAX_DEPTH: usize = 4096;
@@ -2280,7 +2280,7 @@ impl TerminalModel {
             SshLoginState::LastLogin | SshLoginState::PromptDetected => {
                 self.event_proxy
                     .send_terminal_event(Event::DetectedEndOfSshLogin(
-                        SshLoginStatus::ReadyToWarpify,
+                        SshLoginStatus::ReadyToWishify,
                     ));
 
                 ssh_login_state.notification_state = SshLoginNotificationState::Completed;
@@ -2291,7 +2291,7 @@ impl TerminalModel {
                     if ssh_login_state.notification_state == SshLoginNotificationState::Monitoring {
                         self.event_proxy
                             .send_terminal_event(Event::DetectedEndOfSshLogin(
-                                SshLoginStatus::RecheckBeforeWarpifying,
+                                SshLoginStatus::RecheckBeforeWishifying,
                             ));
 
                         // We want to avoid emitting redundant events for the initial check.
@@ -2301,7 +2301,7 @@ impl TerminalModel {
                 } else {
                     self.event_proxy
                         .send_terminal_event(Event::DetectedEndOfSshLogin(
-                            SshLoginStatus::ReadyToWarpify,
+                            SshLoginStatus::ReadyToWishify,
                         ));
 
                     ssh_login_state.notification_state = SshLoginNotificationState::Completed;
@@ -2696,7 +2696,7 @@ impl ansi::Handler for TerminalModel {
         delegate!(self.configure_charset(index, charset));
     }
 
-    fn set_color(&mut self, index: usize, color: warpui::color::ColorU) {
+    fn set_color(&mut self, index: usize, color: wishui::color::ColorU) {
         self.override_colors[index] = Some(color);
     }
 
@@ -2971,8 +2971,8 @@ impl ansi::Handler for TerminalModel {
             );
             if is_tmux_ssh {
                 self.event_proxy
-                    .send_terminal_event(Event::RemoteWarpificationIsUnavailable(
-                        WarpificationUnavailableReason::UnsupportedShell {
+                    .send_terminal_event(Event::RemoteWishificationIsUnavailable(
+                        WishificationUnavailableReason::UnsupportedShell {
                             shell_name: data.shell,
                         },
                     ))
@@ -3018,8 +3018,8 @@ impl ansi::Handler for TerminalModel {
                 })),
             _ => self
                 .event_proxy
-                .send_terminal_event(Event::RemoteWarpificationIsUnavailable(
-                    WarpificationUnavailableReason::UnsupportedShell {
+                .send_terminal_event(Event::RemoteWishificationIsUnavailable(
+                    WishificationUnavailableReason::UnsupportedShell {
                         shell_name: data.shell,
                     },
                 )),
@@ -3031,9 +3031,9 @@ impl ansi::Handler for TerminalModel {
             .send_terminal_event(Event::FinishUpdate(data));
     }
 
-    fn remote_warpification_is_unavailable(&mut self, data: WarpificationUnavailableReason) {
+    fn remote_warpification_is_unavailable(&mut self, data: WishificationUnavailableReason) {
         self.event_proxy
-            .send_terminal_event(Event::RemoteWarpificationIsUnavailable(data));
+            .send_terminal_event(Event::RemoteWishificationIsUnavailable(data));
     }
 
     fn notify_ssh_tmux_is_installed(&mut self, tmux_installation: TmuxInstallationState) {

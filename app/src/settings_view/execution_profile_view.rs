@@ -14,10 +14,10 @@ use crate::view_components::action_button::{ActionButton, ButtonSize, SecondaryT
 use crate::TemplatableMCPServerManager;
 use std::path::PathBuf;
 use uuid::Uuid;
-use warp_core::features::FeatureFlag;
-use warpui::elements::ParentElement;
-use warpui::SingletonEntity;
-use warpui::{
+use wish_core::features::FeatureFlag;
+use wishui::elements::ParentElement;
+use wishui::SingletonEntity;
+use wishui::{
     elements::{
         ConstrainedBox, Container, CrossAxisAlignment, Flex, MainAxisAlignment, MainAxisSize,
         Shrinkable, Text, Wrap,
@@ -363,7 +363,7 @@ impl View for ExecutionProfileView {
                         permissions_column.add_child(with_standard_vertical_margin(
                             render_bool_permission_line_with_icon(
                                 Icon::Compass,
-                                "Auto-sync plans to Warp Drive:",
+                                "Auto-sync plans to Wish Drive:",
                                 profile.autosync_plans_to_warp_drive,
                                 appearance,
                                 is_any_ai_enabled,
@@ -380,10 +380,10 @@ impl View for ExecutionProfileView {
         )
         .with_background(appearance.theme().surface_2())
         .with_border(
-            warpui::elements::Border::new(1.).with_border_fill(appearance.theme().outline()),
+            wishui::elements::Border::new(1.).with_border_fill(appearance.theme().outline()),
         )
-        .with_corner_radius(warpui::elements::CornerRadius::with_all(
-            warpui::elements::Radius::Pixels(4.),
+        .with_corner_radius(wishui::elements::CornerRadius::with_all(
+            wishui::elements::Radius::Pixels(4.),
         ))
         .with_horizontal_padding(16.)
         .with_vertical_padding(12.)
@@ -439,11 +439,11 @@ where
                         )
                         .with_background(appearance.theme().surface_2())
                         .with_border(
-                            warpui::elements::Border::all(1.)
+                            wishui::elements::Border::all(1.)
                                 .with_border_fill(appearance.theme().outline()),
                         )
-                        .with_corner_radius(warpui::elements::CornerRadius::with_all(
-                            warpui::elements::Radius::Pixels(3.),
+                        .with_corner_radius(wishui::elements::CornerRadius::with_all(
+                            wishui::elements::Radius::Pixels(3.),
                         ))
                         .with_horizontal_padding(6.)
                         .with_vertical_padding(2.)
@@ -508,7 +508,7 @@ fn render_allowlist_denylist_row(
             .finish(),
     )
     .with_margin_left(8.)
-    .with_border(warpui::elements::Border::left(1.).with_border_fill(appearance.theme().outline()))
+    .with_border(wishui::elements::Border::left(1.).with_border_fill(appearance.theme().outline()))
     .with_padding_left(8.)
     .finish()
 }

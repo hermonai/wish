@@ -10,7 +10,7 @@ use crate::workspace::WorkspaceRegistry;
 use chrono::TimeZone;
 use std::cmp::Ordering;
 use std::collections::HashSet;
-use warpui::{AppContext, EntityId, SingletonEntity, WindowId};
+use wishui::{AppContext, EntityId, SingletonEntity, WindowId};
 
 /// Result from matching a conversation.
 /// terminal_view_id and window_id are optional because, when we add restored conversations,

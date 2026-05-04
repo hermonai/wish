@@ -5,7 +5,7 @@ use crate::{BuildTreeError, Entry, FileId, FileMetadata, Repository};
 use ignore::gitignore::Gitignore;
 use std::sync::Arc;
 use warp_util::standardized_path::StandardizedPath;
-use warpui::ModelHandle;
+use wishui::ModelHandle;
 
 #[derive(Debug, Clone)]
 pub struct FileTreeEntry {

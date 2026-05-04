@@ -117,12 +117,12 @@ pub fn spawn_task(
         // We use a timeout to ensure we don't wait indefinitely for session info.
         // If no timeout is provided, we use a future that never completes.
         let mut timeout_timer = match timeout {
-            Some(d) => warpui::r#async::Timer::after(d),
-            None => warpui::r#async::Timer::never(),
+            Some(d) => wishui::r#async::Timer::after(d),
+            None => wishui::r#async::Timer::never(),
         }.fuse();
         let mut last_state = None;
         loop {
-            let mut poll_timer = warpui::r#async::Timer::after(TASK_STATUS_POLL_INTERVAL).fuse();
+            let mut poll_timer = wishui::r#async::Timer::after(TASK_STATUS_POLL_INTERVAL).fuse();
 
             select! {
                 _ = timeout_timer => {

@@ -14,8 +14,8 @@ use repo_metadata::{
 use std::fs;
 use std::io::Write;
 use tempfile::TempDir;
-use warpui::App;
 use watcher::HomeDirectoryWatcher;
+use wishui::App;
 
 fn initialize_app(app: &mut App) {
     app.add_singleton_model(DirectoryWatcher::new);

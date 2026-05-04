@@ -4,7 +4,7 @@ use futures_lite::future;
 use itertools::Itertools;
 use rangemap::RangeSet;
 use sum_tree::SumTree;
-use warpui::App;
+use wishui::App;
 
 use crate::content::{
     buffer::Buffer,
@@ -45,7 +45,7 @@ fn test_search_inline_styles() {
 fn test_search_across_link() {
     App::test((), |mut app| async move {
         let (buffer, _selection) = Buffer::mock_from_markdown(
-            "visit [our website](https://warp.dev) for more",
+            "visit [our website](https://wish.hermon.ai) for more",
             None,
             Box::new(|_, _| IndentBehavior::Ignore),
             &mut app,

@@ -98,7 +98,7 @@ pub fn test_sorted_paths_relative_to() {
     ]);
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_paths_relative_to(
+        wishui::r#async::block_on(sorted_paths_relative_to(
             &ParsedToken::empty(),
             MatchStrategy::CaseInsensitive,
             &ctx
@@ -135,7 +135,7 @@ pub fn test_sorted_paths_relative_to() {
     );
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_paths_relative_to(
+        wishui::r#async::block_on(sorted_paths_relative_to(
             &ParsedToken::new("sr"),
             MatchStrategy::CaseInsensitive,
             &ctx
@@ -154,7 +154,7 @@ pub fn test_sorted_paths_relative_to() {
     );
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_paths_relative_to(
+        wishui::r#async::block_on(sorted_paths_relative_to(
             &ParsedToken::new("."),
             MatchStrategy::CaseInsensitive,
             &ctx
@@ -201,7 +201,7 @@ pub fn test_sorted_directories_relative_to() {
     ]);
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_directories_relative_to(
+        wishui::r#async::block_on(sorted_directories_relative_to(
             &ParsedToken::empty(),
             MatchStrategy::CaseInsensitive,
             &ctx
@@ -230,7 +230,7 @@ pub fn test_sorted_directories_relative_to() {
     );
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_directories_relative_to(
+        wishui::r#async::block_on(sorted_directories_relative_to(
             &ParsedToken::new("s"),
             MatchStrategy::CaseInsensitive,
             &ctx
@@ -264,7 +264,7 @@ pub fn test_sorted_paths_case_insensitive_ordering() {
         file_entry("cherry.txt"),
     ]);
 
-    let suggestions: Vec<String> = warpui::r#async::block_on(sorted_paths_relative_to(
+    let suggestions: Vec<String> = wishui::r#async::block_on(sorted_paths_relative_to(
         &ParsedToken::empty(),
         MatchStrategy::CaseInsensitive,
         &ctx,
@@ -292,7 +292,7 @@ pub fn test_path_completions_with_special_characters_relative_to_cwd() {
     let ctx = mock_path_completion_ctx_special_characters();
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_directories_relative_to(
+        wishui::r#async::block_on(sorted_directories_relative_to(
             &ParsedToken::empty(),
             MatchStrategy::CaseInsensitive,
             &ctx
@@ -337,7 +337,7 @@ pub fn test_path_completions_with_special_characters_relative_to_cwd() {
 pub fn test_path_completions_with_special_character_case_insensitive() {
     let ctx = mock_path_completion_ctx_special_characters();
     assert_eq!(
-        warpui::r#async::block_on(sorted_directories_relative_to(
+        wishui::r#async::block_on(sorted_directories_relative_to(
             &ParsedToken::new("~"),
             MatchStrategy::CaseInsensitive,
             &ctx
@@ -374,7 +374,7 @@ pub fn test_path_completions_with_special_characters_fuzzy() {
     let ctx = mock_path_completion_ctx_special_characters();
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_directories_relative_to(
+        wishui::r#async::block_on(sorted_directories_relative_to(
             &ParsedToken::new("~"),
             MatchStrategy::Fuzzy,
             &ctx
@@ -427,7 +427,7 @@ pub fn test_path_completions_tilde_expansion() {
     let ctx = mock_path_completion_ctx_special_characters_home_dir();
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_directories_relative_to(
+        wishui::r#async::block_on(sorted_directories_relative_to(
             &ParsedToken::new("~/"),
             MatchStrategy::Fuzzy,
             &ctx
@@ -453,7 +453,7 @@ pub fn test_path_completions_home_env_var_special_characters() {
     let ctx = mock_path_completion_ctx_special_characters_home_dir();
 
     assert_eq!(
-        warpui::r#async::block_on(sorted_directories_relative_to(
+        wishui::r#async::block_on(sorted_directories_relative_to(
             &ParsedToken::new("$HOME/"),
             MatchStrategy::Fuzzy,
             &ctx

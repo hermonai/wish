@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use chrono::{Local, Utc};
 use persistence::model::AgentConversationData;
 use warp_cli::agent::Harness;
-use warp_core::features::FeatureFlag;
 use warp_multi_agent_api as api;
-use warpui::{App, EntityId};
+use wish_core::features::FeatureFlag;
+use wishui::{App, EntityId};
 
 use crate::ai::agent::conversation::{AIConversation, AIConversationId};
 use crate::ai::ambient_agents::task::{AgentConfigSnapshot, HarnessConfig, TaskCreatorInfo};
@@ -198,7 +198,7 @@ fn test_from_task_resolves_harness() {
             let data = ConversationDetailsData::from_task(&base_task, None, None, ctx);
             assert_eq!(data.harness, None);
 
-            // Snapshot without an explicit harness → default to Warp Agent.
+            // Snapshot without an explicit harness → default to Wish Agent.
             let mut task = base_task.clone();
             task.agent_config_snapshot = Some(AgentConfigSnapshot::default());
             let data = ConversationDetailsData::from_task(&task, None, None, ctx);

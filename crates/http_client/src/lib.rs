@@ -15,7 +15,7 @@ use reqwest::IntoUrl;
 use reqwest_eventsource::RequestBuilderExt;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
-use warp_core::{
+use wish_core::{
     channel::{Channel, ChannelState},
     execution_mode,
     operating_system_info::OperatingSystemInfo,
@@ -24,24 +24,24 @@ use warp_core::{
 
 pub mod headers {
     /// Custom Warp header indicating the version of the Warp app.
-    pub const CLIENT_RELEASE_VERSION_HEADER_KEY: &str = "X-Warp-Client-Version";
+    pub const CLIENT_RELEASE_VERSION_HEADER_KEY: &str = "X-Wish-Client-Version";
 
     /// Custom Warp header indicating the OS category the request was sent from.
-    pub(crate) const WARP_OS_CATEGORY: &str = "X-Warp-OS-Category";
+    pub(crate) const WARP_OS_CATEGORY: &str = "X-Wish-OS-Category";
     /// Custom Warp header indicating the OS name the request was sent from. On Linux this is the
     /// name of the distribution. On all other platforms it should be equivalent to
     /// `WARP_OS_CATEGORY`.
-    pub(crate) const WARP_OS_NAME: &str = "X-Warp-OS-Name";
+    pub(crate) const WARP_OS_NAME: &str = "X-Wish-OS-Name";
     /// Custom Warp header indicating the version of the operating system. On Linux this is the
     /// version of the distribution, not the Linux kernel version.
-    pub(crate) const WARP_OS_VERSION: &str = "X-Warp-OS-Version";
+    pub(crate) const WARP_OS_VERSION: &str = "X-Wish-OS-Version";
 
     /// Custom Warp header indicating the linux kernel version. This is only sent from Linux.
-    pub(crate) const WARP_OS_LINUX_KERNEL_VERSION: &str = "X-Warp-OS-Linux-Kernel-Version";
+    pub(crate) const WARP_OS_LINUX_KERNEL_VERSION: &str = "X-Wish-OS-Linux-Kernel-Version";
 
     /// Custom Warp header indicating the client role. We don't use the User-Agent header
     /// because it can't be set from WASM.
-    pub(crate) const WARP_CLIENT_ID: &str = "X-Warp-Client-ID";
+    pub(crate) const WARP_CLIENT_ID: &str = "X-Wish-Client-ID";
 }
 
 /// The environment variable containing extra HTTP headers to attach to requests.
@@ -568,7 +568,7 @@ impl<'a> RequestBuilder<'a> {
 }
 
 /// An error returned from `Response::error_for_status` that includes response headers.
-/// This allows callers to inspect headers (like X-Warp-Error-Code) when handling errors.
+/// This allows callers to inspect headers (like X-Wish-Error-Code) when handling errors.
 #[derive(Debug)]
 pub struct ResponseError {
     pub source: reqwest::Error,

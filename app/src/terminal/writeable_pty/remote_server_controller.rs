@@ -4,12 +4,12 @@ use instant::Instant;
 use remote_server::auth::RemoteServerAuthContext;
 use std::path::PathBuf;
 use std::sync::Arc;
-use warp_core::SessionId;
-use warpui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle};
+use wish_core::SessionId;
+use wishui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle};
 
 use settings::Setting;
 
-use crate::terminal::warpify::settings::{SshExtensionInstallMode, WarpifySettings};
+use crate::terminal::warpify::settings::{SshExtensionInstallMode, WishifySettings};
 
 use crate::remote_server::manager::{RemoteServerManager, RemoteServerManagerEvent};
 use crate::remote_server::ssh_transport::SshTransport;
@@ -251,7 +251,7 @@ impl<T: EventLoopSender> RemoteServerController<T> {
                 });
             }
             Ok(false) => {
-                let install_mode = *WarpifySettings::as_ref(ctx)
+                let install_mode = *WishifySettings::as_ref(ctx)
                     .ssh_extension_install_mode
                     .value();
                 match install_mode {

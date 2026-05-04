@@ -8,8 +8,8 @@ use warp_command_signatures::{
     Argument, ArgumentType, DynamicCompletionData, Generator, GeneratorProcess, Signature,
     Template, TemplateFilter, TemplateType,
 };
-use warp_core::features::FeatureFlag;
 use warp_util::path::ShellFamily;
+use wish_core::features::FeatureFlag;
 
 use crate::completer::{
     context::CompletionContext,

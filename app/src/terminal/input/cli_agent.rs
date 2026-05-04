@@ -11,11 +11,11 @@ use crate::{
     features::FeatureFlag,
     terminal::{cli_agent_sessions::CLIAgentSessionsModel, view::TerminalAction},
 };
-use warp_core::ui::{
+use wish_core::ui::{
     color::{contrast::MinimumAllowedContrast, ContrastingColor},
     theme::color::internal_colors,
 };
-use warpui::{
+use wishui::{
     elements::{
         Border, Clipped, ConstrainedBox, Container, DispatchEventResult, DropTarget, Element,
         EventHandler, Flex, Hoverable, ParentElement, SavePosition, Stack,
@@ -148,7 +148,7 @@ impl Input {
 
     /// Keep the rich input editor's text colors legible when it's rendered on
     /// top of an alt-screen CLI agent's inferred background (e.g. OpenCode),
-    /// which does not respect the Warp theme. When no alt-screen-backed CLI
+    /// which does not respect the Wish theme. When no alt-screen-backed CLI
     /// agent rich input is active, restores the theme default text colors.
     ///
     /// This mirrors the contrast-adjustment pattern used for the use-agent

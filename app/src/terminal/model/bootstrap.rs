@@ -1,10 +1,10 @@
 /// Stages during the course of bootstrapping the shell.  
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum BootstrapStage {
-    /// Warp is re-parsing historical blocks for this session. We haven't yet started
+    /// Wish is re-parsing historical blocks for this session. We haven't yet started
     /// bootstrapping.
     RestoreBlocks,
-    /// Warp is writing the bootstrap script into the running shell.
+    /// Wish is writing the bootstrap script into the running shell.
     WarpInput,
     /// Execution of any shell startup scripts such as .rc or .profile files.
     ScriptExecution,

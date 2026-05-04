@@ -5,7 +5,7 @@ use crate::ai::agent_conversations_model::{
     StatusFilter,
 };
 use fuzzy_match::match_indices_case_insensitive;
-use warpui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
+use wishui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
 
 pub struct ConversationListViewModelEvent;
 

@@ -1,9 +1,9 @@
-pkgname=warp-terminal@@CHANNEL_SUFFIX@@
+pkgname=wish-terminal@@CHANNEL_SUFFIX@@
 pkgver=@@VERSION@@
 pkgrel=@@RELEASE@@
-pkgdesc="Warp, the Rust-based terminal for developers and teams"
+pkgdesc="Wish, the Hermon AI agentic development environment"
 arch=('@@ARCH@@')
-url="https://warp.dev"
+url="https://wish.hermon.ai"
 license=('custom')
 depends=(
 	'curl'

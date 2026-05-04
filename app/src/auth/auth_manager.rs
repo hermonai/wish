@@ -7,12 +7,12 @@ use std::time::Duration;
 use anyhow::{anyhow, Result};
 use settings::Setting as _;
 use uuid::Uuid;
-use warp_core::channel::ChannelState;
-use warp_core::features::FeatureFlag;
 use warp_graphql::mutations::create_anonymous_user::{
     AnonymousUserType, CreateAnonymousUserResult,
 };
-use warpui::{clipboard::ClipboardContent, Entity, ModelContext, SingletonEntity, UpdateModel};
+use wish_core::channel::ChannelState;
+use wish_core::features::FeatureFlag;
+use wishui::{clipboard::ClipboardContent, Entity, ModelContext, SingletonEntity, UpdateModel};
 
 use super::auth_state::{AuthState, PersistAction};
 use super::auth_view_modal::{AuthRedirectPayload, AuthViewVariant};
@@ -72,7 +72,7 @@ pub enum AuthManagerEvent {
     AttemptedLoginGatedFeature {
         auth_view_variant: AuthViewVariant,
     },
-    // The current user is anonymous and the client has received a browser intent to sign in with a different Warp account.
+    // The current user is anonymous and the client has received a browser intent to sign in with a different Wish account.
     // Holds an auth payload from the received browser intent.
     LoginOverrideDetected(AuthRedirectPayload),
     /// Failed to mint a new custom token for an anonymous user.
@@ -267,7 +267,7 @@ impl AuthManager {
 
     /// Authenticate asynchronously using the OAuth2 device authorization flow.
     ///
-    /// This is only used by the Warp CLI if running on a devic that does not have the Warp app installed.
+    /// This is only used by the Wish CLI if running on a devic that does not have the Wish app installed.
     #[cfg_attr(target_family = "wasm", allow(dead_code))]
     pub fn authorize_device(&self, ctx: &mut ModelContext<Self>) {
         // Clear any stale user state so old credentials don't interfere
@@ -453,18 +453,18 @@ impl AuthManager {
                     // TODO(alokedesai): Investigate a more robust way of handling events
                     // that don't get flushed to Rudderstack outside of this event specifically.
                     async move {
-                        warpui::telemetry::record_identify_user_event(
+                        wishui::telemetry::record_identify_user_event(
                             user_id.as_string(),
                             anonymous_id.clone(),
-                            warpui::time::get_current_time(),
+                            wishui::time::get_current_time(),
                         );
-                        warpui::telemetry::record_event(
+                        wishui::telemetry::record_event(
                             Some(user_id.as_string()),
                             anonymous_id,
                             TelemetryEvent::Login.name().into(),
                             TelemetryEvent::Login.payload(),
                             TelemetryEvent::Login.contains_ugc(),
-                            warpui::time::get_current_time(),
+                            wishui::time::get_current_time(),
                         );
 
                         // Note that this snapshot might get overwritten to disabled after the server fetch.
@@ -481,7 +481,7 @@ impl AuthManager {
                     |_, _, _| {},
                 );
 
-                // Once the user is authenticated, attempt to report the sandbox that Warp is running in, if any.
+                // Once the user is authenticated, attempt to report the sandbox that Wish is running in, if any.
                 ctx.spawn(
                     async { warp_isolation_platform::detect() },
                     |_, platform, ctx| {
@@ -840,7 +840,7 @@ impl AuthManager {
 
     /// Returns whether an auth redirect that failed state validation should be
     /// silently dropped rather than surfaced as an error. This covers the
-    /// "user clicks the browser's 'Take me to Warp' button twice" case: once
+    /// "user clicks the browser's 'Take me to Wish' button twice" case: once
     /// they're fully logged in, a second redirect targeting the same user is
     /// redundant and should not produce a user-visible error.
     fn should_silently_ignore_stale_redirect(&self, incoming_user_uid: &Option<UserUid>) -> bool {

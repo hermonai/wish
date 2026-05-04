@@ -34,7 +34,7 @@ use super::{
     undo::{NonAtomicType, UndoActionType, UndoArg, UndoStack},
     validation::validate_content,
 };
-use warp_core::{platform::SessionPlatform, safe_error};
+use wish_core::{platform::SessionPlatform, safe_error};
 
 use crate::{
     content::{
@@ -53,9 +53,9 @@ use crate::{
 use enum_iterator::all;
 use string_offset::{ByteOffset, CharOffset};
 use sum_tree::{SeekBias, SumTree};
-use warpui::{AppContext, Entity, ModelContext};
-use warpui::{EntityId, ModelHandle, elements::ListIndentLevel};
-use warpui::{
+use wishui::{AppContext, Entity, ModelContext};
+use wishui::{EntityId, ModelHandle, elements::ListIndentLevel};
+use wishui::{
     fonts::Weight,
     text::{TextBuffer, char_slice, point::Point},
 };
@@ -836,7 +836,7 @@ impl Buffer {
         selection_model: ModelHandle<BufferSelectionModel>,
         ctx: &mut ModelContext<Self>,
     ) -> Self {
-        let parse_fn = if warp_core::features::FeatureFlag::MarkdownTables.is_enabled() {
+        let parse_fn = if wish_core::features::FeatureFlag::MarkdownTables.is_enabled() {
             parse_markdown_with_gfm_tables
         } else {
             parse_markdown

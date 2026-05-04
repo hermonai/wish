@@ -18,7 +18,7 @@ use crate::terminal::ClipboardType;
 use crate::util::AsciiDebug;
 
 use super::history::HistoryEntry;
-use super::model::ansi::{FinishUpdateValue, WarpificationUnavailableReason};
+use super::model::ansi::{FinishUpdateValue, WishificationUnavailableReason};
 use super::model::block::BlockId;
 use super::model::session::{SessionId, SessionInfo};
 use super::model::terminal_model::{BlockIndex, ExitReason, TmuxInstallationState};
@@ -82,7 +82,7 @@ pub enum Event {
     },
     /// See comment above [crate::terminal::ModelEvent::DetectedEndOfSshLogin].
     DetectedEndOfSshLogin(SshLoginStatus),
-    RemoteWarpificationIsUnavailable(WarpificationUnavailableReason),
+    RemoteWishificationIsUnavailable(WishificationUnavailableReason),
     SshTmuxInstaller(TmuxInstallationState),
     TmuxInstallFailed {
         line: String,
@@ -94,8 +94,8 @@ pub enum Event {
     SourcedRcFileInSubshell(SourcedRcFileInSubshellEvent),
     /// Emitted when the active block's prompt has been updated.
     PromptUpdated,
-    /// Emitted when the honor_ps1 state of the shell is out-of-sync with Warp's settings.
-    /// This can happen in cases such as when the user changes between PS1 and Warp prompt inside
+    /// Emitted when the honor_ps1 state of the shell is out-of-sync with Wish's settings.
+    /// This can happen in cases such as when the user changes between PS1 and Wish prompt inside
     /// of an SSH session (the bindkeys are sent to the SSH session but not the local session, so
     /// they are out-of-sync when the user exits SSH).
     HonorPS1OutOfSync,
@@ -140,7 +140,7 @@ pub enum Event {
     },
     BootstrapPrecmdDone,
     /// A pluggable notification triggered via OSC 9 or OSC 777 escape sequences.
-    /// External programs can use this to trigger notifications in Warp.
+    /// External programs can use this to trigger notifications in Wish.
     ///
     /// References:
     /// - OSC 9: <https://conemu.github.io/en/AnsiEscapeCodes.html#OSC_Operating_system_commands>
@@ -179,9 +179,9 @@ pub enum TerminalMode {
 #[derive(Clone, Debug)]
 pub enum SshLoginStatus {
     /// We have some evidence login is complete but should check again.
-    RecheckBeforeWarpifying,
+    RecheckBeforeWishifying,
     /// We have high confidence login is complete.
-    ReadyToWarpify,
+    ReadyToWishify,
 }
 
 #[derive(Clone, Debug)]
@@ -259,7 +259,7 @@ pub enum BlockType {
     /// This is a block containing background process output.
     Background(Arc<SerializedBlock>),
 
-    /// This is a block containing static/hardcoded content (e.g. the subshell Warpification
+    /// This is a block containing static/hardcoded content (e.g. the subshell Wishification
     /// welcome block).
     Static,
 }
@@ -431,8 +431,8 @@ impl Debug for Event {
             Event::DetectedEndOfSshLogin(check_type) => {
                 write!(f, "DetectedEndOfSshLogin: {check_type:?}")
             }
-            Event::RemoteWarpificationIsUnavailable(_) => {
-                write!(f, "RemoteWarpificationIsUnavailable")
+            Event::RemoteWishificationIsUnavailable(_) => {
+                write!(f, "RemoteWishificationIsUnavailable")
             }
             Event::SshTmuxInstaller(installer) => {
                 write!(f, "SshTmuxInstaller({installer:?})")

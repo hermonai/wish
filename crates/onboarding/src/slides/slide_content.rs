@@ -1,5 +1,5 @@
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::{
         Align, ClippedScrollStateHandle, ClippedScrollable, Container, CrossAxisAlignment, Flex,
         MainAxisSize, ParentElement, ScrollbarWidth, Shrinkable,

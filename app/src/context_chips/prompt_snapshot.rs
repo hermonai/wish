@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use warpui::{AppContext, SingletonEntity};
+use wishui::{AppContext, SingletonEntity};
 
 use crate::context_chips::ContextChipKind;
 
@@ -15,7 +15,7 @@ pub struct PromptSnapshot {
     chips: Vec<ChipResult>,
 
     same_line_prompt_enabled: bool,
-    /// The separator to use as a trailing character at the end of Warp prompt, if any.
+    /// The separator to use as a trailing character at the end of Wish prompt, if any.
     separator: WarpPromptSeparator,
 }
 

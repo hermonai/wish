@@ -9,7 +9,7 @@ use super::{
 };
 use instant::Instant;
 use pathfinder_color::ColorU;
-use warpui::units::{IntoLines as _, Lines};
+use wishui::units::{IntoLines as _, Lines};
 
 use crate::terminal::event::Event;
 
@@ -123,7 +123,7 @@ pub struct HeaderGrid {
     /// with remote subshells correctly).
     /// TODO(CORE-2403): Rename this field to should_populate_prompt_preview_grid.
     ignore_next_prompt_preview: bool,
-    /// The height of the Warp prompt in lines (non-PS1).
+    /// The height of the Wish prompt in lines (non-PS1).
     warp_prompt_height_lines: f32,
     // whether to honor users ps1 and rprompt values, can be changed by a user in the settings
     // note that the change will only apply to the active block; historical blocks will keep the
@@ -188,7 +188,7 @@ impl HeaderGrid {
     pub fn set_honor_ps1(&mut self, honor_ps1: bool) {
         self.honor_ps1 = honor_ps1;
         if !self.honor_ps1 {
-            // If we are switching to Warp prompt (from PS1), we need to clear the cached prompt end point
+            // If we are switching to Wish prompt (from PS1), we need to clear the cached prompt end point
             // and update the command start point appropriately!
             self.cached_prompt_end_point = Some(PromptEndPoint::EmptyPrompt);
             self.cached_command_start_point = Some(CommandStartPoint::CommandStart {
@@ -315,7 +315,7 @@ impl HeaderGrid {
     /// the command to be finished.
     fn is_command_finished_and_empty(&self) -> bool {
         if !self.honor_ps1 {
-            // If we are using Warp prompt, we expect the combined grid cursor to be at the start, if
+            // If we are using Wish prompt, we expect the combined grid cursor to be at the start, if
             // the command is truly empty.
             return self.prompt_and_command_grid.finished()
                 && self.prompt_and_command_grid.grid_handler().cursor_point() == Point::new(0, 0);

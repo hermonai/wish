@@ -24,7 +24,7 @@ use crate::{
     ui_components::blended_colors,
     view_components::ToastFlavor,
 };
-use warpui::{
+use wishui::{
     clipboard::ClipboardContent,
     elements::{
         Align, Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Element, Fill,
@@ -42,8 +42,8 @@ use warpui::{
 
 const HEADER_FONT_SIZE: f32 = 18.;
 const HEADER_MARGIN_BOTTOM: f32 = 32.;
-const HEADER_TEXT: &str = "Invite a friend to Warp";
-const ANONYMOUS_USER_HEADER_TEXT: &str = "Sign up to participate in Warp's referral program";
+const HEADER_TEXT: &str = "Invite a friend to Wish";
+const ANONYMOUS_USER_HEADER_TEXT: &str = "Sign up to participate in Wish's referral program";
 
 const INVITE_FIELD_LABEL_BOTTOM_MARGIN: f32 = 8.;
 
@@ -65,7 +65,7 @@ const LINK_COPIED_TOAST: &str = "Link copied.";
 const EMAIL_SUCCESS_TOAST: &str = "Successfully sent emails.";
 const EMAIL_FAILURE_TOAST: &str = "Failed to send emails. Please try again.";
 
-const REWARD_INTRO: &str = "Get exclusive Warp goodies when you refer someone*";
+const REWARD_INTRO: &str = "Get exclusive Wish goodies when you refer someone*";
 const REWARD_INTRO_FONT_SIZE: f32 = 14.;
 const REWARD_SECTION_VERTICAL_SPACING: f32 = 24.;
 
@@ -98,9 +98,9 @@ const CLAIMED_REFERRAL_CLIP: usize = 999;
 
 const TERMS_LINK_TEXT: &str = "Certain restrictions apply.";
 const TERMS_URL: &str =
-    "https://docs.warp.dev/support-and-community/community/refer-a-friend#referral-program-terms-and-conditions";
+    "https://wish.hermon.ai/docs/support-and-community/community/refer-a-friend#referral-program-terms-and-conditions";
 const TERMS_CONTACT_TEXT: &str =
-    " If you have any questions about the referral program, please contact referrals@warp.dev.";
+    " If you have any questions about the referral program, please contact support@hermon.ai.";
 
 enum ApiState {
     Loading,

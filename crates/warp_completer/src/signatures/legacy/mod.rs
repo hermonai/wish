@@ -1,6 +1,6 @@
 use std::sync::{Arc, OnceLock};
 
-use warp_core::channel::Channel;
+use wish_core::channel::Channel;
 
 pub mod registry;
 

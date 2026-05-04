@@ -2,7 +2,7 @@ use parking_lot::FairMutex;
 use pathfinder_geometry::vector::Vector2F;
 use settings::Setting as _;
 use std::{any::Any, path::PathBuf, sync::Arc};
-use warpui::{AppContext, SingletonEntity, ViewHandle};
+use wishui::{AppContext, SingletonEntity, ViewHandle};
 
 use crate::PrivacySettings;
 use crate::{
@@ -44,7 +44,7 @@ pub trait TerminalManager: Any {
     fn as_any_mut(&mut self) -> &mut dyn Any;
 }
 
-impl warpui::Entity for Box<dyn TerminalManager> {
+impl wishui::Entity for Box<dyn TerminalManager> {
     type Event = ();
 }
 

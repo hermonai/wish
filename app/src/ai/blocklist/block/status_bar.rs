@@ -6,7 +6,7 @@ use super::{
     view_impl::common::{
         render_switch_control_to_user_button, render_warping_indicator,
         render_warping_indicator_base, ButtonProps, ForceRefreshButtonProps, MaybeShimmeringText,
-        WarpingIndicatorProps, WarpingProps, LOAD_OUTPUT_MESSAGE, WAITING_FOR_USER_INPUT_MESSAGE,
+        WishingIndicatorProps, WishingProps, LOAD_OUTPUT_MESSAGE, WAITING_FOR_USER_INPUT_MESSAGE,
     },
 };
 use crate::{
@@ -70,12 +70,12 @@ use crate::{
 use instant::Instant;
 use parking_lot::FairMutex;
 use pathfinder_color::ColorU;
-use warp_core::{
+use wish_core::{
     features::FeatureFlag,
     ui::{appearance::Appearance, theme::Fill, Icon as CoreIcon},
 };
-use warpui::elements::shimmering_text::ShimmeringTextStateHandle;
-use warpui::{
+use wishui::elements::shimmering_text::ShimmeringTextStateHandle;
+use wishui::{
     elements::{Border, Container, Empty, Flex, MouseStateHandle, ParentElement, Text},
     keymap::Keystroke,
     presenter::ChildView,
@@ -83,7 +83,7 @@ use warpui::{
     AppContext, Element, Entity, EntityId, ModelHandle, SingletonEntity, View, ViewContext,
     ViewHandle,
 };
-use warpui::{r#async::Timer, TypedActionView};
+use wishui::{r#async::Timer, TypedActionView};
 
 pub fn init(app: &mut AppContext) {
     summarization_cancel_dialog::init(app);
@@ -823,7 +823,7 @@ impl BlocklistAIStatusBar {
         };
 
         Some(render_warping_indicator(
-            WarpingProps {
+            WishingProps {
                 model: model.as_ref(),
                 terminal_model: &terminal_model,
                 action_model: self.action_model.as_ref(app),
@@ -895,7 +895,7 @@ impl BlocklistAIStatusBar {
             "Connecting to Host (Step 1/3)"
         };
         Some(render_warping_indicator_base(
-            WarpingIndicatorProps {
+            WishingIndicatorProps {
                 icon: None,
                 warping_indicator_text: MaybeShimmeringText::Shimmering {
                     text: progress_text.into(),
@@ -998,7 +998,7 @@ fn latest_model_used_before_exchange<V: View>(
 fn render_agent_tip(tip: &AgentTip, app: &AppContext) -> Box<dyn Element> {
     use crate::ai::agent_tips::AITip;
     use markdown_parser::{FormattedTextFragment, FormattedTextLine};
-    use warpui::text_layout::ClipConfig;
+    use wishui::text_layout::ClipConfig;
 
     let appearance = Appearance::as_ref(app);
     let theme = appearance.theme();
@@ -1018,7 +1018,7 @@ fn render_agent_tip(tip: &AgentTip, app: &AppContext) -> Box<dyn Element> {
 
     let formatted_text =
         markdown_parser::FormattedText::new(vec![FormattedTextLine::Line(fragments)]);
-    warpui::elements::FormattedTextElement::new(
+    wishui::elements::FormattedTextElement::new(
         formatted_text,
         appearance.monospace_font_size() - 3.,
         appearance.ui_font_family(),
@@ -1030,7 +1030,7 @@ fn render_agent_tip(tip: &AgentTip, app: &AppContext) -> Box<dyn Element> {
     .set_selectable(true)
     .with_clip(ClipConfig::ellipsis())
     .register_default_click_handlers_with_action_support(move |link, evt, app| {
-        use warpui::elements::HyperlinkLens;
+        use wishui::elements::HyperlinkLens;
         match link {
             HyperlinkLens::Url(url) => {
                 send_telemetry_from_app_ctx!(
@@ -1090,10 +1090,10 @@ fn render_fallback_explanation<V: View>(
 }
 
 /// If the current exchange is using a fallback model, returns the warping message to display
-/// (e.g. "Warping with Claude 3.5 Haiku."). When the current exchange's output doesn't have
+/// (e.g. "Wishing with Claude 3.5 Haiku."). When the current exchange's output doesn't have
 /// model info yet (the ModelUsed message hasn't arrived), we check the most recent previous
 /// exchange as a best guess — if the conversation already fell back, the next exchange likely
-/// will too. This avoids a flicker from "Warping..." to "Warping with {name}." on follow-ups.
+/// will too. This avoids a flicker from "Wishing..." to "Wishing with {name}." on follow-ups.
 ///
 /// We skip the lookback for new user queries because the underlying model may have recovered
 /// since the previous exchange. For agent-initiated follow-up exchanges (action results, etc.)
@@ -1128,8 +1128,8 @@ fn resolve_fallback_warping_message<V: View>(
         return None;
     }
     Some(match display_name.as_deref() {
-        Some(name) => format!("Warping with {name}."),
-        None => "Warping with another model.".to_owned(),
+        Some(name) => format!("Wishing with {name}."),
+        None => "Wishing with another model.".to_owned(),
     })
 }
 
@@ -1138,7 +1138,7 @@ impl View for BlocklistAIStatusBar {
         "BlocklistAIStatusBar"
     }
 
-    fn render(&self, app: &AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, app: &AppContext) -> Box<dyn wishui::Element> {
         let appearance = Appearance::as_ref(app);
         let agent_view_controller = self.agent_view_controller.as_ref(app);
         if let Some(cloud_mode_setup_terminal_message) =
@@ -1162,7 +1162,7 @@ impl View for BlocklistAIStatusBar {
                     })
             {
                 render_warping_indicator_base(
-                    WarpingIndicatorProps {
+                    WishingIndicatorProps {
                         icon: None,
                         warping_indicator_text: MaybeShimmeringText::Shimmering {
                             text: "Setting up environment".into(),
@@ -1189,7 +1189,7 @@ impl View for BlocklistAIStatusBar {
                     .is_none()
             {
                 render_warping_indicator_base(
-                    WarpingIndicatorProps {
+                    WishingIndicatorProps {
                         icon: Some(icons::gray_clock_icon(appearance).finish()),
                         warping_indicator_text: MaybeShimmeringText::Static(
                             WAITING_FOR_USER_INPUT_MESSAGE.into(),

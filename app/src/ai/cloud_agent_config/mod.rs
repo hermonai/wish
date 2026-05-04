@@ -13,7 +13,7 @@ use crate::{
     },
     server::{ids::SyncId, server_api::ai::AgentConfigSnapshot, sync_queue::QueueItem},
 };
-use warpui::{AppContext, SingletonEntity as _};
+use wishui::{AppContext, SingletonEntity as _};
 
 /// A CloudAgentConfig represents a saved agent configuration that can be referenced
 /// when running agents via `--agent-id`.

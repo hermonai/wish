@@ -4,7 +4,7 @@ use crate::context_chips::{
     prompt_type::PromptType,
     ChipResult,
 };
-use warpui::{ModelHandle, ViewContext, ViewHandle};
+use wishui::{ModelHandle, ViewContext, ViewHandle};
 
 use super::{AgentInputFooter, AgentInputFooterEvent};
 

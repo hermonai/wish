@@ -1,15 +1,15 @@
 use crate::appearance::Appearance;
-use warpui::elements::{Container, Flex, MainAxisSize, MouseStateHandle, ParentElement};
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::UiComponent;
-use warpui::{
+use wishui::elements::{Container, Flex, MainAxisSize, MouseStateHandle, ParentElement};
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::UiComponent;
+use wishui::{
     platform::Cursor, AppContext, Element, Entity, SingletonEntity, TypedActionView, View,
     ViewContext,
 };
 
 use super::style::{self, MODAL_PADDING};
 
-const SESSION_BUILD_FREE_PLAN_SUBHEADER: &str = "Warp's free and pro plans come with a limited number of shared sessions.\n\nFor increased access to session sharing upgrade to the Build plan.";
+const SESSION_BUILD_FREE_PLAN_SUBHEADER: &str = "Wish's free and pro plans come with a limited number of shared sessions.\n\nFor increased access to session sharing upgrade to the Build plan.";
 const VIEW_PLANS_TEXT: &str = "View plans";
 
 pub struct DeniedBody {

@@ -80,7 +80,7 @@ pub enum FeatureFlag {
     /// discrete GPU.
     IntegratedGPU,
 
-    /// Warp Agent Mode.
+    /// Wish Agent Mode.
     AgentMode,
 
     /// Whether the user is part of the Warp Alpha Program (AI Trusted Testers).
@@ -130,7 +130,7 @@ pub enum FeatureFlag {
     /// Enables next action prediction within Warp, powered by AI.
     AgentPredict,
 
-    /// Enables receiving shared Warp Drive objects.
+    /// Enables receiving shared Wish Drive objects.
     SharedWithMe,
 
     /// Enables workflows for use with Agent Mode.
@@ -185,7 +185,7 @@ pub enum FeatureFlag {
     /// Adds avatar to the tab bar.
     AvatarInTabBar,
 
-    /// Adds aliases for executing Warp Drive workflows.
+    /// Adds aliases for executing Wish Drive workflows.
     WorkflowAliases,
 
     SshDragAndDrop,
@@ -349,7 +349,7 @@ pub enum FeatureFlag {
     /// Enables code symbols in AI context menu
     AIContextMenuCode,
 
-    /// Enables Warp Drive objects (like workflows) as context in AI context menu
+    /// Enables Wish Drive objects (like workflows) as context in AI context menu
     DriveObjectsAsContext,
 
     /// Expands code diff edits to replace the current pane instead of opening in a new tab.
@@ -649,7 +649,7 @@ pub enum FeatureFlag {
     /// Enables conversation artifacts.
     ConversationArtifacts,
 
-    /// Enables auto-syncing ambient plans to Warp Drive.
+    /// Enables auto-syncing ambient plans to Wish Drive.
     SyncAmbientPlans,
 
     /// Enables platform skills support (--skill flag) for agent runs.
@@ -696,7 +696,7 @@ pub enum FeatureFlag {
     ConversationsAsContext,
 
     /// Enables the rich input editor for CLI agents (e.g., Claude Code).
-    /// Ctrl-G intercepts the keystroke and opens Warp's input editor instead of $EDITOR.
+    /// Ctrl-G intercepts the keystroke and opens Wish's input editor instead of $EDITOR.
     CLIAgentRichInput,
 
     /// Enables incremental (diff-based) buffer updates for auto-reload instead of full replace.
@@ -746,7 +746,7 @@ pub enum FeatureFlag {
     /// adopt the configured color when their working directory matches.
     DirectoryTabColors,
 
-    /// Enables the new settings to control visibility of Warp Drive, Code Review Panel,
+    /// Enables the new settings to control visibility of Wish Drive, Code Review Panel,
     /// and Project Explorer & Global Search features.
     OpenWarpNewSettingsModes,
 
@@ -758,7 +758,7 @@ pub enum FeatureFlag {
     HoaCodeReview,
 
     /// Enables the `--harness` flag for `oz agent run`, allowing external agent
-    /// CLIs (e.g. `claude`) to execute prompts instead of Warp's agent harness.
+    /// CLIs (e.g. `claude`) to execute prompts instead of Wish's agent harness.
     AgentHarness,
 
     /// Enables workspace- and block-snapshot handoff between cloud agent runs
@@ -774,7 +774,7 @@ pub enum FeatureFlag {
     /// Enables the upgraded CLI agent session tracking and notifications infrastructure.
     HOANotifications,
 
-    /// Enables the install/update chip for the OpenCode Warp plugin.
+    /// Enables the install/update chip for the OpenCode Wish plugin.
     /// Requires HOANotifications to also be enabled.
     OpenCodeNotifications,
 
@@ -782,7 +782,7 @@ pub enum FeatureFlag {
     /// Requires HOANotifications to also be enabled.
     CodexNotifications,
 
-    /// Enables the install/update chip for the Gemini CLI Warp extension.
+    /// Enables the install/update chip for the Gemini CLI Wish extension.
     /// Requires HOANotifications to also be enabled.
     GeminiNotifications,
 

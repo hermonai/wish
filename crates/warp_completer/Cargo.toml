@@ -1,6 +1,6 @@
 [package]
 name = "warp_completer"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 version = "0.1.0"
 edition = "2021"
 description = "Warp completions engine"
@@ -31,9 +31,9 @@ smol_str.workspace = true
 string-offset.workspace = true
 thiserror.workspace = true
 warp_cli.workspace = true
-warp_core.workspace = true
+wish_core.workspace = true
 warp_js = { workspace = true, optional = true }
-warpui.workspace = true
+wishui.workspace = true
 warp_util.workspace = true
 typed-path.workspace = true
 

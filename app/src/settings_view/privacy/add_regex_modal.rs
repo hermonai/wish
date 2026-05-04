@@ -6,8 +6,8 @@ use crate::{
 };
 use regex::Regex;
 use warp_editor::editor::NavigationKey;
-use warpui::elements::{CrossAxisAlignment, Expanded, MainAxisSize};
-use warpui::{
+use wishui::elements::{CrossAxisAlignment, Expanded, MainAxisSize};
+use wishui::{
     elements::{ChildView, Container, Empty, Flex, MouseStateHandle, ParentElement, Text},
     ui_components::{
         button::ButtonVariant,

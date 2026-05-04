@@ -12,7 +12,7 @@ The CLI agent rich input (used for composing prompts to Claude Code, Gemini CLI,
 - `app/src/terminal/view/use_agent_footer/mod.rs` — `submit_cli_agent_rich_input`, new `paste_images_then_submit_text`
 - `app/src/ai/blocklist/context_model.rs` — `BlocklistAIContextModel`, `PendingAttachment`, `ImageContext`, `pending_images()`, `clear_pending_images()`
 - `app/src/ai/agent/mod.rs` — `ImageContext` struct (base64 data + mime_type + file_name)
-- `crates/warpui_core/src/clipboard.rs` — `Clipboard` trait, `ClipboardContent`, `ImageData`
+- `crates/wishui-core/src/clipboard.rs` — `Clipboard` trait, `ClipboardContent`, `ImageData`
 
 ## Current state
 

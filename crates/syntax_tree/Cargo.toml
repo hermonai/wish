@@ -2,14 +2,14 @@
 name = "syntax_tree"
 version = "0.1.0"
 edition = "2021"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 publish.workspace = true
 license.workspace = true
 
 [dependencies]
 rangemap.workspace = true
 arborium.workspace = true
-warpui.workspace = true
+wishui.workspace = true
 warp_editor.workspace = true
 languages.workspace = true
 futures.workspace = true
@@ -22,4 +22,4 @@ warp_util.workspace = true
 
 [dev-dependencies]
 warp_editor = { workspace = true, features = ["test-util"] }
-warpui = { workspace = true, features = ["test-util"] }
+wishui = { workspace = true, features = ["test-util"] }

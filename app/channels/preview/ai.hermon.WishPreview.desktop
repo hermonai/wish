@@ -1,0 +1,23 @@
+[Desktop Entry]
+# The version of the desktop entry spec this conforms to.
+Version=1.0
+
+Type=Application
+
+Name=WishPreview
+GenericName=TerminalEmulator
+
+Exec=wish-terminal-preview %U
+StartupWMClass=ai.hermon.WishPreview
+
+Keywords=shell;prompt;command;commandline;cmd;
+
+Icon=ai.hermon.WishPreview
+
+Categories=System;TerminalEmulator;
+
+# Don't run this application within a terminal.
+Terminal=false
+
+# Register ourselves as the handler for wishpreview:// URLs.
+MimeType=x-scheme-handler/wishpreview;

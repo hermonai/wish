@@ -4,7 +4,7 @@ use warp_cli::{
     task::{MessageCommand, MessageSendArgs, MessageWatchArgs, TaskCommand},
     CliCommand,
 };
-use warp_core::telemetry::TelemetryEvent;
+use wish_core::telemetry::TelemetryEvent;
 
 use super::{command_requires_auth, command_to_telemetry_event};
 
@@ -15,7 +15,16 @@ fn logout_does_not_require_auth() {
 
 #[test]
 fn login_does_not_require_auth() {
-    assert!(!command_requires_auth(&CliCommand::Login));
+    assert!(!command_requires_auth(&CliCommand::Login(
+        Default::default()
+    )));
+}
+
+#[test]
+fn signup_does_not_require_auth() {
+    assert!(!command_requires_auth(&CliCommand::Signup(
+        Default::default()
+    )));
 }
 
 #[test]

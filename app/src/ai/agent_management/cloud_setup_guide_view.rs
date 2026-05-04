@@ -13,26 +13,26 @@ use std::collections::HashMap;
 use string_offset::CharCounter;
 use warp_completer::signatures::CommandRegistry;
 use warp_completer::{util::parse_current_commands_and_tokens, ParsedTokensSnapshot};
-use warp_core::report_error;
-use warp_core::ui::theme::{AnsiColorIdentifier, AnsiColors};
-use warpui::clipboard::ClipboardContent;
-use warpui::elements::{
+use wish_core::report_error;
+use wish_core::ui::theme::{AnsiColorIdentifier, AnsiColors};
+use wishui::clipboard::ClipboardContent;
+use wishui::elements::{
     new_scrollable::{ClippedAxisConfiguration, DualAxisConfig, NewScrollable},
     Align, Border, ClippedScrollStateHandle, ConstrainedBox, Container, CornerRadius,
     CrossAxisAlignment, Element, Empty, Expanded, Flex, Highlight, HighlightedRange,
     MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::prelude::ChildView;
-use warpui::text_layout::TextStyle;
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::ViewHandle;
-use warpui::{AppContext, Entity, SingletonEntity, TypedActionView, View, ViewContext};
+use wishui::fonts::{Properties, Weight};
+use wishui::prelude::ChildView;
+use wishui::text_layout::TextStyle;
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::ViewHandle;
+use wishui::{AppContext, Entity, SingletonEntity, TypedActionView, View, ViewContext};
 
-const DOCS_URL: &str = "https://docs.warp.dev/agent-platform/cloud-agents/overview";
+const DOCS_URL: &str = "https://wish.hermon.ai/docs/agent-platform/cloud-agents/overview";
 const ENV_DOCS_URL: &str =
-    "https://docs.warp.dev/reference/cli/integration-setup#creating-an-environment";
-const OZ_URL: &str = "https://oz.warp.dev";
+    "https://wish.hermon.ai/docs/reference/cli/integration-setup#creating-an-environment";
+const OZ_URL: &str = "https://wish.hermon.ai";
 
 const CONTENT_MAX_WIDTH: f32 = 720.;
 
@@ -116,7 +116,7 @@ impl CloudSetupGuideView {
         );
 
         let visit_oz_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new("Visit Oz", SecondaryTheme)
+            ActionButton::new("Visit Hermon", SecondaryTheme)
                 .on_click(|ctx| ctx.dispatch_typed_action(CloudSetupGuideAction::VisitOz))
         });
 
@@ -144,7 +144,7 @@ impl CloudSetupGuideView {
         let mut header_container = Flex::column().with_spacing(8.);
 
         let title = Text::new(
-            "Getting started with Oz cloud agents",
+            "Getting started with Hermon cloud agents",
             appearance.ui_font_family(),
             title_font_size,
         )
@@ -154,7 +154,7 @@ impl CloudSetupGuideView {
         header_container.add_child(title);
 
         let subtitle = Text::new(
-            "Start Oz cloud agents directly in Warp from an integration (Linear, Slack), with an event (GitHub, built-in schedule), or programmatically with the Oz SDK or CLI.",
+            "Start Hermon cloud agents directly in Wish from an integration (Linear, Slack), with an event (GitHub, built-in schedule), or programmatically with the Oz SDK or CLI.",
             appearance.ui_font_family(),
             subtitle_font_size,
         )
@@ -177,7 +177,7 @@ impl CloudSetupGuideView {
                 appearance
                     .ui_builder()
                     .link(
-                        "Oz documentation".to_string(),
+                        "Hermon documentation".to_string(),
                         None,
                         Some(Box::new(|ctx| {
                             ctx.dispatch_typed_action(CloudSetupGuideAction::OpenDocs {
@@ -207,13 +207,13 @@ impl CloudSetupGuideView {
         header_container.finish()
     }
 
-    /// Render the quick start banner with link to oz.warp.dev.
+    /// Render the quick start banner with link to wish.hermon.ai.
     fn render_quick_start_banner(&self, appearance: &Appearance) -> Box<dyn Element> {
         let theme = appearance.theme();
         let font_size = 16.;
 
         let text = Text::new_inline(
-            "Quick start: Visit oz.warp.dev for a UI-based setup experience.",
+            "Quick start: Visit wish.hermon.ai for a UI-based setup experience.",
             appearance.ui_font_family(),
             font_size,
         )
@@ -247,7 +247,7 @@ impl CloudSetupGuideView {
         let font_size = 16.;
 
         Text::new(
-            "Manual setup: Create a Slack or Linear integration with the Oz CLI",
+            "Manual setup: Create a Slack or Linear integration with the Wish CLI",
             appearance.ui_font_family(),
             font_size,
         )
@@ -453,7 +453,7 @@ impl CloudSetupGuideView {
         .finish();
 
         let sub_description = Container::new(Self::render_description_with_link(
-            "Use Warp's environment setup command to have an agent help you through it. ",
+            "Use Wish's environment setup command to have an agent help you through it. ",
             "Visit docs",
             self.env_docs_link_mouse_state.clone(),
             SetupGuideDocs::Environment,
@@ -526,7 +526,7 @@ impl CloudSetupGuideView {
             .finish();
 
         let sub_description = Container::new(Self::render_description_with_link(
-            "Integrate Slack or Linear to assign Warp's Agent tasks with @Warp. ",
+            "Integrate Slack or Linear to assign Wish Agent tasks with @Wish. ",
             "Visit docs",
             self.integration_docs_link_mouse_state.clone(),
             SetupGuideDocs::Integration,
@@ -618,7 +618,7 @@ impl View for CloudSetupGuideView {
             },
             theme.nonactive_ui_detail().into(),
             theme.active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .finish();
 

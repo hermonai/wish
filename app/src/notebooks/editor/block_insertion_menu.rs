@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
 use warp_editor::content::text::BufferBlockItem;
-use warpui::{
+use wishui::{
     elements::{
         AnchorPair, Border, Container, CornerRadius, MouseStateHandle, OffsetPositioning,
         OffsetType, PositionedElementOffsetBounds, PositioningAxis, Radius, SavePosition, Stack,

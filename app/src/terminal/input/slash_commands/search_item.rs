@@ -1,10 +1,10 @@
 use ordered_float::OrderedFloat;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::Fill;
-use warpui::elements::{Expanded, Highlight, Icon, ParentElement, Shrinkable};
-use warpui::fonts::{Properties, Weight};
-use warpui::prelude::{ConstrainedBox, Container, CrossAxisAlignment, Empty, Flex, Text};
-use warpui::{AppContext, Element, SingletonEntity};
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::Fill;
+use wishui::elements::{Expanded, Highlight, Icon, ParentElement, Shrinkable};
+use wishui::fonts::{Properties, Weight};
+use wishui::prelude::{ConstrainedBox, Container, CrossAxisAlignment, Empty, Flex, Text};
+use wishui::{AppContext, Element, SingletonEntity};
 
 use crate::ai::blocklist::agent_view::shortcuts::render_keystroke_with_color_overrides;
 use crate::search::item::SearchItemDetail;

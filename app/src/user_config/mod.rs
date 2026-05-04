@@ -14,8 +14,8 @@ use lazy_static::lazy_static;
 #[cfg(feature = "local_fs")]
 use std::path::Path;
 use std::path::PathBuf;
-use warp_core::ui::theme::WarpTheme;
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wish_core::ui::theme::WarpTheme;
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 #[cfg(test)]
 pub(crate) use imp::load_tab_configs;
@@ -25,7 +25,7 @@ pub use imp::{load_launch_configs, load_theme_configs};
 
 lazy_static! {
     pub static ref LAUNCH_CONFIG_COMMENT: String = format!(
-        "# Warp Launch Configuration
+        "# Wish Launch Configuration
 #
 #
 # Use this to start a certain configuration of windows, tabs, and panes.
@@ -33,7 +33,7 @@ lazy_static! {
 #
 # This file defines your launch configuration.
 # More on how to do so here:
-# https://docs.warp.dev/terminal/sessions/launch-configurations
+# https://wish.hermon.ai/docs/terminal/sessions/launch-configurations
 #
 # All launch configurations are stored under {}.
 # Edit them anytime!
@@ -48,7 +48,7 @@ lazy_static! {
 #          commands:
 #            - exec: code .
 ",
-        warp_core::paths::home_relative_path(&crate::user_config::launch_configs_dir())
+        wish_core::paths::home_relative_path(&crate::user_config::launch_configs_dir())
     );
 }
 
@@ -168,12 +168,12 @@ impl WarpConfig {
 
 /// Returns the base directory in which all of the user's data is stored.
 fn base_dir() -> PathBuf {
-    warp_core::paths::data_dir()
+    wish_core::paths::data_dir()
 }
 
 /// Returns the path to the directory containing the user's custom themes.
 pub fn themes_dir() -> PathBuf {
-    warp_core::paths::themes_dir()
+    wish_core::paths::themes_dir()
 }
 
 /// Returns the path to the directory containing the user's custom workflows.
@@ -201,7 +201,7 @@ pub fn default_tab_configs_dir() -> PathBuf {
     base_dir().join("default_tab_configs")
 }
 
-/// Returns whether the path points to a tab config TOML file under one of Warp's
+/// Returns whether the path points to a tab config TOML file under one of Wish's
 /// tab config directories.
 #[cfg(feature = "local_fs")]
 pub fn is_tab_config_toml(path: &Path) -> bool {

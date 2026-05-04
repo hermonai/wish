@@ -18,8 +18,8 @@ use futures::future::join_all;
 use futures::Future;
 use futures_lite::StreamExt;
 use itertools::Itertools;
-use warp_core::command::ExitCode;
-use warpui::{App, ModelHandle};
+use wish_core::command::ExitCode;
+use wishui::{App, ModelHandle};
 
 use std::path::PathBuf;
 use std::pin::pin;
@@ -509,7 +509,7 @@ fn test_multiple_machines() {
             SessionInfo::new_for_test()
                 .with_id(0)
                 .with_shell_type(ShellType::Zsh)
-                .with_session_type(BootstrapSessionType::WarpifiedRemote)
+                .with_session_type(BootstrapSessionType::WishifiedRemote)
                 .with_hostname("prod".to_string())
                 .with_user("user".to_string())
                 .with_ssh_socket_path(PathBuf::from("~/.ssh/12345"))
@@ -521,7 +521,7 @@ fn test_multiple_machines() {
             SessionInfo::new_for_test()
                 .with_id(1)
                 .with_shell_type(ShellType::Zsh)
-                .with_session_type(BootstrapSessionType::WarpifiedRemote)
+                .with_session_type(BootstrapSessionType::WishifiedRemote)
                 .with_hostname("dev".to_string())
                 .with_user("user2".to_string())
                 .with_ssh_socket_path(PathBuf::from("~/.ssh/12345"))

@@ -1,14 +1,14 @@
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use std::{borrow::Cow, sync::Arc};
-use warp_core::ui::{
+use wish_core::ui::{
     appearance::Appearance,
     color::{coloru_with_opacity, contrast::MinimumAllowedContrast, ContrastingColor},
     theme::{color::internal_colors, AnsiColorIdentifier, Fill},
 };
-use warpui::{elements::MainAxisAlignment, Gradient};
-use warpui::{elements::MainAxisSize, text_layout::ClipConfig};
-use warpui::{
+use wishui::{elements::MainAxisAlignment, Gradient};
+use wishui::{elements::MainAxisSize, text_layout::ClipConfig};
+use wishui::{
     elements::{
         Border, ChildAnchor, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex,
         Hoverable, MouseStateHandle, OffsetPositioning, Padding, ParentAnchor, ParentElement as _,

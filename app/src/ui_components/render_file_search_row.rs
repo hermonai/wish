@@ -13,18 +13,18 @@
 
 use fuzzy_match::FuzzyMatchResult;
 use std::path::Path;
-use warp_core::ui::theme::Fill;
-use warpui::elements::{
+use wish_core::ui::theme::Fill;
+use wishui::elements::{
     Container, CrossAxisAlignment, Flex, Highlight, MainAxisSize, ParentElement, Shrinkable, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::text_layout::ClipConfig;
-use warpui::{AppContext, Element};
+use wishui::fonts::{Properties, Weight};
+use wishui::text_layout::ClipConfig;
+use wishui::{AppContext, Element};
 
 use crate::appearance::Appearance;
 use crate::search::ai_context_menu::safe_truncate;
 use crate::search::ItemHighlightState;
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 
 pub const MAX_COMBINED_LENGTH: usize = 55;
 

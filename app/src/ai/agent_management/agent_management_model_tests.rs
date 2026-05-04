@@ -1,5 +1,5 @@
-use warp_core::features::FeatureFlag;
-use warpui::{App, EntityId, ModelHandle};
+use wish_core::features::FeatureFlag;
+use wishui::{App, EntityId, ModelHandle};
 
 use crate::ai::active_agent_views_model::ActiveAgentViewsModel;
 use crate::ai::agent::conversation::AIConversationId;

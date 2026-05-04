@@ -3,30 +3,30 @@ use std::sync::LazyLock;
 
 use itertools::Itertools;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::features::FeatureFlag;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::color::blend::Blend;
-use warp_core::ui::theme::Fill;
-use warp_core::ui::Icon;
-use warpui::color::ColorU;
-use warpui::elements::{
+use wish_core::features::FeatureFlag;
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::color::blend::Blend;
+use wish_core::ui::theme::Fill;
+use wish_core::ui::Icon;
+use wishui::color::ColorU;
+use wishui::elements::{
     drag_resize::drag_resize_handle, ChildAnchor, Clipped, DispatchEventResult, DragResizeElement,
     DragResizeHandle, EventHandler, Expanded, Hoverable, MainAxisAlignment, MainAxisSize,
     MouseInBehavior, MouseStateHandle, OffsetPositioning, ParentAnchor, ParentElement,
     ParentOffsetBounds, ResizeEndFn, Scrollable, ScrollableElement, ScrollbarWidth,
     SizeConstraintCondition, SizeConstraintSwitch, Stack, UniformList, UniformListState,
 };
-use warpui::fonts::Weight;
-use warpui::platform::Cursor;
-use warpui::prelude::{
+use wishui::fonts::Weight;
+use wishui::platform::Cursor;
+use wishui::prelude::{
     Align, ChildView, ConstrainedBox, Container, CrossAxisAlignment, Empty, Flex, SavePosition,
     Text,
 };
-use warpui::scene::{Border, CornerRadius, Radius};
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
-use warpui::{elements::ScrollStateHandle, ModelHandle, View};
-use warpui::{
+use wishui::scene::{Border, CornerRadius, Radius};
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
+use wishui::{elements::ScrollStateHandle, ModelHandle, View};
+use wishui::{
     Action, AppContext, Element, Entity, SingletonEntity, TypedActionView, ViewContext, ViewHandle,
     WeakViewHandle,
 };
@@ -117,8 +117,8 @@ impl<A: InlineMenuAction> QueryResultRenderer<A> {
         is_selected: bool,
         app: &AppContext,
     ) -> Box<dyn Element> {
-        use warpui::elements::{DispatchEventResult, EventHandler, Hoverable};
-        use warpui::platform::Cursor;
+        use wishui::elements::{DispatchEventResult, EventHandler, Hoverable};
+        use wishui::platform::Cursor;
 
         if self.search_result.is_static_separator() {
             return self.render_inline_with_highlight_state(ItemHighlightState::Default, true, app);
@@ -175,7 +175,7 @@ impl<A: InlineMenuAction> QueryResultRenderer<A> {
         is_static_separator: bool,
         app: &AppContext,
     ) -> Box<dyn Element> {
-        use warpui::elements::{MainAxisSize, Shrinkable};
+        use wishui::elements::{MainAxisSize, Shrinkable};
 
         let appearance = Appearance::as_ref(app);
         let icon = self.search_result.render_icon(highlight_state, appearance);
@@ -914,7 +914,7 @@ impl<A: InlineMenuAction, T: 'static + Send + Sync> InlineMenuView<A, T> {
             ScrollbarWidth::Auto,
             theme.nonactive_ui_detail().into(),
             theme.active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .with_overlayed_scrollbar()
         .finish();

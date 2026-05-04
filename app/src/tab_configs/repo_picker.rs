@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use warpui::{
+use wishui::{
     elements::{Border, ChildView, Container, Hoverable, MouseStateHandle, Text},
     platform::Cursor,
     ui_components::components::UiComponentStyles,

@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::{Container, Flex, MouseStateHandle, ParentElement},
     fonts::Weight,
     ui_components::components::{UiComponent, UiComponentStyles},

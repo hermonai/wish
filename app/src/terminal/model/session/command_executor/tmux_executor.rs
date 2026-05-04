@@ -17,7 +17,7 @@ use crate::terminal::shell::Shell;
 
 use super::CommandExecutor;
 use warp_completer::completer::{CommandExitStatus, CommandOutput};
-use warp_core::command::ExitCode;
+use wish_core::command::ExitCode;
 
 /// A `Session`-scoped executor for commands via tmux.
 pub struct TmuxCommandExecutor {

@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
-use warp_core::HostId;
 use warp_util::standardized_path::StandardizedPath;
+use wish_core::HostId;
 
 /// Identifies a repository across local and remote environments.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

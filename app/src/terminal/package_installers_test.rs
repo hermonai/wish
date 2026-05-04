@@ -53,7 +53,7 @@ fn test_command_at_cursor_has_common_package_installer_prefix_with_alias_expansi
     use typed_path::TypedPathBuf;
     use warp_completer::signatures::CommandRegistry;
     use warp_util::path::ShellFamily;
-    use warpui::App;
+    use wishui::App;
 
     use crate::completer::SessionContext;
     use crate::terminal::model::session::{

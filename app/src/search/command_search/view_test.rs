@@ -1,4 +1,4 @@
-use warpui::{platform::WindowStyle, App};
+use wishui::{platform::WindowStyle, App};
 
 use crate::{
     cloud_object::model::persistence::CloudModel,

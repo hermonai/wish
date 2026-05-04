@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-This FAQ covers the questions we hear most often about contributing to the Warp client, working with agents in this repository, and how this repo fits into Warp the product. For the full contribution flow, see [CONTRIBUTING.md](CONTRIBUTING.md). For engineering details — build setup, code style, testing — see [WARP.md](WARP.md).
+This FAQ covers the questions we hear most often about contributing to the Wish client, working with agents in this repository, and how this repo fits into Wish the product. For the full contribution flow, see [CONTRIBUTING.md](CONTRIBUTING.md). For engineering details — build setup, code style, testing — see [WARP.md](WARP.md).
 
 ## Contributing
 
@@ -10,9 +10,9 @@ Start with a GitHub issue. Bug reports are implicitly ready to fix once triaged;
 
 ### How do I file a good bug report or feature request?
 
-Use the [issue templates](https://github.com/warpdotdev/warp/issues/new/choose). For bugs, include reproduction steps, expected vs. actual behavior, your Warp version (`Settings → About`), and OS. For features, describe the user-facing problem before proposing an implementation.
+Use the [issue templates](https://github.com/hermonai/wish/issues/new/choose). For bugs, include reproduction steps, expected vs. actual behavior, your Wish version (`Settings → About`), and OS. For features, describe the user-facing problem before proposing an implementation.
 
-If you're already running Warp, the `/feedback` command files an issue with logs and environment details attached automatically.
+If you're already running Wish, the `/feedback` command files an issue with logs and environment details attached automatically.
 
 ### What do the readiness labels mean?
 
@@ -26,11 +26,11 @@ Anyone can pick up a labeled issue. Mention **@oss-maintainers** on an issue if 
 
 Specs make scope, behavior, and architecture reviewable on their own, before someone writes code that may need to be thrown away. Each spec PR adds a `product.md` (desired behavior) and a `tech.md` (implementation plan) under `specs/GH<issue-number>/`. See [Opening a Spec PR](CONTRIBUTING.md#opening-a-spec-pr) for what each document should contain.
 
-### How do I build and run Warp from source?
+### How do I build and run Wish from source?
 
 ```bash
 ./script/bootstrap   # platform-specific setup
-cargo run            # build and run Warp
+cargo run            # build and run Wish
 ./script/presubmit   # fmt, clippy, and tests
 ```
 
@@ -38,7 +38,7 @@ macOS, Linux, and Windows are all supported. Platform-specific setup is handled 
 
 ### Will my PR be reviewed by a human or by an agent?
 
-Both. When you open a PR, Oz is auto-assigned and produces an initial review. Once Oz approves, it automatically requests a follow-up review from a Warp team subject-matter expert. You don't need to assign reviewers manually.
+Both. When you open a PR, Oz is auto-assigned and produces an initial review. Once Oz approves, it automatically requests a follow-up review from a Hermon AI team subject-matter expert. You don't need to assign reviewers manually.
 
 ### My PR has been sitting without review — what do I do?
 
@@ -58,15 +58,15 @@ Contributors with several merged PRs may be invited to become collaborators. The
 
 ### Can I use my own coding agent to contribute?
 
-Yes. Use whatever you like — Warp's built-in agent, Claude Code, Codex, Gemini CLI, Cursor, others, or no agent at all. The repo ships agent-readable context (skills under [`.agents/skills/`](.agents/skills/), specs under [`specs/`](specs/), and [`WARP.md`](WARP.md)) that any harness supporting these formats can pick up.
+Yes. Use whatever you like — Wish's built-in agent, Claude Code, Codex, Gemini CLI, Cursor, others, or no agent at all. The repo ships agent-readable context (skills under [`.agents/skills/`](.agents/skills/), specs under [`specs/`](specs/), and [`WARP.md`](WARP.md)) that any harness supporting these formats can pick up.
 
-### Can I use Codex or Claude models with my existing subscriptions in Warp, or submit a PR to add that?
+### Can I use Codex or Claude models with my existing subscriptions in Wish, or submit a PR to add that?
 
-Not today. Warp's built-in agent harness runs server-side and isn't open in this repo today.
+Not today. Wish's built-in agent harness runs server-side and isn't open in this repo today.
 
-That said, we plan to support [ACP (agent client protocol)](https://agentclientprotocol.com/) in Warp, so you could connect other models or subscriptions directly and get a native Warp experience for your coding agent of choice.
+That said, we plan to support [ACP (agent client protocol)](https://agentclientprotocol.com/) in Wish, so you could connect other models or subscriptions directly and get a native Wish experience for your coding agent of choice.
 
-[This is tracked on our roadmap](https://github.com/warpdotdev/warp/issues/9233), and we will update the community as we explore this.
+[This is tracked on our roadmap](https://github.com/hermonai/wish/issues/9233), and we will update the community as we explore this.
 
 ### How can I get Oz to implement an issue for me?
 
@@ -76,7 +76,7 @@ Once you're a collaborator, you can mention `@oz` directly on any ready issue to
 
 ### Do I have to pay anything to contribute here?
 
-No. Contributing by hand or with your own agent is free. Oz runs on Warp's credits for approved requests on this repo, and is free for collaborators contributing back to it.
+No. Contributing by hand or with your own agent is free. Oz runs on Wish's credits for approved requests on this repo, and is free for collaborators contributing back to it.
 
 ### Are agent-generated PRs held to the same bar as human ones?
 
@@ -84,23 +84,23 @@ Yes. The same Oz + SME review, the same tests, and the same `cargo fmt` / `cargo
 
 ### Will my issues, comments, or code be used to train models?
 
-No. Warp does not use contributions to this repository, or the discussion around them, for model training.
+No. Wish does not use contributions to this repository, or the discussion around them, for model training.
 
 ## What's open source and what isn't
 
-### Is Warp fully open source?
+### Is Wish fully open source?
 
-The Warp **client** is open source: the app and most crates are licensed under [AGPL v3](LICENSE-AGPL), and the UI framework crates (`warpui_core`, `warpui`) are licensed under [MIT](LICENSE-MIT). The **server**, the **Warp Drive backend**, and **Oz** (our agent orchestration layer) are not in this repository and remain proprietary today.
+The Wish **client** is open source: the app and most crates are licensed under [AGPL v3](LICENSE-AGPL), and the UI framework crates (`wishui_core`, `wishui`) are licensed under [MIT](LICENSE-MIT). The **Hermon backend**, the **Wish Drive backend**, and hosted agent orchestration are not in this repository and remain proprietary today.
 
 ### What lives in this repo and what doesn't?
 
-**In this repo:** the Warp client app, the WarpUI framework, integration tests, agent skills, and feature specs.
+**In this repo:** the Wish client app, the WishUI framework, integration tests, agent skills, and feature specs.
 
 **Not in this repo:** the server, the Drive backend, hosted authentication, and Oz orchestration.
 
-### Can I run Warp without signing in or using Warp's cloud?
+### Can I run Wish without signing in or using Wish's cloud?
 
-Some functionality works fully locally; other features (Drive sync, hosted-model agents, team features) require Warp's backend. We're working to make the locally-runnable surface clearer over time, including more explicit controls in onboarding.
+Some functionality works fully locally; other features (Drive sync, hosted-model agents, team features) require Wish's backend. We're working to make the locally-runnable surface clearer over time, including more explicit controls in onboarding.
 
 ### Will the server or Oz ever be open-sourced?
 
@@ -114,19 +114,19 @@ We wanted two different things from each part of the codebase, so we picked two 
 
 For the **client app**, we chose [AGPL v3](LICENSE-AGPL) because we wanted modifications to stay open. A permissive license like MIT or Apache 2.0 would let someone fork the client, make changes, and ship a closed-source product back to users — that's a pattern we've seen burn end-user-facing open source projects, and it's not the ecosystem we want to seed. AGPL closes the network-use loophole that GPL leaves open, so a hosted derivative of the client is also covered. The trade-off is that AGPL is stricter than what some companies are comfortable embedding into proprietary products, and we accept that — the client isn't where we expect that kind of reuse.
 
-For the **UI framework crates** (`warpui_core`, `warpui`), we chose [MIT](LICENSE-MIT) because they're general-purpose infrastructure that's useful well outside Warp. We want people building unrelated apps in Rust to be able to pick them up without the friction AGPL introduces. Keeping that layer permissive is good for the framework's reach and good for upstream contributions back to it.
+For the **UI framework crates** (`wishui_core`, `wishui`), we chose [MIT](LICENSE-MIT) because they're general-purpose infrastructure that's useful well outside Wish. We want people building unrelated apps in Rust to be able to pick them up without the friction AGPL introduces. Keeping that layer permissive is good for the framework's reach and good for upstream contributions back to it.
 
 In short: AGPL where we want derivatives to stay open, MIT where we want maximum reuse.
 
-### Can I use Warp at my company under AGPL?
+### Can I use Wish at my company under AGPL?
 
-Yes. Using Warp as your terminal or development environment doesn't trigger AGPL's network or distribution obligations. AGPL applies if you modify the client *and* distribute or host that modified version for others.
+Yes. Using Wish as your terminal or development environment doesn't trigger AGPL's network or distribution obligations. AGPL applies if you modify the client *and* distribute or host that modified version for others.
 
 ### Why is there a CLA?
 
-The CLA grants Warp the rights it needs to redistribute contributions under this project's licenses (AGPL and MIT) and to address future licensing and compliance needs. It does not change the license of code contributed to this repo.
+The CLA grants Hermon AI the rights it needs to redistribute contributions under this project's licenses (AGPL and MIT) and to address future licensing and compliance needs. It does not change the license of code contributed to this repo.
 
-### Can someone fork Warp?
+### Can someone fork Wish?
 
 Yes — that's what AGPL is for. The license prevents fully-proprietary relaunches; open derivatives are welcome.
 
@@ -134,11 +134,11 @@ Yes — that's what AGPL is for. The license prevents fully-proprietary relaunch
 
 ### Where do I get help?
 
-- The [Warp docs](https://docs.warp.dev/) for using the product.
-- [GitHub Issues](https://github.com/warpdotdev/warp/issues) for bug reports and feature requests.
-- The [Slack community](https://go.warp.dev/join-preview) for general questions and discussion — contributors chat with each other and the Warp team in [`#oss-contributors`](https://warpcommunity.slack.com/archives/C0B0LM8N4DB).
+- The [Wish docs](https://wish.hermon.ai/docs/) for using the product.
+- [GitHub Issues](https://github.com/hermonai/wish/issues) for bug reports and feature requests.
+- The contributor community for general questions and discussion with other contributors and the Hermon AI team.
 - Mention **@oss-maintainers** on an issue or PR to escalate to the team.
 
 ### How do I report a security vulnerability?
 
-Please don't open a public GitHub issue. See [SECURITY.md](SECURITY.md) — report via [security@warp.dev](mailto:security@warp.dev) or open a private [GitHub Security Advisory](https://github.com/warpdotdev/Warp/security/advisories/new).
+Please don't open a public GitHub issue. See [SECURITY.md](SECURITY.md) — report via [security@hermon.ai](mailto:security@hermon.ai) or open a private [GitHub Security Advisory](https://github.com/hermonai/wish/security/advisories/new).

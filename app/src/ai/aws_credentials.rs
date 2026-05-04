@@ -14,7 +14,7 @@ use futures::future::BoxFuture;
 use tokio::sync::OnceCell;
 use vec1::vec1;
 use warp_managed_secrets::{client::IdentityTokenOptions, ManagedSecretManager};
-use warpui::{ModelContext, ModelHandle, SingletonEntity};
+use wishui::{ModelContext, ModelHandle, SingletonEntity};
 
 /// Errors that can occur when loading AWS credentials.
 #[derive(Debug, Clone)]

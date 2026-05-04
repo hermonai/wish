@@ -29,7 +29,7 @@ use warp_editor::{
     selection::{TextDirection, TextUnit},
 };
 use warp_util::user_input::UserInput;
-use warpui::{
+use wishui::{
     actions::StandardAction,
     elements::Axis,
     event::ModifiersState,
@@ -48,7 +48,7 @@ lazy_static! {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     let text_entry = id!("CodeEditorView") & !id!("IMEOpen");
     // We use this to disable some keybindings that would conflict with the Agent Mode embedded editor.

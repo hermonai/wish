@@ -6,10 +6,10 @@ use crate::search::item::SearchItem;
 use crate::search::result_renderer::ItemHighlightState;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
-use warpui::elements::{
+use wishui::elements::{
     ConstrainedBox, Container, CrossAxisAlignment, Flex, Icon, ParentElement, Text,
 };
-use warpui::{AppContext, Element, SingletonEntity};
+use wishui::{AppContext, Element, SingletonEntity};
 
 #[derive(Debug, Clone)]
 pub struct DiffSetSearchItem {

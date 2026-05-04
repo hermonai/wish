@@ -5,11 +5,11 @@
 //! information.
 #[cfg(not(windows))]
 use command::blocking::Command;
-use warp_core::channel::ChannelState;
-use warpui::windowing;
+use wish_core::channel::ChannelState;
+use wishui::windowing;
 
 pub(crate) fn run() -> anyhow::Result<()> {
-    println!("Warp version: {:?}", ChannelState::app_version());
+    println!("Wish version: {:?}", ChannelState::app_version());
 
     #[cfg(not(windows))]
     {
@@ -31,7 +31,7 @@ pub(crate) fn run() -> anyhow::Result<()> {
     #[cfg(not(target_os = "macos"))]
     {
         if let Ok(event_loop) = winit::event_loop::EventLoop::new() {
-            warpui::rendering::wgpu::init_wgpu_instance(Box::new(
+            wishui::rendering::wgpu::init_wgpu_instance(Box::new(
                 event_loop.owned_display_handle(),
             ));
 
@@ -62,7 +62,7 @@ pub(crate) fn run() -> anyhow::Result<()> {
             init_private_user_preferences, PreferLowPowerGPU, PreferredGraphicsBackend,
         };
         use settings::Setting as _;
-        use warpui::rendering::GPUPowerPreference;
+        use wishui::rendering::GPUPowerPreference;
 
         let user_preferences = init_private_user_preferences();
 
@@ -83,7 +83,7 @@ pub(crate) fn run() -> anyhow::Result<()> {
         println!("##################################################");
         println!("# wgpu Adapters");
         println!("##################################################");
-        warpui::r#async::block_on(warpui::rendering::wgpu::print_wgpu_adapters(
+        wishui::r#async::block_on(wishui::rendering::wgpu::print_wgpu_adapters(
             gpu_power_preference,
             backend_preference,
             windowing_system,

@@ -1,5 +1,5 @@
 use pathfinder_color::ColorU;
-use warpui::{
+use wishui::{
     elements::{
         Align, ConstrainedBox, Container, CrossAxisAlignment, Flex, HighlightedHyperlink,
         MouseStateHandle, ParentElement, Shrinkable,
@@ -17,7 +17,7 @@ use crate::{
     appearance::Appearance,
     terminal::{
         ssh::warpify::warpify_description,
-        view::{RememberForWarpification, TerminalAction},
+        view::{RememberForWishification, TerminalAction},
     },
     themes::theme::Fill,
     ui_components::blended_colors,
@@ -29,7 +29,7 @@ const CLOSE_BUTTON_DIAMETER: f32 = 20.0;
 const STANDARD_PADDING: f32 = 8.0;
 
 #[derive(Clone)]
-pub enum WarpificationMode {
+pub enum WishificationMode {
     Ssh {
         command: String,
         host: Option<String>,
@@ -40,7 +40,7 @@ pub enum WarpificationMode {
     },
 }
 
-impl WarpificationMode {
+impl WishificationMode {
     pub fn ssh(command: String, host: Option<String>) -> Self {
         Self::Ssh {
             command,
@@ -58,28 +58,28 @@ impl WarpificationMode {
     }
 }
 
-impl WarpificationMode {
+impl WishificationMode {
     pub fn is_ssh(&self) -> bool {
         matches!(self, Self::Ssh { .. })
     }
 }
 
-pub struct WarpifyBannerState {
-    pub mode: WarpificationMode,
+pub struct WishifyBannerState {
+    pub mode: WishificationMode,
     pub height: f32,
     pub accept_button_mouse_state: MouseStateHandle,
     pub dont_ask_button_mouse_state: MouseStateHandle,
     pub dismiss_button_mouse_state: MouseStateHandle,
 
-    /// This keybinding gets rendered in the Warpification banner, but we can't look it up
+    /// This keybinding gets rendered in the Wishification banner, but we can't look it up
     /// during render as a &mut AppContext is not available then. This needs to get
     /// looked up during action handling and cached here.
     pub initialize_warpify_keybinding: Option<Keystroke>,
     pub hover_state: MouseStateHandle,
 }
 
-impl WarpifyBannerState {
-    pub fn new(mode: WarpificationMode, initialize_warpify_keybinding: Option<Keystroke>) -> Self {
+impl WishifyBannerState {
+    pub fn new(mode: WishificationMode, initialize_warpify_keybinding: Option<Keystroke>) -> Self {
         Self {
             mode,
             height: 0.0,
@@ -97,40 +97,40 @@ impl WarpifyBannerState {
 
     pub fn title(&self) -> &str {
         match &self.mode {
-            WarpificationMode::Ssh { .. } => "Warpify SSH session",
-            WarpificationMode::Subshell { .. } => "Warpify subshell",
+            WishificationMode::Ssh { .. } => "Wishify SSH session",
+            WishificationMode::Subshell { .. } => "Wishify subshell",
         }
     }
 
     pub fn action(&self) -> TerminalAction {
         match &self.mode {
-            WarpificationMode::Ssh { .. } => TerminalAction::WarpifySSHSession,
-            WarpificationMode::Subshell { .. } => TerminalAction::TriggerSubshellBootstrap,
+            WishificationMode::Ssh { .. } => TerminalAction::WishifySSHSession,
+            WishificationMode::Subshell { .. } => TerminalAction::TriggerSubshellBootstrap,
         }
     }
 
-    fn remember_for_warpification(&self, should_remember: bool) -> RememberForWarpification {
+    fn remember_for_warpification(&self, should_remember: bool) -> RememberForWishification {
         match &self.mode {
-            WarpificationMode::Ssh { command, host, .. } => {
+            WishificationMode::Ssh { command, host, .. } => {
                 let Some(host) = host else {
                     if should_remember {
-                        return RememberForWarpification::RememberSubshellCommand(
+                        return RememberForWishification::RememberSubshellCommand(
                             command.to_owned(),
                         );
                     }
-                    return RememberForWarpification::DoNotRememberSSHHost;
+                    return RememberForWishification::DoNotRememberSSHHost;
                 };
                 if should_remember {
-                    RememberForWarpification::RememberSSHHost(host.to_owned())
+                    RememberForWishification::RememberSSHHost(host.to_owned())
                 } else {
-                    RememberForWarpification::DoNotRememberSSHHost
+                    RememberForWishification::DoNotRememberSSHHost
                 }
             }
-            WarpificationMode::Subshell { command } => {
+            WishificationMode::Subshell { command } => {
                 if should_remember {
-                    RememberForWarpification::RememberSubshellCommand(command.to_owned())
+                    RememberForWishification::RememberSubshellCommand(command.to_owned())
                 } else {
-                    RememberForWarpification::DoNotRememberSubshellCommand
+                    RememberForWishification::DoNotRememberSubshellCommand
                 }
             }
         }
@@ -141,7 +141,7 @@ impl WarpifyBannerState {
 /// command. It asks if they want to boostrap a subshell and, if so, whether we should ask again
 /// next time they run the same command.
 pub fn render_warpification_banner(
-    state: &WarpifyBannerState,
+    state: &WishifyBannerState,
     appearance: &Appearance,
     app: &AppContext,
 ) -> Box<dyn Element> {
@@ -163,7 +163,7 @@ pub fn render_warpification_banner(
             .with_text_label("Do not show again".to_owned())
             .build()
             .on_click(move |ctx, _, _| {
-                ctx.dispatch_typed_action(TerminalAction::DismissWarpifyBanner(
+                ctx.dispatch_typed_action(TerminalAction::DismissWishifyBanner(
                     remember.to_owned(),
                 ));
             })
@@ -181,7 +181,7 @@ pub fn render_warpification_banner(
         )
         .build()
         .on_click(move |ctx, _, _| {
-            ctx.dispatch_typed_action(TerminalAction::DismissWarpifyBanner(
+            ctx.dispatch_typed_action(TerminalAction::DismissWishifyBanner(
                 do_not_remember.to_owned(),
             ));
         })
@@ -202,7 +202,7 @@ pub fn render_warpification_banner(
 
     render_block_banner(
         |hover_state| {
-            if let WarpificationMode::Ssh {
+            if let WishificationMode::Ssh {
                 hyperlink_index, ..
             } = &state.mode
             {
@@ -227,7 +227,7 @@ pub fn render_warpification_banner(
 }
 
 fn render_yes_button(
-    state: &WarpifyBannerState,
+    state: &WishifyBannerState,
     initialize_warpification_keybinding: &Option<Keystroke>,
     mouse_state: &MouseStateHandle,
     appearance: &Appearance,

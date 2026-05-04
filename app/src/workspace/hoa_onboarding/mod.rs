@@ -4,9 +4,9 @@ mod welcome_banner;
 
 pub use hoa_onboarding_flow::{init, HoaOnboardingFlow, HoaOnboardingFlowEvent, HoaOnboardingStep};
 
-use warpui::AppContext;
+use wishui::AppContext;
 
-use warp_core::user_preferences::GetUserPreferences;
+use wish_core::user_preferences::GetUserPreferences;
 
 const HAS_COMPLETED_HOA_ONBOARDING_KEY: &str = "HasCompletedHOAOnboarding";
 

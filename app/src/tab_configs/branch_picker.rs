@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use warpui::{
+use wishui::{
     elements::ChildView, ui_components::components::UiComponentStyles, AppContext, Element, Entity,
     TypedActionView, View, ViewContext, ViewHandle,
 };

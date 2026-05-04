@@ -16,12 +16,12 @@ pub(super) mod proxy;
 use super::server_model::{ConnectionId, ServerModel};
 use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
-use warpui::r#async::executor;
+use wishui::r#async::executor;
 
 /// Run the `remote-server-daemon` subcommand.
 ///
 /// Binds a Unix domain socket and writes a PID file, then delegates the
-/// WarpUI app startup to [`super::run_daemon_app`] with the Unix-specific
+/// WishUI app startup to [`super::run_daemon_app`] with the Unix-specific
 /// `ServerModel` constructor.
 pub fn run_daemon(identity_key: String) -> anyhow::Result<()> {
     // socket_path: ~/.warp[-channel]/remote-server/{identity_key}/server.sock
@@ -116,7 +116,7 @@ pub fn run_daemon(identity_key: String) -> anyhow::Result<()> {
 pub(super) async fn handle_daemon_connection(
     conn_id: ConnectionId,
     stream: async_io::Async<std::os::unix::net::UnixStream>,
-    spawner: warpui::ModelSpawner<ServerModel>,
+    spawner: wishui::ModelSpawner<ServerModel>,
     exec: std::sync::Arc<executor::Background>,
 ) {
     use futures::io::{AsyncWriteExt, BufReader, BufWriter};

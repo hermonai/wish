@@ -6,7 +6,7 @@ use async_trait::async_trait;
 use futures::future::Either;
 use futures::StreamExt;
 use instant::Instant;
-use warpui::r#async::Timer;
+use wishui::r#async::Timer;
 
 use crate::server::server_api::ai::AgentRunEvent;
 use crate::server::server_api::ServerApi;

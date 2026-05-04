@@ -5,7 +5,7 @@ use std::ops::BitOrAssign;
 
 use warp_terminal::model::char_or_str::CharOrStr;
 use warp_util::path::LineAndColumnArg;
-use warpui::text::words::is_default_word_boundary;
+use wishui::text::words::is_default_word_boundary;
 
 use crate::terminal::model::secrets::{ObfuscateSecrets, SecretLevel};
 use crate::terminal::model::{blockgrid::BlockGrid, secrets::IsObfuscated};
@@ -727,7 +727,7 @@ fn test_find_url_wide_characters() {
 #[test]
 fn test_find_url_omits_trailing_periods() {
     // Test that it omits a single trailing period.
-    let blockgrid = mock_blockgrid("Visit https://github.com/warpdotdev/Warp/issues.");
+    let blockgrid = mock_blockgrid("Visit https://github.com/hermonai/wish/issues.");
     assert_eq!(
         blockgrid
             .grid_handler
@@ -745,7 +745,7 @@ fn test_find_url_omits_trailing_periods() {
     );
 
     // Test that it omits multiple trailing periods.
-    let blockgrid = mock_blockgrid("Visit https://github.com/warpdotdev/Warp/issues...");
+    let blockgrid = mock_blockgrid("Visit https://github.com/hermonai/wish/issues...");
     assert_eq!(
         blockgrid
             .grid_handler

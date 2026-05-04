@@ -1,5 +1,5 @@
 use crate::Builder;
-use warp::integration_testing::{
+use wish::integration_testing::{
     step::new_step_with_default_assertions,
     terminal::{
         assert_selected_block_index_is_last_renderable, execute_command_for_single_terminal_in_tab,
@@ -7,11 +7,11 @@ use warp::integration_testing::{
     },
     view_getters::ai_assistant_panel_view,
 };
-use warpui::async_assert;
+use wishui::async_assert;
 
 use super::new_builder;
 
-/// Checks if the Ask Warp AI keybinding works correctly when a block is selected.
+/// Checks if the Ask Wish AI keybinding works correctly when a block is selected.
 /// This is a regression test: https://linear.app/warpdotdev/issue/WAR-6758/warp-ai-ask-from-block-keybinding-doesnt-work-as-expected.
 pub fn test_ask_warp_ai_keybinding_for_selected_block() -> Builder {
     new_builder()

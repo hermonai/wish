@@ -1,4 +1,4 @@
-use warpui::{elements::MouseStateHandle, AppContext, Element};
+use wishui::{elements::MouseStateHandle, AppContext, Element};
 
 use crate::{
     appearance::Appearance,
@@ -71,7 +71,7 @@ impl WarpDriveItemId {
         }
     }
 }
-/// This uniquely identifies an item in Warp Drive index
+/// This uniquely identifies an item in Wish Drive index
 /// Includes spaces (which CloudObjectTypeAndId does not entail)
 #[derive(Debug, Clone, PartialEq, Eq, Copy)]
 pub enum WarpDriveItemId {

@@ -2,15 +2,15 @@ use crate::appearance::Appearance;
 use crate::terminal::view::{InlineBannerId, TerminalAction};
 use crate::ui_components::buttons::icon_button;
 use crate::ui_components::icons::Icon as UiIcon;
-use warpui::elements::{
+use wishui::elements::{
     Container, CornerRadius, CrossAxisAlignment, Flex, Icon, MainAxisAlignment, MainAxisSize,
     MouseStateHandle, ParentElement, Radius, Shrinkable, Text,
 };
-use warpui::ui_components::{
+use wishui::ui_components::{
     button::ButtonVariant,
     components::{Coords, UiComponent, UiComponentStyles},
 };
-use warpui::Element;
+use wishui::Element;
 
 use super::{
     INLINE_BANNER_BUTTON_HOVER_OPACITY, INLINE_BANNER_BUTTON_PADDING,
@@ -81,7 +81,7 @@ fn render_three_column_inline_banner(
     let active_text_color = theme.active_ui_text_color().into_solid();
     let content_text_color = theme.nonactive_ui_text_color().into_solid();
 
-    let hover_background_fill = warpui::elements::Fill::from(
+    let hover_background_fill = wishui::elements::Fill::from(
         theme
             .active_ui_text_color()
             .with_opacity(INLINE_BANNER_BUTTON_HOVER_OPACITY),
@@ -122,7 +122,7 @@ fn render_three_column_inline_banner(
     let icon_color = active_text_color;
 
     let icon_column = Container::new(
-        warpui::elements::ConstrainedBox::new(
+        wishui::elements::ConstrainedBox::new(
             Icon::new("bundled/svg/info.svg", icon_color).finish(),
         )
         .with_width(icon_width)
@@ -179,8 +179,8 @@ fn render_three_column_inline_banner(
     let button_styles = UiComponentStyles {
         font_color: Some(active_text_color),
         font_size: Some(button_text_size),
-        font_weight: Some(warpui::fonts::Weight::Semibold),
-        border_color: Some(warpui::elements::Fill::Solid(content_text_color)),
+        font_weight: Some(wishui::fonts::Weight::Semibold),
+        border_color: Some(wishui::elements::Fill::Solid(content_text_color)),
         border_width: Some(1.0),
         border_radius: Some(CornerRadius::with_all(Radius::Pixels(
             INLINE_BANNER_BUTTON_PADDING,

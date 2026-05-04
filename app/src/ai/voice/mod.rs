@@ -1,5 +1,5 @@
-//! This module contains all code relevant to Voice within Warp.
+//! This module contains all code relevant to Voice within Wish.
 //!
-//! Voice is used for voice input within Warp.
+//! Voice is used for voice input within Wish.
 
 pub(crate) mod transcribe;

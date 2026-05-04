@@ -9,7 +9,7 @@ use crate::{
     server::server_api::{ServerApi, FETCH_CHANNEL_VERSIONS_TIMEOUT},
 };
 
-// Fetches channel versions asynchronously from the Warp server. If the Warp server request fails,
+// Fetches channel versions asynchronously from the Wish server. If the Wish server request fails,
 // then fetches from GCP JSON storage as a fallback.
 pub async fn fetch_channel_versions(
     nonce: &str,
@@ -29,7 +29,7 @@ pub async fn fetch_channel_versions(
     let channel_versions = server_api
         .fetch_channel_versions(include_changelogs, is_daily)
         .await
-        .context("Failed to retrieve channel versions from Warp server");
+        .context("Failed to retrieve channel versions from Wish server");
     match channel_versions {
         channel_versions @ Ok(_) => channel_versions,
         Err(err) => {
@@ -39,7 +39,7 @@ pub async fn fetch_channel_versions(
                 // our Sentry logs).
                 Channel::Dev | Channel::Preview => report_error!(err),
                 _ => log::warn!(
-                    "Failed to retrieve channel versions from Warp server, falling \
+                    "Failed to retrieve channel versions from Wish server, falling \
                 back to GCP JSON storage."
                 ),
             }

@@ -13,7 +13,7 @@ use ai::diff_validation::{
 };
 use itertools::Itertools;
 use vec1::Vec1;
-use warpui::r#async::executor::Background;
+use wishui::r#async::executor::Background;
 
 use crate::{
     ai::{

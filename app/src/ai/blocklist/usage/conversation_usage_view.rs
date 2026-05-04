@@ -8,10 +8,10 @@ use crate::persistence::model::{
 use crate::ui_components::blended_colors;
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use warp_core::ui::theme::color::internal_colors;
-use warp_core::ui::Icon;
-use warpui::elements::ConstrainedBox;
-use warpui::{
+use wish_core::ui::theme::color::internal_colors;
+use wish_core::ui::Icon;
+use wishui::elements::ConstrainedBox;
+use wishui::{
     elements::{
         Border, Container, CornerRadius, CrossAxisAlignment, Empty, Flex, MainAxisSize,
         MouseStateHandle, ParentElement, Radius, Text,

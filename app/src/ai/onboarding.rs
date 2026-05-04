@@ -3,8 +3,8 @@
 use ai::LLMId;
 use onboarding::slides::OnboardingModelInfo;
 use onboarding::OnboardingAuthState;
-use warp_core::ui::icons::Icon;
-use warpui::{AppContext, SingletonEntity};
+use wish_core::ui::icons::Icon;
+use wishui::{AppContext, SingletonEntity};
 
 use crate::auth::AuthStateProvider;
 use crate::experiments::FreeTierDefaultModel;

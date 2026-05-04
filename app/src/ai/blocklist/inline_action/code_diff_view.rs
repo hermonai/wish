@@ -12,7 +12,13 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use warp_core::{
+use warp_editor::{
+    content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
+};
+use warp_util::file::FileSaveError;
+use warp_util::path::common_path;
+use warp_util::standardized_path::StandardizedPath;
+use wish_core::{
     features::FeatureFlag,
     platform::SessionPlatform,
     settings::ToggleableSetting,
@@ -26,13 +32,7 @@ use warp_core::{
     },
     HostId,
 };
-use warp_editor::{
-    content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
-};
-use warp_util::file::FileSaveError;
-use warp_util::path::common_path;
-use warp_util::standardized_path::StandardizedPath;
-use warpui::{
+use wishui::{
     elements::{
         new_scrollable::{ScrollableAppearance, SingleAxisConfig},
         Align, Border, ChildAnchor, ChildView, Clipped, ClippedScrollStateHandle, ConstrainedBox,
@@ -164,7 +164,7 @@ lazy_static! {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([
         FixedBinding::new(
@@ -591,8 +591,8 @@ impl CodeDiffView {
                 ctx,
             )
             .with_horizontal_scrollbar_appearance(
-                warpui::elements::new_scrollable::ScrollableAppearance::new(
-                    warpui::elements::ScrollbarWidth::Auto,
+                wishui::elements::new_scrollable::ScrollableAppearance::new(
+                    wishui::elements::ScrollbarWidth::Auto,
                     true,
                 ),
             )
@@ -1264,7 +1264,7 @@ impl CodeDiffView {
 
     fn render_scroll_icon_for_inline_banner(&self, appearance: &Appearance) -> Box<dyn Element> {
         let background = appearance.theme().foreground();
-        let icon = warpui::elements::Icon::new(
+        let icon = wishui::elements::Icon::new(
             Icon::ArrowDown.into(),
             appearance.theme().main_text_color(background).into_solid(),
         )
@@ -1470,7 +1470,7 @@ impl CodeDiffView {
             }
             CodeDiffState::WaitingForUser => {
                 if self.display_mode().is_inline_banner() {
-                    warpui::elements::Icon::new(
+                    wishui::elements::Icon::new(
                         Icon::Code2.into(),
                         appearance
                             .theme()
@@ -1970,7 +1970,7 @@ impl CodeDiffView {
                 },
                 theme.nonactive_ui_detail().into(),
                 theme.active_ui_detail().into(),
-                warpui::elements::Fill::None,
+                wishui::elements::Fill::None,
             )
             .with_horizontal_scrollbar(ScrollableAppearance::new(ScrollbarWidth::Custom(4.), true))
             .with_propagate_mousewheel_if_not_handled(true)
@@ -2715,7 +2715,7 @@ impl View for CodeDiffView {
         root_stack.finish()
     }
 
-    fn keymap_context(&self, _app: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, _app: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
 
         if self.display_mode().is_full_pane() {
@@ -3149,7 +3149,7 @@ impl BackingView for CodeDiffView {
             title: "Requested Edit".to_string(),
             title_secondary: None,
             title_style: None,
-            title_clip_config: warpui::text_layout::ClipConfig::start(),
+            title_clip_config: wishui::text_layout::ClipConfig::start(),
             title_max_width: None,
             left_of_title: None,
             right_of_title: None,

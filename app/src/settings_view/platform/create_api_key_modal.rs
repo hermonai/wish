@@ -10,18 +10,18 @@ use crate::{
 };
 use chrono::Utc;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::features::FeatureFlag;
-use warpui::elements::{
+use wish_core::features::FeatureFlag;
+use wishui::elements::{
     Border, ChildView, ConstrainedBox, Container, CornerRadius, Empty, Fill, Flex,
     MouseStateHandle, ParentElement, Radius, Text,
 };
-use warpui::elements::{CrossAxisAlignment, Expanded, MainAxisAlignment, MainAxisSize, Padding};
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
-use warpui::ui_components::segmented_control::{
+use wishui::elements::{CrossAxisAlignment, Expanded, MainAxisAlignment, MainAxisSize, Padding};
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
+use wishui::ui_components::segmented_control::{
     LabelConfig, RenderableOptionConfig, SegmentedControl,
 };
-use warpui::{
+use wishui::{
     AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext, ViewHandle,
 };
 
@@ -38,7 +38,7 @@ impl ApiKeyType {
     fn description(&self) -> &'static str {
         match self {
             ApiKeyType::Personal => {
-                "This API key is tied to your user and can make requests against your Warp account."
+                "This API key is tied to your user and can make requests against your Wish account."
             }
             ApiKeyType::Team => {
                 "This API key is tied to your team and can make requests on behalf of your team."
@@ -140,7 +140,7 @@ impl CreateApiKeyModal {
                 ..Default::default()
             };
             let mut editor = EditorView::single_line(options, ctx);
-            editor.set_placeholder_text("Warp API Key", ctx);
+            editor.set_placeholder_text("Wish API Key", ctx);
             editor
         });
 
@@ -248,7 +248,7 @@ impl CreateApiKeyModal {
 
         // Always allow creation, even with empty name (we'll use a default)
         let final_name = if name.trim().is_empty() {
-            "Warp API Key".to_string()
+            "Wish API Key".to_string()
         } else {
             name.trim().to_string()
         };
@@ -407,9 +407,9 @@ impl CreateApiKeyModal {
             "Copy"
         };
         let copy_icon = if self.raw_key_copied {
-            warp_core::ui::icons::Icon::Check.to_warpui_icon(appearance.theme().background())
+            wish_core::ui::icons::Icon::Check.to_warpui_icon(appearance.theme().background())
         } else {
-            warp_core::ui::icons::Icon::Copy
+            wish_core::ui::icons::Icon::Copy
                 .to_warpui_icon(appearance.theme().active_ui_text_color())
         };
         let mut copy_button_builder = appearance
@@ -423,8 +423,8 @@ impl CreateApiKeyModal {
                 self.create_button_mouse_state.clone(),
             )
             .with_text_and_icon_label(
-                warpui::ui_components::button::TextAndIcon::new(
-                    warpui::ui_components::button::TextAndIconAlignment::IconFirst,
+                wishui::ui_components::button::TextAndIcon::new(
+                    wishui::ui_components::button::TextAndIconAlignment::IconFirst,
                     copy_label,
                     copy_icon,
                     MainAxisSize::Min,
@@ -647,7 +647,7 @@ impl TypedActionView for CreateApiKeyModal {
             CreateApiKeyModalAction::CopyRawKey => {
                 let content = self.raw_key.clone().unwrap_or_default();
                 ctx.clipboard()
-                    .write(warpui::clipboard::ClipboardContent::plain_text(content));
+                    .write(wishui::clipboard::ClipboardContent::plain_text(content));
                 self.raw_key_copied = true;
                 // Success toast
                 let window_id = ctx.window_id();

@@ -12,7 +12,7 @@ use crate::{
     ui_components::icons,
 };
 use warp_editor::editor::NavigationKey;
-use warpui::{
+use wishui::{
     elements::{
         Align, Border, ChildAnchor, ChildView, Clipped, ConstrainedBox, Container, CornerRadius,
         CrossAxisAlignment, Dismiss, Element, EventHandler, Flex, MainAxisAlignment, MainAxisSize,

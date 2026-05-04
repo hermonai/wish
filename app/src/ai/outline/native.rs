@@ -15,7 +15,7 @@ use repo_metadata::{
     DirectoryWatcher, Repository, RepositoryUpdate,
 };
 use settings::Setting as _;
-use warpui::{Entity, ModelContext, ModelHandle, SingletonEntity};
+use wishui::{Entity, ModelContext, ModelHandle, SingletonEntity};
 
 use crate::{
     ai::persisted_workspace::all_working_directories,

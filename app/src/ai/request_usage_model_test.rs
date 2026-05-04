@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use chrono::Duration;
-use warpui::{App, ModelHandle};
+use wishui::{App, ModelHandle};
 
 use crate::server::server_api::team::MockTeamClient;
 use crate::server::server_api::workspace::MockWorkspaceClient;
@@ -15,7 +15,7 @@ use crate::workspaces::{
 };
 
 use ai::api_keys::ApiKeyManager;
-use warp_core::features::FeatureFlag;
+use wish_core::features::FeatureFlag;
 
 use super::*;
 

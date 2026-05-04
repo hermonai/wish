@@ -55,7 +55,7 @@
      #  using: the "DEBUG" trap, and the "PROMPT_COMMAND" variable. If you override
      #  either of these after bash-preexec has been installed it will most likely break.
     
- #### In Warp's inclusion of bash-preexec, we don't include these two guards
+ #### In Wish's inclusion of bash-preexec, we don't include these two guards
  #### at the beginning of the script. Instead, we use bash_preexec_imported and __bp_imported to
  #### determine whether we want to execute bash-preexec or not.
      # Make sure this is bash that's running and return otherwise.

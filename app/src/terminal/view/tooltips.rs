@@ -2,7 +2,7 @@
 
 use pathfinder_geometry::vector::vec2f;
 
-use warpui::{
+use wishui::{
     elements::{
         ChildAnchor, Dismiss, MouseStateHandle, OffsetPositioning, PositionedElementAnchor,
         PositionedElementOffsetBounds, Stack,
@@ -54,7 +54,7 @@ fn open_in_warp_tooltip(
         util::tooltips::should_show_open_in_warp_link,
     };
     use settings::Setting as _;
-    use warpui::SingletonEntity;
+    use wishui::SingletonEntity;
 
     if !should_show_open_in_warp_link(&path, app) {
         return None;
@@ -66,8 +66,8 @@ fn open_in_warp_tooltip(
         None
     };
     Some(GridTooltipLink {
-        text: "Open in Warp".to_string(),
-        action: TerminalAction::OpenCodeInWarp {
+        text: "Open in Wish".to_string(),
+        action: TerminalAction::OpenCodeInWish {
             path,
             layout: *EditorSettings::as_ref(app).open_file_layout.value(),
             line_col: line_and_column_num,

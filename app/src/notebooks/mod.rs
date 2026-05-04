@@ -15,7 +15,7 @@ use async_trait::async_trait;
 use anyhow::Result;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use warpui::AppContext;
+use wishui::AppContext;
 
 use crate::server::cloud_objects::update_manager::InitiatedBy;
 use crate::{

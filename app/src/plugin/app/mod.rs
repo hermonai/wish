@@ -4,7 +4,7 @@ use command::blocking::Command;
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use super::{PLUGIN_HOST_ADDRESS_ENV_VAR, PLUGIN_HOST_FLAG};
 use service_impl::{LogServiceImpl, PluginHostBootstrapServiceImpl};

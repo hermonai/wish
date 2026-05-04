@@ -13,7 +13,7 @@ use crate::{
     drive::CloudObjectTypeAndId,
 };
 use serde::{Deserialize, Serialize};
-use warp_core::ui::appearance::Appearance;
+use wish_core::ui::appearance::Appearance;
 
 pub mod manager;
 pub mod view;

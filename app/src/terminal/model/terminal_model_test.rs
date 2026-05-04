@@ -7,10 +7,10 @@ use crate::terminal::model::index::Side;
 use crate::terminal::model::selection::ExpandedSelectionRange;
 use chrono::{DateTime, Local};
 use vec1::vec1;
-use warp_core::command::ExitCode;
 use warp_terminal::model::ansi::ClearMode;
-use warpui::text::str_to_byte_vec;
-use warpui::text::SelectionType;
+use wish_core::command::ExitCode;
+use wishui::text::str_to_byte_vec;
+use wishui::text::SelectionType;
 
 /// Helper function to create a SerializedBlock with default values,
 /// including the new is_local field.

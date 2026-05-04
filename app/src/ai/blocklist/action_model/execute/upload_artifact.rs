@@ -6,7 +6,7 @@ use std::path::PathBuf;
 mod tests;
 
 use futures::{future::BoxFuture, FutureExt};
-use warpui::{Entity, EntityId, ModelContext, ModelHandle};
+use wishui::{Entity, EntityId, ModelContext, ModelHandle};
 
 use crate::terminal::model::session::active_session::ActiveSession;
 #[cfg(not(target_family = "wasm"))]
@@ -20,7 +20,7 @@ use crate::{
     server::server_api::ServerApiProvider,
 };
 #[cfg(not(target_family = "wasm"))]
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 
 use super::{ActionExecution, AnyActionExecution, ExecuteActionInput, PreprocessActionInput};
 

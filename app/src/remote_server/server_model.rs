@@ -5,12 +5,12 @@ use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use warp_core::channel::ChannelState;
-use warp_core::SessionId;
 use warp_util::standardized_path::StandardizedPath;
-use warpui::platform::TerminationMode;
-use warpui::r#async::{Spawnable, SpawnableOutput, SpawnedFutureHandle};
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wish_core::channel::ChannelState;
+use wish_core::SessionId;
+use wishui::platform::TerminationMode;
+use wishui::r#async::{Spawnable, SpawnableOutput, SpawnedFutureHandle};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use warp_files::{FileModel, FileModelEvent};
 use warp_util::content_version::ContentVersion;

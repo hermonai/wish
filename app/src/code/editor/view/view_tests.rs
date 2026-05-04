@@ -1,7 +1,7 @@
 use std::sync::Arc;
-use warp_core::ui::appearance::Appearance;
 use warp_editor::render::element::VerticalExpansionBehavior;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::{new_scrollable::ScrollableAppearance, ScrollbarWidth},
     platform::WindowStyle,
     App, TypedActionView, ViewHandle, WindowId,

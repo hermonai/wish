@@ -1,12 +1,12 @@
-use warpui::elements::{
+use wishui::elements::{
     Container, CrossAxisAlignment, Flex, MainAxisAlignment, MouseStateHandle, ParentElement, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::platform::Cursor;
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::ui_components::text::Span;
-use warpui::{AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext};
+use wishui::fonts::{Properties, Weight};
+use wishui::platform::Cursor;
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::ui_components::text::Span;
+use wishui::{AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext};
 
 use crate::appearance::Appearance;
 use crate::ui_components::blended_colors;

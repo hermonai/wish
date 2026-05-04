@@ -1,6 +1,6 @@
 '''
 Generates the `ExternalFontFamily` definitions used in `app/src/font_fallback.rs`.
-These definitions contain the URLs to each external fallback font we use in Warp.
+These definitions contain the URLs to each external fallback font we use in Wish.
 Generated code is sent to stdout.
 
 This script will read our cloud storage bucket to retrieve the names of the fonts

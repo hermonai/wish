@@ -1,7 +1,7 @@
 use futures_util::stream::AbortHandle;
 use pathfinder_geometry::vector::vec2f;
 use std::path::PathBuf;
-use warpui::{
+use wishui::{
     elements::{
         Align, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex,
         MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius,
@@ -42,7 +42,7 @@ pub(super) const INDENT_MARGIN: f32 = 22.;
 pub(super) const BASE_INDENT: f32 = 30.;
 
 const FILE_TYPE_DOCS_URL: &str =
-    "https://docs.warp.dev/knowledge-and-collaboration/warp-drive#import-and-export";
+    "https://wish.hermon.ai/docs/knowledge-and-collaboration/warp-drive#import-and-export";
 const SUPPORTED_FILE_TYPE_TEXT: &str = "md, yaml, yml";
 
 #[cfg(test)]

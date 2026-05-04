@@ -7,12 +7,12 @@ use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use rust_embed::RustEmbed;
 use std::borrow::Cow;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::{AnsiColor, AnsiColors, Details, Fill, TerminalColors, WarpTheme};
-use warpui::fonts::{Cache, FamilyId, Weight};
-use warpui::platform;
-use warpui::prelude::CrossAxisAlignment;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::{AnsiColor, AnsiColors, Details, Fill, TerminalColors, WarpTheme};
+use wishui::fonts::{Cache, FamilyId, Weight};
+use wishui::platform;
+use wishui::prelude::CrossAxisAlignment;
+use wishui::{
     elements::{
         ChildAnchor, ChildView, ConstrainedBox, Container, Flex, MainAxisAlignment, MainAxisSize,
         OffsetPositioning, ParentElement, PositionedElementAnchor, PositionedElementOffsetBounds,

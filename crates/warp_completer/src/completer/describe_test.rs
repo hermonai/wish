@@ -42,7 +42,7 @@ fn describe_at_cursor<T: CompletionContext>(
     pos: ByteOffset,
     ctx: &T,
 ) -> Option<Description> {
-    warpui::r#async::block_on(describe(line, pos, ctx))
+    wishui::r#async::block_on(describe(line, pos, ctx))
 }
 
 #[test]

@@ -30,11 +30,11 @@ use std::{
 };
 use string_offset::{ByteOffset, CharOffset, impl_offset};
 use sum_tree::{Cursor, SeekBias, SumTree};
-use warp_core::features::FeatureFlag;
-use warpui::elements::ListIndentLevel;
-use warpui::text::BlockHeaderSize as HeaderSize;
-use warpui::text::point::Point;
-use warpui::{
+use wish_core::features::FeatureFlag;
+use wishui::elements::ListIndentLevel;
+use wishui::text::BlockHeaderSize as HeaderSize;
+use wishui::text::point::Point;
+use wishui::{
     AppContext,
     fonts::{Properties, Style, Weight},
 };

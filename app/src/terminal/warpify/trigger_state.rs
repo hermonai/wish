@@ -1,6 +1,6 @@
 use parking_lot::FairMutex;
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     r#async::SpawnedFutureHandle, AppContext, EntityId, SingletonEntity as _, ViewContext,
     ViewHandle,
 };
@@ -14,12 +14,12 @@ use crate::terminal::{
     },
     settings::TerminalSettings,
     shell::ShellType,
-    ssh::{error::SshErrorBlock, install_tmux::SshInstallTmuxBlock, warpify::SshWarpifyBlock},
+    ssh::{error::SshErrorBlock, install_tmux::SshInstallTmuxBlock, warpify::SshWishifyBlock},
     TerminalModel, TerminalView,
 };
 use std::{collections::HashMap, sync::Arc};
 
-use super::success_block::WarpifySuccessBlock;
+use super::success_block::WishifySuccessBlock;
 
 /// A unique identifier for a subshell separator.
 pub type SeparatorId = usize;
@@ -47,11 +47,11 @@ impl SubshellSeparatorState {
 
 #[derive(Debug)]
 pub enum SshBlockState {
-    Warpifying {
-        handle: ViewHandle<SshWarpifyBlock>,
+    Wishifying {
+        handle: ViewHandle<SshWishifyBlock>,
     },
-    WarpifySuccess {
-        handle: ViewHandle<WarpifySuccessBlock>,
+    WishifySuccess {
+        handle: ViewHandle<WishifySuccessBlock>,
     },
     InstallTmux {
         handle: ViewHandle<SshInstallTmuxBlock>,
@@ -68,8 +68,8 @@ impl SshBlockState {
 
     pub fn get_block_view_id(&self) -> EntityId {
         match self {
-            SshBlockState::Warpifying { handle, .. } => handle.id(),
-            SshBlockState::WarpifySuccess { handle, .. } => handle.id(),
+            SshBlockState::Wishifying { handle, .. } => handle.id(),
+            SshBlockState::WishifySuccess { handle, .. } => handle.id(),
             SshBlockState::InstallTmux { handle, .. } => handle.id(),
             SshBlockState::Error { handle } => handle.id(),
         }
@@ -81,18 +81,18 @@ impl SshBlockState {
             SshBlockState::InstallTmux { handle, .. } => {
                 handle.update(ctx, |block, ctx| block.collapse_script(ctx))
             }
-            SshBlockState::Warpifying { .. } => false,
-            SshBlockState::WarpifySuccess { .. } => false,
+            SshBlockState::Wishifying { .. } => false,
+            SshBlockState::WishifySuccess { .. } => false,
             SshBlockState::Error { .. } => false,
         }
     }
 
     pub fn focus(&mut self, ctx: &mut ViewContext<TerminalView>) {
         match self {
-            SshBlockState::Warpifying { handle } => {
+            SshBlockState::Wishifying { handle } => {
                 handle.update(ctx, |block, ctx| block.focus(ctx));
             }
-            SshBlockState::WarpifySuccess { .. } => {}
+            SshBlockState::WishifySuccess { .. } => {}
             SshBlockState::InstallTmux { handle } => {
                 handle.update(ctx, |block, ctx| block.focus(ctx));
             }
@@ -107,8 +107,8 @@ impl SshBlockState {
             SshBlockState::InstallTmux { handle, .. } => {
                 Some(handle.read(app, |view, _| view.system_details()))
             }
-            SshBlockState::Warpifying { .. } => None,
-            SshBlockState::WarpifySuccess { .. } => None,
+            SshBlockState::Wishifying { .. } => None,
+            SshBlockState::WishifySuccess { .. } => None,
             SshBlockState::Error { .. } => None,
         }
     }
@@ -118,11 +118,11 @@ impl SshBlockState {
         ctx: &mut ViewContext<TerminalView>,
     ) -> Option<EntityId> {
         match self {
-            SshBlockState::InstallTmux { .. } | SshBlockState::Warpifying { .. } => {
+            SshBlockState::InstallTmux { .. } | SshBlockState::Wishifying { .. } => {
                 let block_id = self.get_block_view_id();
                 return Some(block_id);
             }
-            SshBlockState::WarpifySuccess { handle } => {
+            SshBlockState::WishifySuccess { handle } => {
                 handle.update(ctx, |block, ctx| {
                     block.on_warpified_session_complete(ctx);
                 });
@@ -133,9 +133,9 @@ impl SshBlockState {
     }
 }
 
-/// Temporary state used to trigger Warpification.
+/// Temporary state used to trigger Wishification.
 #[derive(Default)]
-struct WarpifyTriggerState {
+struct WishifyTriggerState {
     block_id: Option<BlockId>,
 
     /// Lets us abort an attempt to auto warpify if the subshell command
@@ -147,9 +147,9 @@ struct WarpifyTriggerState {
     /// TerminalEvent::BlockCompleted event can abort the banner.
     subshell_banner_abort_handle: Option<SpawnedFutureHandle>,
 
-    /// The command which may trigger ssh Warpification
+    /// The command which may trigger ssh Wishification
     pending_command: Option<String>,
-    /// The Host which may trigger ssh Warpification
+    /// The Host which may trigger ssh Wishification
     pending_warpify_ssh_host: Option<String>,
 
     /// Which, if any, SSH block is currently added to the blocklist.
@@ -165,17 +165,17 @@ struct WarpifyTriggerState {
 }
 
 #[derive(Default)]
-pub struct WarpifyState {
+pub struct WishifyState {
     session_id: Option<SessionId>,
 
-    pending_state: Option<WarpifyTriggerState>,
+    pending_state: Option<WishifyTriggerState>,
     /// Stores the metadata needed to render any separators above the first block of a subshell.
     subshell_separator_state: SubshellSeparatorState,
     /// A unique-enough ID that is used to validate that a timeout is still valid.
     timeout_id: u8,
 }
 
-impl WarpifyState {
+impl WishifyState {
     pub fn delete_state(&mut self) {
         self.pending_state.take();
     }
@@ -312,19 +312,19 @@ impl WarpifyState {
     pub fn get_pending_ssh_host(&self) -> Option<String> {
         self.pending_state
             .as_ref()
-            .and_then(|state: &WarpifyTriggerState| state.pending_warpify_ssh_host.clone())
+            .and_then(|state: &WishifyTriggerState| state.pending_warpify_ssh_host.clone())
     }
 
     pub fn get_pending_ssh_command(&self) -> Option<String> {
         self.pending_state
             .as_ref()
-            .and_then(|state: &WarpifyTriggerState| state.pending_command.clone())
+            .and_then(|state: &WishifyTriggerState| state.pending_command.clone())
     }
 
     pub fn take_pending_ssh_host(&mut self) -> Option<String> {
         self.pending_state
             .as_mut()
-            .and_then(|state: &mut WarpifyTriggerState| state.pending_warpify_ssh_host.take())
+            .and_then(|state: &mut WishifyTriggerState| state.pending_warpify_ssh_host.take())
     }
 
     pub fn clear_pending_ssh_host(&mut self) {
@@ -383,10 +383,10 @@ impl WarpifyState {
     }
 
     /// Called once whenever we get a local block completed, as opposed to a remote ssh block
-    /// and we have a Warpify Success block.
+    /// and we have a Wishify Success block.
     fn on_warpified_session_complete(
         &mut self,
-        state: WarpifyTriggerState,
+        state: WishifyTriggerState,
         ctx: &mut ViewContext<TerminalView>,
     ) -> Option<EntityId> {
         self.clear_ssh_block_state();
@@ -401,7 +401,7 @@ impl WarpifyState {
         self.session_id = active_session_id;
     }
 
-    /// Called whenever a block is completed, to determine whether a Warpified session
+    /// Called whenever a block is completed, to determine whether a Wishified session
     /// has been completed.
     pub fn get_completed_warpify_session_id(
         &mut self,

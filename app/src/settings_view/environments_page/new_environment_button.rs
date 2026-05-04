@@ -1,5 +1,5 @@
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::{
         Border, Container, CornerRadius, DispatchEventResult, EventHandler, Flex,
         MainAxisAlignment, MouseStateHandle, ParentElement as _, Radius, Text,
@@ -84,7 +84,7 @@ impl View for NewEnvironmentButtonView {
         let is_focused = self.is_focused(app);
 
         let trigger = {
-            warpui::elements::Hoverable::new(self.trigger_mouse_state.clone(), move |s| {
+            wishui::elements::Hoverable::new(self.trigger_mouse_state.clone(), move |s| {
                 let is_hovered = s.is_hovered();
                 let background = if is_hovered || is_focused {
                     Some(theme.surface_3())

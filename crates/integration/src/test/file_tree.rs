@@ -1,7 +1,7 @@
 use super::{new_builder, Builder};
 use regex::Regex;
 
-use warp::{
+use wish::{
     integration_testing::{
         step::new_step_with_default_assertions,
         tab::assert_pane_title,
@@ -10,7 +10,7 @@ use warp::{
     },
     workspace::WorkspaceAction,
 };
-use warpui::{async_assert, async_assert_eq, integration::TestStep, App};
+use wishui::{async_assert, async_assert_eq, integration::TestStep, App};
 
 use crate::util::write_all_rc_files_for_test;
 
@@ -30,9 +30,9 @@ fn open_file_tree_panel(app: &mut App) {
     });
 }
 
-/// Test that clicking a file in the file tree opens it in Warp's editor.
+/// Test that clicking a file in the file tree opens it in Wish's editor.
 /// This is a regression test for the bug where files were being opened in
-/// external editors instead of Warp's built-in editor.
+/// external editors instead of Wish's built-in editor.
 pub fn test_file_tree_opens_files_in_warp() -> Builder {
     new_builder()
         .with_setup(|utils| {

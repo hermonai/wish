@@ -1,8 +1,8 @@
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::Vector2F;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::Fill;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::Fill;
+use wishui::{
     elements::{
         ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Empty, Expanded, Flex,
         Hoverable, MainAxisSize, MouseStateHandle, ParentElement, Radius, Shrinkable, Text,

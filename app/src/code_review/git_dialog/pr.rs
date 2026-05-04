@@ -6,8 +6,8 @@
 
 use std::path::Path;
 
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     elements::{
         ClippedScrollStateHandle, Container, Element, Flex, MouseStateHandle, ParentElement, Text,
     },
@@ -33,7 +33,7 @@ use crate::{
     view_components::{DismissibleToast, ToastLink},
     workspace::ToastStack,
 };
-use warp_core::send_telemetry_from_ctx;
+use wish_core::send_telemetry_from_ctx;
 
 /// PR-mode sub-actions, dispatched wrapped in `GitDialogAction::Pr`.
 #[derive(Clone, Debug, PartialEq)]

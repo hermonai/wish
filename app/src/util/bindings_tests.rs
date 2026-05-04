@@ -1,5 +1,5 @@
-use warpui::platform::OperatingSystem;
-use warpui::{
+use wishui::platform::OperatingSystem;
+use wishui::{
     keymap::{EditableBinding, Keystroke, Trigger},
     App,
 };

@@ -21,9 +21,9 @@ The implementation should make every current Markdown table renderer inherit the
 - `crates/editor/src/render/model/mod.rs (424-568)` — `RichTextStyles` and `TableStyle`
 - `crates/editor/src/render/element/table.rs:1-220` — editor-backed Markdown table painting path
 - `app/src/ai/blocklist/block/view_impl/common.rs (1140-1270)` — `render_table_section`; current AI block list table renderer and inline `TableConfig`
-- `crates/warpui_core/src/elements/table/mod.rs (117-239)` — shared `TableConfig`, `RowBackground`, and `TableVerticalSizing`
-- `crates/warpui_core/src/elements/table/mod.rs (537-759)` — intrinsic width measurement logic
-- `crates/warpui_core/src/elements/table/mod.rs (1013-1211)` — viewported row layout and painting behavior
+- `crates/wishui-core/src/elements/table/mod.rs (117-239)` — shared `TableConfig`, `RowBackground`, and `TableVerticalSizing`
+- `crates/wishui-core/src/elements/table/mod.rs (537-759)` — intrinsic width measurement logic
+- `crates/wishui-core/src/elements/table/mod.rs (1013-1211)` — viewported row layout and painting behavior
 - `app/src/notebooks/file/mod.rs (230-278)` — file notebook view using `rich_text_styles`
 - `app/src/ai/ai_document_view.rs (292-321)` — AI document view fallback editor using `rich_text_styles`
 - `app/src/ai/document/ai_document_model.rs (783-801)` — AI document model creating notebook-backed editors with `rich_text_styles`

@@ -1,12 +1,12 @@
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
-use warp_core::ui::theme::Fill;
-use warp_core::ui::Icon;
-use warpui::elements::{ConstrainedBox, Container, Flex, Highlight, ParentElement as _, Text};
-use warpui::fonts::{Properties, Style, Weight};
-use warpui::prelude::CrossAxisAlignment;
-use warpui::text_layout::ClipConfig;
-use warpui::{AppContext, Element, SingletonEntity as _};
+use wish_core::ui::theme::Fill;
+use wish_core::ui::Icon;
+use wishui::elements::{ConstrainedBox, Container, Flex, Highlight, ParentElement as _, Text};
+use wishui::fonts::{Properties, Style, Weight};
+use wishui::prelude::CrossAxisAlignment;
+use wishui::text_layout::ClipConfig;
+use wishui::{AppContext, Element, SingletonEntity as _};
 
 use crate::ai::execution_profiles::profiles::ClientProfileId;
 use crate::appearance::Appearance;

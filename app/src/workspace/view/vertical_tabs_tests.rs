@@ -7,8 +7,8 @@ use crate::workspace::tab_settings::VerticalTabsDisplayGranularity;
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
 use std::path::PathBuf;
-use warpui::elements::PositionedElementOffsetBounds;
-use warpui::EntityId;
+use wishui::elements::PositionedElementOffsetBounds;
+use wishui::EntityId;
 
 use super::{
     branch_label_display, coalesce_summary_branch_entries, code_detail_kind_label,
@@ -715,7 +715,7 @@ fn terminal_search_fragments_include_rendered_terminal_badges() {
         Some("main".to_string()),
         terminal_kind_badge_label(false, Some(CLIAgent::Claude)),
         Some(terminal_pull_request_badge_label(
-            "https://github.com/warpdotdev/warp-internal/pull/12345",
+            "https://github.com/hermonai/wish-internal/pull/12345",
         )),
         Some(GitLineChanges {
             files_changed: 1,

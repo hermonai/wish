@@ -2,7 +2,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::{anyhow, Result};
-use warpui::r#async::Timer;
+use wishui::r#async::Timer;
 
 use crate::server::server_api::integrations::IntegrationsClient;
 use warp_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;

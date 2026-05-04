@@ -2,9 +2,9 @@ use std::collections::HashSet;
 
 use ai::skills::SkillReference;
 use lazy_static::lazy_static;
-use warpui::elements::ChildView;
-use warpui::{AppContext, Element, ViewContext};
-use warpui::{Entity, ModelHandle, View, ViewHandle};
+use wishui::elements::ChildView;
+use wishui::{AppContext, Element, ViewContext};
+use wishui::{Entity, ModelHandle, View, ViewHandle};
 
 use crate::ai::blocklist::agent_view::AgentViewController;
 use crate::search::data_source::{Query, QueryFilter};
@@ -269,7 +269,7 @@ impl View for InlineSlashCommandView {
         "InlineSlashCommandView"
     }
 
-    fn render(&self, _app: &warpui::AppContext) -> Box<dyn Element> {
+    fn render(&self, _app: &wishui::AppContext) -> Box<dyn Element> {
         ChildView::new(&self.menu_view).finish()
     }
 }

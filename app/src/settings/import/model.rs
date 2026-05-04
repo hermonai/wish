@@ -7,10 +7,10 @@ use crate::{send_telemetry_from_ctx, TelemetryEvent};
 use serde::Serialize;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumDiscriminants, EnumIter};
-use warp_core::features::FeatureFlag;
-use warpui::Entity;
-use warpui::ModelContext;
-use warpui::SingletonEntity;
+use wish_core::features::FeatureFlag;
+use wishui::Entity;
+use wishui::ModelContext;
+use wishui::SingletonEntity;
 
 #[cfg(target_os = "macos")]
 use super::config::HotkeyError;
@@ -50,7 +50,7 @@ impl ImportedConfigModel {
         use strum::IntoEnumIterator;
         self.started = true;
 
-        let loaded_system_fonts = warpui::fonts::Cache::handle(ctx)
+        let loaded_system_fonts = wishui::fonts::Cache::handle(ctx)
             .update(ctx, |font_cache, ctx| font_cache.all_system_fonts(ctx));
         ctx.spawn(loaded_system_fonts, |_, fonts, ctx| {
             let fonts = fonts

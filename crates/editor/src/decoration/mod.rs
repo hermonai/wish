@@ -1,4 +1,4 @@
-use warpui::ModelContext;
+use wishui::ModelContext;
 
 use crate::content::{buffer::BufferSnapshot, edit::PreciseDelta, version::BufferVersion};
 

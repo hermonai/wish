@@ -1,7 +1,7 @@
 use super::{ActionExecution, AnyActionExecution, ExecuteActionInput, PreprocessActionInput};
 use crate::terminal::model::session::active_session::ActiveSession;
 use futures::{future::BoxFuture, FutureExt};
-use warpui::{Entity, EntityId, ModelContext, ModelHandle};
+use wishui::{Entity, EntityId, ModelContext, ModelHandle};
 
 #[cfg(not(target_family = "wasm"))]
 use super::get_server_output_id;
@@ -17,7 +17,7 @@ use crate::{
 #[cfg(not(target_family = "wasm"))]
 use itertools::Itertools;
 #[cfg(not(target_family = "wasm"))]
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 
 pub struct CallMCPToolExecutor {
     _active_session: ModelHandle<ActiveSession>,
@@ -208,7 +208,7 @@ fn handle_call_tool_result(
     res: Result<rmcp::model::CallToolResult, rmcp::ServiceError>,
     server_output_id: Option<crate::ai::blocklist::action_model::execute::ServerOutputId>,
     tool_name: String,
-    ctx: &warpui::AppContext,
+    ctx: &wishui::AppContext,
 ) -> AIAgentActionResultType {
     let action_result = match res {
         Ok(result) => {

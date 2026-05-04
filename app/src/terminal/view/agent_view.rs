@@ -1,5 +1,5 @@
-use warp_core::{features::FeatureFlag, send_telemetry_from_ctx, ui::appearance::Appearance};
-use warpui::{keymap::Keystroke, EntityId, SingletonEntity, ViewContext};
+use wish_core::{features::FeatureFlag, send_telemetry_from_ctx, ui::appearance::Appearance};
+use wishui::{keymap::Keystroke, EntityId, SingletonEntity, ViewContext};
 
 use crate::{
     ai::{

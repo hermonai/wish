@@ -1,4 +1,4 @@
-//! File type detection utilities for determining if files can be opened in Warp.
+//! File type detection utilities for determining if files can be opened in Wish.
 
 #[cfg(feature = "local_fs")]
 use crate::util::file::external_editor::{settings::EditorChoice, Editor, EditorSettings};
@@ -26,7 +26,7 @@ pub enum EditorLayout {
     NewTab,
 }
 
-/// The type of file that can be opened in Warp. The in-product treatment for "opening" a file
+/// The type of file that can be opened in Wish. The in-product treatment for "opening" a file
 /// depends on its type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OpenableFileType {
@@ -41,9 +41,9 @@ pub enum OpenableFileType {
 /// The target application or viewer to use when opening a file.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FileTarget {
-    /// Open in Warp's Markdown viewer.
+    /// Open in Wish's Markdown viewer.
     MarkdownViewer(EditorLayout),
-    /// Open in Warp's Code Editor.
+    /// Open in Wish's Code Editor.
     CodeEditor(EditorLayout),
     /// Open in an external editor (e.g. VS Code, Emacs).
     #[cfg(feature = "local_fs")]
@@ -82,7 +82,7 @@ pub fn is_supported_image_file(path: impl AsRef<Path>) -> bool {
 }
 
 /// Returns true if `path` looks like a shell script the user intends to run when
-/// "Open with Warp" is invoked from Finder/another app via a `file://` URL.
+/// "Open with Wish" is invoked from Finder/another app via a `file://` URL.
 ///
 /// Policy: extension in {sh, bash, zsh, fish, ksh} with the user-execute bit set on Unix,
 /// or extension in {ps1, bat, cmd} on Windows (no x-bit concept). On Unix, files with no
@@ -137,7 +137,7 @@ pub fn is_runnable_shell_script(_path: &Path) -> bool {
     false
 }
 
-/// Determines if a file can be opened in Warp and returns its type.
+/// Determines if a file can be opened in Wish and returns its type.
 /// Returns `None` if the file is binary and should not be opened.
 pub fn is_file_openable_in_warp(path: &Path) -> Option<OpenableFileType> {
     if is_binary_file(path) {
@@ -155,9 +155,9 @@ pub fn is_file_openable_in_warp(path: &Path) -> Option<OpenableFileType> {
     }
 }
 
-/// Only use this for UI elements that must explicitly open a file in Warp (i.e. "Open in New Tab").
+/// Only use this for UI elements that must explicitly open a file in Wish (i.e. "Open in New Tab").
 /// Prefer `resolve_file_target` for all other cases to respect users' preferences.
-/// This would also force any binary file to be opened in Warp's Code Editor, so you should likely check
+/// This would also force any binary file to be opened in Wish's Code Editor, so you should likely check
 /// `is_file_openable_in_warp` before rendering any such UI Elements.
 #[cfg(feature = "local_fs")]
 pub fn resolve_file_target_to_open_in_warp(

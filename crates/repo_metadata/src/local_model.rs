@@ -9,8 +9,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use warp_core::{safe_warn, send_telemetry_from_ctx};
-use warpui::ModelHandle;
+use wish_core::{safe_warn, send_telemetry_from_ctx};
+use wishui::ModelHandle;
 
 /// Represents either a file or directory in a repository.
 #[derive(Debug, Clone)]
@@ -34,7 +34,7 @@ cfg_if::cfg_if! {
         use notify_debouncer_full::notify::{RecursiveMode, WatchFilter};
         use crate::repositories::{DetectedRepositories, DetectedRepositoriesEvent};
         use watcher::{BulkFilesystemWatcher, BulkFilesystemWatcherEvent};
-        use warpui::SingletonEntity as _;
+        use wishui::SingletonEntity as _;
 
         /// Duration between filesystem watch events in seconds
         const FILESYSTEM_WATCHER_DEBOUNCE_SECS: u64 = 1;
@@ -50,7 +50,7 @@ use crate::file_tree_update::{
     RepoMetadataUpdate, RepoNodeMetadata,
 };
 use ignore::gitignore::Gitignore;
-use warpui::ModelContext;
+use wishui::ModelContext;
 
 /// Maximum depth to traverse when building file trees
 const MAX_TREE_DEPTH: usize = 200;
@@ -979,7 +979,7 @@ impl LocalRepoMetadataModel {
     }
 }
 
-impl warpui::Entity for LocalRepoMetadataModel {
+impl wishui::Entity for LocalRepoMetadataModel {
     type Event = RepositoryMetadataEvent;
 }
 

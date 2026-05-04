@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use settings::Setting as _;
-use warp::integration_testing::terminal::util::current_shell_starter_and_version;
-use warp::integration_testing::view_getters::single_input_view_for_tab;
-use warp::root_view::SubshellCommandArg;
-use warp::terminal::shell::ShellType;
-use warp::{
+use wish::integration_testing::terminal::util::current_shell_starter_and_version;
+use wish::integration_testing::view_getters::single_input_view_for_tab;
+use wish::root_view::SubshellCommandArg;
+use wish::terminal::shell::ShellType;
+use wish::{
     integration_testing::{
         step::new_step_with_default_assertions,
         subshell::{
@@ -18,10 +18,10 @@ use warp::{
     },
     terminal::warpify::settings::AddedSubshellCommands,
 };
-use warpui::integration::{AssertionOutcome, TestStep};
-use warpui::windowing::state::ApplicationStage;
-use warpui::windowing::WindowManager;
-use warpui::{async_assert, UpdateModel};
+use wishui::integration::{AssertionOutcome, TestStep};
+use wishui::windowing::state::ApplicationStage;
+use wishui::windowing::WindowManager;
+use wishui::{async_assert, UpdateModel};
 
 use crate::util::skip_if_powershell_core_2303;
 

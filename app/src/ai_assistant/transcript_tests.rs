@@ -3,7 +3,7 @@ use crate::{
     workspaces::user_workspaces::UserWorkspaces,
 };
 
-use warpui::{platform::WindowStyle, App};
+use wishui::{platform::WindowStyle, App};
 
 use crate::ai_assistant::{
     requests::Requests,

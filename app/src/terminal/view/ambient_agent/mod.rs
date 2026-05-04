@@ -24,7 +24,7 @@ pub use model_selector::{ModelSelector, ModelSelectorAction, ModelSelectorEvent}
 pub use progress::{render_progress, ProgressProps, ProgressStep, ProgressStepState};
 pub use progress_ui_state::AmbientAgentProgressUIState;
 pub use tips::{get_cloud_mode_tips, CloudModeTip};
-use warp_core::features::FeatureFlag;
+use wish_core::features::FeatureFlag;
 
 use crate::ai::blocklist::agent_view::{AgentViewController, AgentViewState};
 use crate::ai::blocklist::BlocklistAIHistoryModel;
@@ -32,8 +32,8 @@ use crate::pane_group::TerminalViewResources;
 use crate::terminal::shared_session;
 use crate::terminal::TerminalManager;
 use crate::terminal::TerminalView;
-use warpui::geometry::vector::Vector2F;
-use warpui::{AppContext, ModelHandle, SingletonEntity, ViewHandle, WindowId};
+use wishui::geometry::vector::Vector2F;
+use wishui::{AppContext, ModelHandle, SingletonEntity, ViewHandle, WindowId};
 
 /// Creates a cloud mode terminal view and manager for ambient agent sessions.
 ///

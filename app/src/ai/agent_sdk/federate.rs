@@ -4,9 +4,9 @@ use anyhow::{anyhow, Result};
 use serde_json::json;
 use warp_cli::federate::{FederateCommand, IssueGcpTokenArgs, IssueTokenArgs};
 use warp_cli::{agent::OutputFormat, GlobalOptions};
-use warp_core::{features::FeatureFlag, report_error};
 use warp_managed_secrets::ManagedSecretManager;
-use warpui::{platform::TerminationMode, AppContext, SingletonEntity as _};
+use wish_core::{features::FeatureFlag, report_error};
+use wishui::{platform::TerminationMode, AppContext, SingletonEntity as _};
 
 use super::common::set_ambient_task_context_from_run_id;
 

@@ -1,5 +1,5 @@
-use warp_core::ui::appearance::Appearance;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     fonts::Weight,
     ui_components::components::{Coords, UiComponentStyles},
 };

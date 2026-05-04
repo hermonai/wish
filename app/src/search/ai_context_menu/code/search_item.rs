@@ -5,11 +5,11 @@ use crate::search::item::{IconLocation, SearchItem};
 use crate::search::result_renderer::ItemHighlightState;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
-use warpui::elements::{
+use wishui::elements::{
     ConstrainedBox, Container, CrossAxisAlignment, Flex, Highlight, Icon, ParentElement, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::{AppContext, Element, SingletonEntity};
+use wishui::fonts::{Properties, Weight};
+use wishui::{AppContext, Element, SingletonEntity};
 
 // Import CodeSymbol from the data_source module
 use super::data_source::CodeSymbol;

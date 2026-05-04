@@ -1,7 +1,7 @@
 use comfy_table::Cell;
 use serde::Serialize;
 use warp_cli::{mcp::MCPCommand, GlobalOptions};
-use warpui::{AppContext, ModelContext, SingletonEntity};
+use wishui::{AppContext, ModelContext, SingletonEntity};
 
 use crate::ai::agent_sdk::output::{self, TableFormat};
 use crate::ai::mcp::TemplatableMCPServerManager;
@@ -40,12 +40,12 @@ impl MCPCommandRunner {
                 global_options.output_format,
             );
 
-            ctx.terminate_app(warpui::platform::TerminationMode::ForceTerminate, None);
+            ctx.terminate_app(wishui::platform::TerminationMode::ForceTerminate, None);
         });
     }
 }
 
-impl warpui::Entity for MCPCommandRunner {
+impl wishui::Entity for MCPCommandRunner {
     type Event = ();
 }
 impl SingletonEntity for MCPCommandRunner {}

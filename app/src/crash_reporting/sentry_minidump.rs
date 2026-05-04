@@ -32,7 +32,7 @@ use sentry::{
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use warp_core::report_error;
+use wish_core::report_error;
 
 use super::ToSentryTags;
 
@@ -126,9 +126,9 @@ pub struct MinidumpGuard {
 pub fn run_server(socket_path: &Path) -> anyhow::Result<()> {
     // For troubleshooting, attempt to log from the minidump server. There's not much we can really
     // do if crash reporting fails, so creating the log file itself is best-effort.
-    let log_dir = warp_core::paths::state_dir().join(warp_core::paths::WARP_LOGS_DIR);
+    let log_dir = wish_core::paths::state_dir().join(wish_core::paths::WARP_LOGS_DIR);
     let _ = std::fs::create_dir_all(&log_dir);
-    let log_path = log_dir.join("warp-minidump.log");
+    let log_path = log_dir.join("wish-minidump.log");
     let log_target = File::create(log_path)
         .map(|file| env_logger::Target::Pipe(Box::new(file)))
         .unwrap_or_else(|_| env_logger::Target::Stdout);
@@ -239,7 +239,7 @@ fn send_crash_report(details: Option<String>, dump: Option<minidumper::MinidumpB
 
         Some(Attachment {
             buffer,
-            filename: "warp-minidump.dmp".to_string(),
+            filename: "wish-minidump.dmp".to_string(),
             ty: Some(AttachmentType::Minidump),
             ..Default::default()
         })
@@ -269,7 +269,7 @@ impl MinidumpGuard {
             // On macOS, the maximum length of a socket path is fairly short, so use the temp directory.
             std::env::temp_dir().join(socket_name)
         } else {
-            warp_core::paths::state_dir().join(socket_name)
+            wish_core::paths::state_dir().join(socket_name)
         };
 
         let child =

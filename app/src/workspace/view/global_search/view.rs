@@ -28,12 +28,12 @@ use crate::view_components::action_button::{ActionButton, ButtonSize, NakedTheme
 use crate::workspace::view::global_search::model::GlobalSearch;
 use crate::workspace::view::global_search::SearchConfig;
 use crate::TelemetryEvent;
-use warp_core::send_telemetry_from_ctx;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::color::internal_colors;
-use warp_core::ui::theme::{AnsiColorIdentifier, Fill as ThemeFill};
-use warp_core::ui::Icon;
-use warpui::elements::{
+use wish_core::send_telemetry_from_ctx;
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::color::internal_colors;
+use wish_core::ui::theme::{AnsiColorIdentifier, Fill as ThemeFill};
+use wish_core::ui::Icon;
+use wishui::elements::{
     Border, ChildAnchor, ChildView, Clipped, ConstrainedBox, Container, CornerRadius,
     CrossAxisAlignment, DispatchEventResult, Empty, EventHandler, Fill, Flex, FormattedTextElement,
     Highlight, Hoverable, MainAxisAlignment, MainAxisSize, MouseStateHandle, OffsetPositioning,
@@ -41,13 +41,13 @@ use warpui::elements::{
     Scrollable, ScrollableElement, ScrollbarWidth, Shrinkable, Stack, Text, UniformList,
     UniformListState,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::keymap::FixedBinding;
-use warpui::platform::Cursor;
-use warpui::text_layout::{TextAlignment, TextStyle};
-use warpui::ui_components::components::{UiComponent as _, UiComponentStyles};
-use warpui::ui_components::text::Span;
-use warpui::{
+use wishui::fonts::{Properties, Weight};
+use wishui::keymap::FixedBinding;
+use wishui::platform::Cursor;
+use wishui::text_layout::{TextAlignment, TextStyle};
+use wishui::ui_components::components::{UiComponent as _, UiComponentStyles};
+use wishui::ui_components::text::Span;
+use wishui::{
     AppContext, Element, Entity, ModelHandle, SingletonEntity, TypedActionView, View, ViewContext,
     ViewHandle, WeakViewHandle,
 };
@@ -598,7 +598,7 @@ impl GlobalSearchView {
     }
 
     pub fn init(app: &mut AppContext) {
-        use warpui::keymap::macros::*;
+        use wishui::keymap::macros::*;
 
         app.register_fixed_bindings([
             FixedBinding::new(
@@ -1074,7 +1074,7 @@ impl GlobalSearchView {
         directory_path: &Path,
         matched_path: &MatchedPath,
         appearance: &Appearance,
-        theme: &warp_core::ui::theme::WarpTheme,
+        theme: &wish_core::ui::theme::WarpTheme,
         app: &AppContext,
     ) -> Box<dyn Element> {
         let is_selected = self.is_row_at_index_selected(index);
@@ -1249,7 +1249,7 @@ impl GlobalSearchView {
         matched: &Match,
         match_index: usize,
         appearance: &Appearance,
-        theme: &warp_core::ui::theme::WarpTheme,
+        theme: &wish_core::ui::theme::WarpTheme,
     ) -> Box<dyn Element> {
         let is_selected = self.is_row_at_index_selected(index);
         let line_number = matched.line_number;
@@ -1853,7 +1853,7 @@ impl GlobalSearchView {
         index: usize,
         dir_entry: &DirectoryEntry,
         appearance: &Appearance,
-        theme: &warp_core::ui::theme::WarpTheme,
+        theme: &wish_core::ui::theme::WarpTheme,
     ) -> Box<dyn Element> {
         let is_selected = self.is_row_at_index_selected(index);
         let mouse_state = dir_entry.mouse_state.clone();

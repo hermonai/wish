@@ -1,5 +1,5 @@
 #!/usr/bin/env -S fontforge -script
-# Script that patches a given font to include the Warp logo as a glyph in the font,
+# Script that patches a given font to include the Wish logo as a glyph in the font,
 # using a unicode codepoint in the private use area.
 import os
 import sys

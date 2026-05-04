@@ -6,9 +6,9 @@ use fuzzy_match::match_indices_case_insensitive;
 use lazy_static::lazy_static;
 use pathfinder_color::ColorU;
 use siphasher::sip::SipHasher;
-use warp_core::features::FeatureFlag;
-use warpui::scene::DropShadow;
-use warpui::ui_components::button::ButtonVariant;
+use wish_core::features::FeatureFlag;
+use wishui::scene::DropShadow;
+use wishui::ui_components::button::ButtonVariant;
 
 use crate::ai::agent::conversation::AIConversationId;
 use crate::ai::agent_conversations_model::{
@@ -66,25 +66,25 @@ use crate::{send_telemetry_from_ctx, AgentModeEntrypoint};
 use pathfinder_geometry::vector::vec2f;
 use settings::Setting;
 use warp_cli::agent::Harness;
-use warp_core::ui::icons::Icon;
-use warp_core::ui::theme::color::internal_colors;
-use warp_core::ui::theme::Fill;
-use warpui::clipboard::ClipboardContent;
-use warpui::elements::new_scrollable::{
+use wish_core::ui::icons::Icon;
+use wish_core::ui::theme::color::internal_colors;
+use wish_core::ui::theme::Fill;
+use wishui::clipboard::ClipboardContent;
+use wishui::elements::new_scrollable::{
     NewScrollableElement, ScrollableAppearance, SingleAxisConfig,
 };
-use warpui::elements::{
+use wishui::elements::{
     Align, Border, ChildAnchor, ChildView, Clipped, ConstrainedBox, Container, CornerRadius,
     CrossAxisAlignment, Element, Empty, Expanded, Flex, Hoverable, List, ListState, MainAxisSize,
     MouseStateHandle, NewScrollable, OffsetPositioning, Padding, ParentAnchor, ParentElement,
     ParentOffsetBounds, Radius, Rect, ScrollStateHandle, ScrollbarWidth, Shrinkable,
     SizeConstraintCondition, SizeConstraintSwitch, Stack, Text, Wrap,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::platform::Cursor;
-use warpui::ui_components::components::UiComponent;
-use warpui::ui_components::components::UiComponentStyles;
-use warpui::{
+use wishui::fonts::{Properties, Weight};
+use wishui::platform::Cursor;
+use wishui::ui_components::components::UiComponent;
+use wishui::ui_components::components::UiComponentStyles;
+use wishui::{
     keymap::FixedBinding, Action, AppContext, Entity, FocusContext, ModelHandle, SingletonEntity,
     TypedActionView, View, ViewContext, ViewHandle, WeakViewHandle,
 };
@@ -117,7 +117,7 @@ pub fn init(app: &mut AppContext) {
     app.register_fixed_bindings([FixedBinding::new(
         cmd_or_ctrl_shift("f"),
         AgentManagementViewAction::FocusSearch,
-        warpui::keymap::macros::id!(AgentManagementView::ui_name()),
+        wishui::keymap::macros::id!(AgentManagementView::ui_name()),
     )]);
 }
 
@@ -1309,7 +1309,7 @@ impl AgentManagementView {
                 let copy_link_url = conversation.session_or_conversation_link(ctx);
 
                 // Prefer server-reported harness when available; otherwise treat as a pure
-                // local conversation (always Warp Agent).
+                // local conversation (always Wish Agent).
                 let harness = navigation_data
                     .and_then(|nav| history_model.get_server_conversation_metadata(&nav.id))
                     .map(|m| Harness::from(m.harness))
@@ -2133,7 +2133,7 @@ impl AgentManagementView {
             axis_config,
             theme.nonactive_ui_detail().into(),
             theme.active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .with_vertical_scrollbar(ScrollableAppearance::new(ScrollbarWidth::None, false))
         .with_always_handle_events_first(false)

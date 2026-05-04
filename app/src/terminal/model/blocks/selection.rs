@@ -2,9 +2,9 @@ use std::{cmp::max, fmt::Debug, mem, ops::RangeInclusive};
 
 use sum_tree::SeekBias;
 use vec1::{vec1, Vec1};
-use warp_core::semantic_selection::SemanticSelection;
 use warp_terminal::model::grid::CellType;
-use warpui::{
+use wish_core::semantic_selection::SemanticSelection;
+use wishui::{
     text::{IsRect, SelectionType},
     units::{IntoLines as _, Lines},
     AppContext, EntityId, ViewAsRef as _,
@@ -21,7 +21,7 @@ use crate::{
             selection::{ExpandedSelectionRange, Selection, SelectionDirection},
             terminal_model::{BlockIndex, WithinBlock},
         },
-        warpify::success_block::WarpifySuccessBlock,
+        warpify::success_block::WishifySuccessBlock,
         GridType,
     },
 };
@@ -955,7 +955,7 @@ impl BlockList {
 
                             if let Some(active_window_id) = app.windows().active_window() {
                                 if let Some(ssh_block) = app
-                                    .view_with_id::<WarpifySuccessBlock>(active_window_id, *view_id)
+                                    .view_with_id::<WishifySuccessBlock>(active_window_id, *view_id)
                                 {
                                     let warpify_success_block = app.view(&ssh_block);
                                     if let Some(selected_text) =
@@ -1074,7 +1074,7 @@ impl BlockList {
                         }
 
                         if let Some(ssh_block) =
-                            app.view_with_id::<WarpifySuccessBlock>(active_window_id, view_id)
+                            app.view_with_id::<WishifySuccessBlock>(active_window_id, view_id)
                         {
                             let warpify_success_block = app.view(&ssh_block);
                             if let Some(selected_text) = warpify_success_block.selected_text() {

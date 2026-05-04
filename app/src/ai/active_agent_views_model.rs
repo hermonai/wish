@@ -10,7 +10,7 @@ use crate::ai::blocklist::orchestration_event_streamer::{
 };
 use crate::ai::blocklist::BlocklistAIHistoryModel;
 use crate::terminal::model::session::active_session::ActiveSession;
-use warpui::{
+use wishui::{
     AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle,
     WindowId,
 };

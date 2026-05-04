@@ -14,18 +14,18 @@ use std::path::PathBuf;
 #[cfg(feature = "local_fs")]
 use std::{fs::copy, io::Write};
 #[cfg(feature = "local_fs")]
-use warp_core::ui::theme::WarpTheme;
-use warpui::elements::{
+use wish_core::ui::theme::WarpTheme;
+use wishui::elements::{
     Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, DispatchEventResult,
     EventHandler, Fill, Flex, Icon, MainAxisAlignment, MainAxisSize, MouseStateHandle,
     ParentElement, Radius, Rect, SavePosition, Shrinkable, Text,
 };
-use warpui::fonts::Weight;
-use warpui::ui_components::button::{ButtonVariant, TextAndIcon, TextAndIconAlignment};
-use warpui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
-use warpui::ui_components::text_input::TextInput;
-use warpui::ViewHandle;
-use warpui::{
+use wishui::fonts::Weight;
+use wishui::ui_components::button::{ButtonVariant, TextAndIcon, TextAndIconAlignment};
+use wishui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
+use wishui::ui_components::text_input::TextInput;
+use wishui::ViewHandle;
+use wishui::{
     platform::Cursor, AppContext, Element, Entity, SingletonEntity, TypedActionView, View,
     ViewContext,
 };

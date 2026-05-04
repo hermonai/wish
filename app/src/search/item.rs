@@ -1,7 +1,7 @@
 use ordered_float::OrderedFloat;
-use warp_core::ui::theme::Fill;
-use warpui::fonts::FamilyId;
-use warpui::{Action, AppContext, Element};
+use wish_core::ui::theme::Fill;
+use wishui::fonts::FamilyId;
+use wishui::{Action, AppContext, Element};
 
 use crate::appearance::Appearance;
 

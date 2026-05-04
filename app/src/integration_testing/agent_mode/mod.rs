@@ -15,9 +15,9 @@ pub use assertions::*;
 pub use step::*;
 pub use user_defaults::*;
 pub use util::*;
-use warpui::integration::PersistedDataMap;
-pub use warpui::integration::RUNTIME_TAG_FAILURE_REASON;
-use warpui::{App, SingletonEntity as _, WindowId};
+use wishui::integration::PersistedDataMap;
+pub use wishui::integration::RUNTIME_TAG_FAILURE_REASON;
+use wishui::{App, SingletonEntity as _, WindowId};
 
 pub const TOTAL_REQUEST_COST_PREFIX: &str = "Total request cost: ";
 pub const TOTAL_EXCHANGES_PREFIX: &str = "Total number of exchanges: ";

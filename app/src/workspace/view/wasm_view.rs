@@ -1,9 +1,9 @@
 //! WASM-only view functions for the Workspace.
 
-use warpui::elements::{ChildView, Element};
-use warpui::{AppContext, SingletonEntity, ViewContext, ViewHandle};
+use wishui::elements::{ChildView, Element};
+use wishui::{AppContext, SingletonEntity, ViewContext, ViewHandle};
 
-use warp_core::channel::ChannelState;
+use wish_core::channel::ChannelState;
 
 use crate::uri::browser_url_handler::parse_current_url;
 
@@ -27,7 +27,7 @@ const TRANSCRIPT_PANEL_WIDTH: f32 = 280.0;
 
 /// Builds the OZ runs URL for viewing all cloud runs.
 fn build_oz_runs_url() -> String {
-    format!("{}/runs", ChannelState::oz_root_url())
+    format!("{}/runs", ChannelState::hermon_root_url())
 }
 
 impl Workspace {
@@ -46,12 +46,12 @@ impl Workspace {
         ctx: &mut ViewContext<Self>,
     ) -> ViewHandle<ActionButton> {
         ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Open in Warp", PrimaryTheme).on_click(move |ctx| {
+            ActionButton::new("Open in Wish", PrimaryTheme).on_click(move |ctx| {
                 // Get the current URL and dispatch action to open it on desktop
                 if let Some(url) = parse_current_url() {
                     ctx.dispatch_typed_action(WorkspaceAction::OpenLinkOnDesktop(url));
                 } else {
-                    log::warn!("Could not get URL for Open in Warp button");
+                    log::warn!("Could not get URL for Open in Wish button");
                 }
             })
         })

@@ -12,15 +12,15 @@
 //! for a full guide on the server-side experiment framework.
 
 use crate::features::FeatureFlag;
-use crate::terminal::warpify::settings::{SshExtensionInstallMode, WarpifySettings};
+use crate::terminal::warpify::settings::{SshExtensionInstallMode, WishifySettings};
 use crate::workspaces::user_workspaces::UserWorkspaces;
 use crate::workspaces::workspace::CustomerType;
 use settings::Setting;
-use warpui::AppContext;
+use wishui::AppContext;
 #[cfg(not(test))]
-use warpui::SingletonEntity as _;
+use wishui::SingletonEntity as _;
 #[cfg(test)]
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 
 mod convert;
 mod model;
@@ -37,8 +37,8 @@ pub enum ServerExperiment {
     EnvVarsEarlyAccessExperiment,
     AgentModeAnalyticsExperiment,
     WindowsLaunchExperiment,
-    TmuxSshWarpificationControl,
-    TmuxSshWarpificationExperiment,
+    TmuxSshWishificationControl,
+    TmuxSshWishificationExperiment,
     CodebaseContextExperiment,
     CodebaseContextControl,
     SuggestedCodeDiffsControl,
@@ -97,8 +97,8 @@ impl ServerExperiment {
                 // TODO(alokedesai): Clean this up now that we no longer gate access to the Windows
                 // build on an allowlist.
             }
-            Self::TmuxSshWarpificationControl => FeatureFlag::SSHTmuxWrapper.set_enabled(false),
-            Self::TmuxSshWarpificationExperiment => {
+            Self::TmuxSshWishificationControl => FeatureFlag::SSHTmuxWrapper.set_enabled(false),
+            Self::TmuxSshWishificationExperiment => {
                 // Only enable the TMUX-based experience if not on windows. ConPTY doesn't support
                 // DCS, which we need in order to use tmux control mode.
                 if cfg!(not(windows)) {
@@ -161,7 +161,7 @@ impl ServerExperiment {
                 // in-memory value without persisting, so the override is
                 // re-applied from the experiment cache on every launch and
                 // disappears if the user leaves the experiment.
-                WarpifySettings::handle(_ctx).update(_ctx, |settings, ctx| {
+                WishifySettings::handle(_ctx).update(_ctx, |settings, ctx| {
                     if !settings
                         .ssh_extension_install_mode
                         .is_value_explicitly_set()
@@ -179,7 +179,7 @@ impl ServerExperiment {
                 // Restore the default install mode in case the user was
                 // previously in the control arm (which overrides it to
                 // NeverInstall).
-                WarpifySettings::handle(_ctx).update(_ctx, |settings, ctx| {
+                WishifySettings::handle(_ctx).update(_ctx, |settings, ctx| {
                     if !settings
                         .ssh_extension_install_mode
                         .is_value_explicitly_set()

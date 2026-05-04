@@ -12,7 +12,7 @@ use rand::SeedableRng;
 use rand::rngs::StdRng;
 use serde_yaml::{Mapping, Value};
 use vec1::{Vec1, vec1};
-use warpui::{App, AppContext, ModelContext, ModelHandle, ReadModel};
+use wishui::{App, AppContext, ModelContext, ModelHandle, ReadModel};
 
 use crate::content::buffer::{
     AutoScrollBehavior, BufferEditAction, BufferSelectAction, EditOrigin, EmbeddedItemConversion,
@@ -39,8 +39,8 @@ use crate::render::model::{
 };
 use string_offset::ByteOffset;
 use string_offset::CharOffset;
-use warpui::elements::ListIndentLevel;
-use warpui::text::point::Point;
+use wishui::elements::ListIndentLevel;
+use wishui::text::point::Point;
 
 use crate::content::buffer::{Buffer, StyledBufferRun};
 
@@ -3150,7 +3150,7 @@ fn test_inline_markdown_roundtrips() {
         "*Complicated **text*** with *nest**ing***",
         "This `is not a [link](https://example.com) due to` precedence",
         "A **`bold code span`** too",
-        "[link1](https://warp.dev)[**link2**](https://example.com)",
+        "[link1](https://wish.hermon.ai)[**link2**](https://example.com)",
         "Combined *~~italic and strikethrough~~*",
         "Overlapping *~~abc~~def*",
         "This is <u>underlined</u>",

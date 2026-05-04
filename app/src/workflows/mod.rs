@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
-use warp_core::context_flag::ContextFlag;
-use warp_core::features::FeatureFlag;
-use warpui::{AppContext, SingletonEntity};
+use wish_core::context_flag::ContextFlag;
+use wish_core::features::FeatureFlag;
+use wishui::{AppContext, SingletonEntity};
 
 pub mod categories;
 use anyhow::Result;
@@ -156,7 +156,7 @@ pub enum WorkflowType {
     Local(Workflow),
     /// Saved workflows from personal or team collections, saved using cloud-sync.
     Cloud(Box<CloudWorkflow>),
-    /// Ephemeral/transient workflows created from Warp AI output
+    /// Ephemeral/transient workflows created from Wish AI output
     AIGenerated {
         workflow: Workflow,
         origin: AIWorkflowOrigin,

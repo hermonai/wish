@@ -3,7 +3,7 @@ use std::time::Duration;
 use serde::Serialize;
 use serde_json::{json, Value};
 use strum_macros::{EnumDiscriminants, EnumIter};
-use warp_core::{
+use wish_core::{
     features::FeatureFlag,
     register_telemetry_event,
     telemetry::{EnablementState, TelemetryEvent, TelemetryEventDesc},
@@ -127,7 +127,7 @@ impl TelemetryEvent for AITelemetryEvent {
     }
 
     fn event_descs() -> impl Iterator<Item = Box<dyn TelemetryEventDesc>> {
-        warp_core::telemetry::enum_events::<Self>()
+        wish_core::telemetry::enum_events::<Self>()
     }
 }
 

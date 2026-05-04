@@ -7,7 +7,7 @@
 //! Internally, [`Performer`] delegates to finer-grained methods for handling
 //! PTY output implemented by the [`Handler`] trait -- this could be printing to
 //! the terminal, executing actions as a result of CSI or OSC sequences,
-//! executing one of Warp's DCS hooks, etc. [`Handler`] should be implemented by
+//! executing one of Wish's DCS hooks, etc. [`Handler`] should be implemented by
 //! an app-level model that updates the terminal's state accordingly.
 mod ansi_c_decoder;
 mod dcs_hooks;
@@ -49,7 +49,7 @@ use std::str::FromStr as _;
 use std::time::Duration;
 use std::{io, str};
 use vte::{Params, Parser as VteParser, Perform as VtePerform};
-use warpui::color::ColorU;
+use wishui::color::ColorU;
 
 use super::kitty::parse_kitty_chunk;
 use super::terminal_model::TmuxInstallationState;
@@ -64,7 +64,7 @@ const WARP_IN_BAND_GENERATOR_END_BYTE: &[u8] = b"B";
 /// Marks an OSC that is used for messages containing shell hooks.
 const WARP_OSC_MARKER: &[u8] = b"9278";
 /// Marks an OSC that is used for resetting ConPTY's grid. This is useful for performing a series
-/// of checks ensuring that Warp's grids and ConPTY's grid are in sync.
+/// of checks ensuring that Wish's grids and ConPTY's grid are in sync.
 const WARP_RESET_GRID_OSC_MARKER: &[u8] = b"9279";
 
 /// The amount of time a single synchronized update can take from the time the corresponding
@@ -624,7 +624,7 @@ impl<'a, H: Handler + 'a, W: io::Write> Performer<'a, H, W> {
                 log::error!("Received hex-encoded SourcedRcFileForWarp escape sequence.");
             }
             Ok(DProtoHook::FinishUpdate { value }) => self.handler.finish_update(value),
-            Ok(DProtoHook::RemoteWarpificationIsUnavailable { value }) => {
+            Ok(DProtoHook::RemoteWishificationIsUnavailable { value }) => {
                 self.handler.remote_warpification_is_unavailable(value)
             }
             Ok(DProtoHook::SshTmuxInstaller { value }) => {

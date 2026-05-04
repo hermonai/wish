@@ -1,5 +1,5 @@
-use warpui::keymap::Keystroke;
-use warpui::platform::OperatingSystem;
+use wishui::keymap::Keystroke;
+use wishui::platform::OperatingSystem;
 
 use crate::model::{
     indexing::Point,

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::terminal::model::session::Sessions;
 use crate::terminal::model_events::AnsiHandlerEvent;
-use warpui::{r#async::SpawnedFutureHandle, Entity, ModelContext, ModelHandle};
+use wishui::{r#async::SpawnedFutureHandle, Entity, ModelContext, ModelHandle};
 
 use super::{shell::ShellType, ModelEvent, ModelEventDispatcher};
 
@@ -29,8 +29,8 @@ pub struct LineEditorStatus {
     ///
     /// When receiving an end prompt marker in zsh, this is used as a proxy to determine if the
     /// session is bootstrapped -- the prompt markers are emitted by zsh regardless of whether or
-    /// not its a Warpified session, so to in order properly signal downstream that the line editor
-    /// (for Warpified sessions) is active, we must check if there was a corresponding precmd
+    /// not its a Wishified session, so to in order properly signal downstream that the line editor
+    /// (for Wishified sessions) is active, we must check if there was a corresponding precmd
     /// emitted prior to the end prompt marker.
     ///
     /// Precmd is always emitted before prompt markers.
@@ -111,7 +111,7 @@ impl LineEditorStatus {
         // For zsh, we use this heuristic -- 10ms after EndPrompt -- to approximate when the line
         // editor is active.
         let abort_handle = ctx.spawn_abortable(
-            async move { warpui::r#async::Timer::after(delay).await },
+            async move { wishui::r#async::Timer::after(delay).await },
             |me, _, ctx| {
                 me.is_line_editor_active = true;
                 ctx.emit(LineEditorStatusEvent::Active);

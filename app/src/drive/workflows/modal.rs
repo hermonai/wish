@@ -5,11 +5,11 @@ use std::{cmp::Ordering, sync::Arc};
 use itertools::Itertools;
 use pathfinder_geometry::vector::vec2f;
 use string_offset::CharOffset;
-use warp_core::ui::theme::Fill;
 use warp_editor::editor::NavigationKey;
-use warpui::elements::Clipped;
-use warpui::FocusContext;
-use warpui::{
+use wish_core::ui::theme::Fill;
+use wishui::elements::Clipped;
+use wishui::FocusContext;
+use wishui::{
     clipboard::ClipboardContent,
     elements::{
         Align, Border, ChildAnchor, ClippedScrollStateHandle, ClippedScrollable, ConstrainedBox,
@@ -439,7 +439,7 @@ impl WorkflowModal {
     #[allow(dead_code)]
     fn populate(&mut self, workflow: Workflow, ctx: &mut ViewContext<Self>) {
         // Sanitize the arguments generated for the workflow by removing any illegal characters.
-        // Necessary since Warp AI command search sometimes provides arguments in an invalid argument format.
+        // Necessary since Wish AI command search sometimes provides arguments in an invalid argument format.
         let mut sanitized_content = workflow.content().to_string();
         let sanitized_arguments = workflow
             .arguments()
@@ -1740,7 +1740,7 @@ impl WorkflowModal {
                 .finish();
 
             let button_with_tool_tip = appearance.ui_builder().tool_tip_on_element(
-                "Generate a title, descriptions, or parameters with Warp AI".to_string(),
+                "Generate a title, descriptions, or parameters with Wish AI".to_string(),
                 self.button_mouse_states.ai_assist_tool_tip.clone(),
                 rendered_button,
                 ParentAnchor::BottomMiddle,

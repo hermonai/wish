@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::MouseStateHandle,
     fonts::Weight,
     platform::Cursor,

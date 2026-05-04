@@ -1,4 +1,4 @@
-//! AI Assistant has since been renamed to "Warp AI" in the product.
+//! AI Assistant has since been renamed to "Wish AI" in the product.
 use std::{collections::HashSet, sync::Arc};
 
 use crate::{
@@ -11,7 +11,6 @@ use itertools::Itertools;
 use lazy_static::lazy_static;
 use pathfinder_color::ColorU;
 use serde::{Deserialize, Serialize};
-use warp_core::command::ExitCode;
 use warp_graphql::{
     ai::{
         RequestLimitInfo as RequestLimitInfoGraphql,
@@ -19,6 +18,7 @@ use warp_graphql::{
     },
     mutations::generate_commands::{GenerateCommandsFailureType, GeneratedCommand},
 };
+use wish_core::command::ExitCode;
 
 pub mod execution_context;
 pub mod panel;
@@ -34,8 +34,8 @@ mod test_util;
 /// This is also roughly the limit at which the editor starts degrading.
 pub const PROMPT_CHARACTER_LIMIT: usize = 1000;
 
-pub const AI_ASSISTANT_FEATURE_NAME: &str = "Warp AI";
-pub const ASK_AI_ASSISTANT_TEXT: &str = "Ask Warp AI";
+pub const AI_ASSISTANT_FEATURE_NAME: &str = "Wish AI";
+pub const ASK_AI_ASSISTANT_TEXT: &str = "Ask Wish AI";
 
 pub const AI_ASSISTANT_SVG_PATH: &str = "bundled/svg/ai-assistant.svg";
 

@@ -81,3 +81,51 @@ fn llm_info_round_trip_serializes_and_deserializes() {
 
     assert_eq!(info, round_tripped);
 }
+
+#[test]
+fn normalizes_ollama_base_url() {
+    assert_eq!(
+        normalized_ollama_base_url("127.0.0.1:11434/"),
+        "http://127.0.0.1:11434"
+    );
+    assert_eq!(
+        normalized_ollama_base_url("http://localhost:11434/"),
+        "http://localhost:11434"
+    );
+    assert_eq!(normalized_ollama_base_url("   "), DEFAULT_OLLAMA_BASE_URL);
+}
+
+#[test]
+fn builds_local_ollama_models_from_names() {
+    let models = local_ollama_models_from_names([
+        "llama3.2:latest".to_owned(),
+        "qwen2.5-coder:7b".to_owned(),
+        "llama3.2:latest".to_owned(),
+    ])
+    .expect("local Ollama models should be built");
+
+    let choices: Vec<_> = models.agent_mode.choices.iter().collect();
+    assert_eq!(choices.len(), 2);
+    assert_eq!(choices[0].id, LLMId::from("ollama:llama3.2:latest"));
+    assert_eq!(choices[0].provider, LLMProvider::Ollama);
+    assert!(choices[0]
+        .host_configs
+        .contains_key(&LLMModelHost::LocalOllama));
+}
+
+#[test]
+fn marks_ollama_cloud_tags_as_non_local() {
+    let local = OllamaModel {
+        name: "llama3.2:3b".to_owned(),
+        remote_model: None,
+        remote_host: None,
+    };
+    let remote = OllamaModel {
+        name: "qwen3.5:cloud".to_owned(),
+        remote_model: Some("qwen3.5:397b".to_owned()),
+        remote_host: Some("https://ollama.com:443".to_owned()),
+    };
+
+    assert!(local.is_local());
+    assert!(!remote.is_local());
+}

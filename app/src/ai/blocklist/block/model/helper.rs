@@ -1,4 +1,4 @@
-use warpui::{AppContext, EntityId, ModelHandle, SingletonEntity};
+use wishui::{AppContext, EntityId, ModelHandle, SingletonEntity};
 
 use crate::{
     ai::{

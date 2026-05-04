@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use pathfinder_color::ColorU;
-use warpui::{
+use wishui::{
     elements::{
         Border, ChildAnchor, ChildView, ConstrainedBox, Container, Element, Icon,
         MainAxisAlignment, MainAxisSize, MouseStateHandle, OffsetPositioning, ParentElement,

@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use parking_lot::FairMutex;
-use warpui::prelude::Empty;
-use warpui::{
+use wishui::prelude::Empty;
+use wishui::{
     elements::{
         ChildView, Container, CrossAxisAlignment, Expanded, Flex, MainAxisSize, ParentElement,
     },
@@ -16,30 +16,30 @@ use crate::{
 };
 
 use super::{AgentFooterButtonTheme, USE_AGENT_KEYSTROKE};
-use crate::terminal::view::block_banner::WarpificationMode;
+use crate::terminal::view::block_banner::WishificationMode;
 
 /// Footer view rendered for detected subshell/SSH commands, offering both
-/// "Warpify" and "Use agent" buttons in a horizontal row.
-pub(super) struct WarpifyFooterView {
+/// "Wishify" and "Use agent" buttons in a horizontal row.
+pub(super) struct WishifyFooterView {
     terminal_model: Arc<FairMutex<TerminalModel>>,
     warpify_button: ViewHandle<ActionButton>,
     use_agent_button: ViewHandle<ActionButton>,
     dismiss_button: ViewHandle<ActionButton>,
-    mode: Option<WarpificationMode>,
+    mode: Option<WishificationMode>,
 }
 
-impl WarpifyFooterView {
+impl WishifyFooterView {
     pub fn new(terminal_model: Arc<FairMutex<TerminalModel>>, ctx: &mut ViewContext<Self>) -> Self {
         let button_size = ButtonSize::XSmall;
 
         let warpify_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Warpify subshell", AgentFooterButtonTheme::new(None))
+            ActionButton::new("Wishify subshell", AgentFooterButtonTheme::new(None))
                 .with_icon(Icon::Warp)
                 .with_size(button_size)
-                .with_tooltip("Enable Warp shell integration in this session")
+                .with_tooltip("Enable Wish shell integration in this session")
                 .with_tooltip_alignment(TooltipAlignment::Left)
                 .on_click(|ctx| {
-                    ctx.dispatch_typed_action(WarpifyFooterViewAction::Warpify);
+                    ctx.dispatch_typed_action(WishifyFooterViewAction::Wishify);
                 })
         });
 
@@ -48,10 +48,10 @@ impl WarpifyFooterView {
                 .with_icon(Icon::Oz)
                 .with_keybinding(KeystrokeSource::Fixed(USE_AGENT_KEYSTROKE.clone()), ctx)
                 .with_size(button_size)
-                .with_tooltip("Ask the Warp agent to assist")
+                .with_tooltip("Ask the Wish agent to assist")
                 .with_tooltip_alignment(TooltipAlignment::Left)
                 .on_click(|ctx| {
-                    ctx.dispatch_typed_action(WarpifyFooterViewAction::UseAgent);
+                    ctx.dispatch_typed_action(WishifyFooterViewAction::UseAgent);
                 })
         });
 
@@ -59,7 +59,7 @@ impl WarpifyFooterView {
             ActionButton::new("Dismiss", AgentFooterButtonTheme::new(None))
                 .with_size(button_size)
                 .on_click(|ctx| {
-                    ctx.dispatch_typed_action(WarpifyFooterViewAction::Dismiss);
+                    ctx.dispatch_typed_action(WishifyFooterViewAction::Dismiss);
                 })
         });
 
@@ -73,12 +73,12 @@ impl WarpifyFooterView {
     }
 
     /// Updates the warpify button label, keybinding, and stores the current warpification mode.
-    pub fn set_mode(&mut self, mode: WarpificationMode, ctx: &mut ViewContext<Self>) {
+    pub fn set_mode(&mut self, mode: WishificationMode, ctx: &mut ViewContext<Self>) {
         let (label, binding_name) = match mode {
-            WarpificationMode::Ssh { .. } => {
-                ("Warpify SSH session", "terminal:warpify_ssh_session")
+            WishificationMode::Ssh { .. } => {
+                ("Wishify SSH session", "terminal:warpify_ssh_session")
             }
-            WarpificationMode::Subshell { .. } => ("Warpify subshell", "terminal:warpify_subshell"),
+            WishificationMode::Subshell { .. } => ("Wishify subshell", "terminal:warpify_subshell"),
         };
         self.warpify_button.update(ctx, |button, ctx| {
             button.set_label(label, ctx);
@@ -89,7 +89,7 @@ impl WarpifyFooterView {
     }
 
     /// Returns the current warpification mode, if set.
-    pub fn mode(&self) -> Option<&WarpificationMode> {
+    pub fn mode(&self) -> Option<&WishificationMode> {
         self.mode.as_ref()
     }
 
@@ -104,25 +104,25 @@ impl WarpifyFooterView {
 }
 
 #[derive(Debug, Clone)]
-pub enum WarpifyFooterViewAction {
-    Warpify,
+pub enum WishifyFooterViewAction {
+    Wishify,
     UseAgent,
     Dismiss,
 }
 
-pub enum WarpifyFooterViewEvent {
-    Warpify { mode: WarpificationMode },
+pub enum WishifyFooterViewEvent {
+    Wishify { mode: WishificationMode },
     UseAgent,
     Dismiss,
 }
 
-impl Entity for WarpifyFooterView {
-    type Event = WarpifyFooterViewEvent;
+impl Entity for WishifyFooterView {
+    type Event = WishifyFooterViewEvent;
 }
 
-impl View for WarpifyFooterView {
+impl View for WishifyFooterView {
     fn ui_name() -> &'static str {
-        "WarpifyFooterView"
+        "WishifyFooterView"
     }
 
     fn render(&self, _app: &AppContext) -> Box<dyn Element> {
@@ -151,24 +151,24 @@ impl View for WarpifyFooterView {
     }
 }
 
-impl TypedActionView for WarpifyFooterView {
-    type Action = WarpifyFooterViewAction;
+impl TypedActionView for WishifyFooterView {
+    type Action = WishifyFooterViewAction;
 
     fn handle_action(&mut self, action: &Self::Action, ctx: &mut ViewContext<Self>) {
         match action {
-            WarpifyFooterViewAction::Warpify => {
+            WishifyFooterViewAction::Wishify => {
                 if let Some(mode) = self.mode.clone() {
                     self.clear_mode(ctx);
-                    ctx.emit(WarpifyFooterViewEvent::Warpify { mode });
+                    ctx.emit(WishifyFooterViewEvent::Wishify { mode });
                 }
             }
-            WarpifyFooterViewAction::UseAgent => {
+            WishifyFooterViewAction::UseAgent => {
                 self.clear_mode(ctx);
-                ctx.emit(WarpifyFooterViewEvent::UseAgent);
+                ctx.emit(WishifyFooterViewEvent::UseAgent);
             }
-            WarpifyFooterViewAction::Dismiss => {
+            WishifyFooterViewAction::Dismiss => {
                 self.clear_mode(ctx);
-                ctx.emit(WarpifyFooterViewEvent::Dismiss);
+                ctx.emit(WishifyFooterViewEvent::Dismiss);
             }
         }
     }

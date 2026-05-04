@@ -6,4 +6,4 @@ publish.workspace = true
 license.workspace = true
 
 [dependencies]
-warpui.workspace = true
+wishui.workspace = true

@@ -9,7 +9,7 @@ use session_sharing_protocol::common::{
 };
 use std::io::{sink, Sink};
 use std::sync::Arc;
-use warpui::{Entity, ModelContext, SingletonEntity, WeakViewHandle};
+use wishui::{Entity, ModelContext, SingletonEntity, WeakViewHandle};
 
 use crate::terminal::event_listener::ChannelEventListener;
 use crate::terminal::model::ansi::{self};

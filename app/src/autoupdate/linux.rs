@@ -4,9 +4,9 @@ use std::path::PathBuf;
 use anyhow::{bail, Context as _, Result};
 use channel_versions::VersionInfo;
 use instant::Duration;
-use warp_core::channel::{Channel, ChannelState};
 use warp_terminal::shell::ShellType;
-use warpui::ViewContext;
+use wish_core::channel::{Channel, ChannelState};
+use wishui::ViewContext;
 
 use crate::workspace::Workspace;
 
@@ -33,7 +33,7 @@ pub(super) async fn download_update_and_cleanup(
             appimage::download_update_and_cleanup(version_info, &appimage_path, client).await
         }
         UpdateMethod::PackageManager(package_manager) => {
-            log::info!("Detected that Warp was installed using {package_manager:?}");
+            log::info!("Detected that Wish was installed using {package_manager:?}");
             Ok(DownloadReady::Yes)
         }
     }
@@ -164,7 +164,7 @@ mod package_manager {
     use markdown_parser::{
         FormattedText, FormattedTextFragment, FormattedTextHeader, FormattedTextLine,
     };
-    use warpui::{
+    use wishui::{
         elements::{Container, FormattedTextElement, HighlightedHyperlink},
         Element, SingletonEntity as _,
     };
@@ -187,16 +187,16 @@ mod package_manager {
         }
     }
 
-    impl warpui::Entity for AutoupdateContextBlock {
+    impl wishui::Entity for AutoupdateContextBlock {
         type Event = ();
     }
 
-    impl warpui::View for AutoupdateContextBlock {
+    impl wishui::View for AutoupdateContextBlock {
         fn ui_name() -> &'static str {
             "AutoupdateContextBlock"
         }
 
-        fn render(&self, app: &warpui::AppContext) -> Box<dyn warpui::Element> {
+        fn render(&self, app: &wishui::AppContext) -> Box<dyn wishui::Element> {
             let appearance = Appearance::as_ref(app);
             let theme = appearance.theme();
             let package_manager_name = self.package_manager.to_string();
@@ -210,10 +210,10 @@ mod package_manager {
                     ))],
                 }),
                 FormattedTextLine::Line(vec![
-                    FormattedTextFragment::plain_text("If you installed Warp using "),
+                    FormattedTextFragment::plain_text("If you installed Wish using "),
                     FormattedTextFragment::bold(package_manager_name),
                     FormattedTextFragment::plain_text(
-                        " or a compatible tool, the pre-filled command will update Warp for you.",
+                        " or a compatible tool, the pre-filled command will update Wish for you.",
                     ),
                 ]),
             ];
@@ -221,7 +221,7 @@ mod package_manager {
             if self.package_manager.needs_repository_configuration() {
                 lines.push(FormattedTextLine::Line(vec![
                     FormattedTextFragment::plain_text(
-                        "\nThe command below includes a one-time configuration of the Warp package repository and PGP signing key.",
+                        "\nThe command below includes a one-time configuration of the Wish package repository and PGP signing key.",
                     ),
                 ]));
             }
@@ -236,7 +236,7 @@ mod package_manager {
                     ),
                     FormattedTextFragment::inline_code("warp_handle_dist_upgrade"),
                     FormattedTextFragment::plain_text(
-                        " function ensures the Warp package repository is enabled, as we've detected you recently upgraded your distribution.",
+                        " function ensures the Wish package repository is enabled, as we've detected you recently upgraded your distribution.",
                     ),
                 ]));
             }
@@ -244,10 +244,10 @@ mod package_manager {
             lines.push(FormattedTextLine::Line(vec![
                 FormattedTextFragment::plain_text("\nReview the command below, then "),
                 FormattedTextFragment::bold("press enter"),
-                FormattedTextFragment::plain_text(" to install the update and re-launch Warp.  "),
+                FormattedTextFragment::plain_text(" to install the update and re-launch Wish.  "),
                 FormattedTextFragment::hyperlink(
                     "Please report any issues",
-                    "https://github.com/warpdotdev/Warp/issues/new/choose",
+                    "https://github.com/hermonai/wish/issues/new/choose",
                 ),
             ]));
 
@@ -316,9 +316,9 @@ mod package_manager {
 pub(crate) enum UpdateMethod {
     /// We don't know how to update Warp.
     Unknown,
-    /// Warp is running as an AppImage and should be updated in-place.
+    /// Wish is running as an AppImage and should be updated in-place.
     AppImage(PathBuf),
-    /// Warp can be updated using the given package manager.
+    /// Wish can be updated using the given package manager.
     PackageManager(PackageManager),
 }
 
@@ -365,7 +365,7 @@ impl PackageManager {
                     ShellType::Zsh | ShellType::Bash | ShellType::Fish => {
                         "warp_handle_dist_upgrade"
                     }
-                    ShellType::PowerShell => "Warp-Handle-DistUpgrade",
+                    ShellType::PowerShell => "Wish-Handle-DistUpgrade",
                 };
                 // If running with apt, attempt to handle a distribution update that may rename the
                 // warp source file to `{repo_name}.distUpgrade`.
@@ -393,7 +393,7 @@ impl PackageManager {
                 is_signing_key_configured,
             } => {
                 let repo_prefix = if !is_repo_configured {
-                    let cache_dir = warp_core::paths::cache_dir();
+                    let cache_dir = wish_core::paths::cache_dir();
                     let cache_dir_str = cache_dir.display();
                     // Back up the existing pacman.conf file just in case
                     // anything goes wrong, then add the repository config.
@@ -415,7 +415,7 @@ impl PackageManager {
 
         let finish_update_fn = match shell_type {
             ShellType::Zsh | ShellType::Bash | ShellType::Fish => "warp_finish_update",
-            ShellType::PowerShell => "Warp-Finish-Update",
+            ShellType::PowerShell => "Wish-Finish-Update",
         };
         format!("{base_command}{and}{finish_update_fn} {update_id}")
     }
@@ -653,21 +653,21 @@ fn is_pacman_signing_key_installed() -> bool {
 
 fn package_name(channel: Channel) -> &'static str {
     match channel {
-        Channel::Stable => "warp-terminal",
-        Channel::Preview => "warp-terminal-preview",
-        Channel::Dev => "warp-terminal-dev",
-        Channel::Integration => "warp-terminal-integration",
-        Channel::Local => "warp-terminal-local",
-        Channel::Oss => "warp-oss",
+        Channel::Stable => "wish-terminal",
+        Channel::Preview => "wish-terminal-preview",
+        Channel::Dev => "wish-terminal-dev",
+        Channel::Integration => "wish-terminal-integration",
+        Channel::Local => "wish-terminal-local",
+        Channel::Oss => "wish-oss",
     }
 }
 
 fn repo_name(channel: Channel) -> String {
     let package_name = package_name(channel);
     let channel_suffix = package_name
-        .strip_prefix("warp-terminal")
+        .strip_prefix("wish-terminal")
         .unwrap_or_default();
-    format!("warpdotdev{channel_suffix}")
+    format!("hermonai{channel_suffix}")
 }
 
 #[cfg(test)]

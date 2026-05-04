@@ -6,9 +6,9 @@ use cfg_if::cfg_if;
 use lazy_static::lazy_static;
 use parking_lot::RwLock;
 use warp_cli::RecoveryMechanism;
-use warp_core::channel::{Channel, ChannelState};
-use warpui::{Entity, ModelContext, SingletonEntity, WindowId};
 use warpui_extras::user_preferences::UserPreferences;
+use wish_core::channel::{Channel, ChannelState};
+use wishui::{Entity, ModelContext, SingletonEntity, WindowId};
 
 use crate::{report_if_error, settings};
 
@@ -215,8 +215,8 @@ impl CrashRecovery {
     }
 
     #[cfg(test)]
-    pub fn register_for_test(app: &mut warpui::App) {
-        use warp_core::user_preferences::GetUserPreferences as _;
+    pub fn register_for_test(app: &mut wishui::App) {
+        use wish_core::user_preferences::GetUserPreferences as _;
 
         app.update(|ctx| {
             ctx.add_singleton_model(|ctx| {

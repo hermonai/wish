@@ -7,7 +7,7 @@ use std::{
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use warp_util::path::EscapeChar;
-use warpui::{
+use wishui::{
     accessibility::{AccessibilityContent, ActionAccessibilityContent, WarpA11yRole},
     SingletonEntity, ViewContext,
 };
@@ -20,7 +20,7 @@ use crate::{
         event::UserBlockCompleted,
         general_settings::GeneralSettings,
         model::session::Session,
-        view::inline_banner::{OpenInWarpBannerAction, OpenInWarpBannerState},
+        view::inline_banner::{OpenInWishBannerAction, OpenInWishBannerState},
     },
     util::openable_file_type::{is_file_openable_in_warp, OpenableFileType},
 };
@@ -42,10 +42,10 @@ use super::{Event, InlineBannerItem, InlineBannerType, TerminalView};
 mod tests;
 
 const LEARN_MORE_MARKDOWN_URL: &str =
-    "https://docs.warp.dev/terminal/more-features/markdown-viewer";
-const LEARN_MORE_CODE_URL: &str = "https://docs.warp.dev/code/overview#built-in-code-editor";
+    "https://wish.hermon.ai/docs/terminal/more-features/markdown-viewer";
+const LEARN_MORE_CODE_URL: &str = "https://wish.hermon.ai/docs/code/overview#built-in-code-editor";
 
-/// A path to a file that can be opened in Warp, along with its type.
+/// A path to a file that can be opened in Wish, along with its type.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OpenablePath {
     pub path: PathBuf,
@@ -99,7 +99,7 @@ impl TerminalView {
         }
     }
 
-    /// Whether or not the "Open in Warp" banner is open.
+    /// Whether or not the "Open in Wish" banner is open.
     #[cfg(feature = "integration_tests")]
     pub fn is_open_in_warp_banner_open(&self) -> bool {
         self.inline_banners_state.open_in_warp_banner.is_some()
@@ -146,7 +146,7 @@ impl TerminalView {
         }
 
         let banner_id = self.inline_banners_state.next_banner_id();
-        self.inline_banners_state.open_in_warp_banner = Some(OpenInWarpBannerState::new(
+        self.inline_banners_state.open_in_warp_banner = Some(OpenInWishBannerState::new(
             banner_id,
             openable_path,
             session,
@@ -163,22 +163,22 @@ impl TerminalView {
 
     pub fn handle_open_in_warp_banner_action(
         &mut self,
-        action: OpenInWarpBannerAction,
+        action: OpenInWishBannerAction,
         ctx: &mut ViewContext<Self>,
     ) {
         match action {
-            OpenInWarpBannerAction::OpenFile => {
+            OpenInWishBannerAction::OpenFile => {
                 if let Some(banner_state) = self.inline_banners_state.open_in_warp_banner.take() {
                     match banner_state.target.file_type {
                         OpenableFileType::Markdown => {
-                            ctx.emit(Event::OpenFileInWarp {
+                            ctx.emit(Event::OpenFileInWish {
                                 path: banner_state.target.path,
                                 session: banner_state.session,
                             });
                         }
                         OpenableFileType::Code | OpenableFileType::Text => {
                             #[cfg(feature = "local_fs")]
-                            ctx.emit(Event::OpenCodeInWarp {
+                            ctx.emit(Event::OpenCodeInWish {
                                 source: CodeSource::Link {
                                     path: banner_state.target.path,
                                     range_start: None,
@@ -194,7 +194,7 @@ impl TerminalView {
                     ctx.notify();
                 }
             }
-            OpenInWarpBannerAction::LearnMore => {
+            OpenInWishBannerAction::LearnMore => {
                 if let Some(banner_state) = &self.inline_banners_state.open_in_warp_banner {
                     let url = match banner_state.target.file_type {
                         OpenableFileType::Markdown => LEARN_MORE_MARKDOWN_URL,
@@ -203,7 +203,7 @@ impl TerminalView {
                     ctx.open_url(url);
                 }
             }
-            OpenInWarpBannerAction::Close => {
+            OpenInWishBannerAction::Close => {
                 if let Some(banner_state) = self.inline_banners_state.open_in_warp_banner.take() {
                     self.close_open_in_warp_banner(banner_state.id);
                     match banner_state.target.file_type {
@@ -230,30 +230,30 @@ impl TerminalView {
 
     pub fn open_in_warp_banner_accessibility_content(
         &self,
-        action: OpenInWarpBannerAction,
+        action: OpenInWishBannerAction,
     ) -> ActionAccessibilityContent {
         match action {
-            OpenInWarpBannerAction::OpenFile => {
+            OpenInWishBannerAction::OpenFile => {
                 match &self.inline_banners_state.open_in_warp_banner {
                     Some(banner_state) => {
                         ActionAccessibilityContent::Custom(AccessibilityContent::new_without_help(
-                            format!("Open {} in Warp", banner_state.target.path.display()),
+                            format!("Open {} in Wish", banner_state.target.path.display()),
                             WarpA11yRole::UserAction,
                         ))
                     }
                     None => ActionAccessibilityContent::Empty,
                 }
             }
-            OpenInWarpBannerAction::Close => {
+            OpenInWishBannerAction::Close => {
                 ActionAccessibilityContent::Custom(AccessibilityContent::new_without_help(
-                    "Close View in Warp banner",
+                    "Close View in Wish banner",
                     WarpA11yRole::UserAction,
                 ))
             }
-            OpenInWarpBannerAction::LearnMore => {
+            OpenInWishBannerAction::LearnMore => {
                 ActionAccessibilityContent::Custom(AccessibilityContent::new(
                     "Learn more",
-                    "Learn more about opening Markdown files in Warp",
+                    "Learn more about opening Markdown files in Wish",
                     WarpA11yRole::UserAction,
                 ))
             }
@@ -266,7 +266,7 @@ lazy_static! {
         HashSet::from(["bat", "cat", "glow", "less", "open"]);
 }
 
-/// Examines `command` for a file openable in Warp, returning the resolved path and type if found.
+/// Examines `command` for a file openable in Wish, returning the resolved path and type if found.
 async fn check_openable_in_warp(
     command: String,
     working_directory: Option<String>,
@@ -321,7 +321,7 @@ async fn check_openable_in_warp(
                 );
 
                 if async_fs::metadata(&resolved).await.is_ok() {
-                    // We've found a file that exists and can be opened in Warp.
+                    // We've found a file that exists and can be opened in Wish.
                     return Some(OpenablePath {
                         path: resolved,
                         file_type,

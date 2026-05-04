@@ -11,9 +11,6 @@ use std::path::Path;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::{cmp, mem};
-use warp_core::platform::SessionPlatform;
-use warp_core::send_telemetry_from_ctx;
-use warp_core::ui::theme::Fill;
 use warp_editor::content::anchor::Anchor;
 use warp_editor::content::edit::EditDelta;
 use warp_editor::content::find::{SearchConfig, SearchResults};
@@ -22,7 +19,10 @@ use warp_editor::content::version::BufferVersion;
 use warp_editor::multiline::{AnyMultilineString, MultilineString, LF};
 use warp_editor::render::model::{AutoScrollMode, LineCount, StyleUpdateAction};
 use warp_editor::selection::TextDirection;
-use warpui::units::{IntoPixels, Pixels};
+use wish_core::platform::SessionPlatform;
+use wish_core::send_telemetry_from_ctx;
+use wish_core::ui::theme::Fill;
+use wishui::units::{IntoPixels, Pixels};
 
 use crate::util::link_detection::get_word_range_at_offset;
 use crate::{
@@ -47,7 +47,6 @@ use vim::{
     vim_a_quote, vim_a_word, vim_find_char_on_line, vim_find_matching_bracket, vim_inner_block,
     vim_inner_paragraph, vim_inner_quote, vim_inner_word, vim_word_iterator_from_offset,
 };
-use warp_core::semantic_selection::SemanticSelection;
 use warp_editor::content::buffer::{ShouldAutoscroll, VimInsertPoint};
 use warp_editor::{
     content::{
@@ -67,12 +66,13 @@ use warp_editor::{
     },
     selection::{SelectionMode, SelectionModel, TextUnit},
 };
-use warpui::elements::{
+use wish_core::semantic_selection::SemanticSelection;
+use wishui::elements::{
     AnchorPair, OffsetPositioning, OffsetType, PositionedElementOffsetBounds, PositioningAxis,
     XAxisAnchor, YAxisAnchor,
 };
-use warpui::text::{point::Point, TextBuffer};
-use warpui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
+use wishui::text::{point::Point, TextBuffer};
+use wishui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
 
 use super::super::DiffResult;
 use super::comments::{EditorCommentsModel, PendingComment, PendingCommentEvent};
@@ -3721,7 +3721,7 @@ impl CoreEditorModel for CodeEditorModel {
     }
 
     // TODO(kevin): Add validation to the content model.
-    fn validate(&self, _ctx: &impl warpui::ModelAsRef) {}
+    fn validate(&self, _ctx: &impl wishui::ModelAsRef) {}
 
     // Since this is a plain text editor, there is no text styles.
     fn active_text_style(&self) -> warp_editor::content::text::TextStyles {

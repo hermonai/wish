@@ -13,7 +13,7 @@ use crate::terminal::local_tty::shell::{
 use crate::terminal::model::session::command_executor::shell_escape_single_quotes;
 use crate::terminal::shell::ShellType;
 use crate::ASSETS;
-use warp_core::features::FeatureFlag;
+use wish_core::features::FeatureFlag;
 
 use crate::report_if_error;
 use itertools::Itertools;
@@ -47,8 +47,8 @@ use std::{
     path::{Path, PathBuf},
     ptr,
 };
-use warp_core::channel::ChannelState;
-use warpui::{AppContext, SingletonEntity};
+use wish_core::channel::ChannelState;
+use wishui::{AppContext, SingletonEntity};
 
 /// Get raw fds for leader/follower ends of a new PTY.
 fn make_pty(size: winsize) -> Result<(RawFd, RawFd)> {
@@ -315,7 +315,7 @@ fn build_host_shell_command(
     builder.env("WARP_IS_LOCAL_SHELL_SESSION", "1");
 
     // Only advertise the protocol version when the HOA notifications feature is enabled.
-    // Without it, Warp can't render structured CLI agent notifications,
+    // Without it, Wish can't render structured CLI agent notifications,
     // so the plugin should fall back to legacy notifications.
     if FeatureFlag::HOANotifications.is_enabled() {
         builder.env(
@@ -853,7 +853,7 @@ fn prepare_docker_sandbox(starter: &DockerSandboxShellStarter) -> Result<()> {
     // cannot traverse into them, which (combined with the parent living under
     // the per-user Warp cache dir rather than `/tmp`) prevents the init
     // script from being read or symlink-attacked by anyone other than the
-    // Warp user. The file itself is left at the default mode so the
+    // Wish user. The file itself is left at the default mode so the
     // container's shell (which may run as a different uid than the host
     // user) can still read it via `--rcfile`.
     let mk_owner_only_dir = |path: &Path| -> Result<()> {

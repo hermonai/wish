@@ -3,8 +3,8 @@ use std::{marker::PhantomData, rc::Rc};
 use markdown_parser::{
     FormattedText, FormattedTextFragment, FormattedTextInline, FormattedTextLine,
 };
-use warpui::elements::HyperlinkLens;
-use warpui::{
+use wishui::elements::HyperlinkLens;
+use wishui::{
     elements::{
         ConstrainedBox, Container, CrossAxisAlignment, Flex, FormattedTextElement,
         HighlightedHyperlink, HyperlinkUrl, MainAxisAlignment, MainAxisSize, MouseStateHandle,
@@ -33,7 +33,7 @@ pub enum DismissalType {
     Temporary,
 
     /// The banner should not be shown again to the user, whether in a new or existing session.
-    /// Dismissal state should also persist across app sessions (e.g. when Warp is restarted).
+    /// Dismissal state should also persist across app sessions (e.g. when Wish is restarted).
     Permanent,
 }
 

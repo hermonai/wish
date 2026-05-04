@@ -102,7 +102,7 @@ pub(super) async fn prepare_local_harness_child_launch(
                 .map_err(|error: AgentDriverError| error.to_string())?;
             // Local child harness panes inherit the user's existing local Claude
             // auth/session state. We still prepare Claude's config files here,
-            // but there are no Warp-managed secrets to materialize into the
+            // but there are no Wish-managed secrets to materialize into the
             // hidden child pane.
             let managed_secrets: HashMap<String, ManagedSecretValue> = HashMap::new();
             claude_harness

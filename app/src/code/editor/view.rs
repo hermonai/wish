@@ -40,7 +40,6 @@ use std::{collections::HashSet, path::Path};
 use string_offset::CharOffset;
 use vec1::{vec1, Vec1};
 use vim::vim::{Direction, InsertPosition, VimMode, VimModel, VimState, VimSubscriber};
-use warp_core::platform::SessionPlatform;
 use warp_editor::{
     content::{
         buffer::{
@@ -65,7 +64,8 @@ use warp_editor::{
     search::{SearchEvent, Searcher, MATCH_FILL, SELECTED_MATCH_FILL},
 };
 use warp_util::content_version::ContentVersion;
-use warpui::{
+use wish_core::platform::SessionPlatform;
+use wishui::{
     elements::{
         new_scrollable::{
             AxisConfiguration, DualAxisConfig, NewScrollableElement, ScrollableAppearance,
@@ -403,11 +403,11 @@ impl CodeEditorView {
                 // from truncating space for the code editor. We should not render it as an overlay
                 // for small code editors.
                 horizontal_scrollbar_appearance: ScrollableAppearance::new(
-                    warpui::elements::ScrollbarWidth::Auto,
+                    wishui::elements::ScrollbarWidth::Auto,
                     false,
                 ),
                 vertical_scrollbar_appearance: ScrollableAppearance::new(
-                    warpui::elements::ScrollbarWidth::Auto,
+                    wishui::elements::ScrollbarWidth::Auto,
                     false,
                 ),
                 gutter_hover_target: GutterHoverTarget::GutterElement,
@@ -2341,7 +2341,7 @@ impl View for CodeEditorView {
         }
     }
 
-    fn keymap_context(&self, app: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, app: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
 
         if self.interaction_state(app) != InteractionState::Editable {

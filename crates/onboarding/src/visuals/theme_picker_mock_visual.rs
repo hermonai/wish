@@ -1,6 +1,6 @@
 use super::onboarding_visual::{OnboardingVisual, Pill, RectPct};
-use warp_core::ui::{appearance::Appearance, theme::color::internal_colors};
-use warpui::{elements::Align, Element};
+use wish_core::ui::{appearance::Appearance, theme::color::internal_colors};
+use wishui::{elements::Align, Element};
 
 pub(crate) fn theme_picker_visual(appearance: &Appearance) -> Box<dyn Element> {
     let theme = appearance.theme();

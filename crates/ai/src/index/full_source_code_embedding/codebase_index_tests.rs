@@ -23,7 +23,7 @@ use std::ops::Range;
 use std::path::PathBuf;
 use std::sync::Arc;
 use warp_util::standardized_path::StandardizedPath;
-use warpui::{App, SingletonEntity};
+use wishui::{App, SingletonEntity};
 
 use super::{
     CodebaseIndex, CodebaseIndexTimeStampMetadata, TreeSourceSyncState,

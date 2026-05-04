@@ -87,7 +87,7 @@ We render breadcrumbs manually rather than reusing `crate::ui_components::breadc
           .finish();
   }
   ```
-  Pinning the header to `PANE_HEADER_HEIGHT` is **load-bearing**, not cosmetic. `Flex::column` passes `max.y = INFINITY` to its non-flex children (`SizeConstraint::child_constraint_along_axis` in `crates/warpui_core/src/presenter.rs:794`). Without the explicit `ConstrainedBox`, the inner `Align` in `render_three_column_header` collapses to the title's small line-box height and the outer row's `CrossAxisAlignment::Stretch` paints children at offset 0 (top) — the title visibly clings to the top of the row instead of being centered. See `crates/warpui_core/src/elements/flex/mod.rs (467-473)` for the cross-axis offset math and `align.rs (77-89)` for Align's infinite-constraint fallback.
+  Pinning the header to `PANE_HEADER_HEIGHT` is **load-bearing**, not cosmetic. `Flex::column` passes `max.y = INFINITY` to its non-flex children (`SizeConstraint::child_constraint_along_axis` in `crates/wishui-core/src/presenter.rs:794`). Without the explicit `ConstrainedBox`, the inner `Align` in `render_three_column_header` collapses to the title's small line-box height and the outer row's `CrossAxisAlignment::Stretch` paints children at offset 0 (top) — the title visibly clings to the top of the row instead of being centered. See `crates/wishui-core/src/elements/flex/mod.rs (467-473)` for the cross-axis offset math and `align.rs (77-89)` for Align's infinite-constraint fallback.
 
 ### 7. Mouse state wiring
 
@@ -111,7 +111,7 @@ To verify in a local build, run an orchestrator (e.g. via `/orchestrate`) that s
 
 ### Layout-regression test
 
-Add a unit test next to `OrchestrationPillBar` that lays out the view in a `warpui::App::test` with at least one child conversation, asserting it does not panic. This is the standard "UI components need layout validation tests" requirement from the `create-pr` skill, and it specifically guards the load-bearing `ConstrainedBox::with_height(PANE_HEADER_HEIGHT)` fix in `maybe_add_parent_navigation_card` (see Risks).
+Add a unit test next to `OrchestrationPillBar` that lays out the view in a `wishui::App::test` with at least one child conversation, asserting it does not panic. This is the standard "UI components need layout validation tests" requirement from the `create-pr` skill, and it specifically guards the load-bearing `ConstrainedBox::with_height(PANE_HEADER_HEIGHT)` fix in `maybe_add_parent_navigation_card` (see Risks).
 
 ### Behavior-driven coverage to consider
 

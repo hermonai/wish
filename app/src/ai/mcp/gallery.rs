@@ -7,7 +7,7 @@ use crate::server::cloud_objects::update_manager::{UpdateManager, UpdateManagerE
 use crate::server::datetime_ext::DateTimeExt;
 use chrono::DateTime;
 use uuid::Uuid;
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 #[derive(Clone, Debug)]
 pub struct GalleryMCPServer {

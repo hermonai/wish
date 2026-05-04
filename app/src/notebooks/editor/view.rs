@@ -27,7 +27,7 @@ use warp_editor::{
 };
 
 use warp_util::{path::LineAndColumnArg, user_input::UserInput};
-use warpui::{
+use wishui::{
     accessibility::{AccessibilityContent, ActionAccessibilityContent, WarpA11yRole},
     assets::asset_cache::{AssetCache, AssetHandle, AssetState},
     clipboard::ClipboardContent,
@@ -52,8 +52,8 @@ use warpui::{
     windowing, AppContext, BlurContext, CursorInfo, Element, Entity, FocusContext, ModelHandle,
     SingletonEntity, TypedActionView, View, ViewContext, ViewHandle, WeakViewHandle,
 };
-use warpui::{actions::StandardAction, elements::Hoverable};
-use warpui::{keymap::PerPlatformKeystroke, windowing::WindowManager};
+use wishui::{actions::StandardAction, elements::Hoverable};
+use wishui::{keymap::PerPlatformKeystroke, windowing::WindowManager};
 
 use crate::{
     appearance::Appearance,
@@ -80,7 +80,7 @@ use crate::{
 use crate::util::link_detection::{detect_file_paths, get_word_range_at_offset, DetectedLinkType};
 
 #[cfg(feature = "local_fs")]
-use warpui::text::word_boundaries::WordBoundariesPolicy;
+use wishui::text::word_boundaries::WordBoundariesPolicy;
 
 use super::{
     block_insertion_menu::{BlockInsertionMenuState, BlockInsertionSource},
@@ -103,7 +103,7 @@ const MAX_EDITOR_TIP_WIDTH: f32 = 300.;
 const GUTTER_WIDTH: f32 = ICON_DIMENSIONS + 4.;
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     // Context for text entry/navigation/selection:
     // - The editor is focused
@@ -878,7 +878,7 @@ pub enum EditorViewAction {
     OpenEmbeddedObjectSearch,
     RemoveEmbeddingAt(CharOffset),
     MiddleClickPaste,
-    /// Open a file. If open_in_warp is true, open in Warp's code editor; otherwise use external editor.
+    /// Open a file. If open_in_warp is true, open in Wish's code editor; otherwise use external editor.
     OpenFile {
         path: PathBuf,
         line_and_column_num: Option<LineAndColumnArg>,
@@ -2409,7 +2409,7 @@ impl RichTextEditorView {
         appearance: &Appearance,
         ctx: &AppContext,
     ) -> Box<dyn Element> {
-        use warpui::EventContext;
+        use wishui::EventContext;
         type FilePathTooltipLinks = Vec<TooltipLink<Box<dyn Fn(&mut EventContext)>>>;
 
         let path = selected_file_path.path.clone();
@@ -2440,7 +2440,7 @@ impl RichTextEditorView {
         if show_open_in_warp {
             let path_for_warp = path.clone();
             links.push(TooltipLink {
-                text: "Open in Warp".to_string(),
+                text: "Open in Wish".to_string(),
                 on_click: Box::new(move |ctx: &mut EventContext| {
                     ctx.dispatch_typed_action(EditorViewAction::OpenFile {
                         path: path_for_warp.clone(),
@@ -2647,7 +2647,7 @@ impl View for RichTextEditorView {
         stack.finish()
     }
 
-    fn active_cursor_position(&self, ctx: &ViewContext<Self>) -> Option<warpui::CursorInfo> {
+    fn active_cursor_position(&self, ctx: &ViewContext<Self>) -> Option<wishui::CursorInfo> {
         let model = self.model.as_ref(ctx);
         let render_state = model.render_state().as_ref(ctx);
         let font_size = model.cursor_font_size(ctx);
@@ -2658,7 +2658,7 @@ impl View for RichTextEditorView {
             })
     }
 
-    fn keymap_context(&self, ctx: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, ctx: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
 
         if self.is_editable(ctx) {

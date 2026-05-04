@@ -1,12 +1,12 @@
-//! Warp input editor logic related to decorating the input's text, such as
+//! Wish input editor logic related to decorating the input's text, such as
 //! applying syntax highlighting and error underlining.
 
 use std::{collections::HashMap, ops::Range};
 
 use settings::Setting as _;
 use string_offset::{ByteOffset, CharOffset};
-use warp_core::features::FeatureFlag;
-use warpui::{AppContext, SingletonEntity, ViewContext};
+use wish_core::features::FeatureFlag;
+use wishui::{AppContext, SingletonEntity, ViewContext};
 
 use crate::{
     appearance::Appearance,

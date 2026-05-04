@@ -1,5 +1,5 @@
 [package]
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 edition = "2021"
 name = "warp_graphql"
 version = "0.1.0"
@@ -21,7 +21,7 @@ persistence.workspace = true
 reqwest.workspace = true
 serde.workspace = true
 thiserror.workspace = true
-warp_core.workspace = true
+wish_core.workspace = true
 warp_graphql_schema.workspace = true
 websocket = {path = "../websocket"}
 

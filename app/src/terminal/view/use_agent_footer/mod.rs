@@ -12,23 +12,23 @@ use crate::terminal::cli_agent_sessions::{CLIAgentInputEntrypoint, CLIAgentSessi
 use crate::terminal::shared_session::{SharedSessionActionSource, SharedSessionScrollbackType};
 use base64::Engine;
 use session_sharing_protocol::sharer::SessionSourceType;
-use warpui::clipboard::{ClipboardContent, ImageData};
+use wishui::clipboard::{ClipboardContent, ImageData};
 mod warpify_footer;
 
 pub use crate::terminal::CLIAgent;
-use warpify_footer::{WarpifyFooterView, WarpifyFooterViewEvent};
+use warpify_footer::{WishifyFooterView, WishifyFooterViewEvent};
 
 use std::sync::{Arc, LazyLock};
 use std::time::Duration;
 
-use warpui::r#async::Timer;
+use wishui::r#async::Timer;
 
 use crate::code_review::diff_state::GitDeltaPreference;
 use crate::code_review::telemetry_event::CodeReviewPaneEntrypoint;
 use anyhow::anyhow;
 use parking_lot::FairMutex;
 use pathfinder_color::ColorU;
-use warp_core::{
+use wish_core::{
     features::FeatureFlag,
     report_error, send_telemetry_from_ctx,
     settings::Setting,
@@ -41,7 +41,7 @@ use warp_core::{
     },
 };
 
-use warpui::{
+use wishui::{
     elements::{
         ChildView, Container, CrossAxisAlignment, Empty, Expanded, Flex, MainAxisSize,
         ParentElement,
@@ -73,7 +73,7 @@ use crate::{
 use warp_terminal::model::escape_sequences::{BRACKETED_PASTE_END, BRACKETED_PASTE_START};
 
 use super::{RichContentInsertionPosition, TerminalAction, TerminalView};
-use crate::terminal::view::block_banner::WarpificationMode;
+use crate::terminal::view::block_banner::WishificationMode;
 
 /// Small delay inserted between separate PTY writes to CLI agents.
 /// (Used both for the mode-switch prefix split and for the `DelayedEnter`
@@ -256,18 +256,18 @@ impl TerminalView {
             UseAgentToolbarEvent::HideRichInput => {
                 self.close_cli_agent_rich_input_and_disable_auto_toggle(ctx);
             }
-            UseAgentToolbarEvent::Warpify { mode } => {
+            UseAgentToolbarEvent::Wishify { mode } => {
                 self.hide_use_agent_footer_in_blocklist(ctx);
                 match mode {
-                    WarpificationMode::Ssh { .. } => {
-                        self.handle_action(&TerminalAction::WarpifySSHSession, ctx);
+                    WishificationMode::Ssh { .. } => {
+                        self.handle_action(&TerminalAction::WishifySSHSession, ctx);
                     }
-                    WarpificationMode::Subshell { .. } => {
+                    WishificationMode::Subshell { .. } => {
                         self.handle_action(&TerminalAction::TriggerSubshellBootstrap, ctx);
                     }
                 }
                 send_telemetry_from_ctx!(
-                    TelemetryEvent::WarpifyFooterAcceptedWarpify {
+                    TelemetryEvent::WishifyFooterAcceptedWishify {
                         is_ssh: mode.is_ssh()
                     },
                     ctx
@@ -312,7 +312,7 @@ impl TerminalView {
         if cli_agent.is_some() {
             // For CLI agent commands, only check the CLI agent footer setting.
             // This is independent of the global AI toggle so that users who
-            // disable Warp AI still get the footer for third-party coding agents.
+            // disable Wish AI still get the footer for third-party coding agents.
             if !*ai_settings.should_render_cli_agent_footer {
                 return false;
             }
@@ -945,8 +945,8 @@ pub struct UseAgentToolbar {
     // Shared agent input footer (renders CLI agent mode when a CLI session is active).
     agent_input_footer: ViewHandle<AgentInputFooter>,
 
-    // Warpify footer UI (shown when a subshell/SSH command is detected).
-    warpify_footer_view: ViewHandle<WarpifyFooterView>,
+    // Wishify footer UI (shown when a subshell/SSH command is detected).
+    warpify_footer_view: ViewHandle<WishifyFooterView>,
 
     // `true` if the user has dismissed the footer.
     //
@@ -973,7 +973,7 @@ impl UseAgentToolbar {
             .with_icon(Icon::Oz)
             .with_keybinding(KeystrokeSource::Fixed(USE_AGENT_KEYSTROKE.clone()), ctx)
             .with_size(button_size)
-            .with_tooltip("Ask the Warp agent to assist")
+            .with_tooltip("Ask the Wish agent to assist")
             .with_tooltip_alignment(TooltipAlignment::Left)
             .on_click(|ctx| {
                 ctx.dispatch_typed_action(TerminalAction::SetInputModeAgent);
@@ -987,7 +987,7 @@ impl UseAgentToolbar {
             .with_icon(Icon::Oz)
             .with_keybinding(KeystrokeSource::Fixed(USE_AGENT_KEYSTROKE.clone()), ctx)
             .with_size(button_size)
-            .with_tooltip("Ask the Warp agent to resume")
+            .with_tooltip("Ask the Wish agent to resume")
             .with_tooltip_alignment(TooltipAlignment::Left)
             .on_click(|ctx| {
                 ctx.dispatch_typed_action(TerminalAction::SetInputModeAgent);
@@ -1020,7 +1020,7 @@ impl UseAgentToolbar {
         });
 
         let warpify_footer_view =
-            ctx.add_typed_action_view(|ctx| WarpifyFooterView::new(terminal_model.clone(), ctx));
+            ctx.add_typed_action_view(|ctx| WishifyFooterView::new(terminal_model.clone(), ctx));
 
         ctx.subscribe_to_view(&warpify_footer_view, |me, _, event, ctx| {
             me.handle_warpify_footer_event(event, ctx);
@@ -1098,17 +1098,17 @@ impl UseAgentToolbar {
 
     fn handle_warpify_footer_event(
         &mut self,
-        event: &WarpifyFooterViewEvent,
+        event: &WishifyFooterViewEvent,
         ctx: &mut ViewContext<Self>,
     ) {
         match event {
-            WarpifyFooterViewEvent::Warpify { mode } => {
-                ctx.emit(UseAgentToolbarEvent::Warpify { mode: mode.clone() });
+            WishifyFooterViewEvent::Wishify { mode } => {
+                ctx.emit(UseAgentToolbarEvent::Wishify { mode: mode.clone() });
             }
-            WarpifyFooterViewEvent::UseAgent => {
+            WishifyFooterViewEvent::UseAgent => {
                 ctx.emit(UseAgentToolbarEvent::UseAgent);
             }
-            WarpifyFooterViewEvent::Dismiss => {
+            WishifyFooterViewEvent::Dismiss => {
                 ctx.emit(UseAgentToolbarEvent::Dismiss);
             }
         }
@@ -1141,7 +1141,7 @@ impl UseAgentToolbar {
     /// warpify view instead of the CLI agent or regular "Use agent" views.
     pub(in crate::terminal) fn set_warpify_mode(
         &mut self,
-        mode: WarpificationMode,
+        mode: WishificationMode,
         ctx: &mut ViewContext<Self>,
     ) {
         self.warpify_footer_view.update(ctx, |view, ctx| {
@@ -1159,7 +1159,7 @@ impl UseAgentToolbar {
     }
 
     /// Returns the current warpification mode, if set.
-    pub(in crate::terminal) fn warpify_mode(&self, app: &AppContext) -> Option<WarpificationMode> {
+    pub(in crate::terminal) fn warpify_mode(&self, app: &AppContext) -> Option<WishificationMode> {
         self.warpify_footer_view.as_ref(app).mode().cloned()
     }
 
@@ -1193,7 +1193,7 @@ pub enum UseAgentToolbarEvent {
     /// Hide the rich input editor (same as Escape).
     HideRichInput,
     /// User chose to warpify the subshell/SSH session.
-    Warpify { mode: WarpificationMode },
+    Wishify { mode: WishificationMode },
     /// User chose to use the agent.
     UseAgent,
 }

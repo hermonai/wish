@@ -5,8 +5,8 @@ use ai::agent::{
     action_result::{AskUserQuestionAnswerItem, AskUserQuestionResult},
 };
 use itertools::Itertools;
-use warp_core::ui::theme::{color::internal_colors, WarpTheme};
-use warpui::{
+use wish_core::ui::theme::{color::internal_colors, WarpTheme};
+use wishui::{
     elements::{
         new_scrollable::SingleAxisConfig, Border, ChildView, Clipped, ClippedScrollStateHandle,
         ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Expanded, Fill, Flex,
@@ -116,7 +116,7 @@ fn ask_user_question_auto_advance_enabled(is_multiselect: bool, is_last_question
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     // Scope these shortcuts to the active ask-user-question block so arrow/submit keys don't leak
     // into surrounding views.
@@ -340,7 +340,7 @@ struct AskUserQuestionInteractiveViews {
 /// Header state for the collapsed/expanded completion summary.
 struct AskUserQuestionCompletionState {
     label: String,
-    status_icon: warpui::elements::Icon,
+    status_icon: wishui::elements::Icon,
 }
 
 /// Local questionnaire state machine used by the view.
@@ -1305,7 +1305,7 @@ impl AskUserQuestionView {
         questions: &[AskUserQuestionItem],
         answers: Option<&[AskUserQuestionAnswerItem]>,
         label: String,
-        status_icon: warpui::elements::Icon,
+        status_icon: wishui::elements::Icon,
         appearance: &Appearance,
         app: &AppContext,
     ) -> Box<dyn Element> {
@@ -1365,7 +1365,7 @@ impl AskUserQuestionView {
             .with_child(self.render_options_list())
             .finish();
 
-        let scrollable = warpui::elements::NewScrollable::vertical(
+        let scrollable = wishui::elements::NewScrollable::vertical(
             SingleAxisConfig::Clipped {
                 handle: self.options_scroll_state.clone(),
                 child: body,
@@ -1474,7 +1474,7 @@ impl View for AskUserQuestionView {
         }
     }
 
-    fn keymap_context(&self, app: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, app: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
         // These context flags are what activate the fixed bindings registered in init().
         if matches!(self.session.phase(), AskUserQuestionPhase::Editing)

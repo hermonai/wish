@@ -1,5 +1,5 @@
 use super::*;
-use warpui::{
+use wishui::{
     elements::{ChildView, Empty, SavePosition},
     platform::WindowStyle,
     App, ViewHandle,

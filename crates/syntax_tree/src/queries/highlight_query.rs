@@ -8,7 +8,7 @@ use warp_editor::content::{
     buffer::{Buffer, ToBufferByteOffset, ToBufferCharOffset},
     text::Bytes,
 };
-use warpui::color::ColorU;
+use wishui::color::ColorU;
 
 /// Color mapping from parsed syntax token name to its corresponding highlighting color.
 #[derive(Clone, Copy)]

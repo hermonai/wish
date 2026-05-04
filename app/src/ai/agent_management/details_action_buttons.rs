@@ -1,8 +1,8 @@
 //! Action buttons row for conversation details panel.
 
-use warp_core::ui::theme::AnsiColorIdentifier;
-use warpui::elements::{ChildView, CrossAxisAlignment, Empty, Flex, ParentElement};
-use warpui::{AppContext, Element, Entity, TypedActionView, View, ViewContext, ViewHandle};
+use wish_core::ui::theme::AnsiColorIdentifier;
+use wishui::elements::{ChildView, CrossAxisAlignment, Empty, Flex, ParentElement};
+use wishui::{AppContext, Element, Entity, TypedActionView, View, ViewContext, ViewHandle};
 
 use crate::view_components::copyable_text_field::COPY_FEEDBACK_DURATION;
 
@@ -274,7 +274,7 @@ impl TypedActionView for ConversationActionButtonsRow {
                     let duration = COPY_FEEDBACK_DURATION;
                     ctx.spawn(
                         async move {
-                            warpui::r#async::Timer::after(duration).await;
+                            wishui::r#async::Timer::after(duration).await;
                         },
                         |me, _, ctx| {
                             me.copy_link_button.update(ctx, |button, ctx| {

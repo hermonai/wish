@@ -9,7 +9,7 @@ use parking_lot::Mutex;
 use tempfile::tempdir;
 use url::Url;
 use warp_util::path::LineAndColumnArg;
-use warpui::{App, ModelHandle, WindowId};
+use wishui::{App, ModelHandle, WindowId};
 
 use crate::{
     notebooks::{file::is_markdown_file, link::LinkEvent},
@@ -214,8 +214,8 @@ fn test_resolve_valid_url() {
         let links = init_link_model(&mut app, None);
 
         assert_eq!(
-            resolve(&app, &links, "https://warp.dev").await,
-            url("https://warp.dev")
+            resolve(&app, &links, "https://wish.hermon.ai").await,
+            url("https://wish.hermon.ai")
         );
         assert_eq!(
             resolve(&app, &links, "mailto:test@warp.dev").await,

@@ -32,7 +32,7 @@ pub enum TypeaheadMode {
 
 /// Model for "early" terminal output. Early output is output that Warp receives
 /// from the PTY while no block is running. In concrete terms, it's output received
-/// after a `BlockFinished` hook but before Warp has written the next command from
+/// after a `BlockFinished` hook but before Wish has written the next command from
 /// the input editor to the PTY.
 ///
 /// This output belongs to one of two categories:
@@ -148,8 +148,8 @@ impl EarlyOutput {
                 full: ("Matched {ch:?} as typeahead")
             );
 
-            if warp_core::channel::ChannelState::channel()
-                == warp_core::channel::Channel::Integration
+            if wish_core::channel::ChannelState::channel()
+                == wish_core::channel::Channel::Integration
             {
                 log::info!(
                     "Sending input-matched typeahead event for {:?}",
@@ -168,8 +168,8 @@ impl EarlyOutput {
     /// internal count is then updated to match the new typeahead length.
     pub fn advance_typeahead(&mut self) -> Option<(&str, CharOffset)> {
         if self.typeahead.is_empty() {
-            if warp_core::channel::ChannelState::channel()
-                == warp_core::channel::Channel::Integration
+            if wish_core::channel::ChannelState::channel()
+                == wish_core::channel::Channel::Integration
             {
                 log::warn!("Tried to advance typeahead, but it was empty");
             }
@@ -209,7 +209,7 @@ impl EarlyOutput {
             // marks the block as started right before it sends the command to the pty.
             // When the command doesn't come from Warp, however, the active block isn't
             // started until we receive the preexec hook. At this point, the shell has
-            // already written the command to the pty, resulting in Warp treating it as
+            // already written the command to the pty, resulting in Wish treating it as
             // background output.
             // We can't correctly identify the command in advance when this happens, so
             // instead we fix the block list afterwards.
@@ -316,8 +316,8 @@ impl ansi::Handler for EarlyOutputHandler<'_> {
     /// information, such as when the shell reports its input buffer.
     fn input_buffer(&mut self, data: ansi::InputBufferValue) {
         if data.buffer.is_empty() {
-            if warp_core::channel::ChannelState::channel()
-                == warp_core::channel::Channel::Integration
+            if wish_core::channel::ChannelState::channel()
+                == wish_core::channel::Channel::Integration
             {
                 log::info!("Ignoring empty input buffer");
             }
@@ -338,8 +338,8 @@ impl ansi::Handler for EarlyOutputHandler<'_> {
         let me = self.inner();
         if me.mode == TypeaheadMode::ShellReported {
             me.typeahead = data.buffer;
-            if warp_core::channel::ChannelState::channel()
-                == warp_core::channel::Channel::Integration
+            if wish_core::channel::ChannelState::channel()
+                == wish_core::channel::Channel::Integration
             {
                 log::info!(
                     "Sending shell-reported typeahead event for {:?}",

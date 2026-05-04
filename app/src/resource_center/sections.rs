@@ -1,5 +1,5 @@
-use warp_core::{context_flag::ContextFlag, features::FeatureFlag};
-use warpui::ViewContext;
+use wish_core::{context_flag::ContextFlag, features::FeatureFlag};
+use wishui::ViewContext;
 
 use super::{
     ContentItem, ContentSectionData, FeatureItem, FeatureSection, FeatureSectionData,
@@ -36,13 +36,13 @@ pub fn sections(ctx: &mut ViewContext<ResourceCenterMainView>) -> Vec<Section> {
             ),
             FeatureItem::new(
                 "Open command palette",
-                "Access all of Warp via the keyboard.",
+                "Access all of Wish via the keyboard.",
                 Tip::Action(TipAction::CommandPalette),
                 ctx,
             ),
             FeatureItem::new(
                 "Set your theme",
-                "Make Warp your own by choosing a theme.",
+                "Make Wish your own by choosing a theme.",
                 Tip::Action(TipAction::ThemePicker),
                 ctx,
             ),
@@ -61,20 +61,20 @@ pub fn sections(ctx: &mut ViewContext<ResourceCenterMainView>) -> Vec<Section> {
         items: vec![
             ContentItem {
                 title: "Use your custom prompt",
-                description: "Set up Warp to honor your PS1 setting",
-                url: "https://docs.warp.dev/terminal/appearance/prompt",
+                description: "Set up Wish to honor your PS1 setting",
+                url: "https://wish.hermon.ai/docs/terminal/appearance/prompt",
                 button_label: "View documentation",
             },
             ContentItem {
-                title: "Integrate Warp with your IDE",
-                description: "Configure Warp to launch from your most used development tools",
-                url: "https://docs.warp.dev/terminal/integrations-and-plugins",
+                title: "Integrate Wish with your IDE",
+                description: "Configure Wish to launch from your most used development tools",
+                url: "https://wish.hermon.ai/docs/terminal/integrations-and-plugins",
                 button_label: "View documentation",
             },
             ContentItem {
-                title: "How Warp uses Warp",
-                description: "Learn how Warp's engineering team uses their favorite features",
-                url: "https://www.warp.dev/blog/how-warp-uses-warp",
+                title: "How Wish uses AI",
+                description: "Learn how Wish's engineering team uses their favorite features",
+                url: "https://wish.hermon.ai/blog/how-wish-uses-wish",
                 button_label: "Read article",
             },
         ],

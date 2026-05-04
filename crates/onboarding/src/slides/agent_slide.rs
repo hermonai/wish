@@ -2,18 +2,18 @@ use super::two_line_button::{render_two_line_button, TwoLineButtonSpec};
 use crate::model::{OnboardingAuthState, OnboardingStateEvent, OnboardingStateModel};
 use crate::slides::{bottom_nav, layout, slide_content};
 use crate::telemetry::OnboardingEvent;
-use warp_core::send_telemetry_from_ctx;
+use wish_core::send_telemetry_from_ctx;
 
 use super::OnboardingSlide;
 use crate::visuals::agent_visual;
 use pathfinder_geometry::vector::vec2f;
 use ui_components::{button, Component as _, Options as _};
-use warp_core::features::FeatureFlag;
-use warp_core::ui::{
+use wish_core::features::FeatureFlag;
+use wish_core::ui::{
     appearance::Appearance,
     theme::{color::internal_colors, Fill},
 };
-use warpui::{
+use wishui::{
     elements::{
         AnchorPair, Border, ClippedScrollStateHandle, ClippedScrollable, ConstrainedBox, Container,
         CornerRadius, CrossAxisAlignment, Dismiss, Empty, Flex, FormattedTextElement, Hoverable,
@@ -35,7 +35,7 @@ use warpui::{
 use ai::LLMId;
 use pathfinder_color::ColorU;
 use ui_components::button::State as ButtonState;
-use warp_core::ui::icons::Icon;
+use wish_core::ui::icons::Icon;
 
 /// high-contrast "inverted" fill (foreground color)
 struct UpgradeButtonTheme;
@@ -45,8 +45,8 @@ impl button::Theme for UpgradeButtonTheme {
         &self,
         button_state: ButtonState,
         appearance: &Appearance,
-    ) -> Option<warp_core::ui::theme::Fill> {
-        use warp_core::ui::color::blend::Blend;
+    ) -> Option<wish_core::ui::theme::Fill> {
+        use wish_core::ui::color::blend::Blend;
         let theme = appearance.theme();
         let base = theme.foreground();
         match button_state {
@@ -60,7 +60,7 @@ impl button::Theme for UpgradeButtonTheme {
 
     fn text_color(
         &self,
-        background: Option<warp_core::ui::theme::Fill>,
+        background: Option<wish_core::ui::theme::Fill>,
         appearance: &Appearance,
     ) -> ColorU {
         let bg = background
@@ -152,7 +152,7 @@ pub enum AgentSlideEvent {
 }
 
 pub struct AgentSlide {
-    onboarding_state: warpui::ModelHandle<OnboardingStateModel>,
+    onboarding_state: wishui::ModelHandle<OnboardingStateModel>,
 
     /// Mouse state handles for each model row.
     model_mouse_states: Vec<MouseStateHandle>,
@@ -201,7 +201,7 @@ fn sorted_models(models: &[OnboardingModelInfo]) -> Vec<OnboardingModelInfo> {
 
 impl AgentSlide {
     pub(crate) fn new(
-        onboarding_state: warpui::ModelHandle<OnboardingStateModel>,
+        onboarding_state: wishui::ModelHandle<OnboardingStateModel>,
         ctx: &mut ViewContext<Self>,
     ) -> Self {
         let model_count = onboarding_state.as_ref(ctx).models().len();
@@ -234,7 +234,7 @@ impl AgentSlide {
                         me.show_plan_activated_toast = true;
                         // Auto-dismiss after the configured duration.
                         let _ = ctx.spawn(
-                            warpui::r#async::Timer::after(PLAN_ACTIVATED_TOAST_DURATION),
+                            wishui::r#async::Timer::after(PLAN_ACTIVATED_TOAST_DURATION),
                             |me: &mut Self, _, ctx| {
                                 if me.show_plan_activated_toast {
                                     me.show_plan_activated_toast = false;
@@ -323,7 +323,7 @@ impl AgentSlide {
     fn render_header(&self, appearance: &Appearance) -> Box<dyn Element> {
         let title = appearance
             .ui_builder()
-            .paragraph("Customize your Warp Agent")
+            .paragraph("Customize your Wish Agent")
             .with_style(UiComponentStyles {
                 font_size: Some(36.),
                 font_weight: Some(Weight::Medium),
@@ -955,7 +955,7 @@ impl AgentSlide {
             .on_click(|ctx, _, _| ctx.dispatch_typed_action(AgentSlideAction::ToggleDisableOz))
             .finish();
 
-        let label = Text::new("Disable Warp Agent", appearance.ui_font_family(), 14.0)
+        let label = Text::new("Disable Wish Agent", appearance.ui_font_family(), 14.0)
             .with_color(internal_colors::text_sub(theme, background_for_text))
             .with_style(Properties {
                 weight: Weight::Normal,
@@ -1003,7 +1003,7 @@ impl AgentSlide {
         );
 
         let step_index = 2;
-        let step_count = if warp_core::features::FeatureFlag::OpenWarpNewSettingsModes.is_enabled()
+        let step_count = if wish_core::features::FeatureFlag::OpenWarpNewSettingsModes.is_enabled()
         {
             5
         } else {
@@ -1362,7 +1362,7 @@ impl View for AgentSlide {
         let mut stack = Stack::new();
         stack.add_child(slide);
         stack.add_child(
-            warpui::elements::Align::new(bottom_overlay)
+            wishui::elements::Align::new(bottom_overlay)
                 .bottom_center()
                 .finish(),
         );

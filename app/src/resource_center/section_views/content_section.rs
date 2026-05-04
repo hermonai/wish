@@ -1,5 +1,5 @@
 use pathfinder_color::ColorU;
-use warpui::{
+use wishui::{
     elements::{
         ConstrainedBox, Container, Element, Empty, Flex, MouseStateHandle, ParentElement,
         Shrinkable,

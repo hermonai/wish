@@ -28,20 +28,20 @@ use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::vec2f;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use warp_core::channel::{Channel, ChannelState};
-use warp_core::features::FeatureFlag;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::icons::ICON_DIMENSIONS;
 use warp_editor::render::element::VerticalExpansionBehavior;
 use warp_util::path::LineAndColumnArg;
-use warpui::elements::Rect;
-use warpui::fonts::Style;
-use warpui::text::point::Point;
-use warpui::text_layout::ClipConfig;
+use wish_core::channel::{Channel, ChannelState};
+use wish_core::features::FeatureFlag;
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::icons::ICON_DIMENSIONS;
+use wishui::elements::Rect;
+use wishui::fonts::Style;
+use wishui::text::point::Point;
+use wishui::text_layout::ClipConfig;
 
 #[cfg(feature = "local_fs")]
-use warpui::clipboard::ClipboardContent;
-use warpui::{
+use wishui::clipboard::ClipboardContent;
+use wishui::{
     elements::{
         AcceptedByDropTarget, Align, Border, ChildAnchor, ChildView, Clipped, ConstrainedBox,
         Container, CornerRadius, CrossAxisAlignment, Draggable, DraggableState, DropTarget, Empty,
@@ -378,8 +378,8 @@ impl CodeView {
                             ctx,
                         )
                         .with_horizontal_scrollbar_appearance(
-                            warpui::elements::new_scrollable::ScrollableAppearance::new(
-                                warpui::elements::ScrollbarWidth::Auto,
+                            wishui::elements::new_scrollable::ScrollableAppearance::new(
+                                wishui::elements::ScrollbarWidth::Auto,
                                 true,
                             ),
                         )
@@ -419,8 +419,8 @@ impl CodeView {
                 ctx,
             )
             .with_horizontal_scrollbar_appearance(
-                warpui::elements::new_scrollable::ScrollableAppearance::new(
-                    warpui::elements::ScrollbarWidth::Auto,
+                wishui::elements::new_scrollable::ScrollableAppearance::new(
+                    wishui::elements::ScrollbarWidth::Auto,
                     true,
                 ),
             )

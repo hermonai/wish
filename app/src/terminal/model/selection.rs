@@ -19,9 +19,9 @@ use std::cmp::{max, min};
 use std::mem;
 use std::ops::RangeInclusive;
 pub use std::ops::{Range, RangeBounds};
-use warp_core::semantic_selection::SemanticSelection;
-use warpui::text::SelectionType;
-use warpui::units::Lines;
+use wish_core::semantic_selection::SemanticSelection;
+use wishui::text::SelectionType;
+use wishui::units::Lines;
 
 use super::index::{Direction, VisibleRow};
 

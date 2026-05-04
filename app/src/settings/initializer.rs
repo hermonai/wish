@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use warp_core::{features::FeatureFlag, settings::Setting};
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wish_core::{features::FeatureFlag, settings::Setting};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use crate::settings::{AISettings, FontSettings, ThinkingDisplayMode};
 use crate::{
@@ -67,7 +67,7 @@ impl SettingsInitializer {
                 if !settings.input_box_type.is_value_explicitly_set()
                     && *settings.input_box_type.value() == InputBoxType::Classic
                 {
-                    log::debug!("Setting default input type to Warp prompt for new user");
+                    log::debug!("Setting default input type to Wish prompt for new user");
                     report_if_error!(settings
                         .input_box_type
                         .set_value(InputBoxType::Universal, ctx));
@@ -132,7 +132,7 @@ impl SettingsInitializer {
         //
         // TODO(jefflloyd): Remove this approximately 6 weeks from 3/19/26.
         {
-            use warp_core::user_preferences::GetUserPreferences as _;
+            use wish_core::user_preferences::GetUserPreferences as _;
 
             AISettings::handle(ctx).update(ctx, |ai_settings, ctx| {
                 // If the new setting already has a value in preferences, the

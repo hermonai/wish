@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 #[cfg(not(test))]
 use std::env::var_os;
 use vec1::{vec1, Vec1};
-use warpui::keymap::Keystroke;
+use wishui::keymap::Keystroke;
 #[cfg(not(test))]
-use warpui::keymap::Trigger;
-use warpui::AppContext;
+use wishui::keymap::Trigger;
+use wishui::AppContext;
 
 use anyhow::Context;
 
@@ -95,7 +95,7 @@ where
 
 #[cfg(not(test))]
 pub fn keybinding_file_path() -> std::path::PathBuf {
-    warp_core::paths::config_local_dir().join(KEYBINDINGS_FILE_NAME)
+    wish_core::paths::config_local_dir().join(KEYBINDINGS_FILE_NAME)
 }
 
 /// Save the custom keybindings map to disk.

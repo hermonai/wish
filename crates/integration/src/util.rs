@@ -12,7 +12,7 @@ use strum_macros::EnumIter;
 use version_compare::Version;
 
 use crate::builder::cargo_target_tmpdir;
-use warp::{
+use wish::{
     integration_testing::{
         terminal::util::{
             current_shell_starter_and_version, default_histfile_directory, ExpectedOutput,
@@ -21,9 +21,9 @@ use warp::{
     },
     terminal::shell::ShellType,
 };
-use warpui::{App, WindowId};
+use wishui::{App, WindowId};
 
-use warp::terminal::shell;
+use wish::terminal::shell;
 
 pub fn get_input_buffer(
     app: &App,

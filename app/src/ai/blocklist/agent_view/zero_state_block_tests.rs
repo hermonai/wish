@@ -8,7 +8,7 @@ use crate::terminal::{
     event_listener::ChannelEventListener,
 };
 use std::{path::PathBuf, sync::Arc};
-use warpui::r#async::executor::Background;
+use wishui::r#async::executor::Background;
 
 fn terminal_with_startup_path(startup_path: Option<&str>) -> TerminalModel {
     TerminalModel::new_for_test(

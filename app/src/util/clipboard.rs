@@ -2,7 +2,7 @@ use std::borrow::Cow;
 
 use itertools::Itertools;
 use warp_util::path::ShellFamily;
-use warpui::clipboard::ClipboardContent;
+use wishui::clipboard::ClipboardContent;
 
 /// Returns a string representation of the ClipboardContent with any paths properly escaped if there is a known shell. If not, do not escape the paths.
 pub fn clipboard_content_with_escaped_paths(

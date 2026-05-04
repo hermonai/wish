@@ -3,9 +3,9 @@ use crate::appearance::Appearance;
 use crate::coding_entrypoints::glowing_editor::{GlowingEditor, GlowingEditorEvent};
 use crate::settings::PrivacySettings;
 use crate::TelemetryEvent;
-use warp_core::{send_telemetry_from_ctx, ui::icons::Icon};
-use warpui::elements::{ChildView, Expanded, Fill, MainAxisAlignment, MainAxisSize};
-use warpui::{
+use wish_core::{send_telemetry_from_ctx, ui::icons::Icon};
+use wishui::elements::{ChildView, Expanded, Fill, MainAxisAlignment, MainAxisSize};
+use wishui::{
     elements::{
         ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex, Hoverable,
         MouseStateHandle, ParentElement as _, Radius, Text,

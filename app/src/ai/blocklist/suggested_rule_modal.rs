@@ -24,18 +24,18 @@ use crate::{
     ui_components::blended_colors,
 };
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::appearance::Appearance;
 use warp_editor::editor::NavigationKey;
-use warpui::elements::{
+use wish_core::ui::appearance::Appearance;
+use wishui::elements::{
     ChildAnchor, OffsetPositioning, PositionedElementAnchor, PositionedElementOffsetBounds,
 };
-use warpui::fonts::Weight;
-use warpui::keymap::FixedBinding;
-use warpui::{
+use wishui::fonts::Weight;
+use wishui::keymap::FixedBinding;
+use wishui::{
     elements::ClippedScrollStateHandle,
     ui_components::components::{Coords, UiComponentStyles},
 };
-use warpui::{
+use wishui::{
     elements::{
         Align, Border, ChildView, ClippedScrollable, ConstrainedBox, Container, CornerRadius, Flex,
         ParentElement, Radius, ScrollbarWidth,
@@ -49,7 +49,7 @@ const HEADER_TEXT: &str = "Suggested rule";
 const MAX_EDITOR_HEIGHT: f32 = 240.;
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([FixedBinding::new(
         "escape",
@@ -592,7 +592,7 @@ impl SuggestedRuleView {
                             ScrollbarWidth::Auto,
                             appearance.theme().nonactive_ui_detail().into(),
                             appearance.theme().active_ui_detail().into(),
-                            warpui::elements::Fill::None,
+                            wishui::elements::Fill::None,
                         )
                         .finish(),
                     )

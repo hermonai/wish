@@ -10,7 +10,7 @@ use crate::auth::{
 };
 use crate::server::server_api::auth::UserAuthenticationError;
 use crate::ServerApiProvider;
-use warpui::{App, SingletonEntity};
+use wishui::{App, SingletonEntity};
 
 fn initialize_app(app: &mut App) {
     app.add_singleton_model(|_ctx| ServerApiProvider::new_for_test());
@@ -37,7 +37,7 @@ fn track_invalid_state_failures(app: &mut App) -> Arc<AtomicBool> {
 }
 
 /// After a logged-in user successfully completes auth, pressing the browser's
-/// "Take me to Warp" button a second time should silently drop the stale
+/// "Take me to Wish" button a second time should silently drop the stale
 /// redirect rather than surface an `InvalidStateParameter` error.
 #[test]
 fn test_duplicate_redirect_for_logged_in_user_is_silently_ignored() {

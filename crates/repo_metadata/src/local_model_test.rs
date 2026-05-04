@@ -21,8 +21,8 @@ mod tests {
     use std::time::Duration;
     use virtual_fs::{Stub, VirtualFS};
     use warp_util::standardized_path::StandardizedPath;
-    use warpui::r#async::FutureExt as _;
-    use warpui::App;
+    use wishui::r#async::FutureExt as _;
+    use wishui::App;
 
     impl LocalRepoMetadataModel {
         fn new_for_test() -> Self {

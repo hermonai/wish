@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use warpui::App;
+use wishui::App;
 
 use super::*;
 

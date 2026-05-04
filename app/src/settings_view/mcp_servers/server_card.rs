@@ -1,6 +1,6 @@
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use pathfinder_color::ColorU;
-use warp_core::{
+use wish_core::{
     features::FeatureFlag,
     ui::{
         external_product_icon::ExternalProductIcon,
@@ -8,7 +8,7 @@ use warp_core::{
         theme::{color::internal_colors, AnsiColorIdentifier},
     },
 };
-use warpui::{
+use wishui::{
     accessibility::ActionAccessibilityContent,
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Expanded, Fill, Flex,
@@ -871,7 +871,7 @@ impl ServerCardView {
         }
 
         if self.render_options.show_add_icon {
-            let add_icon = warpui::elements::Icon::new(
+            let add_icon = wishui::elements::Icon::new(
                 Icon::Plus.into(),
                 blended_colors::text_main(appearance.theme(), appearance.theme().background()),
             );

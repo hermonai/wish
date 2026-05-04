@@ -12,9 +12,9 @@ use chrono::{DateTime, Utc};
 use instant::Instant;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use warp_core::user_preferences::GetUserPreferences as _;
 use warp_graphql::scalars::time::ServerTimestamp;
-use warpui::{AppContext, Entity, ModelContext, SingletonEntity};
+use wish_core::user_preferences::GetUserPreferences as _;
+use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 pub use warp_graphql::billing::BonusGrantType;
 

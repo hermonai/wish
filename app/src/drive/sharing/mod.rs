@@ -2,8 +2,8 @@ use std::borrow::Cow;
 
 use chrono::{DateTime, Local};
 use session_sharing_protocol::common::SessionId;
-use warp_core::{channel::ChannelState, ui::appearance::Appearance};
-use warpui::{
+use wish_core::{channel::ChannelState, ui::appearance::Appearance};
+use wishui::{
     color::ColorU,
     ui_components::components::{UiComponent, UiComponentStyles},
     AppContext, SingletonEntity, WeakViewHandle,
@@ -29,11 +29,11 @@ pub use warp_server_client::drive::sharing::{
     LinkSharingSubjectType, SharingAccessLevel, Subject, TeamKind, UserKind,
 };
 
-/// Identifier for an object that's shareable via the Warp Drive ACL model. Not all sharing in Warp
+/// Identifier for an object that's shareable via the Wish Drive ACL model. Not all sharing in Wish
 /// is _currently_ tied into this model (e.g. block sharing).
 #[derive(Debug, Clone)]
 pub enum ShareableObject {
-    /// A shareable Warp Drive object.
+    /// A shareable Wish Drive object.
     WarpDriveObject(ServerId),
     /// A shared terminal session. Shared sessions are identified by the participating terminal
     /// pane.

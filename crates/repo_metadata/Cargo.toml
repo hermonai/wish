@@ -1,6 +1,6 @@
 [package]
 name = "repo_metadata"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 version = "0.1.0"
 edition = "2021"
 description = "Repository metadata utilities for Warp"
@@ -21,8 +21,8 @@ serde_json.workspace = true
 thiserror.workspace = true
 walkdir.workspace = true
 itertools.workspace = true
-warpui.workspace = true
-warp_core.workspace = true
+wishui.workspace = true
+wish_core.workspace = true
 warp_util.workspace = true
 ignore = "0.4.23"
 once_cell.workspace = true
@@ -47,4 +47,4 @@ anyhow.workspace = true
 env_logger.workspace = true
 futures = "0.3"
 virtual-fs.workspace = true
-warpui = { workspace = true, features = ["test-util"] }
+wishui = { workspace = true, features = ["test-util"] }

@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 use std::ops::Range;
 use urlocator::{UrlLocation, UrlLocator};
-use warpui::elements::PartialClickableElement;
+use wishui::elements::PartialClickableElement;
 
-use warpui::platform::Cursor;
+use wishui::platform::Cursor;
 
 use crate::ai::agent::{AIAgentActionType, AIAgentOutput, AIAgentTextSection, ReadFilesRequest};
 use crate::ai::blocklist::block::view_impl::output::LinkActionConstructors;
@@ -11,9 +11,9 @@ use crate::ai::blocklist::block::TextLocation;
 use crate::terminal::links::should_directly_open_link;
 use crate::terminal::model::grid::grid_handler::FILE_LINK_SEPARATORS;
 use crate::terminal::ShellLaunchData;
-use warpui::elements::MouseStateHandle;
-use warpui::text::char_slice;
-use warpui::Action;
+use wishui::elements::MouseStateHandle;
+use wishui::text::char_slice;
+use wishui::Action;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "local_fs")] {
@@ -401,7 +401,7 @@ pub(crate) fn detect_file_paths(
 
 use string_offset::CharOffset;
 use warp_editor::content::buffer::Buffer;
-use warpui::text::word_boundaries::WordBoundariesPolicy;
+use wishui::text::word_boundaries::WordBoundariesPolicy;
 
 /// Returns the range of the word surrounding the given offset.
 pub(crate) fn get_word_range_at_offset(
@@ -410,8 +410,8 @@ pub(crate) fn get_word_range_at_offset(
     word_boundary_policy: Option<WordBoundariesPolicy>,
 ) -> Option<Range<CharOffset>> {
     use warp_editor::content::buffer::{ToBufferCharOffset, ToBufferPoint};
-    use warpui::text::words::is_default_word_boundary;
-    use warpui::text::TextBuffer;
+    use wishui::text::words::is_default_word_boundary;
+    use wishui::text::TextBuffer;
 
     let word_boundary_policy = word_boundary_policy.unwrap_or(WordBoundariesPolicy::Default);
     let mut word_found_at: Option<CharOffset> = None;

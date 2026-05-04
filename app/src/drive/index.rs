@@ -81,8 +81,8 @@ use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use std::{any::Any, collections::HashMap, sync::Arc};
 use url::Url;
-use warp_core::{context_flag::ContextFlag, settings::Setting, ui::theme::color::internal_colors};
-use warpui::{
+use wish_core::{context_flag::ContextFlag, settings::Setting, ui::theme::color::internal_colors};
+use wishui::{
     clipboard::ClipboardContent,
     elements::{
         Align, AnchorPair, Border, ChildAnchor, ChildView, ClippedScrollStateHandle,
@@ -105,7 +105,7 @@ use warpui::{
     UpdateView, View, ViewContext, ViewHandle, WindowId,
 };
 
-const WARP_DRIVE_TITLE: &str = "Warp Drive";
+const WARP_DRIVE_TITLE: &str = "Wish Drive";
 
 // Team zero state consts
 const HINT_HORIZONTAL_PADDING: f32 = 18.;
@@ -181,7 +181,7 @@ const OFFLINE_BANNER_TEXT: &str = "You are offline. Some files will be read only
 
 pub const DRIVE_INDEX_VIEW_POSITION_ID: &str = "drive_index_view_id";
 
-// Sets the speed of the autoscroll that occurs when you drag an item near the Warp Drive border.
+// Sets the speed of the autoscroll that occurs when you drag an item near the Wish Drive border.
 pub const AUTOSCROLL_SPEED_MULTIPLIER: f32 = 10.;
 // Sets the distance from a border at which scroll events start to occur.
 pub const AUTOSCROLL_DETECTION_DISTANCE: f32 = 30.0;
@@ -203,7 +203,7 @@ const PAYMENT_ISSUE_BANNER_LINE_2_ADMIN: &str =
     "Please update your payment information to restore access.";
 
 const PAYMENT_ISSUE_BANNER_LINE_2_ADMIN_ENTERPRISE: &str =
-    "Please contact support@warp.dev to restore access.";
+    "Please contact support@hermon.ai to restore access.";
 
 const PAYMENT_ISSUE_BANNER_LINE_2_NONADMIN: &str = "Please contact a team admin to restore access.";
 
@@ -349,10 +349,10 @@ pub enum DriveIndexAction {
     CloseTrashIndex,
     FocusPreviousItem,
     FocusNextItem,
-    /// Hitting one of the l/r arrow keys on a Warp Drive item.
+    /// Hitting one of the l/r arrow keys on a Wish Drive item.
     LeftArrowKey,
     RightArrowKey,
-    /// Hitting enter key on a Warp Drive item.
+    /// Hitting enter key on a Wish Drive item.
     EnterKey,
     /// Hitting escape key from trash index returns to main drive index.
     EscapeKey,
@@ -506,10 +506,10 @@ struct SpaceMenuState {
     offset: Vector2F,
 }
 
-/// The main view for the Warp Drive sidebar.
+/// The main view for the Wish Drive sidebar.
 /// `DriveIndex` is different from `DrivePanel` in that it is responsible for
-/// all the logic within Warp Drive, whereas `DrivePanel` is responsible for
-/// how Warp Drive interacts with the workspace and the rest of the app.
+/// all the logic within Wish Drive, whereas `DrivePanel` is responsible for
+/// how Wish Drive interacts with the workspace and the rest of the app.
 #[derive(Clone)]
 pub struct DriveIndex {
     window_id: WindowId,
@@ -518,7 +518,7 @@ pub struct DriveIndex {
     menu: ViewHandle<Menu<DriveIndexAction>>,
 
     sharing_dialog: ViewHandle<SharingDialog>,
-    /// Variant of the index, determines whether base Warp Drive or trash is viewed.
+    /// Variant of the index, determines whether base Wish Drive or trash is viewed.
     index_variant: DriveIndexVariant,
     /// If None, the context menu is closed. Otherwise, this contains the ID of the object it's open on.
     menu_object_id_if_open: Option<WarpDriveItemId>,
@@ -546,7 +546,7 @@ pub struct DriveIndex {
     /// A hashmap of location (space/folder) to a list of hashed IDs of objects inside
     /// the space/folder, used for rendering our objects
     sorted_orders_by_location: HashMap<CloudObjectLocation, Vec<ObjectUid>>,
-    /// A sorted list of all the items (spaces + objects) in Warp Drive
+    /// A sorted list of all the items (spaces + objects) in Wish Drive
     /// Unlike sorted_orders_by_location, this is not used for rendering
     /// This is used for object focusing and WD keyboard navigation
     ordered_items: Vec<WarpDriveItemId>,
@@ -556,7 +556,7 @@ pub struct DriveIndex {
     /// from links before everything has been set up.
     has_initialized_sections: Condition,
 
-    /// The number of objects in Warp Drive that have errored.
+    /// The number of objects in Wish Drive that have errored.
     /// This value is cached so that we can determine whether to render the "retry all"
     /// objects button in the case of syncing failures.
     num_errored_objects: usize,
@@ -575,7 +575,7 @@ pub struct DriveIndex {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings(vec![
         FixedBinding::new("up", DriveIndexAction::FocusPreviousItem, id!("DriveIndex")),
@@ -948,7 +948,7 @@ impl DriveIndex {
 
         let sorting_choice = *WarpDriveSettings::as_ref(ctx).sorting_choice.value();
 
-        // Hide Warp Drive loading icon once initial load is complete
+        // Hide Wish Drive loading icon once initial load is complete
         let initial_load_complete = UpdateManager::as_ref(ctx).initial_load_complete();
         ctx.spawn(initial_load_complete, |me, _, ctx| {
             me.show_warp_drive_loading_icon = false;
@@ -1461,7 +1461,7 @@ impl DriveIndex {
             if let Some(focused_index) = self.focused_index {
                 if Some(&WarpDriveItemId::Space(space)) == self.ordered_items.get(focused_index) {
                     container = container.with_background(
-                        warp_core::ui::theme::color::internal_colors::fg_overlay_4(
+                        wish_core::ui::theme::color::internal_colors::fg_overlay_4(
                             appearance.theme(),
                         ),
                     );
@@ -1476,7 +1476,7 @@ impl DriveIndex {
                     // If the item is hovered, set a hover background that matches the hover state of warp drive items.
                     if mouse_state.is_hovered() && !is_focused || section_state.menu_open {
                         container = container.with_background(
-                            warp_core::ui::theme::color::internal_colors::fg_overlay_2(
+                            wish_core::ui::theme::color::internal_colors::fg_overlay_2(
                                 appearance.theme(),
                             ),
                         );
@@ -1570,7 +1570,7 @@ impl DriveIndex {
             font_color: Some(empty_trash_default_font_color),
             font_size: Some(14.),
             font_family_id: Some(appearance.ui_font_family()),
-            font_weight: Some(warpui::fonts::Weight::Semibold),
+            font_weight: Some(wishui::fonts::Weight::Semibold),
             padding: Some(Coords::uniform(6.)),
             border_radius: Some(CornerRadius::with_all(Radius::Pixels(6.))),
             ..Default::default()
@@ -1664,7 +1664,7 @@ impl DriveIndex {
             if let Some(focused_index) = self.focused_index {
                 if Some(&WarpDriveItemId::Space(space)) == self.ordered_items.get(focused_index) {
                     container = container.with_background(
-                        warp_core::ui::theme::color::internal_colors::fg_overlay_4(
+                        wish_core::ui::theme::color::internal_colors::fg_overlay_4(
                             appearance.theme(),
                         ),
                     );
@@ -1679,7 +1679,7 @@ impl DriveIndex {
                 // If the item is hovered, set a hover background that matches the hover state of warp drive items.
                 if mouse_state.is_hovered() && !is_focused || section_state.menu_open {
                     container = container.with_background(
-                        warp_core::ui::theme::color::internal_colors::fg_overlay_2(
+                        wish_core::ui::theme::color::internal_colors::fg_overlay_2(
                             appearance.theme(),
                         ),
                     );
@@ -1728,7 +1728,7 @@ impl DriveIndex {
             (DriveIndexVariant::MainIndex, DriveIndexSection::JoinTeam) => {
                 if self.is_online(app) {
                     let join_teams_text = format!(
-                        "Collaborate with {} of your teammates already on Warp.",
+                        "Collaborate with {} of your teammates already on Wish.",
                         UserWorkspaces::handle(app)
                             .as_ref(app)
                             .total_teammates_in_joinable_teams()
@@ -1850,7 +1850,7 @@ impl DriveIndex {
         if let Some(focused_index) = self.focused_index {
             if Some(&WarpDriveItemId::Trash) == self.ordered_items.get(focused_index) {
                 container = container.with_background(
-                    warp_core::ui::theme::color::internal_colors::fg_overlay_4(appearance.theme()),
+                    wish_core::ui::theme::color::internal_colors::fg_overlay_4(appearance.theme()),
                 );
                 is_focused = true;
             }
@@ -1863,7 +1863,7 @@ impl DriveIndex {
                 if mouse_state.is_hovered() && !is_focused {
                     container
                         .with_background(
-                            warp_core::ui::theme::color::internal_colors::fg_overlay_2(
+                            wish_core::ui::theme::color::internal_colors::fg_overlay_2(
                                 appearance.theme(),
                             ),
                         )
@@ -2913,7 +2913,7 @@ impl DriveIndex {
         section: DriveIndexSection,
         is_collapsed: bool,
         appearance: &Appearance,
-    ) -> Box<dyn warpui::Element> {
+    ) -> Box<dyn wishui::Element> {
         let icon = if is_collapsed {
             Icon::ListCollapsed
         } else {
@@ -2946,7 +2946,7 @@ impl DriveIndex {
         .finish()
     }
 
-    fn render_warp_drive_loading_icon(&self, appearance: &Appearance) -> Box<dyn warpui::Element> {
+    fn render_warp_drive_loading_icon(&self, appearance: &Appearance) -> Box<dyn wishui::Element> {
         // Use same padding as icon_button (4px) to center the icon within ICON_DIMENSIONS
         let icon_button_padding = (ICON_DIMENSIONS - LOADING_ICON_WIDTH) / 2.;
         let loading_icon = Container::new(
@@ -2976,7 +2976,7 @@ impl DriveIndex {
                 if mouse_state.is_hovered() {
                     let tooltip = appearance
                         .ui_builder()
-                        .tool_tip(String::from("Syncing Warp Drive"));
+                        .tool_tip(String::from("Syncing Wish Drive"));
 
                     stack.add_positioned_overlay_child(
                         tooltip.build().finish(),
@@ -2995,7 +2995,7 @@ impl DriveIndex {
         hoverable.finish()
     }
 
-    fn render_sorting_button(&self, appearance: &Appearance) -> Box<dyn warpui::Element> {
+    fn render_sorting_button(&self, appearance: &Appearance) -> Box<dyn wishui::Element> {
         let mut button = icon_button_with_context_menu(
             Icon::Sort,
             move |ctx, _, _| ctx.dispatch_typed_action(DriveIndexAction::ToggleSortingMenu),
@@ -3033,7 +3033,7 @@ impl DriveIndex {
         hoverable.finish()
     }
 
-    fn render_retry_button(&self, appearance: &Appearance) -> Box<dyn warpui::Element> {
+    fn render_retry_button(&self, appearance: &Appearance) -> Box<dyn wishui::Element> {
         let ui_builder = appearance.ui_builder().clone();
 
         icon_button(
@@ -3061,7 +3061,7 @@ impl DriveIndex {
         space: Space,
         state: &DriveIndexSectionState,
         app: &AppContext,
-    ) -> Box<dyn warpui::Element> {
+    ) -> Box<dyn wishui::Element> {
         let mut button;
         // Set color contrast correctly when focused
         if self.focused_index.is_some()
@@ -3139,7 +3139,7 @@ impl DriveIndex {
         appearance: &Appearance,
         state: &DriveIndexSectionState,
         space: Space,
-    ) -> Box<dyn warpui::Element> {
+    ) -> Box<dyn wishui::Element> {
         let mut button = icon_button(
             appearance,
             Icon::AddTeammates,
@@ -3212,7 +3212,7 @@ impl DriveIndex {
             if let DriveIndexSection::Space(space) = *section {
                 self.set_focused_item(WarpDriveItemId::Space(space), true, ctx);
             }
-            // Need to re-render focused index in Warp Drive after a space has been toggled
+            // Need to re-render focused index in Wish Drive after a space has been toggled
             if let Some(focused_index) = self.focused_index {
                 self.update_focused_params(focused_index, CloudModel::as_ref(ctx));
             }
@@ -3958,10 +3958,10 @@ impl DriveIndex {
             .with_cross_axis_alignment(CrossAxisAlignment::Start)
             .with_main_axis_alignment(MainAxisAlignment::SpaceBetween)
             .with_child(
-                Text::new_inline("Warp Drive".to_string(), appearance.ui_font_family(), 14.)
+                Text::new_inline("Wish Drive".to_string(), appearance.ui_font_family(), 14.)
                     .with_color(theme.main_text_color(background_color).into())
                     .with_style(Properties {
-                        weight: warpui::fonts::Weight::Bold,
+                        weight: wishui::fonts::Weight::Bold,
                         ..Default::default()
                     })
                     .finish(),
@@ -4694,7 +4694,7 @@ impl DriveIndex {
                                     .into_item(),
                             );
                         }
-                        if !warpui::platform::is_mobile_device()
+                        if !wishui::platform::is_mobile_device()
                             && !ContextFlag::HideOpenOnDesktopButton.is_enabled()
                             && *UserAppInstallDetectionSettings::as_ref(app)
                                 .user_app_installation_detected
@@ -4772,7 +4772,7 @@ impl DriveIndex {
         menu_items
     }
 
-    /// Builder for a menu item to open a Warp Drive object in a pane. The icon and label depend
+    /// Builder for a menu item to open a Wish Drive object in a pane. The icon and label depend
     /// on whether the object is editable or not.
     ///
     /// If `prefer_open` is `true`, the item defaults to view/open mode rather than edit mode.
@@ -5075,7 +5075,7 @@ impl View for DriveIndex {
         }
     }
 
-    fn keymap_context(&self, _ctx: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, _ctx: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
 
         // Disable WD Vim keybindings when a dialog is open
@@ -5088,7 +5088,7 @@ impl View for DriveIndex {
         context
     }
 
-    fn render(&self, app: &AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, app: &AppContext) -> Box<dyn wishui::Element> {
         let appearance = Appearance::as_ref(app);
         let workspaces = UserWorkspaces::as_ref(app);
 

@@ -1,6 +1,6 @@
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::theme::Fill;
-use warpui::{
+use wish_core::ui::theme::Fill;
+use wishui::{
     elements::{
         Align, ChildAnchor, Container, MouseStateHandle, OffsetPositioning, ParentAnchor,
         ParentOffsetBounds, Stack,

@@ -1,7 +1,7 @@
 //! A singleton model for storing conversations by ID to enable restoration across terminal views.
 
 use std::collections::HashMap;
-use warpui::{Entity, SingletonEntity};
+use wishui::{Entity, SingletonEntity};
 
 use crate::{
     ai::{

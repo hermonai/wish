@@ -16,18 +16,18 @@ cfg_if::cfg_if! {
         use crate::index::path_passes_filters;
         use ignore::gitignore::Gitignore;
         use notify_debouncer_full::notify::{RecursiveMode, WatchFilter};
-        use warp_core::features::FeatureFlag;
+        use wish_core::features::FeatureFlag;
         use watcher::{BulkFilesystemWatcher, BulkFilesystemWatcherEvent};
-        use warpui::r#async::Timer;
-        use warp_core::{send_telemetry_from_ctx, report_if_error};
+        use wishui::r#async::Timer;
+        use wish_core::{send_telemetry_from_ctx, report_if_error};
         use crate::telemetry::AITelemetryEvent;
         use instant::Instant;
-        use warp_core::channel::ChannelState;
-        use warp_core::safe_warn;
+        use wish_core::channel::ChannelState;
+        use wish_core::safe_warn;
     }
 }
-use warp_core::safe_anyhow;
-use warpui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
+use wish_core::safe_anyhow;
+use wishui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
 
 use super::{
     codebase_index::{CodebaseIndexEvent, RetrievalID, SyncProgress},

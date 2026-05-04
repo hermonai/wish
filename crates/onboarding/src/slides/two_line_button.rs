@@ -1,11 +1,11 @@
 use super::agent_slide::AgentSlideAction;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::{
+use wish_core::ui::{
     appearance::Appearance,
     icons::Icon,
     theme::{color::internal_colors, Fill},
 };
-use warpui::{
+use wishui::{
     elements::{
         Align, Border, ChildAnchor, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment,
         Flex, Hoverable, MainAxisSize, MouseStateHandle, OffsetPositioning, ParentAnchor,

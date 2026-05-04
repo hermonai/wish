@@ -1,8 +1,8 @@
 use pathfinder_color::ColorU;
 use std::borrow::Cow;
 use std::rc::Rc;
-use warp_core::ui::{appearance::Appearance, theme::color::internal_colors};
-use warpui::{
+use wish_core::ui::{appearance::Appearance, theme::color::internal_colors};
+use wishui::{
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, DispatchEventResult,
         EventHandler, Expanded, Flex, FormattedTextElement, Hoverable, MainAxisAlignment,
@@ -115,7 +115,7 @@ pub struct HeaderConfig {
     pub font_family: FamilyId,
     /// Whether to parse the title as markdown when rendering.
     pub use_markdown: bool,
-    pub icon: Option<warpui::elements::Icon>,
+    pub icon: Option<wishui::elements::Icon>,
     pub badge: Option<String>,
     pub interaction_mode: Option<InteractionMode>,
     pub is_text_selectable: bool,
@@ -150,7 +150,7 @@ impl HeaderConfig {
         self
     }
 
-    pub fn with_icon(mut self, icon: warpui::elements::Icon) -> Self {
+    pub fn with_icon(mut self, icon: wishui::elements::Icon) -> Self {
         self.icon = Some(icon);
         self
     }

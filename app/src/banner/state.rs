@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use warpui::Entity;
+use wishui::Entity;
 
 #[derive(
     Debug,

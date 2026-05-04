@@ -18,7 +18,7 @@ use queries::{
 };
 use rangemap::{RangeMap, RangeSet};
 use string_offset::{ByteOffset, CharOffset};
-use warpui::{color::ColorU, AppContext, Entity, ModelContext, WeakModelHandle};
+use wishui::{color::ColorU, AppContext, Entity, ModelContext, WeakModelHandle};
 
 use warp_editor::{
     content::{
@@ -29,7 +29,7 @@ use warp_editor::{
     },
     decoration::DecorationLayer,
 };
-use warpui::text::point::Point;
+use wishui::text::point::Point;
 
 const MAX_SYNTAX_TREES: usize = 3;
 

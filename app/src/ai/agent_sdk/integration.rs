@@ -8,7 +8,7 @@ use warp_cli::{
 use warp_graphql::mutations::create_simple_integration::CreateSimpleIntegrationOutput;
 use warp_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
 use warp_graphql::queries::get_simple_integrations::SimpleIntegrationsOutput;
-use warpui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
+use wishui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
 
 use super::common::{EnvironmentChoice, ResolveConfigurationError};
 use super::integration_output;
@@ -518,7 +518,7 @@ impl IntegrationCommandRunner {
     }
 }
 
-impl warpui::Entity for IntegrationCommandRunner {
+impl wishui::Entity for IntegrationCommandRunner {
     type Event = ();
 }
 impl SingletonEntity for IntegrationCommandRunner {}

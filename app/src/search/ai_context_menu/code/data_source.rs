@@ -23,9 +23,9 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 #[cfg(not(target_family = "wasm"))]
 use std::time::Duration;
-use warpui::AppContext;
+use wishui::AppContext;
 #[cfg(not(target_family = "wasm"))]
-use warpui::ModelSpawner;
+use wishui::ModelSpawner;
 
 #[cfg(not(target_family = "wasm"))]
 use crate::ai::outline::{OutlineStatus, RepoOutlines, RepoOutlinesEvent};
@@ -36,7 +36,7 @@ use repo_metadata::repositories::DetectedRepositories;
 #[cfg(not(target_family = "wasm"))]
 use std::path::Path;
 #[cfg(not(target_family = "wasm"))]
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 
 const MAX_RESULTS: usize = 200;
 
@@ -71,13 +71,13 @@ pub struct CodeSymbolCache {
     spawner: ModelSpawner<Self>,
 }
 
-impl warpui::Entity for CodeSymbolCache {
+impl wishui::Entity for CodeSymbolCache {
     type Event = ();
 }
 
 impl CodeSymbolCache {
     #[cfg(not(target_family = "wasm"))]
-    pub fn new(ctx: &mut warpui::ModelContext<Self>) -> Self {
+    pub fn new(ctx: &mut wishui::ModelContext<Self>) -> Self {
         let spawner = ctx.spawner();
         let cache = Self {
             symbol_cache: RefCell::new(HashMap::new()),

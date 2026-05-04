@@ -10,7 +10,7 @@ use crate::terminal::available_shells::AvailableShells;
 use crate::terminal::local_tty::shell::ShellStarterSourceOrWslName;
 #[cfg(feature = "local_tty")]
 use command::r#async::Command;
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 #[derive(Debug)]
 pub enum LocalShellState {
@@ -207,7 +207,7 @@ pub async fn execute_command(
 
     // Build environment variables map.
     // Always include HOME to ensure the shell can expand ~ in rc files - this is critical
-    // when Warp is launched via launchd (Finder, Dock) with a minimal environment.
+    // when Wish is launched via launchd (Finder, Dock) with a minimal environment.
     let mut env_vars = HashMap::new();
     if let Some(home) = dirs::home_dir().and_then(|h| h.to_str().map(|s| s.to_string())) {
         env_vars.insert("HOME".to_owned(), home);

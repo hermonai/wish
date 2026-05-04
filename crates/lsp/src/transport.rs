@@ -10,7 +10,7 @@ use futures::{
 };
 use jsonrpc::Transport;
 use simple_logger::SimpleLogger;
-use warpui::r#async::{
+use wishui::r#async::{
     executor::{Background, BackgroundTask},
     Timer,
 };

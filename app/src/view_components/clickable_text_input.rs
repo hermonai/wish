@@ -2,7 +2,7 @@ use crate::{
     appearance::Appearance,
     editor::{EditorOptions, EditorView, Event as EditorEvent, TextOptions},
 };
-use warpui::{
+use wishui::{
     elements::{Container, CornerRadius, Dismiss, MouseStateHandle, Radius},
     fonts::Weight,
     platform::Cursor,

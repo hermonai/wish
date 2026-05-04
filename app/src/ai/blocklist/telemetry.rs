@@ -2,7 +2,7 @@ use crate::ai::agent::conversation::AIConversationId;
 use serde::Serialize;
 use serde_json::{json, Value};
 use strum_macros::{EnumDiscriminants, EnumIter};
-use warp_core::telemetry::{EnablementState, TelemetryEvent, TelemetryEventDesc};
+use wish_core::telemetry::{EnablementState, TelemetryEvent, TelemetryEventDesc};
 
 #[derive(Debug, EnumDiscriminants)]
 #[strum_discriminants(derive(EnumIter))]
@@ -82,7 +82,7 @@ impl TelemetryEvent for BlocklistOrchestrationTelemetryEvent {
     }
 
     fn event_descs() -> impl Iterator<Item = Box<dyn TelemetryEventDesc>> {
-        warp_core::telemetry::enum_events::<Self>()
+        wish_core::telemetry::enum_events::<Self>()
     }
 }
 
@@ -108,4 +108,4 @@ impl TelemetryEventDesc for BlocklistOrchestrationTelemetryEventDiscriminants {
     }
 }
 
-warp_core::register_telemetry_event!(BlocklistOrchestrationTelemetryEvent);
+wish_core::register_telemetry_event!(BlocklistOrchestrationTelemetryEvent);

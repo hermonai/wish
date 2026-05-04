@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::{Align, Clipped},
     ui_components::components::{Coords, UiComponentStyles},
     AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext, ViewHandle,
@@ -8,7 +8,7 @@ use crate::{
     editor::{EditorView, Event as EditorEvent, SingleLineEditorOptions, TextOptions},
     Appearance,
 };
-use warpui::{
+use wishui::{
     elements::{
         Border, ChildView, Container, CornerRadius, CrossAxisAlignment, Expanded, Flex,
         MouseStateHandle, Padding, ParentElement, Radius, Text,
@@ -200,7 +200,7 @@ impl View for SpendingLimitModal {
         let theme = appearance.theme();
 
         let description_text = Text::new(
-            "Warp will prevent use of premium models when this dollar limit is reached. Resets on a monthly basis.",
+            "Wish will prevent use of premium models when this dollar limit is reached. Resets on a monthly basis.",
             appearance.ui_font_family(),
             14.,
         )

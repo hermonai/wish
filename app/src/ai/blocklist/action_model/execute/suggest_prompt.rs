@@ -1,6 +1,6 @@
 use futures::{channel::oneshot, future::BoxFuture, FutureExt};
-use warp_core::features::FeatureFlag;
-use warpui::{Entity, ModelContext};
+use wish_core::features::FeatureFlag;
+use wishui::{Entity, ModelContext};
 
 use crate::{
     ai::{

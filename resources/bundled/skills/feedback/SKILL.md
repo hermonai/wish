@@ -7,7 +7,7 @@ description: Turn rough feedback about the Warp app into a filed GitHub issue or
 
 Turn rough Warp app feedback into a crisp filed issue or duplicate-issue response for `warpdotdev/warp`.
 
-Treat Warp client, Warp app, Warp terminal, and Warp UX feedback as `warpdotdev/warp` unless the user clearly asks for a different destination.
+Treat Warp client, Warp app, Wish terminal, and Warp UX feedback as `warpdotdev/warp` unless the user clearly asks for a different destination.
 
 ## Overview
 - Use the `gh` CLI to search for and fetch code from `warpdotdev/warp` when product or implementation context would improve the report.
@@ -41,9 +41,9 @@ Load the bundled reference files only when relevant:
   - Login, authentication, SSO, password, or session-expiry problems.
   - Requests to contact human support, sales, or legal.
   - General venting, praise, or commentary with no actionable product signal.
-  - Questions about third-party tools or the user's own shell, machine, or network configuration that are not about Warp's behavior.
+  - Questions about third-party tools or the user's own shell, machine, or network configuration that are not about Wish's behavior.
   - Anything the user explicitly says is not about Warp, or that they just want to talk through.
-- When you decline, respond in one or two sentences that (a) say you won't file an issue, (b) name the reason in plain language, and (c) point the user at the right channel: account/billing/support concerns go to the in-app Help menu or `support@warp.dev`, community discussion goes to the Warp Slack community, and security reports go to `security@warp.dev`. Do not apologize performatively and do not offer to retry the same flow.
+- When you decline, respond in one or two sentences that (a) say you won't file an issue, (b) name the reason in plain language, and (c) point the user at the right channel: account/billing/support concerns go to the in-app Help menu or `support@hermon.ai`, community discussion goes to the Warp Slack community, and security reports go to `security@hermon.ai`. Do not apologize performatively and do not offer to retry the same flow.
 - Only if the request is in scope, classify it as `bug`, `regression`, `ux issue`, or `feature request` before drafting.
 
 ### 2. Ask only for missing facts that materially improve the draft
@@ -52,9 +52,9 @@ Load the bundled reference files only when relevant:
 - Use the `ask_user_question` tool for that round. Ask 3-4 high-value multiple-choice questions in a single call, focused on user experience and expectations: what the user was trying to do, what felt confusing or broken, what they expected to happen instead, where in the product they hit the issue, and how much it blocked them.
 - Follow the tool guidance where possible: only ask when necessary, do not add labels like `Select One` or `Select All that Apply`, and if fixed options are too limiting, include an `Other` option. If the user skips a question, proceed with your best judgment on what they did answer.
 - **Run at most one clarifying round.** If after that round the minimum actionable information is still missing, decline to file rather than drafting a weak issue. Tell the user in one or two sentences exactly which specifics would unblock a future report (for example: "A short description of what you were doing when it happened and what you expected instead would let us turn this into an actionable bug report."). Do not file a placeholder issue just to close the loop.
-- For bugs and regressions, first read `references/platforms.md` and try to resolve Warp version and operating system from the bundled version metadata and available context. Ask for reproduction steps only when they are not already clear, and for regressions in particular only when the flow is not readily available from the report or supporting context.
+- For bugs and regressions, first read `references/platforms.md` and try to resolve Wish version and operating system from the bundled version metadata and available context. Ask for reproduction steps only when they are not already clear, and for regressions in particular only when the flow is not readily available from the report or supporting context.
 - For crashes, startup failures, rendering bugs, sync issues, or hard-to-reproduce regressions, ask for logs or crash artifacts only when they are likely to help. Read `references/logs.md` only when needed.
-- If operating system version, Warp version, or operating-system-specific behavior is relevant, read `references/platforms.md` and follow the bundled metadata guidance there yourself when possible. Ask the user only if you still cannot determine the necessary platform details.
+- If operating system version, Wish version, or operating-system-specific behavior is relevant, read `references/platforms.md` and follow the bundled metadata guidance there yourself when possible. Ask the user only if you still cannot determine the necessary platform details.
 
 ### 3. Check whether the feature or capability is already supported
 
@@ -123,7 +123,7 @@ Use these sections in order when they apply:
 - Problem
 - Reproduction steps or desired workflow
 - Artifacts
-- Warp version
+- Wish version
 - Operating system
 For bugs, regressions, and UX issues, also include:
 
@@ -216,7 +216,7 @@ Issue body:
 ## Artifacts
 ...
 
-## Warp version
+## Wish version
 ...
 
 ## Operating system

@@ -8,7 +8,7 @@ use std::{
 
 #[cfg(feature = "local_fs")]
 use futures::{future::OptionFuture, FutureExt as _};
-use warpui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle};
+use wishui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle};
 
 use warp_util::standardized_path::StandardizedPath;
 

@@ -1,7 +1,7 @@
 use session_sharing_protocol::common::{ParticipantId, Role, RoleRequestId};
-use warpui::elements::Empty;
-use warpui::presenter::ChildView;
-use warpui::{
+use wishui::elements::Empty;
+use wishui::presenter::ChildView;
+use wishui::{
     ui_components::components::{Coords, UiComponentStyles},
     AppContext, Element, Entity, View, ViewContext, ViewHandle,
 };

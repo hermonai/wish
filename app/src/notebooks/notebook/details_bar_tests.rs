@@ -1,4 +1,4 @@
-use warpui::{App, SingletonEntity};
+use wishui::{App, SingletonEntity};
 
 use crate::{
     auth::UserUid,

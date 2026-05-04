@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::{
         Border, Clipped, Container, CornerRadius, Dismiss, Empty, Flex, MainAxisSize,
         MouseStateHandle, ParentElement, Radius, Shrinkable, Text,

@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::iter::FromIterator;
 use std::path::PathBuf;
-use warp_core::ui::color::pick_foreground_color;
-use warpui::assets::asset_cache::AssetSource;
-use warpui::{
+use wish_core::ui::color::pick_foreground_color;
+use wishui::assets::asset_cache::AssetSource;
+use wishui::{
     color::ColorU,
     elements::{
         Align, Border, ConstrainedBox, Container, Element, Empty, Flex, ParentElement, Rect,
@@ -17,8 +17,8 @@ use warpui::{
 
 use super::theme_creator::{pick_accent_color_from_options, top_colors_for_image};
 
-pub use warp_core::ui::color::blend::Blend;
-pub use warp_core::ui::theme::*;
+pub use wish_core::ui::color::blend::Blend;
+pub use wish_core::ui::theme::*;
 
 const THUMBNAIL_MARGIN: f32 = 10.;
 
@@ -133,8 +133,8 @@ impl std::fmt::Display for ThemeKind {
             ThemeKind::Phenomenon => "Phenomenon",
             ThemeKind::SolarFlare => "Solar Flare",
             ThemeKind::Adeberry => "Adeberry",
-            ThemeKind::SentReferralReward => "Warp Referral",
-            ThemeKind::ReceivedReferralReward => "Referred to Warp",
+            ThemeKind::SentReferralReward => "Wish Referral",
+            ThemeKind::ReceivedReferralReward => "Referred to Wish",
             ThemeKind::Custom(custom_theme) => custom_theme.name.as_str(),
             ThemeKind::CustomBase16(custom_theme) => custom_theme.name.as_str(),
             ThemeKind::InMemory(in_memory_theme) => in_memory_theme.name.as_str(),
@@ -517,9 +517,9 @@ pub fn render_preview(
         thumbnail.add_child(
             Shrinkable::new(
                 1.,
-                warpui::elements::Image::new(
+                wishui::elements::Image::new(
                     background_image.source(),
-                    warpui::elements::CacheOption::BySize,
+                    wishui::elements::CacheOption::BySize,
                 )
                 .cover()
                 .finish(),

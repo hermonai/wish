@@ -1,5 +1,5 @@
-use warp_core::features::FeatureFlag;
-use warpui::{SingletonEntity, ViewContext};
+use wish_core::features::FeatureFlag;
+use wishui::{SingletonEntity, ViewContext};
 
 use crate::{
     ai::{

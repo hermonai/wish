@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::{ChildView, Container, CrossAxisAlignment, Expanded, Flex, ParentElement, Text},
     fonts::{Properties, Style, Weight},
     AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext, ViewHandle,

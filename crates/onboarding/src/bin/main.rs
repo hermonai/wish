@@ -9,12 +9,12 @@ use onboarding::{
 use pathfinder_color::ColorU;
 use rust_embed::RustEmbed;
 use std::borrow::Cow;
-use warp_core::ui::icons::Icon;
-use warp_core::ui::theme::{AnsiColor, AnsiColors, Details, Fill, Image, TerminalColors};
-use warp_core::ui::{appearance::Appearance, theme::WarpTheme};
-use warpui::assets::asset_cache::AssetSource;
-use warpui::platform;
-use warpui::{
+use wish_core::ui::icons::Icon;
+use wish_core::ui::theme::{AnsiColor, AnsiColors, Details, Fill, Image, TerminalColors};
+use wish_core::ui::{appearance::Appearance, theme::WarpTheme};
+use wishui::assets::asset_cache::AssetSource;
+use wishui::platform;
+use wishui::{
     elements::{
         Container, CrossAxisAlignment, Flex, MainAxisAlignment, MainAxisSize, ParentElement,
     },
@@ -266,7 +266,7 @@ impl View for OnboardingMainView {
         }
     }
 
-    fn on_focus(&mut self, focus_ctx: &warpui::FocusContext, ctx: &mut ViewContext<Self>) {
+    fn on_focus(&mut self, focus_ctx: &wishui::FocusContext, ctx: &mut ViewContext<Self>) {
         if let OnboardingMainState::Onboarding(view) = &self.state {
             if focus_ctx.is_self_focused() {
                 ctx.focus(view);

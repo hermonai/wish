@@ -4,10 +4,10 @@ use crate::appearance::Appearance;
 use crate::terminal::view::{InlineBannerId, TerminalAction};
 use crate::ui_components::blended_colors;
 use crate::ui_components::icons::Icon;
-use warpui::elements::{Align, ConstrainedBox};
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::Coords;
-use warpui::{
+use wishui::elements::{Align, ConstrainedBox};
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::Coords;
+use wishui::{
     elements::{
         Container, CrossAxisAlignment, Flex, MainAxisSize, MouseStateHandle, ParentElement,
         Shrinkable,

@@ -1,7 +1,7 @@
 use serde::Serialize;
 use serde_json::json;
 use strum_macros::{EnumDiscriminants, EnumIter};
-use warp_core::telemetry::{EnablementState, TelemetryEvent, TelemetryEventDesc};
+use wish_core::telemetry::{EnablementState, TelemetryEvent, TelemetryEventDesc};
 
 use crate::ai::agent_management::cloud_setup_guide_view::SetupGuideDocs;
 
@@ -114,7 +114,7 @@ pub enum AgentManagementTelemetryEvent {
     /// User invoked the /continue-locally slash command
     #[cfg(not(target_family = "wasm"))]
     SlashCommandContinueLocally,
-    /// User clicked "Open in Warp" in the tombstone (wasm)
+    /// User clicked "Open in Wish" in the tombstone (wasm)
     #[cfg(target_family = "wasm")]
     TombstoneOpenInWarp,
     /// User cancelled a cloud run
@@ -221,7 +221,7 @@ impl TelemetryEvent for AgentManagementTelemetryEvent {
     }
 
     fn event_descs() -> impl Iterator<Item = Box<dyn TelemetryEventDesc>> {
-        warp_core::telemetry::enum_events::<Self>()
+        wish_core::telemetry::enum_events::<Self>()
     }
 }
 
@@ -290,7 +290,7 @@ impl TelemetryEventDesc for AgentManagementTelemetryEventDiscriminants {
                 "User invoked /continue-locally to fork a cloud conversation locally"
             }
             #[cfg(target_family = "wasm")]
-            Self::TombstoneOpenInWarp => "User clicked Open in Warp in the tombstone",
+            Self::TombstoneOpenInWarp => "User clicked Open in Wish in the tombstone",
             Self::CloudRunCancelled => "User cancelled a cloud run",
             Self::ConversationForked => "User forked a conversation",
         }
@@ -301,4 +301,4 @@ impl TelemetryEventDesc for AgentManagementTelemetryEventDiscriminants {
     }
 }
 
-warp_core::register_telemetry_event!(AgentManagementTelemetryEvent);
+wish_core::register_telemetry_event!(AgentManagementTelemetryEvent);

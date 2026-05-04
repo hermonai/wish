@@ -222,7 +222,7 @@ commands = []
 ```
 
 ### With parameters
-Warp-generated worktree configs default to `~/.warp/worktrees/<repo-name>/<worktree-name>`. When writing a reusable config by hand, derive the repo-name segment at shell runtime with `$(basename {{repo}})`.
+Wish-generated worktree configs default to `~/.warp/worktrees/<repo-name>/<worktree-name>`. When writing a reusable config by hand, derive the repo-name segment at shell runtime with `$(basename {{repo}})`.
 
 ```toml
 name = "New Worktree"

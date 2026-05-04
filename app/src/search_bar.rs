@@ -1,6 +1,6 @@
 use crate::{appearance::Appearance, editor::EditorView};
-use warpui::SingletonEntity;
-use warpui::{
+use wishui::SingletonEntity;
+use wishui::{
     elements::{
         Border, ChildView, Clipped, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment,
         DispatchEventResult, EventHandler, Flex, Icon, ParentElement, Radius, Shrinkable,
@@ -43,7 +43,7 @@ impl View for SearchBar {
         "SearchBar"
     }
 
-    fn render(&self, app: &warpui::AppContext) -> Box<dyn Element> {
+    fn render(&self, app: &wishui::AppContext) -> Box<dyn Element> {
         let styles = {
             let appearance = Appearance::as_ref(app);
             let context_styles = UiComponentStyles {

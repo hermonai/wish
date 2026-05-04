@@ -1,6 +1,6 @@
 use itertools::Itertools;
-use warp_core::context_flag::ContextFlag;
-use warpui::{
+use wish_core::context_flag::ContextFlag;
+use wishui::{
     elements::{Clipped, Container, Flex, MouseStateHandle, ParentElement},
     fonts::Weight,
     ui_components::components::{UiComponent, UiComponentStyles},

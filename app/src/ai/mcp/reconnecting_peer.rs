@@ -3,7 +3,7 @@
 use std::future::Future;
 
 use uuid::Uuid;
-use warpui::ModelSpawner;
+use wishui::ModelSpawner;
 
 use super::TemplatableMCPServerManager;
 

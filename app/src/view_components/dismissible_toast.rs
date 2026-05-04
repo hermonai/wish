@@ -4,12 +4,12 @@ use std::time::Duration;
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use uuid::Uuid;
-use warp_core::ui::builder::UiBuilder;
-use warp_core::ui::theme::color::internal_colors;
-use warpui::elements::ChildView;
-use warpui::keymap::Keystroke;
-use warpui::r#async::Timer;
-use warpui::{
+use wish_core::ui::builder::UiBuilder;
+use wish_core::ui::theme::color::internal_colors;
+use wishui::elements::ChildView;
+use wishui::keymap::Keystroke;
+use wishui::r#async::Timer;
+use wishui::{
     elements::{
         Border, ChildAnchor, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment,
         DispatchEventResult, EventHandler, Flex, Hoverable, Icon, MainAxisAlignment, MainAxisSize,
@@ -21,7 +21,7 @@ use warpui::{
     ui_components::components::{Coords, UiComponent, UiComponentStyles},
     AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext,
 };
-use warpui::{Action, ViewHandle};
+use wishui::{Action, ViewHandle};
 
 use crate::{appearance::Appearance, themes::theme::Fill};
 
@@ -455,14 +455,14 @@ impl<A: Action + Clone> DismissibleToast<A> {
 
         let is_clickable = self.is_clickable();
         // On mobile devices, always show close button since hover effects don't work with touch
-        let is_mobile = warpui::platform::is_mobile_device();
+        let is_mobile = wishui::platform::is_mobile_device();
 
         Hoverable::new(self.close_button_hover_state.clone(), move |mouse_state| {
             let toast_container = Container::new(row.finish())
                 .with_vertical_padding(VERTICAL_PADDING)
                 .with_horizontal_padding(HORIZONTAL_PADDING)
                 .with_background(self.flavor.bg_color(appearance))
-                .with_corner_radius(warpui::elements::CornerRadius::with_all(Radius::Pixels(
+                .with_corner_radius(wishui::elements::CornerRadius::with_all(Radius::Pixels(
                     TOAST_CORNER_RADIUS,
                 )))
                 .with_border(Border::all(1.).with_border_fill(self.flavor.border_color(appearance)))

@@ -1,18 +1,18 @@
-//! Support for pane contents that are shareable, like sessions and Warp Drive objects.
+//! Support for pane contents that are shareable, like sessions and Wish Drive objects.
 //!
 //! This is tightly coupled to the pane header so that different overlays (context menus, the
 //! sharing dialog, and so on) are correctly displayed.
 
-use warp_core::{features::FeatureFlag, ui::appearance::Appearance};
-use warpui::{
+use wish_core::{features::FeatureFlag, ui::appearance::Appearance};
+use wishui::{
     elements::{MouseStateHandle, ParentElement},
     platform::Cursor,
     ui_components::components::UiComponent,
     AppContext, Element, ViewContext, ViewHandle,
 };
 
-use warp_core::ui::theme::Fill;
-use warpui::elements::ConstrainedBox;
+use wish_core::ui::theme::Fill;
+use wishui::elements::ConstrainedBox;
 
 use crate::{
     drive::sharing::{
@@ -74,17 +74,17 @@ impl<P: BackingView> PaneHeader<P> {
         &self.shared_content.sharing_dialog
     }
 
-    pub fn has_shareable_object<C: warpui::ViewAsRef>(&self, ctx: &C) -> bool {
+    pub fn has_shareable_object<C: wishui::ViewAsRef>(&self, ctx: &C) -> bool {
         self.sharing_dialog().as_ref(ctx).has_target()
     }
 
-    pub fn has_shareable_shared_session<C: warpui::ViewAsRef>(&self, ctx: &C) -> bool {
+    pub fn has_shareable_shared_session<C: wishui::ViewAsRef>(&self, ctx: &C) -> bool {
         self.sharing_dialog()
             .as_ref(ctx)
             .has_shared_session_target()
     }
 
-    pub fn is_sharing_dialog_enabled<C: warpui::ViewAsRef>(&self, ctx: &C) -> bool {
+    pub fn is_sharing_dialog_enabled<C: wishui::ViewAsRef>(&self, ctx: &C) -> bool {
         let sharing_enabled = self.has_shareable_object(ctx);
         if self.has_shareable_shared_session(ctx) {
             sharing_enabled && FeatureFlag::SessionSharingAcls.is_enabled()

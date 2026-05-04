@@ -11,11 +11,11 @@ use crate::settings_view::mcp_servers::style::{
 };
 use crate::view_components::dropdown::{Dropdown, DropdownItem};
 use markdown_parser::parse_markdown;
-use warpui::elements::Shrinkable;
-use warpui::fonts::{Properties, Weight};
-use warpui::ui_components::button::ButtonVariant;
-use warpui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
-use warpui::{
+use wishui::elements::Shrinkable;
+use wishui::fonts::{Properties, Weight};
+use wishui::ui_components::button::ButtonVariant;
+use wishui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
+use wishui::{
     elements::{
         Align, Border, ChildView, ConstrainedBox, Container, CrossAxisAlignment, Empty, Flex,
         FormattedTextElement, HighlightedHyperlink, Hoverable, MainAxisAlignment, MouseStateHandle,
@@ -24,7 +24,7 @@ use warpui::{
     platform::Cursor,
     AppContext, Element, Entity, FocusContext, TypedActionView, View, ViewHandle,
 };
-use warpui::{SingletonEntity, ViewContext};
+use wishui::{SingletonEntity, ViewContext};
 
 use crate::ai::mcp::{TemplatableMCPServer, TemplatableMCPServerManager, TemplateVariable};
 
@@ -32,9 +32,9 @@ use crate::ui_components::{
     avatar::{Avatar, AvatarContent},
     blended_colors,
 };
-use warpui::elements::{CornerRadius, Padding, Radius};
+use wishui::elements::{CornerRadius, Padding, Radius};
 
-use warp_core::ui::{
+use wish_core::ui::{
     color::coloru_with_opacity, external_product_icon::ExternalProductIcon, icons::Icon,
 };
 

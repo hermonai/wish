@@ -4,7 +4,7 @@ use crate::{
     PaneViewLocator,
 };
 use std::collections::HashMap;
-use warpui::{Entity, EntityId, ModelContext, SingletonEntity, ViewHandle, WindowId};
+use wishui::{Entity, EntityId, ModelContext, SingletonEntity, ViewHandle, WindowId};
 
 /// Singleton model to manage state of AI fact panes across multiple windows
 /// (where only one AI fact pane can exist per window). Specifically:

@@ -1,0 +1,32 @@
+[package]
+name = "hermon_client"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Typed Rust HTTP client for the Hermon control plane API"
+
+[features]
+default = []
+test-util = []
+
+[dependencies]
+anyhow.workspace = true
+async-stream.workspace = true
+bytes.workspace = true
+chrono.workspace = true
+futures.workspace = true
+log.workspace = true
+reqwest.workspace = true
+reqwest-eventsource.workspace = true
+rustls = { workspace = true, features = ["ring"] }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["rt", "time", "sync", "macros"] }
+uuid.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

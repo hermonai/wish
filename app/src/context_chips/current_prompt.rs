@@ -24,7 +24,7 @@ use futures::{pin_mut, FutureExt as _};
 use itertools::Itertools;
 use settings::Setting as _;
 use warp_completer::completer::{CommandExitStatus, CommandOutput};
-use warp_core::user_preferences::GetUserPreferences;
+use wish_core::user_preferences::GetUserPreferences;
 
 use super::ChipResult;
 use super::{
@@ -47,12 +47,12 @@ use std::hash::{Hash as _, Hasher as _};
 use std::sync::Arc;
 use std::time::Duration;
 #[cfg(feature = "local_fs")]
-use warpui::WeakModelHandle;
-use warpui::{
+use wishui::WeakModelHandle;
+use wishui::{
     r#async::{SpawnedFutureHandle, Timer},
     AppContext, ViewHandle,
 };
-use warpui::{Entity, ModelAsRef, ModelContext, ModelHandle, SingletonEntity};
+use wishui::{Entity, ModelAsRef, ModelContext, ModelHandle, SingletonEntity};
 
 #[cfg(test)]
 #[path = "current_prompt_test.rs"]
@@ -171,7 +171,7 @@ pub struct CurrentPrompt {
     renderable_chips: HashSet<ContextChipKind>,
 
     same_line_prompt_enabled: bool,
-    /// The separator to use as a trailing character at the end of Warp prompt, if any.
+    /// The separator to use as a trailing character at the end of Wish prompt, if any.
     separator: WarpPromptSeparator,
 
     latest_context: Option<PromptContext>,
@@ -330,12 +330,12 @@ impl CurrentPrompt {
             .collect()
     }
 
-    /// Whether same line prompt is enabled for the Warp prompt.
+    /// Whether same line prompt is enabled for the Wish prompt.
     pub fn same_line_prompt_enabled(&self) -> bool {
         self.same_line_prompt_enabled
     }
 
-    /// The separator for the current Warp prompt.
+    /// The separator for the current Wish prompt.
     pub fn separator(&self) -> WarpPromptSeparator {
         self.separator
     }
@@ -1217,7 +1217,7 @@ impl CurrentPrompt {
     #[cfg(test)]
     pub fn await_generators(
         &self,
-        ctx: &mut warpui::AppContext,
+        ctx: &mut wishui::AppContext,
     ) -> futures_util::future::BoxFuture<'static, ()> {
         use futures_util::FutureExt;
         use itertools::Itertools;

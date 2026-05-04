@@ -2,14 +2,14 @@ use super::{ActionExecution, AnyActionExecution, ExecuteActionInput, PreprocessA
 use crate::ai::skills::{SkillManager, SkillTelemetryEvent};
 use crate::send_telemetry_from_ctx;
 use ai::agent::action_result::AnyFileContent;
-use warpui::{ModelContext, SingletonEntity};
+use wishui::{ModelContext, SingletonEntity};
 
 use crate::ai::agent::AIAgentActionType;
 use crate::ai::agent::ReadSkillRequest;
 use crate::ai::agent::ReadSkillResult;
 use ai::agent::action_result::FileContext;
 use futures::future::{BoxFuture, FutureExt};
-use warpui::Entity;
+use wishui::Entity;
 
 pub struct ReadSkillExecutor;
 

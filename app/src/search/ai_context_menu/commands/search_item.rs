@@ -4,7 +4,7 @@ use crate::search::item::SearchItem;
 use crate::search::result_renderer::ItemHighlightState;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
-use warpui::{
+use wishui::{
     elements::{ConstrainedBox, Container, Icon, Text},
     AppContext, Element, SingletonEntity,
 };
@@ -53,9 +53,9 @@ impl SearchItem for CommandSearchItem {
         )
         .with_color(highlight_state.main_text_fill(appearance).into_solid())
         .with_single_highlight(
-            warpui::elements::Highlight::new()
+            wishui::elements::Highlight::new()
                 .with_properties(
-                    warpui::fonts::Properties::default().weight(warpui::fonts::Weight::Bold),
+                    wishui::fonts::Properties::default().weight(wishui::fonts::Weight::Bold),
                 )
                 .with_foreground_color(highlight_state.main_text_fill(appearance).into_solid()),
             self.match_result.matched_indices.clone(),

@@ -6,9 +6,9 @@ pub use terminal_model::TerminalModel;
 macro_rules! assert_lines_approx_eq {
     ($actual:expr, $expected:expr) => {{
         float_cmp::assert_approx_eq!(
-            warpui::units::Lines,
+            wishui::units::Lines,
             $actual,
-            warpui::units::IntoLines::into_lines($expected)
+            wishui::units::IntoLines::into_lines($expected)
         )
     }};
 }

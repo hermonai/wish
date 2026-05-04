@@ -5,7 +5,7 @@ use crate::{
 };
 use chrono::Utc;
 use warp_graphql::scalars::time::ServerTimestamp;
-use warpui::{App, SingletonEntity};
+use wishui::{App, SingletonEntity};
 
 fn create_test_request_limit_info(
     limit: usize,

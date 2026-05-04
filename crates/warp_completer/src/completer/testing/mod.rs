@@ -13,8 +13,8 @@ use async_trait::async_trait;
 use smol_str::SmolStr;
 use typed_path::{TypedPath, TypedPathBuf};
 use warp_command_signatures::IconType;
-use warp_core::command::ExitCode;
 use warp_util::path::{EscapeChar, ShellFamily, TEST_SESSION_HOME_DIR};
+use wish_core::command::ExitCode;
 
 use crate::{
     completer::{

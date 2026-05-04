@@ -3,7 +3,7 @@ use anyhow::Result;
 use repo_metadata::repositories::RepoDetectionSource;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "local_fs")] {

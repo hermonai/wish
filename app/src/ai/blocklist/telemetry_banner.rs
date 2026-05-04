@@ -5,7 +5,7 @@ use crate::{
     workspaces::{user_workspaces::UserWorkspaces, workspace::UgcCollectionEnablementSetting},
     Appearance, FeatureFlag, WorkspaceAction,
 };
-use warpui::{
+use wishui::{
     elements::{
         ConstrainedBox, Container, CrossAxisAlignment, Flex, MainAxisAlignment, MainAxisSize,
         MouseStateHandle, ParentElement, Shrinkable, Text,
@@ -19,9 +19,9 @@ use warpui::{
 };
 
 const TITLE_EXISTING_USERS: &str = "We've updated our telemetry policy.";
-const TITLE_NEW_USERS: &str = "Help improve Warp.";
-const DESCRIPTION: &str = "We may collect certain console interactions to improve Warp's AI capabilities. You can opt out any time.";
-const PRIVACY_URL: &str = "https://warp.dev/privacy";
+const TITLE_NEW_USERS: &str = "Help improve Wish.";
+const DESCRIPTION: &str = "We may collect certain console interactions to improve Wish's AI capabilities. You can opt out any time.";
+const PRIVACY_URL: &str = "https://wish.hermon.ai/privacy";
 
 #[derive(Default, Debug, Clone)]
 pub struct TelemetryBanner {

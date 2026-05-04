@@ -4,8 +4,8 @@ use crate::slides::{
 use crate::telemetry::OnboardingEvent;
 use crate::OnboardingIntention;
 use ai::LLMId;
-use warp_core::send_telemetry_from_ctx;
-use warpui::{Entity, ModelContext};
+use wish_core::send_telemetry_from_ctx;
+use wishui::{Entity, ModelContext};
 
 /// UI customization settings chosen during the "Customize your UI" onboarding slide.
 #[derive(Clone, Debug)]
@@ -78,7 +78,7 @@ pub enum SelectedSettings {
 
 impl SelectedSettings {
     pub fn is_ai_enabled(&self) -> bool {
-        use warp_core::features::FeatureFlag;
+        use wish_core::features::FeatureFlag;
         match self {
             SelectedSettings::AgentDrivenDevelopment { agent_settings, .. } => {
                 !agent_settings.disable_oz
@@ -197,7 +197,7 @@ impl OnboardingStateModel {
     }
 
     pub(crate) fn settings(&self) -> SelectedSettings {
-        use warp_core::features::FeatureFlag;
+        use wish_core::features::FeatureFlag;
         let ui_customization = if FeatureFlag::OpenWarpNewSettingsModes.is_enabled() {
             Some(self.ui_customization.clone())
         } else {
@@ -551,7 +551,7 @@ impl OnboardingStateModel {
         default_model_id: LLMId,
         ctx: &mut ModelContext<Self>,
     ) {
-        use warp_core::features::FeatureFlag;
+        use wish_core::features::FeatureFlag;
 
         // If the user is past the agent slide, don't change the agent model from underneath them.
         // When the new settings modes flag is on, ThemePicker comes after the agent slides
@@ -663,7 +663,7 @@ impl OnboardingStateModel {
     }
 
     pub(crate) fn back(&mut self, ctx: &mut ModelContext<Self>) {
-        use warp_core::features::FeatureFlag;
+        use wish_core::features::FeatureFlag;
         let theme_picker_last = FeatureFlag::OpenWarpNewSettingsModes.is_enabled();
 
         let prev = if theme_picker_last {
@@ -698,7 +698,7 @@ impl OnboardingStateModel {
     }
 
     pub(crate) fn next(&mut self, ctx: &mut ModelContext<Self>) {
-        use warp_core::features::FeatureFlag;
+        use wish_core::features::FeatureFlag;
         let theme_picker_last = FeatureFlag::OpenWarpNewSettingsModes.is_enabled();
 
         let is_last_step = if theme_picker_last {

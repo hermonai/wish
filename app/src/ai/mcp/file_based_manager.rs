@@ -5,8 +5,8 @@ use repo_metadata::repositories::DetectedRepositories;
 use std::collections::{hash_map::Entry, HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use uuid::Uuid;
-use warp_core::features::FeatureFlag;
-use warpui::{AppContext, Entity, ModelContext, SingletonEntity};
+use wish_core::features::FeatureFlag;
+use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 use crate::{
     ai::mcp::{
@@ -262,7 +262,7 @@ impl FileBasedMCPManager {
     }
 
     /// Returns `true` if the server identified by `hash` is referenced from the global
-    /// Warp config (`~/.warp/.mcp.json`). Global Warp servers always auto-spawn.
+    /// Warp config (`~/.warp/.mcp.json`). Global Hermon servers always auto-spawn.
     fn is_global_warp_server(&self, hash: u64) -> bool {
         let warp_root = warp_data_dir();
         self.file_based_servers_by_root
@@ -333,7 +333,7 @@ impl FileBasedMCPManager {
 
     fn handle_file_based_mcp_enabled_change(&mut self, ctx: &mut ModelContext<Self>) {
         // Only global third-party servers are affected by the toggle:
-        // - Global Warp servers always spawn regardless of the toggle.
+        // - Global Hermon servers always spawn regardless of the toggle.
         // - Project-scoped servers (any provider) are never auto-spawned and their
         //   running state is managed per-card via the MCP settings UI; toggling the
         //   setting must not spawn or despawn them.
@@ -354,7 +354,7 @@ impl FileBasedMCPManager {
                     .collect_vec(),
             });
         } else {
-            // Toggle on: spawn global third-party servers (global Warp servers are
+            // Toggle on: spawn global third-party servers (global Hermon servers are
             // already running; project-scoped servers are unaffected).
             ctx.emit(FileBasedMCPManagerEvent::SpawnServers {
                 installations: global_third_party_servers,
@@ -409,7 +409,7 @@ impl FileBasedMCPManager {
     /// when its config does not specify `working_directory`.
     ///
     /// The spawn root is the directory the config was discovered in, with one
-    /// exception: global Warp installs are discovered in `~/.warp/` (Warp's data
+    /// exception: global Warp installs are discovered in `~/.warp/` (Wish's data
     /// dir) which isn't a useful cwd for spawned processes, so they are remapped
     /// to the home directory instead.
     /// - Project-scoped installations: the repo root.

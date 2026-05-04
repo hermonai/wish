@@ -42,7 +42,7 @@ impl FindableRichContentView for AIBlock {
     fn run_find(
         &mut self,
         options: &FindOptions,
-        ctx: &mut warpui::ViewContext<Self>,
+        ctx: &mut wishui::ViewContext<Self>,
     ) -> Vec<RichContentMatchId> {
         self.clear_matches(ctx);
 
@@ -124,7 +124,7 @@ impl FindableRichContentView for AIBlock {
         new_match_ids
     }
 
-    fn clear_matches(&mut self, ctx: &mut warpui::ViewContext<Self>) {
+    fn clear_matches(&mut self, ctx: &mut wishui::ViewContext<Self>) {
         self.find_state.matches.clear();
         ctx.notify();
     }

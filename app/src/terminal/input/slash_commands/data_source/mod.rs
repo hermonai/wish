@@ -3,7 +3,7 @@ mod zero_state;
 
 use ai::skills::SkillProvider;
 pub(crate) use saved_prompts::*;
-use warp_core::features::FeatureFlag;
+use wish_core::features::FeatureFlag;
 pub use zero_state::*;
 
 use std::collections::HashMap;
@@ -11,9 +11,9 @@ use std::path::PathBuf;
 
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
-use warp_core::ui::appearance::Appearance;
-use warpui::fonts::FamilyId;
-use warpui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
+use wish_core::ui::appearance::Appearance;
+use wishui::fonts::FamilyId;
+use wishui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
 
 use crate::ai::agent_conversations_model::{AgentConversationsModel, AgentConversationsModelEvent};
 use crate::ai::blocklist::BlocklistAIHistoryModel;
@@ -28,7 +28,7 @@ use crate::terminal::cli_agent_sessions::{
 use crate::terminal::model::session::SessionType;
 #[cfg(not(target_family = "wasm"))]
 use warp_cli::agent::Harness;
-use warp_core::ui::Icon as WarpIcon;
+use wish_core::ui::Icon as WarpIcon;
 
 use super::AcceptSlashCommandOrSavedPrompt;
 use crate::{
@@ -404,7 +404,7 @@ impl SyncDataSource for SlashCommandDataSource {
     fn run_query(
         &self,
         query: &Query,
-        app: &warpui::AppContext,
+        app: &wishui::AppContext,
     ) -> Result<Vec<QueryResult<Self::Action>>, DataSourceRunErrorWrapper> {
         if query.text.is_empty() {
             return Ok(vec![]);

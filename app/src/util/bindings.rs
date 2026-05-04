@@ -12,9 +12,9 @@ use std::{
     collections::{HashMap, HashSet},
     sync::Arc,
 };
-use warpui::keymap::{BindingId, IsBindingValid};
-use warpui::platform::OperatingSystem;
-use warpui::{
+use wishui::keymap::{BindingId, IsBindingValid};
+use wishui::platform::OperatingSystem;
+use wishui::{
     actions::StandardAction,
     keymap::{
         BindingDescription, BindingLens, CustomTag, DescriptionContext, EditableBindingLens,
@@ -22,7 +22,7 @@ use warpui::{
     },
     Action,
 };
-use warpui::{AppContext, SingletonEntity};
+use wishui::{AppContext, SingletonEntity};
 
 pub const MAC_MENUS_CONTEXT: DescriptionContext = DescriptionContext::Custom("mac_menus");
 
@@ -122,9 +122,9 @@ pub enum CustomAction {
     WindowsPaste,
     #[cfg(windows)]
     WindowsCopy,
-    /// Also applies to legacy Warp AI (toggles the panel)
+    /// Also applies to legacy Wish AI (toggles the panel)
     NewAgentModePane,
-    /// Also applies to legacy Warp AI (attaches the selection to the panel editor)
+    /// Also applies to legacy Wish AI (attaches the selection to the panel editor)
     AttachSelectionAsAgentModeContext,
     OpenAIFactCollection,
     OpenMCPServerCollection,
@@ -143,7 +143,7 @@ lazy_static! {
     /// Maps for converting from custom tags back to the action enum
     /// This layer of indirection is necessary because the UI framework can't
     /// know about particular Warp specific actions, so it deals with all actions
-    /// as plain isizes.  Within Warp though we want to deal with them as the enum type.
+    /// as plain isizes.  Within Wish though we want to deal with them as the enum type.
     pub static ref CUSTOM_TAG_TO_ACTION: HashMap<isize, CustomAction> = HashMap::from_iter(all::<CustomAction>().map(|action| {
         (action as isize, action)
     }));
@@ -797,7 +797,7 @@ fn materialize_description(desc: &BindingDescription, ctx: &AppContext) -> Bindi
 
 /// Possible groups a Binding can be part of. The string representation (produced in
 /// [`BindingGroup::as_str`]) is used as the group identifier within
-/// [`warpui::keymap::FixedBinding`] or [`EditableBinding`].
+/// [`wishui::keymap::FixedBinding`] or [`EditableBinding`].
 #[derive(Copy, Clone, Debug, Sequence)]
 pub enum BindingGroup {
     Settings,
@@ -857,8 +857,8 @@ impl BindingGroup {
 /// framework and we can't easily produce the shift-modified version of the key ourselves. In this case the recommended
 /// solution is to to create separate [`Keystroke`]s for the Mac and non-Mac cases. For example:
 /// ```
-/// use warpui::keymap::Keystroke;
-/// use warpui::platform::OperatingSystem;
+/// use wishui::keymap::Keystroke;
+/// use wishui::platform::OperatingSystem;
 /// let keystroke = if OperatingSystem::get().is_mac() {
 ///    Keystroke::parse("cmd-[")
 /// } else {
@@ -885,7 +885,7 @@ pub fn cmd_or_ctrl_shift(key: &str) -> String {
             }
             // The need to uppercase the key because of the addition of the `shift`.
             // Keystroke::parse debug asserts if this the modifier is lowercase:
-            // https://github.com/warpdotdev/warp-internal/blob/c225b8cedd94fdba33e957cf1efb99d84768d193/ui/src/keymap.rs#L637/
+            // https://github.com/hermonai/wish-internal/blob/c225b8cedd94fdba33e957cf1efb99d84768d193/ui/src/keymap.rs#L637/
             key.to_ascii_uppercase().into()
         };
         format!("ctrl-shift-{key}")

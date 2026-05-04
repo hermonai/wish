@@ -34,8 +34,8 @@ pub use ssh::*;
 pub use vim_mode::*;
 
 use pathfinder_color::ColorU;
-use warpui::elements::Clipped;
-use warpui::{
+use wishui::elements::Clipped;
+use wishui::{
     elements::{
         Align, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex, Icon,
         MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius, SavePosition,
@@ -187,7 +187,7 @@ fn render_inline_block_list_banner(
     let theme = appearance.theme();
     let title_font_size = appearance.ui_font_size() + 1.;
     let button_text_size = title_font_size;
-    let hover_background_fill = warpui::elements::Fill::from(
+    let hover_background_fill = wishui::elements::Fill::from(
         theme
             .active_ui_text_color()
             .with_opacity(INLINE_BANNER_BUTTON_HOVER_OPACITY),
@@ -413,7 +413,7 @@ fn render_inline_banner_text_button(
             font_color: Some(coloru_with_opacity(button_info.text_color, text_opacity)),
             font_family_id: button_info.font.family,
             font_weight: button_info.font.weight,
-            border_color: Some(warpui::elements::Fill::Solid(coloru_with_opacity(
+            border_color: Some(wishui::elements::Fill::Solid(coloru_with_opacity(
                 button_info.text_color,
                 text_opacity,
             ))),

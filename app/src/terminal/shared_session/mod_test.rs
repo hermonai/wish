@@ -15,8 +15,8 @@ use serde_json::Value;
 use session_sharing_protocol::common::{Scrollback, ScrollbackBlock};
 use std::sync::Arc;
 use url::Url;
-use warpui::r#async::executor::Background;
-use warpui::units::Lines;
+use wishui::r#async::executor::Background;
+use wishui::units::Lines;
 
 pub const MAX_BYTES_SHAREABLE: usize = 5000;
 

@@ -1,4 +1,4 @@
-use warpui::App;
+use wishui::App;
 
 use crate::{
     auth::{auth_manager::AuthManager, AuthStateProvider},

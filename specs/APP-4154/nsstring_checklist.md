@@ -10,10 +10,10 @@ rg -n 'NSString::alloc' -g '*.rs'
 ```
 
 Ignore these (not call sites):
-- `crates/warpui/src/platform/mac/mod.rs:34` — definition of `make_nsstring` itself. Excluded because the body is a one-liner that always returns an autoreleased NSString; the leak potential is at its callers, not the definition.
+- `crates/wishui/src/platform/mac/mod.rs:34` — definition of `make_nsstring` itself. Excluded because the body is a one-liner that always returns an autoreleased NSString; the leak potential is at its callers, not the definition.
 - `use ... make_nsstring` import lines.
 Audited even though it's a definition, not a call:
-- `crates/warpui_extras/src/user_preferences/user_defaults.rs:88-89` — local `util::make_nsstring` helper definition. Unlike the warpui helper, this one returns a retained `StrongPtr`-wrapped NSString; the definition itself is the correctness point, so it's listed in batch 1.D.
+- `crates/warpui_extras/src/user_preferences/user_defaults.rs:88-89` — local `util::make_nsstring` helper definition. Unlike the wishui helper, this one returns a retained `StrongPtr`-wrapped NSString; the definition itself is the correctness point, so it's listed in batch 1.D.
 
 ## Row format
 
@@ -47,52 +47,52 @@ Files: `app/src/app_services/mac.rs`, `app/src/appearance.rs`, `app/src/util/fil
 
 Before ticking, agent 1.B must re-run the rg invocations at the top of this checklist across the whole workspace and confirm no new hits have landed since this scaffolding was written. Add any new rows that appear.
 
-## Batch 1.C — `warpui-platform-nsstring`
+## Batch 1.C — `wishui-platform-nsstring`
 
-Files: `crates/warpui/src/platform/mac/{app.rs, clipboard.rs, delegate.rs, menus.rs, window.rs, keycode.rs}`. If the batch diff exceeds ~200 lines, split by file.
+Files: `crates/wishui/src/platform/mac/{app.rs, clipboard.rs, delegate.rs, menus.rs, window.rs, keycode.rs}`. If the batch diff exceeds ~200 lines, split by file.
 
-- [x] crates/warpui/src/platform/mac/app.rs:81 — `create_native_platform_modal` — autoreleased — appkit-event (show_native_platform_modal via AppContext) — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/app.rs:82 — `create_native_platform_modal` — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/app.rs:84 — `create_native_platform_modal` — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/clipboard.rs:43 — `pasteboard_type_for_image_mime_type` — retained — appkit-event (copy action on main thread) — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:49 — `Clipboard::write` (plain text) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:55 — `Clipboard::write` (html) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:142 — `read_image_data_from_pasteboard` (public.png) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:143 — `read_image_data_from_pasteboard` (public.jpeg) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:144 — `read_image_data_from_pasteboard` (public.gif) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:145 — `read_image_data_from_pasteboard` (public.webp) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:146 — `read_image_data_from_pasteboard` (public.svg-image) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/clipboard.rs:147 — `read_image_data_from_pasteboard` (com.compuserve.gif) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/delegate.rs:257 — `application_bundle_info` — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/delegate.rs:267 — `application_bundle_info` — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/delegate.rs:343 — `send_desktop_notification` (title) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/delegate.rs:344 — `send_desktop_notification` (body) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/delegate.rs:345 — `send_desktop_notification` (data) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/delegate.rs:423 — `microphone_access_state` — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/keycode.rs:50 — `Keycode::keycodes_from_key_name` (`charToKeyCodes` wrapper) — autoreleased — appkit-event (register/unregister global shortcut via AppContext) — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/menus.rs:215 — `resolve_key_equivalent` (empty key_equivalent) — autoreleased — appkit-event (menu item update) — hot — local-pool — covered by pool wrapping `apply_changes` body (hot: AppKit menu validation per open/shortcut)
-- [x] crates/warpui/src/platform/mac/menus.rs:219 — `resolve_key_equivalent` (special char key equivalent) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `apply_changes` body
-- [x] crates/warpui/src/platform/mac/menus.rs:220 — `resolve_key_equivalent` (literal key equivalent) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `apply_changes` body
-- [x] crates/warpui/src/platform/mac/menus.rs:240 — `apply_changes` (setTitle) — autoreleased — appkit-event — hot — local-pool — wrapped `apply_changes` body in NSAutoreleasePool
-- [x] crates/warpui/src/platform/mac/menus.rs:265 — `make_submenu` (delegated menu title) — autoreleased — appkit-event (menu rebuild) — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/menus.rs:296 — `make_menu_item` standard-action title — autoreleased — appkit-event (menu rebuild) — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/menus.rs:298 — `make_menu_item` standard-action key equivalent — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
-- [x] crates/warpui/src/platform/mac/menus.rs:313 — `make_top_level_menu_item` (top-level menu title) — autoreleased — appkit-event (app startup / menubar rebuild) — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:711 — `Window::open_url` — autoreleased — appkit-event (delegate call from AppContext) — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:718 — `Window::open_file_path` — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:726 — `Window::open_file_path_in_explorer` — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:735 — `Window::open_file_picker` (file type mapping) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:754 — `Window::open_save_file_picker` (default_directory) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:755 — `Window::open_save_file_picker` (default_directory fallback) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:758 — `Window::open_save_file_picker` (default_filename) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:759 — `Window::open_save_file_picker` (default_filename fallback) — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:803 — `Window::set_accessibility_contents` (value) — autoreleased — appkit-event (fires per user action when VoiceOver is enabled) — hot — local-pool — wrapped `Window::set_accessibility_contents` body in NSAutoreleasePool
-- [x] crates/warpui/src/platform/mac/window.rs:804 — `Window::set_accessibility_contents` (help) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `Window::set_accessibility_contents` body
-- [x] crates/warpui/src/platform/mac/window.rs:805 — `Window::set_accessibility_contents` (role) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `Window::set_accessibility_contents` body
-- [x] crates/warpui/src/platform/mac/window.rs:893 — `Window::set_window_title` — autoreleased — appkit-event — cold — ambient — no-op
-- [x] crates/warpui/src/platform/mac/window.rs:1230 — `warp_get_accessibility_contents` (C-unwind) — autoreleased — appkit-event (AppKit accessibility callback) — hot — ambient — no-op; local-pool not applicable because the autoreleased NSString is the return value and must outlive this scope
+- [x] crates/wishui/src/platform/mac/app.rs:81 — `create_native_platform_modal` — autoreleased — appkit-event (show_native_platform_modal via AppContext) — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/app.rs:82 — `create_native_platform_modal` — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/app.rs:84 — `create_native_platform_modal` — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/clipboard.rs:43 — `pasteboard_type_for_image_mime_type` — retained — appkit-event (copy action on main thread) — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:49 — `Clipboard::write` (plain text) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:55 — `Clipboard::write` (html) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:142 — `read_image_data_from_pasteboard` (public.png) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:143 — `read_image_data_from_pasteboard` (public.jpeg) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:144 — `read_image_data_from_pasteboard` (public.gif) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:145 — `read_image_data_from_pasteboard` (public.webp) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:146 — `read_image_data_from_pasteboard` (public.svg-image) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/clipboard.rs:147 — `read_image_data_from_pasteboard` (com.compuserve.gif) — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/delegate.rs:257 — `application_bundle_info` — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/delegate.rs:267 — `application_bundle_info` — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/delegate.rs:343 — `send_desktop_notification` (title) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/delegate.rs:344 — `send_desktop_notification` (body) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/delegate.rs:345 — `send_desktop_notification` (data) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/delegate.rs:423 — `microphone_access_state` — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/keycode.rs:50 — `Keycode::keycodes_from_key_name` (`charToKeyCodes` wrapper) — autoreleased — appkit-event (register/unregister global shortcut via AppContext) — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/menus.rs:215 — `resolve_key_equivalent` (empty key_equivalent) — autoreleased — appkit-event (menu item update) — hot — local-pool — covered by pool wrapping `apply_changes` body (hot: AppKit menu validation per open/shortcut)
+- [x] crates/wishui/src/platform/mac/menus.rs:219 — `resolve_key_equivalent` (special char key equivalent) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `apply_changes` body
+- [x] crates/wishui/src/platform/mac/menus.rs:220 — `resolve_key_equivalent` (literal key equivalent) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `apply_changes` body
+- [x] crates/wishui/src/platform/mac/menus.rs:240 — `apply_changes` (setTitle) — autoreleased — appkit-event — hot — local-pool — wrapped `apply_changes` body in NSAutoreleasePool
+- [x] crates/wishui/src/platform/mac/menus.rs:265 — `make_submenu` (delegated menu title) — autoreleased — appkit-event (menu rebuild) — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/menus.rs:296 — `make_menu_item` standard-action title — autoreleased — appkit-event (menu rebuild) — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/menus.rs:298 — `make_menu_item` standard-action key equivalent — retained — appkit-event — cold — autorelease-helper — switched to `make_nsstring`
+- [x] crates/wishui/src/platform/mac/menus.rs:313 — `make_top_level_menu_item` (top-level menu title) — autoreleased — appkit-event (app startup / menubar rebuild) — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:711 — `Window::open_url` — autoreleased — appkit-event (delegate call from AppContext) — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:718 — `Window::open_file_path` — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:726 — `Window::open_file_path_in_explorer` — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:735 — `Window::open_file_picker` (file type mapping) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:754 — `Window::open_save_file_picker` (default_directory) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:755 — `Window::open_save_file_picker` (default_directory fallback) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:758 — `Window::open_save_file_picker` (default_filename) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:759 — `Window::open_save_file_picker` (default_filename fallback) — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:803 — `Window::set_accessibility_contents` (value) — autoreleased — appkit-event (fires per user action when VoiceOver is enabled) — hot — local-pool — wrapped `Window::set_accessibility_contents` body in NSAutoreleasePool
+- [x] crates/wishui/src/platform/mac/window.rs:804 — `Window::set_accessibility_contents` (help) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `Window::set_accessibility_contents` body
+- [x] crates/wishui/src/platform/mac/window.rs:805 — `Window::set_accessibility_contents` (role) — autoreleased — appkit-event — hot — local-pool — covered by pool wrapping `Window::set_accessibility_contents` body
+- [x] crates/wishui/src/platform/mac/window.rs:893 — `Window::set_window_title` — autoreleased — appkit-event — cold — ambient — no-op
+- [x] crates/wishui/src/platform/mac/window.rs:1230 — `warp_get_accessibility_contents` (C-unwind) — autoreleased — appkit-event (AppKit accessibility callback) — hot — ambient — no-op; local-pool not applicable because the autoreleased NSString is the return value and must outlive this scope
 
-## Batch 1.D — `warpui-extras-nsstring`
+## Batch 1.D — `wishui-extras-nsstring`
 
 Files: `crates/warpui_extras/src/user_preferences/user_defaults.rs`.
 

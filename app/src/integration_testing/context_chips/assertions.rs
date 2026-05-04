@@ -1,7 +1,7 @@
 use crate::context_chips::ContextChipKind;
 use crate::integration_testing::view_getters::single_terminal_view_for_tab;
-use warpui::async_assert;
-use warpui::integration::AssertionCallback;
+use wishui::async_assert;
+use wishui::integration::AssertionCallback;
 
 /// Assertion that the working dir chip is present in the current prompt.
 pub fn assert_working_dir_is_present(tab_index: usize) -> AssertionCallback {

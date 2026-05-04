@@ -7,8 +7,8 @@ mod view;
 pub use view::{InlineConversationMenuEvent, InlineConversationMenuView};
 
 use pathfinder_color::ColorU;
-use warp_core::ui::appearance::Appearance;
-use warpui::{keymap::Keystroke, SingletonEntity};
+use wish_core::ui::appearance::Appearance;
+use wishui::{keymap::Keystroke, SingletonEntity};
 
 use crate::ai::active_agent_views_model::{ActiveAgentViewsModel, ConversationOrTaskId};
 use crate::ai::conversation_navigation::ConversationNavigationData;

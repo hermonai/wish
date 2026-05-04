@@ -2,8 +2,8 @@ use rangemap::RangeSet;
 use std::{cell::Cell, sync::Arc};
 use sum_tree::SumTree;
 use vec1::{Vec1, vec1};
-use warpui::assets::asset_cache::AssetSource;
-use warpui::{
+use wishui::assets::asset_cache::AssetSource;
+use wishui::{
     color::ColorU,
     fonts::FamilyId,
     geometry::{rect::RectF, vector::vec2f},
@@ -34,7 +34,7 @@ use crate::{
 };
 use markdown_parser::{FormattedTextStyles, Hyperlink};
 use string_offset::CharOffset;
-use warpui::elements::ListIndentLevel;
+use wishui::elements::ListIndentLevel;
 
 #[test]
 fn test_height() {
@@ -1158,17 +1158,17 @@ fn make_test_cell_layout() -> CellLayout {
         line_char_ranges: vec![CharOffset::from(0)..CharOffset::from(3)],
         line_widths: vec![30.0],
         line_caret_positions: vec![vec![
-            warpui::text_layout::CaretPosition {
+            wishui::text_layout::CaretPosition {
                 position_in_line: 0.0,
                 start_offset: 0,
                 last_offset: 0,
             },
-            warpui::text_layout::CaretPosition {
+            wishui::text_layout::CaretPosition {
                 position_in_line: 10.0,
                 start_offset: 1,
                 last_offset: 1,
             },
-            warpui::text_layout::CaretPosition {
+            wishui::text_layout::CaretPosition {
                 position_in_line: 20.0,
                 start_offset: 2,
                 last_offset: 2,
@@ -1397,7 +1397,7 @@ fn test_link_at_offset_uses_cached_cell_links() {
                 FormattedTextFragment {
                     text: "bc".into(),
                     styles: FormattedTextStyles {
-                        hyperlink: Some(Hyperlink::Url("https://warp.dev".into())),
+                        hyperlink: Some(Hyperlink::Url("https://wish.hermon.ai".into())),
                         ..Default::default()
                     },
                 },
@@ -1412,7 +1412,7 @@ fn test_link_at_offset_uses_cached_cell_links() {
     };
     table.cell_links = vec![
         vec![
-            vec![ParsedUrl::new(1..3, "https://warp.dev".into())],
+            vec![ParsedUrl::new(1..3, "https://wish.hermon.ai".into())],
             vec![],
         ],
         vec![vec![], vec![]],
@@ -1420,11 +1420,11 @@ fn test_link_at_offset_uses_cached_cell_links() {
 
     assert_eq!(
         table.link_at_offset(CharOffset::from(1)),
-        Some("https://warp.dev".into())
+        Some("https://wish.hermon.ai".into())
     );
     assert_eq!(
         table.link_at_offset(CharOffset::from(2)),
-        Some("https://warp.dev".into())
+        Some("https://wish.hermon.ai".into())
     );
     assert_eq!(table.link_at_offset(CharOffset::from(0)), None);
     assert_eq!(table.link_at_offset(CharOffset::from(3)), None);

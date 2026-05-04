@@ -1,7 +1,7 @@
 use std::{collections::HashMap, ffi::OsString, future::Future, pin::Pin};
 
 use anyhow::Error;
-use warpui::ModelSpawner;
+use wishui::ModelSpawner;
 
 use super::terminal::TerminalDriver;
 use crate::ai::cloud_environments::ProvidersConfig;

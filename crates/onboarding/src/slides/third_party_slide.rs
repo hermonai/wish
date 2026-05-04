@@ -5,10 +5,10 @@ use crate::slides::{bottom_nav, layout, slide_content};
 use crate::OnboardingIntention;
 
 use ui_components::{button, Component as _, Options as _};
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::color::internal_colors;
-use warpui::prelude::Align;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::color::internal_colors;
+use wishui::prelude::Align;
+use wishui::{
     elements::{
         ClippedScrollStateHandle, Container, CrossAxisAlignment, Flex, FormattedTextElement,
         MainAxisSize, MouseStateHandle, ParentElement,

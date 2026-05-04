@@ -17,13 +17,13 @@ use warp_cli::{
     },
     GlobalOptions,
 };
-use warp_core::features::FeatureFlag;
 use warp_graphql::{
     managed_secrets::{ManagedSecret, ManagedSecretType},
     object::SpaceType,
 };
 use warp_managed_secrets::{client::SecretOwner, ManagedSecretManager, ManagedSecretValue};
-use warpui::{platform::TerminationMode, AppContext, SingletonEntity as _};
+use wish_core::features::FeatureFlag;
+use wishui::{platform::TerminationMode, AppContext, SingletonEntity as _};
 
 use crate::{
     auth::UserUid, cloud_object::Owner, server::ids::ServerId,

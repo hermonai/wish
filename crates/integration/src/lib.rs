@@ -6,5 +6,5 @@ pub mod user_defaults;
 pub mod util;
 
 pub use builder::Builder;
-pub use warp::integration_testing::view_getters;
-pub use warpui::integration::TestStep;
+pub use wish::integration_testing::view_getters;
+pub use wishui::integration::TestStep;

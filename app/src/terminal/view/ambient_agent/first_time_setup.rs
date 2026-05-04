@@ -17,8 +17,8 @@ use crate::{
     ui_components::blended_colors,
 };
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
-use warp_core::ui::theme::{AnsiColorIdentifier, Fill};
-use warpui::{
+use wish_core::ui::theme::{AnsiColorIdentifier, Fill};
+use wishui::{
     elements::{
         new_scrollable::SingleAxisConfig, Align, Border, ChildView, ClippedScrollStateHandle,
         ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Element, Expanded, Flex,
@@ -148,7 +148,7 @@ impl FirstTimeCloudAgentSetupView {
         // Title - 20px medium weight
         column.add_child(
             Text::new(
-                "Start a new Oz cloud agent",
+                "Start a new Hermon cloud agent",
                 appearance.ui_font_family(),
                 20.,
             )
@@ -160,11 +160,11 @@ impl FirstTimeCloudAgentSetupView {
         // Description with "Visit docs" link
         let description_fragments = vec![
             FormattedTextFragment::plain_text(
-                "Use Oz cloud agents to run parallel agents, build agents that run autonomously, and check in on your agents from anywhere. ",
+                "Use Hermon cloud agents to run parallel agents, build agents that run autonomously, and check in on your agents from anywhere. ",
             ),
             FormattedTextFragment::hyperlink(
                 "Visit docs",
-                "https://docs.warp.dev/agent-platform/cloud-agents/overview",
+                "https://wish.hermon.ai/docs/agent-platform/cloud-agents/overview",
             ),
         ];
         column.add_child(
@@ -225,10 +225,10 @@ impl FirstTimeCloudAgentSetupView {
 
         // Banner text - dynamic based on credits
         let credits_text = if credits == 1 {
-            "You have 1 free credit to use on Oz cloud agents.".to_string()
+            "You have 1 free credit to use on Hermon cloud agents.".to_string()
         } else {
             format!(
-                "You have {} free credits to use on Oz cloud agents.",
+                "You have {} free credits to use on Hermon cloud agents.",
                 credits
             )
         };
@@ -355,7 +355,7 @@ impl View for FirstTimeCloudAgentSetupView {
             },
             appearance.theme().nonactive_ui_detail().into(),
             appearance.theme().active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .finish();
 

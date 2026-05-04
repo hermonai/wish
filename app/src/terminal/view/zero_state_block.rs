@@ -1,6 +1,6 @@
 use settings::Setting;
-use warp_core::{report_if_error, ui::Icon};
-use warpui::{
+use wish_core::{report_if_error, ui::Icon};
+use wishui::{
     elements::{
         ChildAnchor, Container, CrossAxisAlignment, Flex, MainAxisSize, OffsetPositioning,
         ParentAnchor, ParentElement, ParentOffsetBounds, Shrinkable, Stack, Text,

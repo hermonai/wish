@@ -10,7 +10,6 @@ use instant::Duration;
 use mockall::{automock, predicate::*};
 use oauth2::TokenResponse;
 use thiserror::Error;
-use warp_core::errors::{AnyhowErrorExt, ErrorExt};
 use warp_graphql::client::Operation;
 use warp_graphql::mutations::expire_api_key::{
     ExpireApiKey, ExpireApiKeyResult, ExpireApiKeyVariables,
@@ -18,6 +17,7 @@ use warp_graphql::mutations::expire_api_key::{
 use warp_graphql::queries::get_conversation_usage::{
     ConversationUsage, GetConversationUsage, GetConversationUsageVariables, UserResult,
 };
+use wish_core::errors::{AnyhowErrorExt, ErrorExt};
 
 use warp_graphql::mutations::set_user_is_onboarded::{
     SetUserIsOnboarded, SetUserIsOnboardedResult, SetUserIsOnboardedVariables,
@@ -42,7 +42,7 @@ use warp_graphql::queries::api_keys::{
 };
 use warp_graphql::queries::get_user::{GetUser, GetUserVariables, UserOutput as GqlUserOutput};
 use warp_graphql::queries::get_user_settings::{GetUserSettings, GetUserSettingsVariables};
-use warpui::r#async::BoxFuture;
+use wishui::r#async::BoxFuture;
 
 use crate::auth::UserUid;
 use crate::server::graphql::{default_request_options, get_user_facing_error_message};
@@ -86,10 +86,10 @@ static FETCH_ACCESS_TOKEN_HARD_ERROR_MESSAGES: &[&str] = &["USER_DISABLED", "USE
 const FETCH_ACCESS_TOKEN_TIMEOUT: Duration = Duration::from_secs(5);
 
 /// Header key for the ambient workload token attached to multi-agent requests.
-pub const AMBIENT_WORKLOAD_TOKEN_HEADER: &str = "X-Warp-Ambient-Workload-Token";
+pub const AMBIENT_WORKLOAD_TOKEN_HEADER: &str = "X-Wish-Ambient-Workload-Token";
 
 /// Header key for the cloud agent task ID attached to requests from ambient agents.
-pub const CLOUD_AGENT_ID_HEADER: &str = "X-Warp-Cloud-Agent-ID";
+pub const CLOUD_AGENT_ID_HEADER: &str = "X-Wish-Cloud-Agent-ID";
 
 /// Duration for which the ambient workload token is valid (3 hours).
 const AMBIENT_WORKLOAD_TOKEN_DURATION: Duration = Duration::from_secs(3 * 60 * 60);
@@ -572,7 +572,7 @@ impl AuthClient for ServerApi {
             .exchange_device_access_token(details)
             .request_async(
                 self.client.as_ref(),
-                |delay| warpui::r#async::Timer::after(delay).map(|_| ()),
+                |delay| wishui::r#async::Timer::after(delay).map(|_| ()),
                 Some(timeout),
             )
             .await

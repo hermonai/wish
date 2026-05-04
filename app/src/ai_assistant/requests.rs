@@ -5,8 +5,8 @@ use std::sync::Arc;
 use chrono::{OutOfRangeError, Utc};
 use futures::stream::AbortHandle;
 
-use warp_core::user_preferences::GetUserPreferences as _;
-use warpui::{AppContext, Entity, ModelContext, SingletonEntity};
+use wish_core::user_preferences::GetUserPreferences as _;
+use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 use crate::{
     ai::{RequestLimitInfo, RequestUsageInfo},
@@ -30,7 +30,7 @@ use anyhow::Result;
 /// Not wiring through Settings for now since this data is only needed by the panel view.
 pub const REQUEST_LIMIT_INFO_CACHE_KEY: &str = "AIAssistantRequestLimitInfo";
 
-/// Tracks the current request status for making Warp AI requests against server.
+/// Tracks the current request status for making Wish AI requests against server.
 pub enum RequestStatus {
     /// There isn't a request in flight right now.
     NotInFlight,
@@ -172,7 +172,7 @@ impl Requests {
         }
     }
 
-    /// Starts a Warp AI request against the server with the given request prompt.
+    /// Starts a Wish AI request against the server with the given request prompt.
     pub fn issue_request(&mut self, request: String, ctx: &mut ModelContext<Self>) {
         let server_api = self.server_api.clone();
         let raw_request = request.trim();

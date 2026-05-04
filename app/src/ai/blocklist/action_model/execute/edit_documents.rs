@@ -1,7 +1,7 @@
 use ai::diff_validation::DiffDelta;
 use futures::{future::BoxFuture, FutureExt};
 use std::collections::HashMap;
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use crate::ai::{
     agent::{

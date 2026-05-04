@@ -1,4 +1,4 @@
-//! A framework for running A/B tests within Warp.
+//! A framework for running A/B tests within Wish.
 //!
 //! Before starting, please read the usage guide on Notion. The guide explains
 //! some important constraints that are required for proper use of the framework
@@ -12,7 +12,7 @@ pub use block_onboarding_layer::{BlockOnboarding, BLOCK_ONBOARDING_LAYER};
 pub use free_tier_default_model_layer::{FreeTierDefaultModel, FREE_TIER_DEFAULT_MODEL_LAYER};
 pub use improved_palette_search_layer::{ImprovedPaletteSearch, IMPROVED_PALETTE_SEARCH_LAYER};
 pub use login_layer::{AuthFlowInstructions, LOGIN_LAYER};
-use warp_core::user_preferences::GetUserPreferences as _;
+use wish_core::user_preferences::GetUserPreferences as _;
 
 use crate::auth::auth_state::AuthStateProvider;
 use crate::channel::{Channel, ChannelState};
@@ -25,7 +25,7 @@ use std::ops::Range;
 use std::str::FromStr;
 use std::{collections::HashMap, hash::Hasher};
 
-use warpui::{AppContext, SingletonEntity};
+use wishui::{AppContext, SingletonEntity};
 
 use crate::send_telemetry_sync_from_app_ctx;
 

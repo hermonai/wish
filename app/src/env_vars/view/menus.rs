@@ -1,6 +1,6 @@
 use pathfinder_geometry::vector::Vector2F;
-use warp_core::context_flag::ContextFlag;
-use warpui::{keymap::Trigger, SingletonEntity, ViewContext, ViewHandle};
+use wish_core::context_flag::ContextFlag;
+use wishui::{keymap::Trigger, SingletonEntity, ViewContext, ViewHandle};
 
 use crate::{
     cloud_object::{CloudObject, GenericStringObjectFormat, Space},

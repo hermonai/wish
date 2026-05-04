@@ -5,7 +5,7 @@ use crate::search::data_source::{Query, QueryResult};
 use crate::search::mixer::{DataSourceRunErrorWrapper, SyncDataSource};
 use fuzzy_match::FuzzyMatchResult;
 use std::path::PathBuf;
-use warpui::{AppContext, Entity, SingletonEntity};
+use wishui::{AppContext, Entity, SingletonEntity};
 
 #[cfg(not(target_family = "wasm"))]
 use crate::workspace::ActiveSession;

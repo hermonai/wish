@@ -3,7 +3,7 @@
 //! We should migrate to these view getters because to make it easier to work
 //! with tabs and panes. The old view getters use `tab_idx` without considering
 //! how many panes are in each tab.
-//! See https://github.com/warpdotdev/warp-internal/pull/4785#issue-1634862270
+//! See https://github.com/hermonai/wish-internal/pull/4785#issue-1634862270
 
 use crate::view_components::find::FindEvent;
 use crate::view_components::find::FindModel;
@@ -24,8 +24,8 @@ use crate::{
     workflows::{workflow_view::WorkflowView, CategoriesView},
     workspace::Workspace,
 };
-use warpui::Entity;
-use warpui::{async_assert, integration::AssertionCallback, App, View, ViewHandle, WindowId};
+use wishui::Entity;
+use wishui::{async_assert, integration::AssertionCallback, App, View, ViewHandle, WindowId};
 
 /// This identifier is useful when you'd like to weakly identify a terminal view
 /// without actually grabbing a handle to it. Often useful when writing reusable assertions.

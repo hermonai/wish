@@ -22,9 +22,9 @@ use futures::channel::oneshot::{self, Receiver};
 use futures::stream::AbortHandle;
 use std::sync::mpsc::SyncSender;
 use std::sync::Arc;
-use warpui::r#async::Timer;
-use warpui::{duration_with_jitter, RequestState};
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wishui::r#async::Timer;
+use wishui::{duration_with_jitter, RequestState};
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 pub enum TeamUpdateManagerEvent {
     LeaveSuccess,

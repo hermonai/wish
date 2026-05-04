@@ -1,6 +1,6 @@
 use chrono::Utc;
 use itertools::Itertools;
-use warpui::{AddSingletonModel, App};
+use wishui::{AddSingletonModel, App};
 
 use crate::{
     auth::AuthManager,
@@ -130,7 +130,7 @@ fn test_leaving_team_removes_objects() {
             &mut app,
         );
 
-        // Add the initial Warp Drive objects.
+        // Add the initial Wish Drive objects.
         CloudModel::handle(&app).update(&mut app, |cloud_model, _| {
             cloud_model.add_object(
                 SyncId::ServerId(team_workflow_id.into()),

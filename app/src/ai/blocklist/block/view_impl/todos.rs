@@ -1,8 +1,8 @@
 //! Rendering logic for todo list components in AI blocks.
 
-use warpui::fonts::Properties;
-use warpui::text_layout::TextStyle;
-use warpui::{
+use wishui::fonts::Properties;
+use wishui::text_layout::TextStyle;
+use wishui::{
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Empty, Flex,
         Highlight, ParentElement, Radius, Shrinkable, Text,
@@ -169,9 +169,9 @@ pub(super) fn render_completed_todo_items(
     // Create a check mark icon
     let check_icon = Container::new(
         ConstrainedBox::new(
-            warpui::elements::Icon::new(
+            wishui::elements::Icon::new(
                 Icon::Check.into(),
-                warp_core::ui::theme::Fill::Solid(sub_text_color),
+                wish_core::ui::theme::Fill::Solid(sub_text_color),
             )
             .finish(),
         )

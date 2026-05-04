@@ -1,5 +1,5 @@
-use warp_core::features::FeatureFlag;
-use warpui::{elements::MouseStateHandle, AppContext, Element};
+use wish_core::features::FeatureFlag;
+use wishui::{elements::MouseStateHandle, AppContext, Element};
 
 use crate::{
     appearance::Appearance,

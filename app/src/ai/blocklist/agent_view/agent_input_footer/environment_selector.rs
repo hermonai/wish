@@ -1,10 +1,10 @@
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use settings::Setting;
-use warp_core::send_telemetry_from_ctx;
-use warp_core::ui::color::blend::Blend;
-use warp_core::ui::theme::Fill;
-use warpui::{
+use wish_core::send_telemetry_from_ctx;
+use wish_core::ui::color::blend::Blend;
+use wish_core::ui::theme::Fill;
+use wishui::{
     elements::{
         ChildAnchor, ChildView, ConstrainedBox, OffsetPositioning, ParentAnchor, ParentElement,
         ParentOffsetBounds, Stack,

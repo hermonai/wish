@@ -8,9 +8,9 @@ use crate::workspaces::user_workspaces::UserWorkspaces;
 use crate::workspaces::workspace::{AdminEnablementSetting, UgcCollectionEnablementSetting};
 use asset_macro::bundled_or_fetched_asset;
 use markdown_parser::{FormattedTextFragment, FormattedTextLine};
-use warp_core::send_telemetry_from_ctx;
-use warpui::assets::asset_cache::AssetSource;
-use warpui::{AppContext, SingletonEntity};
+use wish_core::send_telemetry_from_ctx;
+use wishui::assets::asset_cache::AssetSource;
+use wishui::{AppContext, SingletonEntity};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum OzLaunchSlide {
@@ -22,7 +22,7 @@ pub enum OzLaunchSlide {
 
 impl Slide for OzLaunchSlide {
     fn modal_title(&self) -> String {
-        "Introducing Oz".to_string()
+        "Introducing Hermon".to_string()
     }
 
     fn modal_subtext_paragraphs(&self) -> Vec<FormattedTextLine> {
@@ -81,7 +81,7 @@ impl Slide for OzLaunchSlide {
             }
             OzLaunchSlide::AgentManagement => "Track local and cloud agents seamlessly",
             OzLaunchSlide::LaunchCredits => {
-                "1,000 free cloud agent credits when you upgrade to Warp Build"
+                "1,000 free cloud agent credits when you upgrade to Wish Build"
             }
         }
     }
@@ -96,13 +96,13 @@ impl Slide for OzLaunchSlide {
                 "Use cloud agents to run many agents in parallel, keep agents working when you close your laptop, or start agents programmatically. Plus, you can check on their work through the web."
             }
             OzLaunchSlide::AgentAutomations => {
-                "Oz agents can be defined using the standard Skills format. You can use the built in scheduler to setup agents to run autonomously at set intervals, or use the Oz SDK or API to programmatically start and manage Oz agents."
+                "Hermon agents can be defined using the standard Skills format. You can use the built in scheduler to setup agents to run autonomously at set intervals, or use the Wish SDK or API to programmatically start and manage Hermon agents."
             }
             OzLaunchSlide::AgentManagement => {
-                "View all of your agents across local and cloud sessions in the Warp app or at [oz.warp.dev](https://oz.warp.dev). Join live agent sessions, continue tasks locally, and steer agents with one click."
+                "View all of your agents across local and cloud sessions in the Wish app or at [wish.hermon.ai](https://wish.hermon.ai). Join live agent sessions, continue tasks locally, and steer agents with one click."
             }
             OzLaunchSlide::LaunchCredits => {
-                "Upgrade to Build this month and receive 1,000 extra credits to try using Oz. Credits are only eligible for Oz runs in Warp-hosted cloud environments."
+                "Upgrade to Build this month and receive 1,000 extra credits to try using Oz. Credits are only eligible for Oz runs in Wish-hosted cloud environments."
             }
         }
     }
@@ -188,7 +188,7 @@ impl Slide for OzLaunchSlide {
         ) && !matches!(ugc_setting, UgcCollectionEnablementSetting::Enable)
     }
 
-    fn on_close(&self, ctx: &mut warpui::ViewContext<super::LaunchModal<Self>>) {
+    fn on_close(&self, ctx: &mut wishui::ViewContext<super::LaunchModal<Self>>) {
         ctx.dispatch_typed_action(&WorkspaceAction::StartAgentOnboardingTutorial(
             OnboardingTutorial::NoProject {
                 intention: OnboardingIntention::AgentDrivenDevelopment,
@@ -197,6 +197,6 @@ impl Slide for OzLaunchSlide {
     }
 }
 
-pub fn init(app: &mut warpui::AppContext) {
+pub fn init(app: &mut wishui::AppContext) {
     super::init::<OzLaunchSlide>(app);
 }

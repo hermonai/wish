@@ -1,5 +1,5 @@
-use warp_core::ui::{appearance::Appearance, Icon};
-use warpui::{
+use wish_core::ui::{appearance::Appearance, Icon};
+use wishui::{
     elements::ParentElement,
     prelude::{
         ConstrainedBox, Container, CrossAxisAlignment, Cursor, Empty, Flex, Hoverable,

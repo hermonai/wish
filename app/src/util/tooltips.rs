@@ -3,7 +3,7 @@
 #[cfg(feature = "local_fs")]
 use std::path::Path;
 
-use warpui::{
+use wishui::{
     elements::{
         Border, Container, CornerRadius, Flex, MouseStateHandle, ParentElement, Radius, Text,
     },
@@ -203,7 +203,7 @@ where
             .with_child(
                 appearance
                     .ui_builder()
-                    .span("*Secrets are not sent to Warp's server.")
+                    .span("*Secrets are not sent to Wish's server.")
                     .with_style(UiComponentStyles {
                         font_size: Some(12.),
                         margin: Some(Coords::default().top(4.)),
@@ -236,12 +236,12 @@ where
         .finish()
 }
 
-/// Returns whether "Open in Warp" should be offered for the given file path.
+/// Returns whether "Open in Wish" should be offered for the given file path.
 ///
 /// This checks:
-/// - Whether Warp is already the default editor (skip if so)
-/// - Whether this file is openable in Warp (skips binary files and directories)
-/// - Whether Warp is an OS-level default editor (skips Markdown files)
+/// - Whether Wish is already the default editor (skip if so)
+/// - Whether this file is openable in Wish (skips binary files and directories)
+/// - Whether Wish is an OS-level default editor (skips Markdown files)
 #[cfg(feature = "local_fs")]
 pub fn should_show_open_in_warp_link(path: &Path, app: &AppContext) -> bool {
     use crate::{
@@ -249,7 +249,7 @@ pub fn should_show_open_in_warp_link(path: &Path, app: &AppContext) -> bool {
         notebooks::file::is_markdown_file,
         util::file::external_editor::{settings::EditorChoice, EditorSettings},
     };
-    use warpui::SingletonEntity;
+    use wishui::SingletonEntity;
 
     let settings = EditorSettings::as_ref(app);
 

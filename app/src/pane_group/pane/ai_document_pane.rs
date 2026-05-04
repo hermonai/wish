@@ -1,4 +1,4 @@
-use warpui::{AppContext, ModelHandle, SingletonEntity, ViewContext, ViewHandle};
+use wishui::{AppContext, ModelHandle, SingletonEntity, ViewContext, ViewHandle};
 
 use crate::{
     ai::ai_document_view::{AIDocumentEvent, AIDocumentView},
@@ -98,12 +98,12 @@ impl PaneContent for AIDocumentPane {
                     ctx.emit(crate::pane_group::Event::ViewInWarpDrive(*id));
                 }
                 #[cfg(feature = "local_fs")]
-                AIDocumentEvent::OpenCodeInWarp {
+                AIDocumentEvent::OpenCodeInWish {
                     source,
                     layout,
                     line_col,
                 } => {
-                    ctx.emit(crate::pane_group::Event::OpenCodeInWarp {
+                    ctx.emit(crate::pane_group::Event::OpenCodeInWish {
                         source: source.clone(),
                         layout: *layout,
                         line_col: *line_col,

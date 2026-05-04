@@ -6,7 +6,7 @@ use std::sync::Arc;
 use serde::Deserialize;
 use serde_json as json;
 
-use warpui::r#async::executor::Background;
+use wishui::r#async::executor::Background;
 
 use crate::terminal::color;
 use crate::terminal::color::Colors;

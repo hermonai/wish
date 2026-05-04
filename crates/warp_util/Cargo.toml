@@ -1,6 +1,6 @@
 [package]
 name = "warp_util"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 version = "0.1.0"
 edition = "2021"
 description = "General utilities and helpers used across warp crates"
@@ -33,4 +33,4 @@ windows.workspace = true
 gloo.workspace = true
 
 [dev-dependencies]
-warpui.workspace = true
+wishui.workspace = true

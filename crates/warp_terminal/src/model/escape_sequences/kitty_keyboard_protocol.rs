@@ -1,6 +1,6 @@
-use warpui::keymap::Keystroke;
-use warpui::platform::keyboard::KeyCode;
-use warpui::platform::OperatingSystem;
+use wishui::keymap::Keystroke;
+use wishui::platform::keyboard::KeyCode;
+use wishui::platform::OperatingSystem;
 
 use super::{ModeProvider, TermMode};
 

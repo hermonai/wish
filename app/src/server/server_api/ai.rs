@@ -11,9 +11,9 @@ use std::{
     collections::{HashMap, HashSet},
     time::Duration,
 };
-use warp_core::channel::ChannelState;
-use warp_core::{features::FeatureFlag, report_error};
 use warp_multi_agent_api::ConversationData;
+use wish_core::channel::ChannelState;
+use wish_core::{features::FeatureFlag, report_error};
 
 use super::auth::AuthClient;
 use super::ServerApi;

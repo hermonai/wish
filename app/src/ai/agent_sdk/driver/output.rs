@@ -1289,12 +1289,12 @@ pub mod json {
 use crate::ai::agent::{AIAgentText, AIAgentTextSection};
 use crate::code::editor_management::CodeSource;
 use std::io::{self, BufWriter, Write};
-use warp_core::channel::ChannelState;
+use wish_core::channel::ChannelState;
 
 /// Constructs the Oz dashboard URL for a given run ID.
 fn run_url(run_id: &str) -> String {
-    let oz_root_url = ChannelState::oz_root_url();
-    format!("{oz_root_url}/runs/{run_id}")
+    let hermon_root_url = ChannelState::hermon_root_url();
+    format!("{hermon_root_url}/runs/{run_id}")
 }
 
 /// Execute a closure with a buffered stdout writer and flush it afterwards.

@@ -5,8 +5,8 @@ use std::{env, fmt, path::Path};
 use clap::{CommandFactory, Parser, Subcommand, ValueEnum};
 use url::Url;
 
-use warp_core::channel::ChannelState;
-use warp_core::features::FeatureFlag;
+use wish_core::channel::ChannelState;
+use wish_core::features::FeatureFlag;
 
 use crate::agent::OutputFormat;
 
@@ -32,22 +32,22 @@ pub mod schedule;
 pub mod secret;
 pub mod share;
 pub mod task;
-pub const OZ_RUN_ID_ENV: &str = "OZ_RUN_ID";
-pub const OZ_PARENT_RUN_ID_ENV: &str = "OZ_PARENT_RUN_ID";
-pub const OZ_CLI_ENV: &str = "OZ_CLI";
-pub const OZ_HARNESS_ENV: &str = "OZ_HARNESS";
-pub const SERVER_ROOT_URL_OVERRIDE_ENV: &str = "WARP_SERVER_ROOT_URL";
-pub const WS_SERVER_URL_OVERRIDE_ENV: &str = "WARP_WS_SERVER_URL";
-pub const SESSION_SHARING_SERVER_URL_OVERRIDE_ENV: &str = "WARP_SESSION_SHARING_SERVER_URL";
+pub const OZ_RUN_ID_ENV: &str = "WISH_RUN_ID";
+pub const OZ_PARENT_RUN_ID_ENV: &str = "WISH_PARENT_RUN_ID";
+pub const OZ_CLI_ENV: &str = "WISH_CLI";
+pub const OZ_HARNESS_ENV: &str = "WISH_HARNESS";
+pub const SERVER_ROOT_URL_OVERRIDE_ENV: &str = "WISH_SERVER_ROOT_URL";
+pub const WS_SERVER_URL_OVERRIDE_ENV: &str = "WISH_WS_SERVER_URL";
+pub const SESSION_SHARING_SERVER_URL_OVERRIDE_ENV: &str = "WISH_SESSION_SHARING_SERVER_URL";
 
-/// Options related to the parent process that spawned this Warp instance.
+/// Options related to the parent process that spawned this Wish instance.
 #[derive(Debug, Default, Clone, clap::Args)]
 pub struct ParentOpts {
-    /// The ID of the Warp process that spawned this one.
+    /// The ID of the Wish process that spawned this one.
     ///
-    /// Used by codepaths that attempt to detect when the parent Warp process
+    /// Used by codepaths that attempt to detect when the parent Wish process
     /// has terminated. Guaranteed to be [`None`] when this is the initial
-    /// Warp process, but may also be [`None`] for Warp child processes if the
+    /// Wish process, but may also be [`None`] for Wish child processes if the
     /// child process doesn't need to keep track of its parent.
     #[arg(long = "parent-pid", hide = true)]
     pub pid: Option<u32>,
@@ -62,7 +62,7 @@ pub struct ParentOpts {
 }
 
 /// Hidden worker args used to scope remote-server proxy/daemon sockets by
-/// Warp identity without exposing credentials.
+/// Wish identity without exposing credentials.
 #[derive(Debug, Clone, Default, clap::Args)]
 pub struct RemoteServerIdentityArgs {
     /// Non-secret identity partition key for the remote-server daemon.
@@ -74,7 +74,7 @@ pub struct RemoteServerIdentityArgs {
 #[derive(Debug, Default, Clone, clap::Args)]
 pub struct GlobalOptions {
     /// API key for server authentication.
-    #[arg(long = "api-key", global = true, env = "WARP_API_KEY")]
+    #[arg(long = "api-key", global = true, env = "WISH_API_KEY")]
     pub api_key: Option<String>,
 
     /// Set the output format.
@@ -83,24 +83,24 @@ pub struct GlobalOptions {
         global = true,
         value_enum,
         default_value_t = OutputFormat::Pretty,
-        env = "WARP_OUTPUT_FORMAT"
+        env = "WISH_OUTPUT_FORMAT"
     )]
     pub output_format: OutputFormat,
 }
 
-/// Command-line argument parser for the main Warp binary. This is used across all channels.
+/// Command-line argument parser for the main Wish binary. This is used across all channels.
 #[derive(Debug, Default, Parser, Clone)]
 #[command(
-    name = "oz",
-    display_name = "Oz",
-    about = r#"The orchestration platform for cloud agents
+    name = "wish",
+    display_name = "Wish",
+    about = r#"The agentic development environment
 
-The Oz CLI is a tool for running, managing, and orchestrating coding agents at scale.
+The Wish CLI is a tool for running, managing, and orchestrating coding agents at scale.
 Use the CLI to:
 * Launch and inspect cloud agents
 * Schedule cloud agents to run in the future
 * Manage the environments that cloud agents run in
-* Upload secrets to Oz's secure storage"#
+* Upload secrets to secure storage"#
 )]
 #[clap(args_conflicts_with_subcommands = true)]
 pub struct Args {
@@ -116,7 +116,7 @@ pub struct Args {
         long = "server-root-url",
         global = true,
         hide = true,
-        env = "WARP_SERVER_ROOT_URL"
+        env = "WISH_SERVER_ROOT_URL"
     )]
     server_root_url: Option<String>,
 
@@ -125,7 +125,7 @@ pub struct Args {
         long = "ws-server-url",
         global = true,
         hide = true,
-        env = "WARP_WS_SERVER_URL"
+        env = "WISH_WS_SERVER_URL"
     )]
     ws_server_url: Option<String>,
 
@@ -134,7 +134,7 @@ pub struct Args {
         long = "session-sharing-server-url",
         global = true,
         hide = true,
-        env = "WARP_SESSION_SHARING_SERVER_URL"
+        env = "WISH_SESSION_SHARING_SERVER_URL"
     )]
     session_sharing_server_url: Option<String>,
 
@@ -145,7 +145,7 @@ pub struct Args {
     args: AppArgs,
 }
 
-/// Flags for the Warp application. Additional binaries, like test runners, may use this type
+/// Flags for the Wish application. Additional binaries, like test runners, may use this type
 /// along with their own flags, or convert their flags into an `AppArgs` value.
 #[derive(Debug, Default, clap::Args, Clone)]
 pub struct AppArgs {
@@ -365,7 +365,7 @@ impl Args {
 
 <bold><underline>Learn more:</underline></bold>
 * Use <bold>{bin_name} help</bold> to learn more about each command
-* Read the documentation at https://docs.warp.dev/reference/cli
+* Read the documentation at https://wish.hermon.ai/docs/reference/cli
 "#
         ));
 
@@ -476,11 +476,31 @@ pub enum WorkerCommand {
     },
 }
 
-/// CLI-related subcommands. The command-line interface to Warp isn't a full SDK (e.g. with language bindings),
-/// but it allows scripting some Warp functionality.
+/// Arguments for the `wish login` command.
+#[derive(Debug, Clone, Default, Parser)]
+pub struct LoginArgs {
+    /// Authenticate using a Hermon API key instead of the default device flow.
+    /// The key can be provided via WISH_API_KEY or entered interactively.
+    #[clap(long)]
+    pub hermon: bool,
+}
+
+/// Arguments for the `wish signup` command.
+#[derive(Debug, Clone, Default, Parser)]
+pub struct SignupArgs {
+    /// Email address for the new account.
+    #[clap(long)]
+    pub email: Option<String>,
+    /// Display name (optional).
+    #[clap(long)]
+    pub name: Option<String>,
+}
+
+/// CLI-related subcommands. The command-line interface to Wish isn't a full SDK (e.g. with language bindings),
+/// but it allows scripting some Wish functionality.
 #[derive(Debug, Clone, Subcommand)]
 pub enum CliCommand {
-    /// Interact with Oz.
+    /// Interact with Wish agents.
     #[command(subcommand)]
     Agent(crate::agent::AgentCommand),
 
@@ -500,9 +520,11 @@ pub enum CliCommand {
     #[command(subcommand)]
     Model(crate::model::ModelCommand),
 
-    /// Log in to Warp.
-    Login,
-    /// Log out of Warp.
+    /// Log in to Wish.
+    Login(LoginArgs),
+    /// Create a new Hermon account from the terminal.
+    Signup(SignupArgs),
+    /// Log out of Wish.
     Logout,
     /// Print information about the logged-in user.
     Whoami,
@@ -515,7 +537,7 @@ pub enum CliCommand {
     #[command(subcommand)]
     Integration(crate::integration::IntegrationCommand),
 
-    /// Create and manage scheduled Oz agents. Scheduled agents run a user-defined task periodically, according to a cron schedule.
+    /// Create and manage scheduled Wish agents. Scheduled agents run a user-defined task periodically, according to a cron schedule.
     ///
     /// As a shorthand, the `schedule` command behaves identically to `schedule create`.
     Schedule(crate::schedule::ScheduleCommand),

@@ -1,6 +1,6 @@
 //! This module contains rendering functions for various requested inline actions that have not yet
 //! been transformed into a [`View`] component. This currently encompasses UI for file retrieval,
-//! environmental variable collection, and SSH Warpification, to name a few.
+//! environmental variable collection, and SSH Wishification, to name a few.
 //!
 //! There's quite a bit of duplication between function-based inline actions and view-based inline
 //! actions. Moreover, the header rendering functions here don't make use of the HeaderConfig.
@@ -16,13 +16,13 @@ use markdown_parser::FormattedTextLine;
 use pathfinder_color::ColorU;
 use std::borrow::Cow;
 use std::rc::Rc;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::color::internal_colors::neutral_2;
-use warpui::elements::Align;
-use warpui::elements::Clipped;
-use warpui::elements::FormattedTextElement;
-use warpui::fonts::FamilyId;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::color::internal_colors::neutral_2;
+use wishui::elements::Align;
+use wishui::elements::Clipped;
+use wishui::elements::FormattedTextElement;
+use wishui::fonts::FamilyId;
+use wishui::{
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Empty, Flex,
         Hoverable, MainAxisAlignment, MouseStateHandle, ParentElement, Radius, Shrinkable,

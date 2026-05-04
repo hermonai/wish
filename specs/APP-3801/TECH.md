@@ -15,7 +15,7 @@ The originating Linear ticket is titled "remote server initialization with authe
 - `crates/remote_server/proto/remote_server.proto` — `ClientMessage`/`ServerMessage` envelopes, `Initialize`/`InitializeResponse`, shared `ErrorResponse` with `ErrorCode { UNSPECIFIED, INVALID_REQUEST, INTERNAL }`. No auth fields anywhere.
 - `crates/remote_server/src/client.rs (117-199)` — `RemoteServerClient::initialize()`, per-request correlation via `pending_requests`, fire-and-forget helpers (`send_notification`, `notify_session_bootstrapped`).
 - `crates/remote_server/src/manager.rs (168-283)` — `RemoteServerManager::connect_session` drives Setup → Launch → `Initialize` handshake → `Connected`.
-- `app/src/remote_server/mod.rs:21` — `run()` configures stderr-only logging and boots the headless warpui app; reads no CLI args or env.
+- `app/src/remote_server/mod.rs:21` — `run()` configures stderr-only logging and boots the headless wishui app; reads no CLI args or env.
 - `app/src/remote_server/server_model.rs (118-480)` — `ServerModel` state, `handle_message` dispatch, `handle_initialize` returns `server_version` + `host_id`.
 - `crates/warp_cli/src/lib.rs:430-433` — `WorkerCommand::RemoteServer` is a unit variant; `app/src/lib.rs:548-551` dispatches to `remote_server::run()` with no args.
 

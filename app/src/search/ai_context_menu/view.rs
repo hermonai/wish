@@ -39,30 +39,30 @@ use settings::Setting as _;
 use std::collections::HashSet;
 use std::ops::Range;
 use std::time::Duration;
-use warp_core::features::FeatureFlag;
-use warpui::elements::ConstrainedBox;
-use warpui::elements::CrossAxisAlignment;
-use warpui::elements::Empty;
-use warpui::elements::Fill;
-use warpui::elements::Hoverable;
-use warpui::elements::MouseStateHandle;
-use warpui::elements::ScrollStateHandle;
-use warpui::elements::Scrollable;
-use warpui::elements::ScrollableElement;
-use warpui::elements::ScrollbarWidth;
-use warpui::elements::UniformList;
-use warpui::elements::UniformListState;
-use warpui::elements::{
+use wish_core::features::FeatureFlag;
+use wishui::elements::ConstrainedBox;
+use wishui::elements::CrossAxisAlignment;
+use wishui::elements::Empty;
+use wishui::elements::Fill;
+use wishui::elements::Hoverable;
+use wishui::elements::MouseStateHandle;
+use wishui::elements::ScrollStateHandle;
+use wishui::elements::Scrollable;
+use wishui::elements::ScrollableElement;
+use wishui::elements::ScrollbarWidth;
+use wishui::elements::UniformList;
+use wishui::elements::UniformListState;
+use wishui::elements::{
     AnchorPair, Border, ChildView, Container, CornerRadius, Dismiss, Flex, Icon, OffsetPositioning,
     OffsetType, ParentElement, PositionedElementOffsetBounds, PositioningAxis, Radius,
     SavePosition, Shrinkable, Stack, Text, XAxisAnchor, YAxisAnchor,
 };
 
-use warpui::platform::Cursor;
-use warpui::windowing::WindowManager;
-use warpui::SingletonEntity;
-use warpui::View;
-use warpui::{
+use wishui::platform::Cursor;
+use wishui::windowing::WindowManager;
+use wishui::SingletonEntity;
+use wishui::View;
+use wishui::{
     AppContext, Element, Entity, ModelHandle, TypedActionView, ViewContext, ViewHandle,
     WeakViewHandle,
 };

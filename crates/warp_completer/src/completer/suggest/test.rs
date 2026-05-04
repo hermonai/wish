@@ -51,7 +51,7 @@ fn suggestions_for_test<T: CompletionContext>(
     options: CompleterOptions,
     ctx: &T,
 ) -> Option<SuggestionResults> {
-    warpui::r#async::block_on(suggestions(line, pos, None, options, ctx))
+    wishui::r#async::block_on(suggestions(line, pos, None, options, ctx))
 }
 
 /// Runs the completer at the end of the given line and returns the associated
@@ -1273,7 +1273,7 @@ pub fn test_env_var_completion() {
         )
         .with_entries(
             pwd.join("target/debug"),
-            [EngineDirEntry::test_file("warpui")],
+            [EngineDirEntry::test_file("wishui")],
         );
 
     let env_vars = HashSet::from_iter([("HOME".into()), ("BAR".into()), ("BAZZ".into())]);
@@ -1352,7 +1352,7 @@ pub fn test_alias_completion() {
         )
         .with_entries(
             pwd.join("target/debug"),
-            [EngineDirEntry::test_file("warpui")],
+            [EngineDirEntry::test_file("wishui")],
         );
 
     let aliases = HashMap::from_iter([
@@ -1446,7 +1446,7 @@ pub fn test_path_fallback() {
         )
         .with_entries(
             pwd.join("target/debug"),
-            [EngineDirEntry::test_file("warpui")],
+            [EngineDirEntry::test_file("wishui")],
         );
 
     let ctx = FakeCompletionContext::new(registry).with_path_completion_context(path_ctx);
@@ -1546,7 +1546,7 @@ pub fn test_completions() {
         )
         .with_entries(
             pwd.join("target/debug"),
-            [EngineDirEntry::test_file("warpui")],
+            [EngineDirEntry::test_file("wishui")],
         );
 
     let registry = create_test_command_registry([git_signature(), cd_signature()]);

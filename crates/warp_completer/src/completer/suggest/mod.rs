@@ -7,7 +7,7 @@ use alias::{expand_command_aliases, AliasExpansionResult};
 pub use priority::Priority;
 
 use imp::*;
-use warp_core::ui::theme::AnsiColorIdentifier;
+use wish_core::ui::theme::AnsiColorIdentifier;
 
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -511,7 +511,7 @@ impl Default for CompleterOptions {
     }
 }
 
-/// This is the public API for using Warp's completion engine. Note that
+/// This is the public API for using Wish's completion engine. Note that
 /// the completion engines could end up performing I/O (e.g. calling generators,
 /// interacting with the file system, etc.), so you should ensure that you
 /// are on a background thread when using this API.

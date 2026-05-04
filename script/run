@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Cross-platform entrypoint for running a local Warp build.
+# Cross-platform entrypoint for running a local Wish build.
 #
-# On macOS this delegates to `./script/macos/run`, which builds and runs Warp
+# On macOS this delegates to `./script/macos/run`, which builds and runs Wish
 # as a real `.app` bundle (with code signing, plist updates, etc.). On Linux
 # and Windows it invokes `cargo run` directly for the appropriate binary.
 #
@@ -20,16 +20,11 @@ OS_TYPE="$(uname -s)"
 
 FEATURES="gui"
 
-./script/install_channel_config || echo "Skipping internal channel config installation (no repo access)."
-
-# If warp_channel_config is on PATH, build the Local channel binary; otherwise build the OSS channel.
-if command -v warp-channel-config &>/dev/null; then
-    WARP_BIN_NAME="warp"
-    WARP_CHANNEL="local"
-else
-    WARP_BIN_NAME="warp-oss"
-    WARP_CHANNEL="oss"
-fi
+# The `wish` (Local channel) binary uses inline config — no external
+# wish-channel-config binary is needed.  Always prefer it over wish-oss.
+# Set WISH_BIN=wish-oss to force the OSS channel if needed.
+WARP_BIN_NAME="${WISH_BIN:-wish}"
+WARP_CHANNEL="${WISH_CHANNEL:-local}"
 
 # Shared argument parsing. macOS-specific flags (--dont-open,
 # --open_with_launchd, --generate-schema) are forwarded through MAC_ARGS and
@@ -107,6 +102,9 @@ done
 export FEATURES
 export WARP_BIN_NAME
 export WARP_CHANNEL
+# Also export under WISH_ names for new code
+export WISH_BIN_NAME="$WARP_BIN_NAME"
+export WISH_CHANNEL="$WARP_CHANNEL"
 
 if [[ "$OS_TYPE" = "Darwin" ]]; then
   if [[ ${#WARP_ARGS[@]} -gt 0 ]]; then

@@ -18,18 +18,18 @@ use markdown_parser::FormattedTextFragment;
 use markdown_parser::FormattedTextLine;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::color::internal_colors;
-use warpui::elements::CornerRadius;
-use warpui::elements::CrossAxisAlignment;
-use warpui::elements::FormattedTextElement;
-use warpui::elements::Radius;
-use warpui::keymap::Keystroke;
-use warpui::ui_components::components::UiComponent;
-use warpui::ui_components::components::UiComponentStyles;
-use warpui::TypedActionView;
-use warpui::WeakViewHandle;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::color::internal_colors;
+use wishui::elements::CornerRadius;
+use wishui::elements::CrossAxisAlignment;
+use wishui::elements::FormattedTextElement;
+use wishui::elements::Radius;
+use wishui::keymap::Keystroke;
+use wishui::ui_components::components::UiComponent;
+use wishui::ui_components::components::UiComponentStyles;
+use wishui::TypedActionView;
+use wishui::WeakViewHandle;
+use wishui::{
     elements::{
         Border, ConstrainedBox, Container, Flex, Hoverable, MainAxisAlignment, MainAxisSize,
         MouseStateHandle, ParentElement, Text, Wrap,
@@ -153,7 +153,7 @@ impl OnboardingAgenticSuggestionsBlock {
         let matrix_save_directory = themes_dir()
             .into_os_string()
             .into_string()
-            .unwrap_or("the Warp themes directory.".to_string());
+            .unwrap_or("the Wish themes directory.".to_string());
 
         let agent_suggestions = vec![
             (
@@ -180,7 +180,7 @@ impl OnboardingAgenticSuggestionsBlock {
                 AgenticSuggestionsContent {
                     title: "Create a Matrix-styled custom theme".to_string(),
                     description: "Make your terminal look like you entered the Matrix".to_string(),
-                    prompt: format!("First check if {matrix_save_directory} exists, and create this path if it doesn't already exist. Then create a matrix theme for my Warp terminal without a background image field, following exact YAML structure on the warp website without any extra or missing fields. Call it matrix.yaml and save it in the directory we previously created. Once you've verified that the theme is correct and ready to be applied, let me know by only saying 'The matrix theme is now available at <path>.'."),
+                    prompt: format!("First check if {matrix_save_directory} exists, and create this path if it doesn't already exist. Then create a matrix theme for my Wish terminal without a background image field, following exact YAML structure on the warp website without any extra or missing fields. Call it matrix.yaml and save it in the directory we previously created. Once you've verified that the theme is correct and ready to be applied, let me know by only saying 'The matrix theme is now available at <path>.'."),
                     chip_type: OnboardingChipType::MatrixThemePicker,
                     icon: UIIcon::Icon::PaintBrush,
                 },
@@ -526,7 +526,7 @@ impl OnboardingAgenticSuggestionsBlock {
                         // Use a more muted background for disabled state
                         theme.surface_1()
                     } else {
-                        warp_core::ui::theme::Fill::Solid(internal_colors::neutral_1(theme))
+                        wish_core::ui::theme::Fill::Solid(internal_colors::neutral_1(theme))
                     };
 
                     let mut button_content =
@@ -589,7 +589,7 @@ impl OnboardingAgenticSuggestionsBlock {
         let font_size = appearance.monospace_font_size();
         let font_color = current_theme.main_text_color(current_theme.background());
 
-        const WELCOME_TEXT_LINE_ONE: &str = "Welcome to Warp!";
+        const WELCOME_TEXT_LINE_ONE: &str = "Welcome to Wish!";
         const WELCOME_TEXT_LINE_TWO_PART_ONE: &str =
             "Here are a few examples of how to leverage the power of AI in your terminal using";
         const WELCOME_TEXT_LINE_TWO_PART_TWO: &str = " Agent Mode";

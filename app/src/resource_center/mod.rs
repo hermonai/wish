@@ -20,7 +20,7 @@ pub mod sections;
 mod view;
 use serde::{Deserialize, Serialize};
 pub use view::{ResourceCenterAction, ResourceCenterEvent, ResourceCenterPage, ResourceCenterView};
-use warpui::{keymap::Keystroke, AppContext, Entity, SingletonEntity};
+use wishui::{keymap::Keystroke, AppContext, Entity, SingletonEntity};
 
 use self::section_views::feature_section::FeatureSection;
 
@@ -90,7 +90,7 @@ pub enum TipAction {
     AiCommandSearch,
     SaveNewLaunchConfig,
     WarpAI,
-    // This toggles Warp Drive rather than opening it. This enum can't directly be
+    // This toggles Wish Drive rather than opening it. This enum can't directly be
     // renamed because we serialize it into the welcome tips.
     OpenWarpDrive,
     Changelog,

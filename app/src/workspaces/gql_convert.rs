@@ -544,7 +544,7 @@ impl TryFrom<&BillingMetadata> for StripeSubscriptionPlan {
             CustomerType::Prosumer => Ok(StripeSubscriptionPlan::Pro),
             CustomerType::Business => {
                 // Check if this is a legacy Business Plan, or a new Build Business plan based on service agreement type
-                // See: https://github.com/warpdotdev/warp-server/pull/6828#discussion_r2496242091
+                // See: https://github.com/hermonai/wish-server/pull/6828#discussion_r2496242091
                 match billing_metadata
                     .service_agreements
                     .first()

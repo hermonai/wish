@@ -13,7 +13,7 @@ The remote server binary (`crates/remote_server`) currently only handles `Initia
 
 ### Remote server (`crates/remote_server`)
 - `ServerModel` singleton handles stdin/stdout protobuf I/O
-- `run()` boots a headless warpui app with only `ServerModel`
+- `run()` boots a headless wishui app with only `ServerModel`
 - Proto schema has only `Initialize`/`InitializeResponse`
 
 ### repo_metadata crate

@@ -1,4 +1,4 @@
-use warpui::EntityId;
+use wishui::EntityId;
 
 /// Utility for consistently creating and referencing saved position IDs for
 /// rich text.

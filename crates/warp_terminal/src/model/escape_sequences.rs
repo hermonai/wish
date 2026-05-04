@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use lazy_static::lazy_static;
-use warpui::keymap::Keystroke;
-use warpui::platform::OperatingSystem;
+use wishui::keymap::Keystroke;
+use wishui::platform::OperatingSystem;
 
 use super::{
     mouse::{MouseAction, MouseButton, MouseState},

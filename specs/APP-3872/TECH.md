@@ -261,7 +261,7 @@ If the current keyboard overlays are too pixelated, the best next step is to inc
 
 ## Validation
 Implementation was validated with:
-- `cargo check -p warpui_core --features integration_tests --manifest-path /Users/zach/Projects/warp_5/Cargo.toml`
+- `cargo check -p wishui_core --features integration_tests --manifest-path /Users/zach/Projects/warp_5/Cargo.toml`
 - `cargo check -p integration --manifest-path /Users/zach/Projects/warp_5/Cargo.toml`
 
 For manual validation, the existing `integration/src/test/video_recording.rs` flow should be used to inspect:

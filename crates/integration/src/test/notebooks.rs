@@ -1,4 +1,4 @@
-use warp::{
+use wish::{
     cmd_or_ctrl_shift,
     features::FeatureFlag,
     integration_testing::{
@@ -20,7 +20,7 @@ use warp::{
         window::{add_and_save_window, close_window, save_active_window_id},
     },
 };
-use warpui::integration::TestStep;
+use wishui::integration::TestStep;
 
 use super::{new_builder, Builder};
 
@@ -165,7 +165,7 @@ pub fn test_open_in_warp_banner() -> Builder {
             .add_assertion(assert_open_in_warp_banner_open(0, 0)),
         )
         .with_step(
-            new_step_with_default_assertions("Click Open in Warp banner")
+            new_step_with_default_assertions("Click Open in Wish banner")
                 .with_click_on_saved_position_fn(|app, window_id| {
                     let view = terminal_view(app, window_id, 0, 0);
                     format!("open_in_warp_banner_button_{}", view.id())

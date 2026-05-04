@@ -9,9 +9,9 @@ use async_trait::async_trait;
 use itertools::Itertools;
 use parking_lot::Mutex;
 use settings::Setting as _;
-use warp_core::command::ExitCode;
-use warpui::{App, SingletonEntity};
 use warpui_extras::user_preferences;
+use wish_core::command::ExitCode;
+use wishui::{App, SingletonEntity};
 
 #[cfg(feature = "local_fs")]
 use crate::code_review::diff_state::DiffStats;

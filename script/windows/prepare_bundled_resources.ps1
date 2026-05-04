@@ -1,7 +1,7 @@
 #
 # Prepares bundled resources for distribution on Windows.
 #
-# This script copies resources that should be bundled with Warp into a
+# This script copies resources that should be bundled with Wish into a
 # destination directory. It is used by the Windows build script.
 #
 # Usage:
@@ -56,7 +56,7 @@ if (Test-Path $BundledSource -PathType Container) {
 if ($env:GIT_RELEASE_TAG) {
     $VersionMetadataDir = Join-Path (Join-Path $DestinationDir 'bundled') 'metadata'
     $VersionMetadataPath = Join-Path $VersionMetadataDir 'version.json'
-    Write-Output "Writing bundled Warp version metadata to $VersionMetadataPath"
+    Write-Output "Writing bundled Wish version metadata to $VersionMetadataPath"
     if (-Not (Test-Path $VersionMetadataDir -PathType Container)) {
         New-Item -ItemType Directory -Path $VersionMetadataDir -Force | Out-Null
     }

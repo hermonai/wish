@@ -1,6 +1,6 @@
 [package]
 name = "warp_js"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 version = "0.1.0"
 edition = "2021"
 publish.workspace = true

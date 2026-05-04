@@ -5,8 +5,8 @@ use super::{
 };
 use crate::ai::artifacts::Artifact;
 use crate::persistence::model::AgentConversationData;
-use warp_core::features::FeatureFlag;
 use warp_multi_agent_api as api;
+use wish_core::features::FeatureFlag;
 
 fn restored_conversation(conversation_data: Option<AgentConversationData>) -> AIConversation {
     AIConversation::new_restored(

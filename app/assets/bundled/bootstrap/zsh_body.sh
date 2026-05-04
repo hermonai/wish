@@ -99,7 +99,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   # session.
   #
   # Only relevant for remote SSH shells. WARP_IS_SSH is exported to "1"
-  # by `warp_ssh_helper` on the remote side of a Warp-managed SSH session
+  # by `warp_ssh_helper` on the remote side of a Wish-managed SSH session
   # and is unset everywhere else (local shells, subshells, docker
   # sandboxes, etc.), so the hook only fires where a remote-server-proxy
   # actually needs tearing down.
@@ -354,14 +354,14 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
       bindkey -r '\ei'
       bindkey '\ei' warp_report_input
 
-      # Introduce keybinding to switch prompt modes (PS1 vs built-in Warp prompt).
+      # Introduce keybinding to switch prompt modes (PS1 vs built-in Wish prompt).
       # This is arbitrarily bound to ESC-p in all supported shells ("p" for PS1),
       # and we can change it to any other keybinding if needed.
       bindkey -r '\ep'
       bindkey '\ep' warp_change_prompt_modes_to_ps1
 
-      # Introduce keybinding to switch prompt modes (PS1 vs built-in Warp prompt).
-      # This is arbitrarily bound to ESC-w in all supported shells ("w" for Warp prompt),
+      # Introduce keybinding to switch prompt modes (PS1 vs built-in Wish prompt).
+      # This is arbitrarily bound to ESC-w in all supported shells ("w" for Wish prompt),
       # and we can change it to any other keybinding if needed.
       bindkey -r '\ew'
       bindkey '\ew' warp_change_prompt_modes_to_warp_prompt
@@ -451,7 +451,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
       fi
 
 
-      # We also pass the shell's notion of `honor_ps1` to ensure it's synced correctly on the Warp-side for prompt handling.
+      # We also pass the shell's notion of `honor_ps1` to ensure it's synced correctly on the Wish-side for prompt handling.
       # This is passed as a "real boolean" via the JSON payload (string interpolated into JSON string below).
       local honor_ps1
       if [[ "$WARP_HONOR_PS1" == "1" ]]; then
@@ -682,15 +682,15 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
     local prompt_prefix_with_cursor_marker_surrounded="%{$prompt_prefix%}"
     local suffix_with_cursor_marker_surrounded="%{$suffix%}"
 
-    # Clear the user-defined prompt again, if using Warp's built-in prompt, before the command 
-    # is rendered as it could have been reset by the user's zshrc or by setting 
+    # Clear the user-defined prompt again, if using Wish's built-in prompt, before the command
+    # is rendered as it could have been reset by the user's zshrc or by setting
     # the variable on the command line. This is used for same-line prompt and leads to the temporary
-    # product behavior of Warp prompt switches only taking effect in new sessions.
+    # product behavior of Wish prompt switches only taking effect in new sessions.
     # Certain prompt plugins like p10k can reset the prompt to a non-empty value, after we've initially unset it.
-    # Confirm that it is unset, if using built-in Warp prompt (update prompt vars is forced to run as the last precmd fn).
+    # Confirm that it is unset, if using built-in Wish prompt (update prompt vars is forced to run as the last precmd fn).
     if [[ "$WARP_HONOR_PS1" != "1" ]]; then
       # If the PROMPT has its original value (i.e. we haven't modified it yet), we save it to SAVED_PROMPT
-      # so we can recover it, via bindkey, if we switch back from Warp prompt to PS1 (intra-session).
+      # so we can recover it, via bindkey, if we switch back from Wish prompt to PS1 (intra-session).
       if [[ "$PROMPT" != "%{$prompt_prefix"*"%}" ]]; then
         SAVED_PROMPT=$PROMPT
       fi
@@ -759,15 +759,15 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
     # columns leads to undesired artifacts in the command grid.
     # Note that we only need cursor markers for the prefix/suffix when using a combined prompt &
     # command grid.
-    # If we are using the Warp prompt, we pass a "hidden left prompt" to the prompt
+    # If we are using the Wish prompt, we pass a "hidden left prompt" to the prompt
     # preview grid (the hidden prompt grid) with cursor markers surrounding the entire prompt.
     if [[ "$WARP_HONOR_PS1" != "1" ]]; then
       if [[ "$PROMPT" != "%{$prompt_prefix$ORIGINAL_PROMPT$suffix%}" ]]; then
         # We purposefully surround this entire prompt with cursor markers to prevent
         # the shell from moving its internal state of the cursor position, for purposes
-        # of printing the command with the Warp prompt.
-        # Note that the Warp prompt is always ABOVE the combined grid in finished blocks
-        # (same line prompt only affects the input editor with Warp prompt, not
+        # of printing the command with the Wish prompt.
+        # Note that the Wish prompt is always ABOVE the combined grid in finished blocks
+        # (same line prompt only affects the input editor with Wish prompt, not
         # finished blocks).
         PROMPT="%{$prompt_prefix$ORIGINAL_PROMPT$suffix%}"
       fi
@@ -794,7 +794,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   }
 
   # Switches to PS1 prompt by restoring the prompt/rprompt to their original values and flipping
-  # WARP_HONOR_PS1 to "1" (they had originally been unset for the Warp prompt). Resets the prompt,
+  # WARP_HONOR_PS1 to "1" (they had originally been unset for the Wish prompt). Resets the prompt,
   # forcing a re-print.
   function warp_change_prompt_modes_to_ps1() {
     PROMPT="$SAVED_PROMPT"
@@ -809,7 +809,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   # so we can reference this when we register it with a bindkey.
   zle -N warp_change_prompt_modes_to_ps1
 
-  # Switches to Warp prompt by flipping WARP_HONOR_PS1 to "0", which will result
+  # Switches to Wish prompt by flipping WARP_HONOR_PS1 to "0", which will result
   # in unsetting the PROMPT variables to avoid a double prompt. Resets the prompt, forcing
   # a re-print.
   function warp_change_prompt_modes_to_warp_prompt() {
@@ -880,7 +880,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
           -t "${@:1}" \
 "
 export TERM_PROGRAM='WarpTerminal'
-# Mark the remote side of a Warp-managed SSH session so the bootstrap
+# Mark the remote side of a Wish-managed SSH session so the bootstrap
 # body can distinguish it from local shells. Used to gate the ExitShell
 # hook which tears down the remote-server-proxy subprocess.
 export WARP_IS_SSH='1'
@@ -999,7 +999,7 @@ esac
   typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
   # Add the Warp title precmd functions before the bootstrap sequence is sourced so that a user's custom tab title
-  # behavior is respected over Warp's.
+  # behavior is respected over Wish's.
   precmd_functions+=(warp_set_title_idle_on_precmd)
   preexec_functions+=(warp_set_title_active_on_preexec)
 
@@ -1060,8 +1060,8 @@ esac
   # option, this var will be true. It tells p10k to output an extra newline in its precmd function
   # which visually separates commands. These are generally undesired in Warp, since blocks provide
   # enough visual separation. Although generally benign, this causes an issue on Windows when
-  # ConPTY is involved. The extra newline is output by p10k's precmd which runs after Warp's
-  # precmd, i.e. after the "reset grid" sequence. It ends up causing Warp's grid content to be out
+  # ConPTY is involved. The extra newline is output by p10k's precmd which runs after Wish's
+  # precmd, i.e. after the "reset grid" sequence. It ends up causing Wish's grid content to be out
   # of sync with ConPTY, causing cursor positioning problems.
   if [[ ${POWERLEVEL9K_PROMPT_ADD_NEWLINE:-} == true ]]; then
     POWERLEVEL9K_PROMPT_ADD_NEWLINE=false

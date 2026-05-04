@@ -49,7 +49,6 @@ use cynic::{MutationBuilder, QueryBuilder, SubscriptionBuilder};
 #[cfg(test)]
 use mockall::{automock, predicate::*};
 use std::collections::HashMap;
-use warp_core::report_error;
 use warp_graphql::{
     error::UserFacingErrorInterface,
     generic_string_object::GenericStringObjectInput,
@@ -154,6 +153,7 @@ use warp_graphql::{
         get_warp_drive_updates::GetWarpDriveUpdates, start_graphql_streaming_operation,
     },
 };
+use wish_core::report_error;
 
 /// Identifies a guest to remove from an object.
 #[derive(Clone, Debug)]
@@ -237,7 +237,7 @@ pub trait ObjectClient: 'static + Send + Sync {
     async fn give_up_notebook_edit_access(&self, notebook_id: NotebookId)
         -> Result<ServerMetadata>;
 
-    /// Gets updates for all Warp Drive actions.
+    /// Gets updates for all Wish Drive actions.
     async fn get_warp_drive_updates(
         &self,
         message_sender: Sender<ObjectUpdateMessage>,

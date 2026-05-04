@@ -11,7 +11,7 @@ use repo_metadata::{
 };
 use tempfile::TempDir;
 use warp_util::standardized_path::StandardizedPath;
-use warpui::App;
+use wishui::App;
 
 use super::SkillWatcher;
 

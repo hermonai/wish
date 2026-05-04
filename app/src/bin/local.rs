@@ -1,19 +1,32 @@
-#[path = "channel_config.rs"]
-mod channel_config;
+// On Windows, we don't want to display a console window when the application is running in release
+// builds. See https://doc.rust-lang.org/reference/runtime.html#the-windows_subsystem-attribute.
+#![cfg_attr(feature = "release_bundle", windows_subsystem = "windows")]
 
 use anyhow::Result;
-use warp_core::{
-    channel::{Channel, ChannelState},
-    features,
+use wish_core::{
+    channel::{Channel, ChannelConfig, ChannelState, HermonConfig, WishServerConfig},
+    features, AppId,
 };
 
+// The `wish` (local) binary uses inline config — no external config generator needed.
+// This is the development channel with all debug + dogfood + preview features enabled.
 fn main() -> Result<()> {
-    let config = channel_config::load_config!("local");
-
-    let mut state = ChannelState::new(Channel::Local, config)
-        .with_additional_features(features::DEBUG_FLAGS)
-        .with_additional_features(features::DOGFOOD_FLAGS)
-        .with_additional_features(features::PREVIEW_FLAGS);
+    let mut state = ChannelState::new(
+        Channel::Local,
+        ChannelConfig {
+            app_id: AppId::new("ai", "hermon", "Wish"),
+            logfile_name: "wish-local.log".into(),
+            server_config: WishServerConfig::local_dev(),
+            hermon_config: HermonConfig::local_dev(),
+            telemetry_config: None,
+            crash_reporting_config: None,
+            autoupdate_config: None,
+            mcp_static_config: None,
+        },
+    )
+    .with_additional_features(features::DEBUG_FLAGS)
+    .with_additional_features(features::DOGFOOD_FLAGS)
+    .with_additional_features(features::PREVIEW_FLAGS);
 
     // Enable sandbox telemetry feature flag if the env var is set.
     if std::env::var("WITH_SANDBOX_TELEMETRY").is_ok() {
@@ -22,7 +35,7 @@ fn main() -> Result<()> {
 
     ChannelState::set(state);
 
-    warp::run()
+    wish::run()
 }
 
 // If we're not using an external plist, embed the following as the Info.plist.
@@ -35,15 +48,15 @@ embed_plist::embed_info_plist_bytes!(r#"
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleDisplayName</key>
-    <string>WarpLocal</string>
+    <string>Wish</string>
     <key>CFBundleExecutable</key>
-    <string>warp</string>
+    <string>wish</string>
     <key>CFBundleIdentifier</key>
-    <string>dev.warp.Warp-Local</string>
+    <string>ai.hermon.Wish</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>WarpLocal</string>
+    <string>Wish</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -55,9 +68,9 @@ embed_plist::embed_info_plist_bytes!(r#"
     <key>UIDesignRequiresCompatibility</key>
     <true/>
     <key>CFBundleURLTypes</key>
-    <array><dict><key>CFBundleURLName</key><string>Custom App</string><key>CFBundleURLSchemes</key><array><string>warplocal</string></array></dict></array>
+    <array><dict><key>CFBundleURLName</key><string>Custom App</string><key>CFBundleURLSchemes</key><array><string>wish</string></array></dict></array>
     <key>NSHumanReadableCopyright</key>
-    <string>© 2026, Denver Technologies, Inc</string>
+    <string>Copyright (c) Hermon AI. All rights reserved.</string>
     </dict>
     </plist>
 "#.as_bytes());

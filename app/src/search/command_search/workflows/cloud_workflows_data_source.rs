@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use futures_lite::future::yield_now;
-use warpui::{AppContext, SingletonEntity};
+use wishui::{AppContext, SingletonEntity};
 
 use crate::cloud_object::model::persistence::CloudModel;
 use crate::search::async_snapshot_data_source::AsyncSnapshotDataSource;
@@ -30,7 +30,7 @@ pub(crate) struct CloudWorkflowsSnapshot {
     filter_to_command_workflows: bool,
 }
 
-/// Creates an async data source for cloud workflows (i.e. those that exist in Warp Drive).
+/// Creates an async data source for cloud workflows (i.e. those that exist in Wish Drive).
 pub fn cloud_workflows_data_source(
 ) -> AsyncSnapshotDataSource<CloudWorkflowsSnapshot, CommandSearchItemAction> {
     AsyncSnapshotDataSource::new(

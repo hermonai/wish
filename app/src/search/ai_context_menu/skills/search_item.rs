@@ -7,12 +7,12 @@ use crate::search::ai_context_menu::mixer::AIContextMenuSearchableAction;
 use crate::search::ai_context_menu::styles;
 use crate::search::item::SearchItem;
 use crate::search::result_renderer::ItemHighlightState;
-use warp_core::ui::icons::Icon;
-use warpui::elements::{
+use wish_core::ui::icons::Icon;
+use wishui::elements::{
     ConstrainedBox, Container, CrossAxisAlignment, Flex, Highlight, ParentElement, Shrinkable, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::{AppContext, Element, SingletonEntity};
+use wishui::fonts::{Properties, Weight};
+use wishui::{AppContext, Element, SingletonEntity};
 
 const MAX_DESCRIPTION_LEN: usize = 60;
 

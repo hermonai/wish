@@ -64,7 +64,7 @@ impl super::UserPreferences for UserDefaultsPreferencesStorage {
             let value: id = msg_send![*self.user_defaults, stringForKey: *key];
             if value != nil {
                 Ok(Some(
-                    warpui::platform::mac::utils::nsstring_as_str(value)?.to_owned(),
+                    wishui::platform::mac::utils::nsstring_as_str(value)?.to_owned(),
                 ))
             } else {
                 Ok(None)

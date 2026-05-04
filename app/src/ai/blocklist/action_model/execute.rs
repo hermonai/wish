@@ -52,7 +52,7 @@ use suggest_new_conversation::SuggestNewConversationExecutor;
 pub use suggest_prompt::PromptSuggestionExecutor;
 use upload_artifact::UploadArtifactExecutor;
 use use_computer::UseComputerExecutor;
-use warp_core::{execution_mode::AppExecutionMode, features::FeatureFlag};
+use wish_core::{execution_mode::AppExecutionMode, features::FeatureFlag};
 
 #[cfg(feature = "local_fs")]
 use crate::util::openable_file_type::is_binary_file;
@@ -65,7 +65,7 @@ use warp_files::{FileModel, TextFileReadResult};
 use warp_util::file::FileLoadError;
 #[cfg(feature = "local_fs")]
 use warp_util::file_type::is_buffer_binary;
-use warpui::{
+use wishui::{
     r#async::{Spawnable, SpawnableOutput},
     AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity,
 };

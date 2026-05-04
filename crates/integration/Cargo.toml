@@ -38,13 +38,13 @@ strum.workspace = true
 strum_macros.workspace = true
 sum_tree.workspace = true
 version-compare.workspace = true
-warp = { workspace = true, features = ["integration_tests"] }
+wish = { workspace = true, features = ["integration_tests"] }
 warp_cli = { workspace = true, features = ["integration_tests"] }
-warp_core.workspace = true
+wish_core.workspace = true
 warp-command-signatures.workspace = true
 warp_multi_agent_api.workspace = true
 warp-workflows.workspace = true
-warpui.workspace = true
+wishui.workspace = true
 warpui_extras = { workspace = true, features = [
     "user_preferences-file",
 ] }
@@ -52,8 +52,8 @@ whoami = "1.5.2"
 
 [dev-dependencies]
 command = { workspace = true, features = ["test-util"] }
-warpui = { workspace = true, features = ["integration_tests"] }
-warp_core = { workspace = true, features = ["test-util"] }
+wishui = { workspace = true, features = ["integration_tests"] }
+wish_core = { workspace = true, features = ["test-util"] }
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 app-installation-detection.workspace = true

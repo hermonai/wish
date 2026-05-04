@@ -119,7 +119,7 @@ class FallbackToBrowserTests(unittest.TestCase):
             "small body",
             open_ok=False,
             gh_path="/usr/bin/gh",
-            gh_create_result=("https://github.com/warpdotdev/warp/issues/7", None),
+            gh_create_result=("https://github.com/hermonai/wish/issues/7", None),
         )
         self.assertEqual(rc, 0)
         self.assertEqual(payload["status"], "created")
@@ -146,7 +146,7 @@ class FallbackToBrowserTests(unittest.TestCase):
             "small body",
             browser_available=(False, "No DISPLAY"),
             gh_path="/usr/bin/gh",
-            gh_create_result=("https://github.com/warpdotdev/warp/issues/8", None),
+            gh_create_result=("https://github.com/hermonai/wish/issues/8", None),
         )
         self.assertEqual(rc, 0)
         self.assertEqual(payload["status"], "created")
@@ -232,7 +232,7 @@ class FileWithGhTests(unittest.TestCase):
         rc, payload = self._run(
             gh_path_if_authenticated="/usr/bin/gh",
             create_issue_with_gh=(
-                "https://github.com/warpdotdev/warp/issues/42",
+                "https://github.com/hermonai/wish/issues/42",
                 None,
             ),
         )
@@ -289,7 +289,7 @@ class MainTests(unittest.TestCase):
             ffi,
             "create_issue_with_gh",
             return_value=(
-                "https://github.com/warpdotdev/warp/issues/999",
+                "https://github.com/hermonai/wish/issues/999",
                 None,
             ),
         ):

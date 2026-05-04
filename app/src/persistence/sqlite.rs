@@ -31,8 +31,8 @@ use pathfinder_geometry::{rect::RectF, vector::Vector2F};
 use persistence::model::AMBIENT_AGENT_PANE_KIND;
 use uuid::Uuid;
 use warp_graphql::scalars::time::ServerTimestamp;
-use warpui::platform::FullscreenState;
-use warpui::{AppContext, SingletonEntity};
+use wishui::platform::FullscreenState;
+use wishui::{AppContext, SingletonEntity};
 
 use super::agent::{delete_agent_conversations, upsert_agent_conversation};
 use super::block_list::{
@@ -141,7 +141,9 @@ const COMMANDS_COUNT_LIMIT: i64 = 10000;
 
 use warp_server_client::persistence::{upsert_cloud_object, CloudObjectId};
 
-const WARP_SQLITE_FILE_NAME: &str = "warp.sqlite";
+const WISH_SQLITE_FILE_NAME: &str = "wish.sqlite";
+/// Legacy filename — used for migration from older installs.
+const LEGACY_SQLITE_FILE_NAME: &str = "warp.sqlite";
 
 /// When delete a cloud object, this callback is used to delete the cloud
 /// object. It takes the id of the cloud object to delete as a parameter.
@@ -258,7 +260,7 @@ unsafe fn init_logging() {
             // According to the docs, this error means that the database file was moved (or deleted),
             // so SQLite can't safely modify it and the rollback journal:
             //     https://www.sqlite.org/rescode.html#readonly_dbmoved
-            // This is mostly outside of Warp's control (e.g. the user or some system program is
+            // This is mostly outside of Wish's control (e.g. the user or some system program is
             // moving around files in the user data directory), so downgrade to a warning.
             (_, sqlite3::SQLITE_READONLY_DBMOVED) => log::Level::Warn,
             _ => log::Level::Error,
@@ -348,8 +350,81 @@ pub(super) fn init_db() -> Result<SqliteConnection> {
         );
     }
 
-    // Migrate old SQLite files into the secure application container.
-    let old_db_path = warp_core::paths::state_dir().join(WARP_SQLITE_FILE_NAME);
+    // Migrate from the legacy macOS group container (2BBY89MBSN.dev.warp).
+    // When entitlements changed to 2BBY89MBSN.ai.hermon.wish, secure_state_dir()
+    // stopped resolving the old container, orphaning its data.
+    #[cfg(target_os = "macos")]
+    if !db_path.exists() {
+        if let Some(legacy_dir) = wish_core::paths::legacy_secure_state_dir() {
+            let old_db = {
+                let new_name = legacy_dir.join(WISH_SQLITE_FILE_NAME);
+                if new_name.exists() {
+                    new_name
+                } else {
+                    legacy_dir.join(LEGACY_SQLITE_FILE_NAME)
+                }
+            };
+            if old_db.exists() {
+                match std::fs::rename(&old_db, &db_path) {
+                    Ok(_) => {
+                        safe_info!(
+                            safe: ("Migrated SQLite from legacy group container"),
+                            full: ("Migrated SQLite from `{}` to `{}`", old_db.display(), db_path.display())
+                        );
+                        let _ = std::fs::rename(
+                            old_db.with_extension("sqlite-wal"),
+                            db_path.with_extension("sqlite-wal"),
+                        );
+                        let _ = std::fs::rename(
+                            old_db.with_extension("sqlite-shm"),
+                            db_path.with_extension("sqlite-shm"),
+                        );
+                    }
+                    Err(err) => {
+                        report_error!(anyhow::Error::new(err)
+                            .context("Failed to migrate SQLite from legacy group container"));
+                    }
+                }
+            }
+        }
+    }
+
+    // Migrate from legacy warp.sqlite in the same secure dir (renamed file).
+    let legacy_in_secure = db_path.parent().map(|p| p.join(LEGACY_SQLITE_FILE_NAME));
+    if let Some(ref legacy_path) = legacy_in_secure {
+        if legacy_path != &db_path && legacy_path.exists() && !db_path.exists() {
+            if let Err(err) = std::fs::rename(legacy_path, &db_path) {
+                report_error!(anyhow::Error::new(err)
+                    .context("Failed to rename legacy warp.sqlite to wish.sqlite"));
+            } else {
+                safe_info!(
+                    safe: ("Renamed legacy warp.sqlite → wish.sqlite"),
+                    full: ("Renamed `{}` → `{}`", legacy_path.display(), db_path.display())
+                );
+                // Also rename WAL/SHM files.
+                let _ = std::fs::rename(
+                    legacy_path.with_extension("sqlite-wal"),
+                    db_path.with_extension("sqlite-wal"),
+                );
+                let _ = std::fs::rename(
+                    legacy_path.with_extension("sqlite-shm"),
+                    db_path.with_extension("sqlite-shm"),
+                );
+            }
+        }
+    }
+
+    // Migrate old SQLite files from the non-secure state dir into the secure application container.
+    // Try the new name first, then fall back to the legacy name.
+    let state_dir = wish_core::paths::state_dir();
+    let old_db_path = {
+        let new_name = state_dir.join(WISH_SQLITE_FILE_NAME);
+        if new_name.exists() {
+            new_name
+        } else {
+            state_dir.join(LEGACY_SQLITE_FILE_NAME)
+        }
+    };
     if old_db_path != db_path && old_db_path.exists() && !db_path.exists() {
         match std::fs::rename(&old_db_path, &db_path) {
             Ok(_) => {
@@ -414,9 +489,9 @@ fn setup_database(database_path: &Path) -> Result<SqliteConnection> {
 /// Integration tests that initialize the database with known data should use
 /// this function to determine where to create the database file.
 pub fn database_file_path() -> PathBuf {
-    warp_core::paths::secure_state_dir()
-        .unwrap_or_else(warp_core::paths::state_dir)
-        .join(WARP_SQLITE_FILE_NAME)
+    wish_core::paths::secure_state_dir()
+        .unwrap_or_else(wish_core::paths::state_dir)
+        .join(WISH_SQLITE_FILE_NAME)
 }
 
 pub(super) fn remove(sender: SyncSender<ModelEvent>) {

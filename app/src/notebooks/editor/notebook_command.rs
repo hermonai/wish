@@ -27,8 +27,8 @@ use warp_editor::{
 
 use markdown_parser::markdown_parser::CODE_BLOCK_DEFAULT_MARKDOWN_LANG;
 use warp_util::user_input::UserInput;
-use warpui::{elements::Align, r#async::SpawnedFutureHandle, AppContext};
-use warpui::{
+use wishui::{elements::Align, r#async::SpawnedFutureHandle, AppContext};
+use wishui::{
     elements::{
         Border, Container, CrossAxisAlignment, Empty, Flex, MainAxisAlignment, MouseStateHandle,
         ParentElement, Shrinkable, Text,
@@ -603,7 +603,7 @@ impl RunnableCommandModel for NotebookCommand {
                         appearance.ui_font_size(),
                     )
                     .with_style(Properties {
-                        weight: warpui::fonts::Weight::Light,
+                        weight: wishui::fonts::Weight::Light,
                         ..Default::default()
                     })
                     .with_color(

@@ -5,7 +5,7 @@ use crate::content::{
     },
 };
 use sum_tree::SumTree;
-use warpui::elements::ListIndentLevel;
+use wishui::elements::ListIndentLevel;
 
 #[test]
 #[should_panic(

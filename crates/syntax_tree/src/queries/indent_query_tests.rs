@@ -5,7 +5,7 @@ use languages::{language_by_filename, Language};
 use warp_editor::content::buffer::{Buffer, BufferSnapshot};
 use warp_editor::content::selection_model::BufferSelectionModel;
 use warp_editor::content::text::IndentBehavior;
-use warpui::App;
+use wishui::App;
 
 use crate::SyntaxTreeState;
 
@@ -15,7 +15,7 @@ use super::*;
 fn mock_buffer_and_tree(text_content: &str, language: Arc<Language>) -> (Buffer, Tree) {
     // Create a tree by parsing the text
     let snapshot = BufferSnapshot::from_plain_text(text_content);
-    let tree = warpui::r#async::block_on(async {
+    let tree = wishui::r#async::block_on(async {
         SyntaxTreeState::parse_text(snapshot, None, &language).await
     });
 
@@ -55,7 +55,7 @@ fn test_indent_query() {
         });
 
         let buffer_snapshot = buffer_handle.read(&app, |buffer, _| buffer.buffer_snapshot());
-        let tree = warpui::r#async::block_on(async {
+        let tree = wishui::r#async::block_on(async {
             SyntaxTreeState::parse_text(buffer_snapshot, None, &language).await
         });
 
@@ -151,7 +151,7 @@ fn test_indent_query_on_go() {
         });
 
         let buffer_snapshot = buffer_handle.read(&app, |buffer, _| buffer.buffer_snapshot());
-        let tree = warpui::r#async::block_on(async {
+        let tree = wishui::r#async::block_on(async {
             SyntaxTreeState::parse_text(buffer_snapshot, None, &language).await
         });
 

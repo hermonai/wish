@@ -13,7 +13,7 @@ use crate::cloud_object::{
 use crate::ids::SyncId;
 use persistence::model::{NewObjectMetadata, NewObjectPermissions, ObjectMetadata};
 use persistence::schema;
-use warp_core::features::FeatureFlag;
+use wish_core::features::FeatureFlag;
 
 /// The sqlite id of a cloud object.
 pub type CloudObjectId = i32;

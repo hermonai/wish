@@ -8,8 +8,8 @@ pub use query::*;
 pub use setup_command::*;
 pub use setup_command_text::*;
 
-use warpui::prelude::Container;
-use warpui::{AppContext, Element, ModelHandle};
+use wishui::prelude::Container;
+use wishui::{AppContext, Element, ModelHandle};
 
 use crate::ai::blocklist::block::view_impl::{
     WithContentItemSpacing, CONTENT_ITEM_VERTICAL_MARGIN,

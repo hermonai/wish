@@ -3,7 +3,7 @@ use crate::server::server_api::{ServerApiEvent, ServerApiProvider};
 #[cfg(not(target_family = "wasm"))]
 use remote_server::manager::RemoteServerManager;
 #[cfg(not(target_family = "wasm"))]
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 // Re-export everything from the `remote_server` crate so existing
 // `crate::remote_server::*` imports in `app` continue to work.
 pub use remote_server::*;
@@ -39,7 +39,7 @@ pub fn run_daemon(_identity_key: String) -> anyhow::Result<()> {
     anyhow::bail!("remote-server-daemon is not supported on this platform")
 }
 
-/// Start the WarpUI headless app with all daemon singleton models.
+/// Start the WishUI headless app with all daemon singleton models.
 ///
 /// This is the platform-agnostic core of every `run_daemon` implementation.
 /// Platform-specific code (Unix sockets, Windows named pipes, …) binds a
@@ -54,11 +54,11 @@ pub fn run_daemon(_identity_key: String) -> anyhow::Result<()> {
 /// ```
 #[cfg(not(target_family = "wasm"))]
 pub(super) fn run_daemon_app(
-    server_model_init: impl FnOnce(&mut warpui::ModelContext<server_model::ServerModel>) -> server_model::ServerModel
+    server_model_init: impl FnOnce(&mut wishui::ModelContext<server_model::ServerModel>) -> server_model::ServerModel
         + 'static,
 ) -> anyhow::Result<()> {
-    use warpui::platform::app::AppCallbacks;
-    use warpui::platform::AppBuilder;
+    use wishui::platform::app::AppCallbacks;
+    use wishui::platform::AppBuilder;
 
     AppBuilder::new_headless(AppCallbacks::default(), Box::new(()), None).run(|ctx| {
         // Rotate log files from the previous daemon invocation in the background.
@@ -90,7 +90,7 @@ pub(super) fn run_daemon_app(
 
 /// Forwards app auth-token rotation events to the remote-server manager.
 #[cfg(not(target_family = "wasm"))]
-pub fn wire_auth_token_rotation(ctx: &mut warpui::AppContext) {
+pub fn wire_auth_token_rotation(ctx: &mut wishui::AppContext) {
     let server_api = ServerApiProvider::handle(ctx);
     let manager = RemoteServerManager::handle(ctx);
     ctx.subscribe_to_model(&server_api, move |_, event, ctx| {

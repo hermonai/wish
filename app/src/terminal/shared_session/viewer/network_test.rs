@@ -6,7 +6,7 @@ use std::{sync::Arc, time::Duration};
 
 use parking_lot::FairMutex;
 
-use warpui::{App, ModelHandle};
+use wishui::{App, ModelHandle};
 
 use crate::{
     terminal::{event_listener::ChannelEventListener, TerminalModel},

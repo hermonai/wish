@@ -9,7 +9,7 @@
 mod warpify;
 
 pub use warpify::*;
-use warpui::{
+use wishui::{
     elements::{
         ConstrainedBox, Container, CornerRadius, Hoverable, MouseState, MouseStateHandle,
         ParentElement, Radius, Stack,
@@ -28,22 +28,22 @@ pub const BLOCK_BANNER_HEIGHT: f32 = CONSTRAINED_BANNER_HEIGHT + BANNER_TOP_MARG
 pub const BLOCK_BANNER_DESCRIPTION_MAX_HEIGHT: f32 = 24.;
 
 pub enum WithinBlockBanner {
-    WarpifyBanner(WarpifyBannerState),
+    WishifyBanner(WishifyBannerState),
 }
 
 impl WithinBlockBanner {
     pub fn banner_height(&self) -> f32 {
         match self.warpify_mode() {
-            Some(WarpificationMode::Ssh { .. }) => {
+            Some(WishificationMode::Ssh { .. }) => {
                 BLOCK_BANNER_HEIGHT + BLOCK_BANNER_DESCRIPTION_MAX_HEIGHT
             }
-            Some(WarpificationMode::Subshell { .. }) | None => BLOCK_BANNER_HEIGHT,
+            Some(WishificationMode::Subshell { .. }) | None => BLOCK_BANNER_HEIGHT,
         }
     }
 
-    pub fn warpify_mode(&self) -> Option<&WarpificationMode> {
+    pub fn warpify_mode(&self) -> Option<&WishificationMode> {
         match self {
-            WithinBlockBanner::WarpifyBanner(state) => Some(&state.mode),
+            WithinBlockBanner::WishifyBanner(state) => Some(&state.mode),
         }
     }
 }

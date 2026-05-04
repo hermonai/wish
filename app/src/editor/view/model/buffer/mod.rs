@@ -42,10 +42,10 @@ use sum_tree::{self, Cursor, FilterCursor, SeekBias, SumTree};
 use time::{Global, Lamport};
 use undo::{LocalUndoStack, UndoHistory};
 use vec1::{vec1, Vec1};
-use warpui::color::ColorU;
-use warpui::text::{point::Point, words::is_default_word_boundary, BufferIndex, TextBuffer};
-use warpui::text_layout::TextStyle;
-use warpui::{Entity, ModelContext};
+use wishui::color::ColorU;
+use wishui::text::{point::Point, words::is_default_word_boundary, BufferIndex, TextBuffer};
+use wishui::text_layout::TextStyle;
+use wishui::{Entity, ModelContext};
 
 #[cfg(test)]
 use rand::prelude::*;
@@ -365,9 +365,9 @@ impl TextStyleOperation {
     ///
     /// # Example
     /// ```
-    /// use warpui::color::ColorU;
-    /// use warpui::text_layout::TextStyle;
-    /// use warp::editor::TextStyleOperation;
+    /// use wishui::color::ColorU;
+    /// use wishui::text_layout::TextStyle;
+    /// use wish::editor::TextStyleOperation;
     /// TextStyleOperation::apply_text_style_operation(
     ///     TextStyle::default(),
     ///     TextStyleOperation::default().set_error_underline_color(ColorU::black()),
@@ -1646,9 +1646,9 @@ impl Buffer {
     ///
     /// # Example
     /// ```ignore
-    /// use warpui::{color::ColorU, App, ModelHandle};
-    /// use warp::Assets;
-    /// use warp::editor::model::buffer::{Buffer, TextStyleOperation, EditOrigin};
+    /// use wishui::{color::ColorU, App, ModelHandle};
+    /// use wish::Assets;
+    /// use wish::editor::model::buffer::{Buffer, TextStyleOperation, EditOrigin};
     /// use string_offset::CharOffset;
     /// App::test((), |mut app| async move {
     ///     let buffer_model: &mut ModelHandle<Buffer> =

@@ -46,12 +46,12 @@ This should be a surgical extension of the existing section-based block-list ren
 - `crates/markdown_parser/src/markdown_parser.rs (286-326)` — `parse_image`; current image recognition behavior
 - `crates/markdown_parser/src/markdown_parser.rs (466-475)` — `parse_inline_markdown`; current inline parser surface
 - `crates/markdown_parser/src/markdown_parser_test.rs (2171-2320)` — current parser coverage for images
-- `crates/warpui_core/src/elements/formatted_text_element.rs (1580-1591, 1661-1671)` — images are currently treated as line breaks in the block-list rich-text path
+- `crates/wishui-core/src/elements/formatted_text_element.rs (1580-1591, 1661-1671)` — images are currently treated as line breaks in the block-list rich-text path
 - `crates/editor/src/content/text.rs (280-362)` — image markdown round-trip behavior in the editor stack
 - `crates/editor/src/content/text.rs (526-579)` — `CodeBlockType::Mermaid` gating
 - `crates/editor/src/content/edit.rs (56-91)` — native/WASM asset-source resolution rules
 - `crates/editor/src/content/mermaid_diagram.rs (20-67)` — in-memory Mermaid SVG asset generation and sizing
-- `crates/warpui_core/src/image_cache.rs` — supported shared image types (JPEG, PNG, GIF, WebP, SVG)
+- `crates/wishui-core/src/image_cache.rs` — supported shared image types (JPEG, PNG, GIF, WebP, SVG)
 - `crates/warp_features/src/lib.rs (525-540, 817-858)` — markdown-related feature flags
 - `app/src/lib.rs (2462-2471)` — app-side feature-flag wiring for markdown tables and Mermaid
 - `app/Cargo.toml (667-746)` — compile-time feature declarations
@@ -80,12 +80,12 @@ Our current `markdown_parser` does not fully implement that inline image semanti
 - multiple image references on the same line, which become an inline image row
 
 ### Why images disappear today
-Plain-text markdown sections are rendered with `render_rich_text_output_text_section` in `app/src/ai/blocklist/block/view_impl/common.rs (986-1084)`, which delegates to `FormattedTextElement`. In `crates/warpui_core/src/elements/formatted_text_element.rs (1580-1591, 1661-1671)`, `FormattedTextLine::Image(_)`, `FormattedTextLine::Embedded(_)`, and `FormattedTextLine::HorizontalRule` are all treated as line-break-like layout items rather than renderable content. That is the immediate reason that block-list Markdown images never show up.
+Plain-text markdown sections are rendered with `render_rich_text_output_text_section` in `app/src/ai/blocklist/block/view_impl/common.rs (986-1084)`, which delegates to `FormattedTextElement`. In `crates/wishui-core/src/elements/formatted_text_element.rs (1580-1591, 1661-1671)`, `FormattedTextLine::Image(_)`, `FormattedTextLine::Embedded(_)`, and `FormattedTextLine::HorizontalRule` are all treated as line-break-like layout items rather than renderable content. That is the immediate reason that block-list Markdown images never show up.
 
 ### Asset and Mermaid support already exists elsewhere
 Warp already has the low-level capabilities this feature needs:
 
-- shared image format support in `crates/warpui_core/src/image_cache.rs`
+- shared image format support in `crates/wishui-core/src/image_cache.rs`
 - asset-source resolution, including WASM-safe behavior, in `crates/editor/src/content/edit.rs (56-91)`
 - Mermaid SVG generation and sizing in `crates/editor/src/content/mermaid_diagram.rs (20-67)`
 - Mermaid code-block identification in `crates/editor/src/content/text.rs (526-579)`
@@ -358,7 +358,7 @@ Mitigation:
 
 ### Integration tests
 - A reasonable first integration test is a single manual-observation test, `test_restored_ai_block_renders_mermaid_and_local_images`, in `crates/integration/src/test/agent_mode.rs`.
-- That test would restore a synthetic `ConversationData` through `load_conversation_from_tasks`, set `InputContext.directory` to `crates/warpui_core/test_data`, and capture a real-display screenshot of one AI response that contains same-line local image markdown plus a Mermaid fence.
+- That test would restore a synthetic `ConversationData` through `load_conversation_from_tasks`, set `InputContext.directory` to `crates/wishui-core/test_data`, and capture a real-display screenshot of one AI response that contains same-line local image markdown plus a Mermaid fence.
 - It would be intentionally narrow: it would prove the restored AI block list can render both surfaces through the real conversation-hydration path without introducing protobuf fixtures or test-only UI hooks.
 - Recommended follow-up integration coverage remains:
   - an AI response containing plain text, a linked code block, a markdown table, a relative-path image, and a Mermaid diagram

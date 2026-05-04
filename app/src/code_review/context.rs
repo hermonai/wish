@@ -9,7 +9,7 @@ cfg_if::cfg_if! {
         use crate::ai::agent::{AIAgentAttachment, CurrentHead, DiffBase};
         use crate::ai::blocklist::BlocklistAIContextModel;
         use crate::code_review::{diff_state::DiffMode, DiffSetScope};
-        use warpui::{AppContext, ModelHandle};
+        use wishui::{AppContext, ModelHandle};
     }
 }
 

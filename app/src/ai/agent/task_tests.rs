@@ -562,7 +562,7 @@ fn test_new_moved_messages_subtask_preserves_messages() {
 }
 
 // =============================================================================
-// Tests for Warp docs subagent classification
+// Tests for Wish docs subagent classification
 // =============================================================================
 
 #[test]

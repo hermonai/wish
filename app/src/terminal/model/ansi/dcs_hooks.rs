@@ -6,24 +6,24 @@ use ordered_float::OrderedFloat;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashSet;
 use std::path::PathBuf;
-use warp_core::command::ExitCode;
+use wish_core::command::ExitCode;
 
-/// Indicates that the following JSON-encoded message is hex-encoded for Warp's lifecycle hooks.
+/// Indicates that the following JSON-encoded message is hex-encoded for Wish's lifecycle hooks.
 /// In DCS, it is used as the final char in the DCS start sequence.
 /// In OSC, it is used as the first parameter.
 pub(super) const HEX_ENCODED_JSON_MARKER: char = 'd';
 
-/// Indicates that the following JSON-encoded message is unencoded for Warp's lifecycle hooks.
+/// Indicates that the following JSON-encoded message is unencoded for Wish's lifecycle hooks.
 /// In DCS, it is used as the final char in the DCS start sequence.
 /// In OSC, it is used as the first parameter.
 pub(super) const UNENCODED_JSON_MARKER: char = 'f';
 
-/// Indicates that the following message is a ANSI-C quoted message for receiving Warp's lifecycle
+/// Indicates that the following message is a ANSI-C quoted message for receiving Wish's lifecycle
 /// hooks via key-value pairs.
 /// In OSC< it is used as the first parameter.
 pub(super) const UNENCODED_KV_MARKER: char = 'k';
 
-/// Enum representing all possible JSON payloads for Warp's DCS's.
+/// Enum representing all possible JSON payloads for Wish's DCS's.
 #[derive(Serialize, Debug, Deserialize)]
 #[allow(clippy::upper_case_acronyms)]
 #[serde(tag = "hook")]
@@ -69,9 +69,9 @@ pub(super) enum DProtoHook {
     FinishUpdate {
         value: FinishUpdateValue,
     },
-    RemoteWarpificationIsUnavailable {
+    RemoteWishificationIsUnavailable {
         // If a value is provided, it's suggesting a way to install TMUX on the remote.
-        value: WarpificationUnavailableReason,
+        value: WishificationUnavailableReason,
     },
     SshTmuxInstaller {
         value: String,
@@ -100,8 +100,8 @@ impl DProtoHook {
             DProtoHook::SourcedRcFileForWarp { .. } => "SourcedRcFileForWarp",
             DProtoHook::InitSsh { .. } => "InitSsh",
             DProtoHook::FinishUpdate { .. } => "FinishUpdate",
-            DProtoHook::RemoteWarpificationIsUnavailable { .. } => {
-                "RemoteWarpificationIsUnavailable"
+            DProtoHook::RemoteWishificationIsUnavailable { .. } => {
+                "RemoteWishificationIsUnavailable"
             }
             DProtoHook::SshTmuxInstaller { .. } => "SshTmuxInstaller",
             DProtoHook::TmuxInstallFailed { .. } => "TmuxInstallFailed",
@@ -371,7 +371,7 @@ pub struct SystemDetails {
 /// to warpify.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all(serialize = "snake_case"))]
-pub enum WarpificationUnavailableReason {
+pub enum WishificationUnavailableReason {
     TmuxFailed,
     UnsupportedTmuxVersion {
         #[serde(flatten)]
@@ -495,7 +495,7 @@ pub struct PreexecValue {
     pub command: String,
 }
 
-/// Received from the pty after the shell has finished executing Warp's
+/// Received from the pty after the shell has finished executing Wish's
 /// bootstrap script.
 #[derive(Clone, Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
 pub struct BootstrappedValue {
@@ -597,7 +597,7 @@ fn parse_float_from_string(s: String) -> Option<OrderedFloat<f64>> {
     s.parse::<f64>().map(|f| f.into()).ok()
 }
 
-/// Received from the pty when Warp's SSH wrapper is executed, prior to
+/// Received from the pty when Wish's SSH wrapper is executed, prior to
 /// bootstrapping the SSH session.
 #[derive(Debug, Default, PartialEq, Eq, Deserialize, Serialize, Clone)]
 pub struct PreInteractiveSSHSessionValue {}
@@ -646,7 +646,7 @@ pub struct InitSubshellValue {
 }
 
 /// Emitted by a snippet included in the user's RC file, which signals a new session is being
-/// created; if the session is for a subshell, this triggers Warp's bootstrap process.
+/// created; if the session is for a subshell, this triggers Wish's bootstrap process.
 /// Otherwise, it's ignored.
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
 pub struct SourcedRcFileForWarpValue {
@@ -679,7 +679,7 @@ pub struct FinishUpdateValue {
 }
 
 /// Received from the pty right before the remote shell exits (via `exit`,
-/// `logout`, Ctrl-D on an empty prompt, etc.). Lets the Warp client drop
+/// `logout`, Ctrl-D on an empty prompt, etc.). Lets the Wish client drop
 /// per-session resources — in particular the `ssh … remote-server-proxy`
 /// child process that holds a multiplexed channel on the foreground ssh
 /// ControlMaster — before the user's outer ssh tunnel tries to close, so

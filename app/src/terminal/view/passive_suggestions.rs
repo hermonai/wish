@@ -1,4 +1,4 @@
-use warpui::ViewContext;
+use wishui::ViewContext;
 
 use crate::{server::telemetry::InteractionSource, terminal::view::CodeDiffAction};
 

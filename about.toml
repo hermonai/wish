@@ -33,9 +33,9 @@ workarounds = [
     "rustls",
 ]
 
-# These are Warp's own private crates, sourced via git from the warpdotdev
-# organization. They are not part of this workspace and do not have explicit
-# licenses yet (they will be open-sourced soon). cargo-about will skip them
+# These are inherited private crates still sourced via git from the upstream
+# Warp organization. They are not part of this workspace and do not have explicit
+# licenses yet. cargo-about will skip them
 # during generation. Once they are open-sourced and have license fields, they
 # will be included automatically and we can add --fail back to the generate
 # invocation.

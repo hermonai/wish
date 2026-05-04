@@ -3,20 +3,20 @@ use std::sync::Arc;
 
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use warpui::elements::{
+use wishui::elements::{
     Border, ChildAnchor, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Expanded,
     Flex, Hoverable, MainAxisAlignment, MainAxisSize, MouseStateHandle, OffsetPositioning,
     ParentAnchor, ParentElement, ParentOffsetBounds, Radius, Stack, Text,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::geometry::vector::Vector2F;
-use warpui::platform::Cursor;
-use warpui::ui_components::components::UiComponent;
-use warpui::Element;
-use warpui::EventContext;
+use wishui::fonts::{Properties, Weight};
+use wishui::geometry::vector::Vector2F;
+use wishui::platform::Cursor;
+use wishui::ui_components::components::UiComponent;
+use wishui::Element;
+use wishui::EventContext;
 
-use warp_core::ui::theme::Fill;
-use warp_core::ui::theme::WarpTheme;
+use wish_core::ui::theme::Fill;
+use wish_core::ui::theme::WarpTheme;
 
 use crate::appearance::Appearance;
 use crate::tab_configs::session_config::SessionType;
@@ -320,7 +320,7 @@ pub fn render_worktree_checkbox_with_background<F>(
     appearance: &Appearance,
 ) -> Box<dyn Element>
 where
-    F: Fn(&mut warpui::EventContext, warpui::geometry::vector::Vector2F) + 'static,
+    F: Fn(&mut wishui::EventContext, wishui::geometry::vector::Vector2F) + 'static,
 {
     let disabled = !is_git_repo;
     let on_accent_bg = bg.is_some();

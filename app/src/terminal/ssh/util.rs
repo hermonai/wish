@@ -78,7 +78,7 @@ pub fn check_ssh_login_state(block_output: &str) -> SshLoginState {
 }
 
 /// Represents the parsed components of an interactive SSH command.
-/// For some [`SshWarpifyCommand`]s, we do not support parsing
+/// For some [`SshWishifyCommand`]s, we do not support parsing
 /// a host or port In these cases, we can still parse to a valid
 /// empty `InteractiveSshCommand` to indicate that we did
 /// successfully detect an interactive SSH command.
@@ -147,21 +147,21 @@ pub enum SshLikeCommand {
     DigitalOceanDroplet,
 }
 
-/// TMUX SSH Warpification can be triggered by any command that
+/// TMUX SSH Wishification can be triggered by any command that
 /// we determine to be an interactive SSH command. This enum
 /// represents the different types of SSH commands we support
-/// for TMUX Warpification. `Ssh` means a literal `ssh` command,
+/// for TMUX Wishification. `Ssh` means a literal `ssh` command,
 /// where all other commands are categorized as SSH-like commands.
-pub enum SshWarpifyCommand {
+pub enum SshWishifyCommand {
     Ssh,
     SshLike(SshLikeCommand),
 }
 
-impl SshWarpifyCommand {
+impl SshWishifyCommand {
     /// Not a literal `ssh` command, but another command that starts an interactive SSH
-    /// session that we can Warpify with TMUX.
+    /// session that we can Wishify with TMUX.
     pub fn is_ssh_like_command(&self) -> bool {
-        matches!(self, SshWarpifyCommand::SshLike(_))
+        matches!(self, SshWishifyCommand::SshLike(_))
     }
 }
 
@@ -178,21 +178,21 @@ lazy_static! {
     static ref DIGITAL_OCEAN_DROPLET_REGEX: Regex = Regex::new(r"^doctl\s+compute\s+ssh\s.+").expect("digital ocean SSH regex invalid");
 }
 
-impl SshWarpifyCommand {
-    pub fn matches(command: &str) -> Option<SshWarpifyCommand> {
+impl SshWishifyCommand {
+    pub fn matches(command: &str) -> Option<SshWishifyCommand> {
         let command = if let Some(suffix) = command.strip_prefix("command ") {
             suffix
         } else {
             command
         };
         if INTERACTIVE_SSH.is_match(command) {
-            Some(SshWarpifyCommand::Ssh)
+            Some(SshWishifyCommand::Ssh)
         } else if GCLOUD_REGEX.is_match(command) {
-            Some(SshWarpifyCommand::SshLike(SshLikeCommand::Gcloud))
+            Some(SshWishifyCommand::SshLike(SshLikeCommand::Gcloud))
         } else if ELASTIC_BEANSTALK_REGEX.is_match(command) {
-            Some(SshWarpifyCommand::SshLike(SshLikeCommand::ElasticBeanstalk))
+            Some(SshWishifyCommand::SshLike(SshLikeCommand::ElasticBeanstalk))
         } else if DIGITAL_OCEAN_DROPLET_REGEX.is_match(command) {
-            Some(SshWarpifyCommand::SshLike(
+            Some(SshWishifyCommand::SshLike(
                 SshLikeCommand::DigitalOceanDroplet,
             ))
         } else {
@@ -202,15 +202,15 @@ impl SshWarpifyCommand {
 }
 
 pub fn parse_interactive_ssh_command(command: &str) -> Option<InteractiveSshCommand> {
-    match SshWarpifyCommand::matches(command) {
-        Some(SshWarpifyCommand::Ssh) => InteractiveSshCommand::parse_ssh_command(command),
-        Some(SshWarpifyCommand::SshLike(SshLikeCommand::Gcloud)) => {
+    match SshWishifyCommand::matches(command) {
+        Some(SshWishifyCommand::Ssh) => InteractiveSshCommand::parse_ssh_command(command),
+        Some(SshWishifyCommand::SshLike(SshLikeCommand::Gcloud)) => {
             Some(InteractiveSshCommand::default())
         }
-        Some(SshWarpifyCommand::SshLike(SshLikeCommand::ElasticBeanstalk)) => {
+        Some(SshWishifyCommand::SshLike(SshLikeCommand::ElasticBeanstalk)) => {
             Some(InteractiveSshCommand::default())
         }
-        Some(SshWarpifyCommand::SshLike(SshLikeCommand::DigitalOceanDroplet)) => {
+        Some(SshWishifyCommand::SshLike(SshLikeCommand::DigitalOceanDroplet)) => {
             Some(InteractiveSshCommand::default())
         }
         None => None,

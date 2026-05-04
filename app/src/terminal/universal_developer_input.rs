@@ -18,7 +18,7 @@ use std::borrow::Cow;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
-use warpui::{
+use wishui::{
     elements::{
         ChildView, Clipped, Container, CornerRadius, CrossAxisAlignment, Fill, Flex,
         MainAxisAlignment, MainAxisSize, ParentElement, Radius, Rect, Shrinkable,
@@ -29,7 +29,7 @@ use warpui::{
     ViewContext, ViewHandle,
 };
 
-use warp_core::ui::{
+use wish_core::ui::{
     color::{
         coloru_with_opacity,
         contrast::{foreground_color_with_minimum_contrast, MinimumAllowedContrast},
@@ -39,13 +39,13 @@ use warp_core::ui::{
 };
 
 use std::boxed::Box;
-use warpui::{
+use wishui::{
     ui_components::segmented_control::{SegmentedControl, SegmentedControlEvent},
     ModelHandle,
 };
 
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::color::internal_colors;
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::color::internal_colors;
 
 use crate::ai::blocklist::prompt::PromptIconButtonTheme;
 use crate::ai::blocklist::BlocklistAIHistoryEvent;
@@ -79,8 +79,8 @@ use crate::{
     workspaces::user_workspaces::UserWorkspaces,
     BlocklistAIHistoryModel,
 };
-use warp_core::features::FeatureFlag;
-use warpui::ui_components::segmented_control::{LabelConfig, TooltipConfig};
+use wish_core::features::FeatureFlag;
+use wishui::ui_components::segmented_control::{LabelConfig, TooltipConfig};
 
 pub enum AtContextMenuDisabledReason {
     #[cfg(target_family = "wasm")]
@@ -138,7 +138,7 @@ impl AtContextMenuDisabledReason {
             .and_then(|session_id| sessions.get(session_id))
             .map(|session| {
                 let is_ssh_session = session.is_legacy_ssh_session()
-                    || matches!(session.session_type(), SessionType::WarpifiedRemote { .. });
+                    || matches!(session.session_type(), SessionType::WishifiedRemote { .. });
                 let is_subshell = session.subshell_info().is_some();
                 (is_ssh_session, is_subshell)
             })
@@ -787,7 +787,7 @@ impl View for UniversalDeveloperInputButtonBar {
         "UniversalDeveloperInputButtonBar"
     }
 
-    fn render(&self, app: &AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, app: &AppContext) -> Box<dyn wishui::Element> {
         let appearance = Appearance::as_ref(app);
         let theme = appearance.theme();
         #[cfg(feature = "voice_input")]
@@ -796,7 +796,7 @@ impl View for UniversalDeveloperInputButtonBar {
         // Helper function to create a 1px vertical divider
         let create_divider = || {
             Container::new(
-                warpui::elements::ConstrainedBox::new(
+                wishui::elements::ConstrainedBox::new(
                     Rect::new().with_background(theme.surface_3()).finish(),
                 )
                 .with_width(1.0)
@@ -808,7 +808,7 @@ impl View for UniversalDeveloperInputButtonBar {
             .finish()
         };
 
-        let build_buttons = |model_selector_element: Box<dyn warpui::Element>| {
+        let build_buttons = |model_selector_element: Box<dyn wishui::Element>| {
             // Create a horizontal layout with buttons arranged in a row
             let mut buttons = Flex::row()
                 .with_main_axis_size(MainAxisSize::Max)

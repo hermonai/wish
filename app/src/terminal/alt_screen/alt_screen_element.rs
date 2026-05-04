@@ -28,28 +28,28 @@ use num_traits::Float as _;
 use parking_lot::FairMutex;
 use pathfinder_geometry::vector::vec2f;
 use vec1::Vec1;
-use warp_core::features::FeatureFlag;
 use warp_util::user_input::UserInput;
-use warpui::elements::new_scrollable::{NewScrollableElement, ScrollableAxis};
-use warpui::event::{KeyState, ModifiersState};
-use warpui::platform::keyboard::KeyCode;
-use warpui::text::SelectionType;
+use wish_core::features::FeatureFlag;
+use wishui::elements::new_scrollable::{NewScrollableElement, ScrollableAxis};
+use wishui::event::{KeyState, ModifiersState};
+use wishui::platform::keyboard::KeyCode;
+use wishui::text::SelectionType;
 
 use super::{should_intercept_mouse, should_intercept_scroll};
 use std::ops::{Deref as _, Range};
 use std::sync::Arc;
-use warpui::elements::{Axis, Fill, Point as UiPoint, ScrollData, ScrollableElement};
-use warpui::fonts::Properties;
-use warpui::geometry::rect::RectF;
-use warpui::geometry::vector::Vector2F;
-use warpui::units::{IntoLines, IntoPixels, Lines, Pixels};
-use warpui::{
+use wishui::elements::{Axis, Fill, Point as UiPoint, ScrollData, ScrollableElement};
+use wishui::fonts::Properties;
+use wishui::geometry::rect::RectF;
+use wishui::geometry::vector::Vector2F;
+use wishui::units::{IntoLines, IntoPixels, Lines, Pixels};
+use wishui::{
     end_trace,
     event::{DispatchedEvent, InBoundsExt},
     record_trace_event, start_trace, AfterLayoutContext, AppContext, Element, Event, EventContext,
     LayoutContext, PaintContext, SizeConstraint,
 };
-use warpui::{ClipBounds, EntityId, ModelHandle};
+use wishui::{ClipBounds, EntityId, ModelHandle};
 
 const CLI_SUBAGENT_HORIZONTAL_MARGIN: f32 = 8.;
 const CLI_SUBAGENT_VERTICAL_MARGIN: f32 = 8.;
@@ -260,7 +260,7 @@ impl AltScreenElement {
         ctx.dispatch_typed_action(TerminalAction::Focus);
 
         // On mobile, request soft keyboard so users can input.
-        if warpui::platform::is_mobile_device() {
+        if wishui::platform::is_mobile_device() {
             ctx.request_soft_keyboard();
         }
 

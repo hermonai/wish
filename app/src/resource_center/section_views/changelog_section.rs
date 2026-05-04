@@ -1,7 +1,7 @@
 use instant::Instant;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
-use warp_core::features::FeatureFlag;
-use warpui::{
+use wish_core::features::FeatureFlag;
+use wishui::{
     elements::{
         Border, CacheOption, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Element,
         Flex, FormattedTextElement, HighlightedHyperlink, Icon, Image, MouseStateHandle,
@@ -366,7 +366,7 @@ impl SectionView for ChangelogSectionView {
                 .ui_builder()
                 .link(
                     "Read all changelogs".into(),
-                    Some("https://docs.warp.dev/changelog".into()),
+                    Some("https://wish.hermon.ai/docs/changelog".into()),
                     None,
                     self.changelog_button_mouse_states
                         .view_changelogs_mouse_state

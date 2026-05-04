@@ -25,8 +25,8 @@ use crate::workspaces::workspace::{
 use mockall::Sequence;
 use settings::{PrivatePreferences, PublicPreferences};
 use std::time::Duration;
-use warpui::{AddSingletonModel, App};
 use warpui_extras::user_preferences;
+use wishui::{AddSingletonModel, App};
 
 use super::*;
 
@@ -170,7 +170,7 @@ fn test_loading_all_spaces_after_switching_from_offline() {
         });
 
         // Spend time waiting for the initial load to finish etc.
-        warpui::r#async::Timer::after(Duration::from_secs(1)).await;
+        wishui::r#async::Timer::after(Duration::from_secs(1)).await;
 
         // Lets go offline
         NetworkStatus::handle(&app).update(&mut app, |network_status, ctx| {
@@ -183,7 +183,7 @@ fn test_loading_all_spaces_after_switching_from_offline() {
         });
 
         // Spend time waiting for the load to finish etc.
-        warpui::r#async::Timer::after(Duration::from_secs(1)).await;
+        wishui::r#async::Timer::after(Duration::from_secs(1)).await;
 
         // We also ensure that UserWorkspaces stores a team
         UserWorkspaces::handle(&app).read(&app, |teams, _| {

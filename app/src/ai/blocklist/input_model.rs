@@ -14,8 +14,8 @@ use parking_lot::FairMutex;
 use serde::{Deserialize, Serialize};
 use session_sharing_protocol::common::{InputMode, InputType as ProtocolInputType};
 use settings::Setting as _;
-use warp_core::features::FeatureFlag;
-use warpui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
+use wish_core::features::FeatureFlag;
+use wishui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
 
 pub use input_classifier::InputType;
 

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use futures_util::FutureExt as _;
 use itertools::Itertools as _;
-use warpui::{r#async::executor::BackgroundTask, AppContext, SingletonEntity};
+use wishui::{r#async::executor::BackgroundTask, AppContext, SingletonEntity};
 use zbus::{interface, proxy, zvariant};
 
 use crate::channel::ChannelState;
@@ -32,7 +32,7 @@ pub fn pass_startup_args_to_existing_instance(
         return Err(StartupArgsForwardingError::IgnoredAfterAutoUpdate);
     }
 
-    warpui::r#async::block_on(async {
+    wishui::r#async::block_on(async {
         let conn = zbus::Connection::session().await?;
         let proxy = ExistingApplicationProxy::builder(&conn)
             .destination(DBusServiceHost::well_known_name())?
@@ -81,7 +81,7 @@ impl From<zbus::fdo::Error> for StartupArgsForwardingError {
     fn from(value: zbus::fdo::Error) -> Self {
         // While ServiceUnknown usually means that D-Bus doesn't know how to
         // _launch_ something to handle your message, in our case, we're not
-        // registering a service, so this really means that Warp is not already
+        // registering a service, so this really means that Wish is not already
         // running.
         if matches!(value, zbus::fdo::Error::ServiceUnknown(_)) {
             StartupArgsForwardingError::NoExistingInstance
@@ -149,12 +149,12 @@ impl ApplicationService {
     }
 }
 
-// A D-Bus client for connecting to an already-running instance of Warp and
+// A D-Bus client for connecting to an already-running instance of Wish and
 // invoking org.freedesktop.Application IPC methods.
 #[proxy(
     interface = "org.freedesktop.Application",
-    default_service = "dev.warp.WarpLocal",
-    default_path = "/dev/warp/WarpLocal",
+    default_service = "ai.hermon.Wish",
+    default_path = "/ai/hermon/Wish",
     gen_blocking = false
 )]
 trait ExistingApplication {
@@ -181,7 +181,7 @@ struct DBusServiceHost {
 }
 
 impl DBusServiceHost {
-    fn new(ctx: &mut warpui::ModelContext<Self>) -> Self {
+    fn new(ctx: &mut wishui::ModelContext<Self>) -> Self {
         let (tx, rx) = async_channel::unbounded();
 
         // Spawn a background task for the D-Bus server.
@@ -232,7 +232,7 @@ impl DBusServiceHost {
         if let Some(server_task) = self.server_task.take() {
             server_task.abort();
             // Wait until we've torn down the dbus service.
-            report_if_error!(warpui::r#async::block_on(server_task));
+            report_if_error!(wishui::r#async::block_on(server_task));
         }
     }
 
@@ -248,7 +248,7 @@ impl DBusServiceHost {
     }
 }
 
-impl warpui::Entity for DBusServiceHost {
+impl wishui::Entity for DBusServiceHost {
     type Event = ();
 }
 

@@ -35,13 +35,13 @@ use std::ops::{AddAssign, Range, RangeInclusive};
 use std::sync::Arc;
 use std::time::Duration;
 use sum_tree::{Dimension, Item, SeekBias, SumTree};
-use warp_core::features::FeatureFlag;
-use warpui::color::ColorU;
-use warpui::r#async::executor::Background;
-use warpui::record_trace_event;
+use wish_core::features::FeatureFlag;
+use wishui::color::ColorU;
+use wishui::r#async::executor::Background;
+use wishui::record_trace_event;
 
 use std::collections::{HashMap, HashSet};
-use warpui::{
+use wishui::{
     units::{IntoLines, IntoPixels, Lines},
     AppContext, EntityId, ViewHandle,
 };
@@ -2345,7 +2345,7 @@ impl BlockList {
                 let next_block = self.block_at(next_block_index)?;
                 let next_command_is_empty = next_block.is_command_empty();
                 // NOTE: there is a semantic difference here of seeking down to the next "prompt" (in the PS1 case)
-                // vs the next "command" (in the Warp prompt case), when using the combined grid, rather than
+                // vs the next "command" (in the Wish prompt case), when using the combined grid, rather than
                 // directly going to the next "command" in both cases.
                 let grid_type = GridType::PromptAndCommand;
 
@@ -3561,10 +3561,10 @@ impl ansi::Handler for BlockList {
             }
             ClearMode::All => {
                 // TODO(alokedesai): Investigate how we can call `clear_visible_screen` here to have
-                // Warp's custom logic for "clear". It's not immediately straightforward because a
+                // Wish's custom logic for "clear". It's not immediately straightforward because a
                 // a running program that writes output, clears the visible screen, and then writes
                 // more output should all be encapsulated within a single block, which wouldn't be
-                // quite right with Warp's custom clear screen logic.
+                // quite right with Wish's custom clear screen logic.
             }
             _ => {}
         }

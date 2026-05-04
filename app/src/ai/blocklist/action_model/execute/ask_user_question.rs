@@ -2,7 +2,7 @@ use crate::ai::agent::{AIAgentActionResultType, AIAgentActionType};
 use crate::ai::blocklist::BlocklistAIPermissions;
 use ai::agent::action_result::{AskUserQuestionAnswerItem, AskUserQuestionResult};
 use futures::{future::BoxFuture, FutureExt};
-use warpui::{Entity, EntityId, ModelContext, SingletonEntity};
+use wishui::{Entity, EntityId, ModelContext, SingletonEntity};
 
 use super::{ActionExecution, AnyActionExecution, ExecuteActionInput, PreprocessActionInput};
 

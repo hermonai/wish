@@ -7,25 +7,25 @@ use crate::appearance::Appearance;
 use crate::terminal::model::ansi::SystemDetails;
 use crate::terminal::model::escape_sequences;
 use crate::terminal::warpify::render;
-use crate::terminal::warpify::settings::WarpifySettings;
+use crate::terminal::warpify::settings::WishifySettings;
 use crate::ui_components::blended_colors;
 use crate::ui_components::icons::Icon as UiIcon;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
-use warp_core::ui::theme::WarpTheme;
-use warpui::elements::{
+use wish_core::ui::theme::WarpTheme;
+use wishui::elements::{
     FormattedTextElement, HighlightedHyperlink, Hoverable, Icon, MainAxisAlignment, MainAxisSize,
     MouseStateHandle,
 };
-use warpui::keymap::FixedBinding;
-use warpui::ui_components::toggle_menu::ToggleMenuStateHandle;
-use warpui::{
+use wishui::keymap::FixedBinding;
+use wishui::ui_components::toggle_menu::ToggleMenuStateHandle;
+use wishui::{
     elements::{Border, Container, CrossAxisAlignment, Flex, ParentElement},
     AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext,
 };
-use warpui::{BlurContext, FocusContext};
+use wishui::{BlurContext, FocusContext};
 
 pub const WHY_INSTALL_TMUX_URL: &str =
-    "https://docs.warp.dev/terminal/warpify/ssh#why-do-i-need-tmux-on-the-remote-machine";
+    "https://wish.hermon.ai/docs/terminal/warpify/ssh#why-do-i-need-tmux-on-the-remote-machine";
 
 #[derive(Debug, Clone)]
 pub struct TmuxInstallMethod {
@@ -35,7 +35,7 @@ pub struct TmuxInstallMethod {
 
 #[derive(Debug, Clone)]
 pub enum SshInstallTmuxBlockEvent {
-    InstallTmuxAndWarpify(TmuxInstallMethod),
+    InstallTmuxAndWishify(TmuxInstallMethod),
     ToggleScriptVisibility,
     Cancel,
     Interrupt,
@@ -113,7 +113,7 @@ pub struct SystemInstallState {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([
         FixedBinding::new(
@@ -220,7 +220,7 @@ impl SshInstallTmuxBlock {
         ctx: &mut ViewContext<Self>,
     ) {
         self.script_status = RequestedScriptStatus::Running;
-        ctx.emit(SshInstallTmuxBlockEvent::InstallTmuxAndWarpify(
+        ctx.emit(SshInstallTmuxBlockEvent::InstallTmuxAndWishify(
             install_method,
         ));
         ctx.notify()
@@ -377,9 +377,9 @@ impl View for SshInstallTmuxBlock {
         );
 
         let explanation = if self.outdated_version {
-            "In order to Warpify your SSH session, a more recent version of tmux (>=3.0) must be installed. "
+            "In order to Wishify your SSH session, a more recent version of tmux (>=3.0) must be installed. "
         } else {
-            "In order to Warpify your SSH session, tmux must be installed. "
+            "In order to Wishify your SSH session, tmux must be installed. "
         };
 
         let warpify_description = vec![
@@ -490,7 +490,7 @@ impl TypedActionView for SshInstallTmuxBlock {
                 ctx.emit(SshInstallTmuxBlockEvent::Interrupt);
             }
             (SshInstallTmuxBlockAction::AddSshHostToDenylist(ssh_host), true) => {
-                let settings = WarpifySettings::handle(ctx);
+                let settings = WishifySettings::handle(ctx);
                 settings.update(ctx, |warpify, ctx| {
                     warpify.denylist_ssh_host(ssh_host, ctx);
                 });
@@ -511,7 +511,7 @@ impl TypedActionView for SshInstallTmuxBlock {
 #[allow(unused_variables)]
 pub fn install_tmux_script(system: &SystemDetails, app: &AppContext) -> Option<String> {
     use asset_macro::bundled_asset;
-    use warpui::assets::asset_cache::{AssetCache, AssetState};
+    use wishui::assets::asset_cache::{AssetCache, AssetState};
 
     let asset_source = match (
         system.operating_system.as_str(),
@@ -549,7 +549,7 @@ pub fn install_root_tmux_script(
     can_run_sudo: bool,
 ) -> Option<String> {
     use asset_macro::bundled_asset;
-    use warpui::assets::asset_cache::{AssetCache, AssetState};
+    use wishui::assets::asset_cache::{AssetCache, AssetState};
 
     let asset_source = match (
         system.operating_system.as_str(),

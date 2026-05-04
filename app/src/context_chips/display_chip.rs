@@ -27,14 +27,14 @@ use crate::view_components::{FeaturePopup, NewFeaturePopupEvent, NewFeaturePopup
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use std::path::PathBuf;
-use warp_core::ui::theme::Fill;
-use warp_core::{features::FeatureFlag, ui::theme::color::internal_colors};
-use warpui::elements::Empty;
-use warpui::keymap::Keystroke;
-use warpui::platform::Cursor;
-use warpui::ui_components::components::UiComponentStyles;
-use warpui::ui_components::components::{Coords, UiComponent};
-use warpui::{
+use wish_core::ui::theme::Fill;
+use wish_core::{features::FeatureFlag, ui::theme::color::internal_colors};
+use wishui::elements::Empty;
+use wishui::keymap::Keystroke;
+use wishui::platform::Cursor;
+use wishui::ui_components::components::UiComponentStyles;
+use wishui::ui_components::components::{Coords, UiComponent};
+use wishui::{
     elements::{
         Border, ChildAnchor, ChildView, ConstrainedBox, Container, CornerRadius,
         CrossAxisAlignment, Flex, Hoverable, MouseStateHandle, OffsetPositioning, ParentAnchor,

@@ -5,10 +5,10 @@ use crate::test_util::settings::initialize_settings_for_tests;
 use crate::workspace::ToastStack;
 use ai::index::full_source_code_embedding::manager::CodebaseIndexManager;
 use std::path::PathBuf;
-use warp_core::ui::appearance::Appearance;
-use warpui::elements::{ChildView, Empty};
-use warpui::platform::WindowStyle;
-use warpui::{App, AppContext, Element, Entity, TypedActionView, View, ViewContext, ViewHandle};
+use wish_core::ui::appearance::Appearance;
+use wishui::elements::{ChildView, Empty};
+use wishui::platform::WindowStyle;
+use wishui::{App, AppContext, Element, Entity, TypedActionView, View, ViewContext, ViewHandle};
 
 fn init_modal_test_models(app: &mut App) {
     initialize_settings_for_tests(app);

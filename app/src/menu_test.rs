@@ -1,7 +1,7 @@
 use super::{Menu, MenuAction, MenuItem, MenuItemFields, SelectAction, SubMenu};
 
-use warp_core::ui::appearance::Appearance;
-use warpui::{platform::WindowStyle, App, TypedActionView};
+use wish_core::ui::appearance::Appearance;
+use wishui::{platform::WindowStyle, App, TypedActionView};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum TestAction {

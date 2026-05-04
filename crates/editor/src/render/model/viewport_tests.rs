@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use sum_tree::SumTree;
 
-use warpui::{
+use wishui::{
     SizeConstraint,
     geometry::vector::vec2f,
     units::{IntoPixels, Pixels},

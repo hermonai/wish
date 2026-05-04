@@ -7,7 +7,7 @@ fn test_ready_future_doesnt_call_callback() {
     let callback_called = AtomicBool::new(false);
 
     let future = async {}.on_cancel(|| callback_called.store(true, Ordering::SeqCst));
-    warpui::r#async::block_on(future);
+    wishui::r#async::block_on(future);
 
     assert!(!callback_called.load(Ordering::Relaxed));
 }
@@ -24,7 +24,7 @@ fn test_aborted_future_calls_callback() {
 
     // Abort the future before it is ever polled.
     handle.abort();
-    let future_result = warpui::r#async::block_on(future);
+    let future_result = wishui::r#async::block_on(future);
 
     // The future should be aborted and the callback should have been called.
     assert_eq!(future_result, Err(Aborted));

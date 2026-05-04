@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
-use warp_core::{features::FeatureFlag, settings::Setting};
 use warp_util::path::ShellFamily;
+use wish_core::{features::FeatureFlag, settings::Setting};
 
-use crate::terminal::warpify::settings::WarpifySettings;
+use crate::terminal::warpify::settings::WishifySettings;
 
 /// The different possible outcomes of detecting an interactive SSH session.
 /// Also the payload for the [`crate::server::telemetry::TelemetryEvent::SshInteractiveSessionDetected`] event.
@@ -13,7 +13,7 @@ pub enum SshInteractiveSessionDetected {
     #[serde(rename = "host_denylisted")]
     HostDenylisted,
     #[serde(rename = "warpify_prompt")]
-    ShouldPromptWarpification {
+    ShouldPromptWishification {
         #[serde(skip)]
         command: String,
         #[serde(skip)]
@@ -26,7 +26,7 @@ pub fn evaluate_warpify_ssh_host(
     command: &str,
     ssh_host: Option<&str>,
     shell_family: ShellFamily,
-    warpify_settings: &WarpifySettings,
+    warpify_settings: &WishifySettings,
 ) -> SshInteractiveSessionDetected {
     let should_prompt_ssh_tmux_wrapper = *warpify_settings.enable_ssh_warpification.value()
         && *warpify_settings.use_ssh_tmux_wrapper.value();
@@ -45,7 +45,7 @@ pub fn evaluate_warpify_ssh_host(
         }
     }
 
-    SshInteractiveSessionDetected::ShouldPromptWarpification {
+    SshInteractiveSessionDetected::ShouldPromptWishification {
         host: ssh_host.map(|host| host.to_owned()),
         command: command.to_string(),
     }

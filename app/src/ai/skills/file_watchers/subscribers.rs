@@ -5,7 +5,7 @@ use futures::Future;
 use ai::skills::{read_skills, ParsedSkill, SKILL_PROVIDER_DEFINITIONS};
 use async_channel::Sender;
 use repo_metadata::{repository::RepositorySubscriber, Repository, RepositoryUpdate};
-use warpui::ModelContext;
+use wishui::ModelContext;
 
 /// Messages sent from [`RepositorySubscriber`]s to [`SkillManager`].
 pub enum SkillRepositoryMessage {

@@ -5,13 +5,13 @@ use std::{collections::HashSet, future::Future, path::PathBuf};
 use virtual_fs::{Stub, VirtualFS};
 use warp_util::standardized_path::StandardizedPath;
 #[cfg(test)]
-use warpui::r#async::FutureId;
-use warpui::{AppContext, Entity, ModelContext, ModelHandle};
+use wishui::r#async::FutureId;
+use wishui::{AppContext, Entity, ModelContext, ModelHandle};
 
 use crate::DirectoryWatcher;
 use crate::Repository;
 use futures::future::{ready, Either};
-use warpui::SingletonEntity;
+use wishui::SingletonEntity;
 
 /// Indicates why a repository detection event was emitted.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

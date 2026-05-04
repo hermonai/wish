@@ -14,8 +14,8 @@ use rangemap::RangeSet;
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 use urlocator::{UrlLocation, UrlLocator};
 use vec1::Vec1;
-use warp_core::{features::FeatureFlag, ui::theme::Fill as ThemeFill};
-use warpui::{
+use wish_core::{features::FeatureFlag, ui::theme::Fill as ThemeFill};
+use wishui::{
     AppContext,
     assets::asset_cache::AssetSource,
     fonts::Weight,
@@ -39,7 +39,7 @@ use crate::{
     },
 };
 use string_offset::{ByteOffset, CharOffset};
-use warpui::text::char_slice;
+use wishui::text::char_slice;
 
 use super::{
     buffer::{StyledBufferBlock, StyledBufferRun, StyledTextBlock},

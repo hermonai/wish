@@ -1,9 +1,9 @@
 use std::ops::Range;
 use std::sync::{Arc, RwLock};
 
-use warp_core::ui::appearance::Appearance;
-use warpui::ui_components::components::UiComponentStyles;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::ui_components::components::UiComponentStyles;
+use wishui::{
     elements::{
         Container, CornerRadius, CrossAxisAlignment, Element, Flex, FormattedTextElement,
         MainAxisAlignment, ParentElement, Radius, SelectableArea, SelectionHandle, Shrinkable,
@@ -277,7 +277,7 @@ impl SearchCodebaseView {
     fn create_header_text_style(
         &self,
         appearance: &Appearance,
-        header_background: warp_core::ui::theme::Fill,
+        header_background: wish_core::ui::theme::Fill,
     ) -> UiComponentStyles {
         UiComponentStyles {
             font_family_id: Some(appearance.ui_font_family()),
@@ -295,7 +295,7 @@ impl SearchCodebaseView {
     fn create_header_container(
         &self,
         header_row: Box<dyn Element>,
-        header_background: warp_core::ui::theme::Fill,
+        header_background: wish_core::ui::theme::Fill,
         corner_radius: CornerRadius,
         app: &AppContext,
     ) -> Box<dyn Element> {
@@ -333,7 +333,7 @@ impl SearchCodebaseView {
         &self,
         _appearance: &Appearance,
         text: String,
-        icon: warpui::elements::Icon,
+        icon: wishui::elements::Icon,
         app: &AppContext,
     ) -> Box<dyn Element> {
         super::search_results_common::render_loading_header(text, icon, app)

@@ -8,14 +8,14 @@ use diesel::SqliteConnection;
 use parking_lot::Mutex;
 use pathfinder_geometry::vector::vec2f;
 use uuid::Uuid;
-use warp_core::{
-    send_telemetry_from_ctx,
-    ui::{appearance::Appearance, theme::color::internal_colors},
-};
 use warp_editor::{
     content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
 };
-use warpui::{
+use wish_core::{
+    send_telemetry_from_ctx,
+    ui::{appearance::Appearance, theme::color::internal_colors},
+};
+use wishui::{
     elements::{
         Border, ChildAnchor, ChildView, Container, CornerRadius, CrossAxisAlignment, Flex,
         MainAxisAlignment, MainAxisSize, MouseStateHandle, OffsetPositioning, ParentAnchor,
@@ -170,8 +170,8 @@ impl MCPServersEditPageView {
                 ctx,
             )
             .with_horizontal_scrollbar_appearance(
-                warpui::elements::new_scrollable::ScrollableAppearance::new(
-                    warpui::elements::ScrollbarWidth::Auto,
+                wishui::elements::new_scrollable::ScrollableAppearance::new(
+                    wishui::elements::ScrollbarWidth::Auto,
                     true,
                 ),
             );

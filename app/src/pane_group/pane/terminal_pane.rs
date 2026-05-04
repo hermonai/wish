@@ -8,7 +8,7 @@ use url::Url;
 use warp_cli::agent::Harness;
 use warp_multi_agent_api as multi_agent_api;
 
-use warpui::{
+use wishui::{
     AppContext, EntityId, ModelHandle, SingletonEntity, ViewContext, ViewHandle, WindowId,
 };
 
@@ -58,7 +58,7 @@ use crate::ai::blocklist::BlocklistAIHistoryEvent;
 #[cfg(not(target_family = "wasm"))]
 use crate::server::server_api::ServerApiProvider;
 
-use warp_core::execution_mode::AppExecutionMode;
+use wish_core::execution_mode::AppExecutionMode;
 
 #[cfg(not(target_family = "wasm"))]
 use super::local_harness_launch::{prepare_local_harness_child_launch, PreparedLocalHarnessLaunch};
@@ -783,8 +783,8 @@ fn handle_terminal_view_event(
             Event::OpenCLIAgentToolbarEditor => {
                 ctx.emit(pane_group::Event::OpenCLIAgentToolbarEditor);
             }
-            Event::OpenFileInWarp { path, session } => {
-                ctx.emit(pane_group::Event::OpenFileInWarp {
+            Event::OpenFileInWish { path, session } => {
+                ctx.emit(pane_group::Event::OpenFileInWish {
                     path: path.clone(),
                     session: session.clone(),
                 });
@@ -796,8 +796,8 @@ fn handle_terminal_view_event(
                 });
             }
             #[cfg(feature = "local_fs")]
-            Event::OpenCodeInWarp { source, layout } => {
-                ctx.emit(pane_group::Event::OpenCodeInWarp {
+            Event::OpenCodeInWish { source, layout } => {
+                ctx.emit(pane_group::Event::OpenCodeInWish {
                     source: source.clone(),
                     layout: *layout,
                     line_col: if let CodeSource::Link { range_start, .. } = source {

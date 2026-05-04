@@ -4,7 +4,7 @@ use crate::search::slash_command_menu::static_commands::commands;
 use crate::settings::AISettings;
 use crate::terminal::input::tests::{add_window_with_bootstrapped_terminal, initialize_app};
 use settings::Setting as _;
-use warpui::{App, SingletonEntity as _};
+use wishui::{App, SingletonEntity as _};
 
 #[test]
 fn test_parse_slash_command_handles_argument_rules() {

@@ -14,7 +14,7 @@ use crate::search::SyncDataSource;
 use crate::workspace::Workspace;
 use itertools::Itertools;
 use std::collections::HashMap;
-use warpui::{AppContext, Entity};
+use wishui::{AppContext, Entity};
 
 /// Sections for grouping conversations in the command palette.
 #[derive(Debug, PartialEq, Eq, Hash)]

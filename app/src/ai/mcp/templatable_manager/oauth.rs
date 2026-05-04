@@ -13,12 +13,12 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use url::Url;
 use uuid::Uuid;
-use warp_core::channel::ChannelState;
-use warpui::ModelSpawner;
 use warpui_extras::secure_storage::AppContextExt as _;
+use wish_core::channel::ChannelState;
+use wishui::ModelSpawner;
 
 use super::{MCPServerState, TemplatableMCPServerManager};
-use {crate::ai::mcp::FileBasedMCPManager, warpui::SingletonEntity};
+use {crate::ai::mcp::FileBasedMCPManager, wishui::SingletonEntity};
 
 pub(crate) const TEMPLATABLE_MCP_CREDENTIALS_KEY: &str = "TemplatableMcpCredentials";
 pub(crate) const FILE_BASED_MCP_CREDENTIALS_KEY: &str = "FileBasedMcpCredentials";
@@ -50,7 +50,7 @@ pub type PersistedCredentialsMap = HashMap<Uuid, PersistedCredentials>;
 pub type FileBasedPersistedCredentialsMap = HashMap<u64, PersistedCredentials>;
 
 /// A credential store that wraps [`InMemoryCredentialStore`] and persists token
-/// updates to Warp's secure storage via a channel.
+/// updates to Wish's secure storage via a channel.
 ///
 /// When rmcp auto-refreshes an expired access token at runtime, the rotated
 /// tokens are only saved to the in-memory store by default. This wrapper
@@ -126,7 +126,7 @@ impl CredentialStore for PersistingCredentialStore {
 }
 
 /// Installs a [`PersistingCredentialStore`] on the given auth manager so that
-/// runtime token auto-refreshes are written back to Warp's secure storage.
+/// runtime token auto-refreshes are written back to Wish's secure storage.
 ///
 /// A background tokio task is spawned to receive credential updates and persist
 /// them via the [`ModelSpawner`]. The task terminates when the auth manager (and
@@ -291,19 +291,19 @@ pub async fn make_authenticated_client(
             log::warn!(
                 "File-based MCP server {uuid} requires OAuth authentication; \
                  skipping in headless mode. To use this server, authenticate it \
-                 in the Warp desktop app first."
+                 in the Wish desktop app first."
             );
         }
         return Err(AuthError::AuthorizationFailed(
             "MCP server requires OAuth authentication. Please authenticate this server in the \
-             Warp desktop app first, then try again."
+             Wish desktop app first, then try again."
                 .to_string(),
         ));
     }
 
     // Start the authorization process with our custom redirect URI
     oauth_state
-        .start_authorization(&[], &redirect_uri, Some("Warp"))
+        .start_authorization(&[], &redirect_uri, Some("Wish"))
         .await?;
 
     let OAuthState::Session(AuthorizationSession {
@@ -321,7 +321,7 @@ pub async fn make_authenticated_client(
     // For apps for which we have static client IDs (e.g. GitHub), we manually override scopes.
     let mut scopes: &[&str] = &[];
 
-    let config = match auth_manager.register_client("Warp", &redirect_uri).await {
+    let config = match auth_manager.register_client("Wish", &redirect_uri).await {
         Ok(config) => config,
         Err(err @ AuthError::RegistrationFailed(_)) => {
             // If we failed dynamic registration, check to see if this is an auth
@@ -476,7 +476,7 @@ impl TemplatableMCPServerManager {
             bail!("No spawned server found for uuid={server_uuid}");
         };
 
-        warpui::r#async::block_on(server_info.oauth_result_tx.send(result)).map_err(|_| {
+        wishui::r#async::block_on(server_info.oauth_result_tx.send(result)).map_err(|_| {
             anyhow!("Failed to send OAuth result to server {server_uuid} - receiver dropped")
         })?;
 
@@ -486,7 +486,7 @@ impl TemplatableMCPServerManager {
 
     pub fn save_credentials_to_secure_storage(
         &mut self,
-        app: &mut warpui::AppContext,
+        app: &mut wishui::AppContext,
         installation_uuid: Uuid,
         credentials: PersistedCredentials,
     ) {
@@ -517,7 +517,7 @@ impl TemplatableMCPServerManager {
     pub fn delete_credentials_from_secure_storage(
         &mut self,
         installation_uuid: Uuid,
-        app: &mut warpui::AppContext,
+        app: &mut wishui::AppContext,
     ) {
         if let Some(template_uuid) = self.get_template_uuid(installation_uuid) {
             self.server_credentials.remove(&template_uuid);
@@ -534,7 +534,7 @@ impl TemplatableMCPServerManager {
 
 /// Loads credentials from secure storage at the provided key.
 pub(crate) fn load_credentials_from_secure_storage<T: DeserializeOwned + Default>(
-    app: &mut warpui::AppContext,
+    app: &mut wishui::AppContext,
     key: &str,
 ) -> T {
     app.secure_storage()
@@ -551,7 +551,7 @@ pub(crate) fn load_credentials_from_secure_storage<T: DeserializeOwned + Default
 
 /// Writes credentials to secure storage at the provided key.
 pub(crate) fn write_to_secure_storage<T: Serialize>(
-    app: &mut warpui::AppContext,
+    app: &mut wishui::AppContext,
     key: &str,
     credentials: &T,
 ) {

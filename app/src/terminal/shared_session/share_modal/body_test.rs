@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use parking_lot::FairMutex;
 
-use warpui::App;
+use wishui::App;
 
 use crate::terminal::shared_session::MAX_BYTES_SHAREABLE;
 use crate::terminal::TerminalModel;

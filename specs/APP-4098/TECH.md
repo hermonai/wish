@@ -8,9 +8,9 @@ This spec covers the technical fix landed on branch `kc/memory2`.
 
 ## Relevant code
 - `app/src/terminal/grid_renderer/cell_glyph_cache.rs:32` — `CellGlyphCache::glyph_for_char` calls `FontCache::glyph_for_char(font_id, ch, /* include_fallback_fonts */ true)` once per (char, font) for every terminal cell.
-- `crates/warpui_core/src/fonts.rs:457-500` — `Cache::glyph_for_char` caches the final `Option<(GlyphId, FontId)>` per `(FontId, char)` in `glyphs_by_char`. On a miss it first tries app-specified fallbacks, then `system_font_fallback`, which calls `platform.fallback_fonts(ch, font)`.
-- `crates/warpui/src/windowing/winit/fonts.rs` — `TextLayoutSystem` (cosmic_text + fontdb wrapper). Contains `loaded_fonts: DashMap<FontKey, FontId>` used by `insert_font` for path-based dedup, where `FontKey` is `(PathBuf, u32)`.
-- `crates/warpui/src/windowing/winit/fonts/windows.rs:125-265` — `TextLayoutSystem::get_fallback_fonts_for_character` plus the new `fallback_font_path_handle` helper.
+- `crates/wishui-core/src/fonts.rs:457-500` — `Cache::glyph_for_char` caches the final `Option<(GlyphId, FontId)>` per `(FontId, char)` in `glyphs_by_char`. On a miss it first tries app-specified fallbacks, then `system_font_fallback`, which calls `platform.fallback_fonts(ch, font)`.
+- `crates/wishui/src/windowing/winit/fonts.rs` — `TextLayoutSystem` (cosmic_text + fontdb wrapper). Contains `loaded_fonts: DashMap<FontKey, FontId>` used by `insert_font` for path-based dedup, where `FontKey` is `(PathBuf, u32)`.
+- `crates/wishui/src/windowing/winit/fonts/windows.rs:125-265` — `TextLayoutSystem::get_fallback_fonts_for_character` plus the new `fallback_font_path_handle` helper.
 - External: `font-kit/src/loader.rs:172-176` — default `Loader::handle()` impl that reads the full font file into an `Arc<Vec<u8>>` and returns `Handle::Memory(bytes, 0)`. Used by the DirectWrite `Font` in the absence of a platform-specific override. This is what we step around.
 - External: `font-kit/src/sources/directwrite.rs:103-110` — `DirectWriteSource::create_handle_from_dwrite_font` already builds a `Handle::Path` for enumerated system fonts. Our helper mirrors this pattern.
 - External: `dwrote/src/font_face.rs` — `FontFace::files()`, `FontFace::get_index()`. `dwrote/src/font_file.rs` — `FontFile::font_file_path()`. These are the DirectWrite accessors we use to rebuild a Path handle.
@@ -23,7 +23,7 @@ On Windows, fallback resolution is lazy and per-character:
 5. `load_font_from_handle` pattern-matches on `Handle::Memory` and copies the bytes (`bytes.to_vec()`) into an `OwnedFace`.
 6. `insert_font` wraps that into `fontdb::Source::Binary(Arc::new(face.into_vec()))` and calls `fontdb.load_font_source(source)`. The dedup cache `loaded_fonts: DashMap<FontKey, FontId>` is keyed by `PathBuf`, so `Source::Binary` entries bypass it entirely.
 Because `Cache::glyphs_by_char` caches by `(FontId, char)`, each unique CJK codepoint triggers the full pipeline **exactly once**. With N unique codepoints, fontdb ends up with N duplicate copies of the same fallback face retained for the life of the `FontSystem`.
-When the user's primary font already contains the CJK glyphs, `Cache::glyph_for_char` returns at `crates/warpui_core/src/fonts.rs:471` without ever entering the fallback path, so the bug is invisible — matching the user-reported symptom.
+When the user's primary font already contains the CJK glyphs, `Cache::glyph_for_char` returns at `crates/wishui-core/src/fonts.rs:471` without ever entering the fallback path, so the bug is invisible — matching the user-reported symptom.
 ## Design
 The fix addresses the root cause: `Font::handle()` returning `Handle::Memory` instead of `Handle::Path`. Rather than caching around the byte-copy pipeline, we skip it entirely by reaching through font-kit's `NativeFont` to the underlying `IDWriteFontFace` and rebuilding a path-based handle ourselves — the same trick `DirectWriteSource::create_handle_from_dwrite_font` uses for enumerated system fonts.
 ### New helper in `windows.rs`
@@ -60,7 +60,7 @@ dwrote = { git = "https://github.com/warpdotdev/dwrote-rs", rev = "a71ce6c0136f7
 ```mermaid
 sequenceDiagram
     participant Grid as CellGlyphCache
-    participant Cache as warpui_core::fonts::Cache
+    participant Cache as wishui_core::fonts::Cache
     participant FontDB as winit::fonts::FontDB
     participant TLS as TextLayoutSystem
     participant FK as font_kit (DirectWrite)
@@ -94,7 +94,7 @@ sequenceDiagram
 Every call after the first for the same fallback face hits `loaded_fonts` and returns the existing `FontId` immediately. fontdb never holds more than one entry per `(path, index)` pair.
 ## Risks and mitigations
 - **`font_file_path()` returns `Err`.** Happens only for fonts not backed by a local file (custom collection loaders, in-memory streams). DirectWrite system fallbacks always have a path, so this case is not exercised for real CJK fallbacks. We gracefully fall back to the legacy Memory-handle path, so behavior for edge cases is strictly no worse than before.
-- **Extra COM calls per character.** Each unique-codepoint first lookup now makes two additional COM calls (`GetFiles` and the local-loader cast in `font_file_path()`). Both are cheap and only happen once per unique codepoint thanks to the existing `glyphs_by_char` cache in `warpui_core::fonts::Cache`.
+- **Extra COM calls per character.** Each unique-codepoint first lookup now makes two additional COM calls (`GetFiles` and the local-loader cast in `font_file_path()`). Both are cheap and only happen once per unique codepoint thanks to the existing `glyphs_by_char` cache in `wishui_core::fonts::Cache`.
 - **Pinned dwrote version.** We now carry `dwrote` as a direct dep pinned to a specific git rev. If font-kit's transitive pin drifts, we could end up with two compiled versions. Mitigation: the fork pins are both under `warpdotdev/`, and CI's `cargo tree -p dwrote` output will show a dup immediately. Bump both at once.
 - **font-kit fork drift.** None. We do not modify `warpdotdev/font-kit`. If/when we later override `Loader::handle()` in the fork, the in-tree helper simply becomes redundant and can be removed without behavior change.
 - **Concurrency.** Unchanged. All dedup flows through `loaded_fonts`, which is a `DashMap` — same as today.
@@ -103,7 +103,7 @@ Every call after the first for the same fallback face hits `loaded_fonts` and re
   1. On Windows, select a primary font with no CJK glyphs (e.g. Cascadia Code NF).
   2. `cat` or `Get-Content` a large text file containing many unique Chinese characters.
   3. Observe Warp's working-set memory in Task Manager. Before: grows with unique-codepoint count and does not return after the block scrolls off. After: plateaus after the first fallback family loads, then stays flat.
-- **Static checks** (already run on the implementation): `cargo check -p warpui --target x86_64-pc-windows-msvc`, `cargo clippy -p warpui --target x86_64-pc-windows-msvc --no-deps`, `cargo fmt -p warpui -- --check`.
+- **Static checks** (already run on the implementation): `cargo check -p wishui --target x86_64-pc-windows-msvc`, `cargo clippy -p wishui --target x86_64-pc-windows-msvc --no-deps`, `cargo fmt -p wishui -- --check`.
 - **Automated regression** (not landed): a reliable unit/integration test would need to exercise the real DirectWrite system-font set, which is environment-dependent (CI images may not even ship CJK fonts). Deferred in favor of the manual repro; see Follow-ups.
 ## Follow-ups
 - Patch `warpdotdev/font-kit` to override `Loader::handle()` on the DirectWrite loader so it returns `Handle::Path { path, font_index }` when `dwrite_font_face.files()[0].font_file_path()` succeeds (mirroring `DirectWriteSource::create_handle_from_dwrite_font` in `src/sources/directwrite.rs`). Also fix the hard-coded `font_index = 0` in the default `handle()` impl. Once that lands, `fallback_font_path_handle` in our code can be deleted and we can simply call `font.handle()` everywhere.

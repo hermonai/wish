@@ -7,30 +7,30 @@ use anyhow::{anyhow, Result};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use url::Url;
-use warp_core::errors::ErrorExt;
-use warp_core::features::FeatureFlag;
-use warpui::elements::ChildAnchor;
-use warpui::elements::Container;
-use warpui::elements::Fill;
-use warpui::elements::HighlightedHyperlink;
-use warpui::elements::MouseStateHandle;
-use warpui::elements::OffsetPositioning;
-use warpui::elements::ParentAnchor;
-use warpui::elements::ParentElement;
-use warpui::elements::ParentOffsetBounds;
-use warpui::elements::Stack;
-use warpui::keymap::FixedBinding;
-use warpui::AppContext;
-use warpui::FocusContext;
-use warpui::SingletonEntity;
-use warpui::TypedActionView;
+use wish_core::errors::ErrorExt;
+use wish_core::features::FeatureFlag;
+use wishui::elements::ChildAnchor;
+use wishui::elements::Container;
+use wishui::elements::Fill;
+use wishui::elements::HighlightedHyperlink;
+use wishui::elements::MouseStateHandle;
+use wishui::elements::OffsetPositioning;
+use wishui::elements::ParentAnchor;
+use wishui::elements::ParentElement;
+use wishui::elements::ParentOffsetBounds;
+use wishui::elements::Stack;
+use wishui::keymap::FixedBinding;
+use wishui::AppContext;
+use wishui::FocusContext;
+use wishui::SingletonEntity;
+use wishui::TypedActionView;
 
 use crate::auth::auth_view_body::AuthViewBody;
 use crate::modal::Modal;
 use std::collections::HashMap;
-use warpui::elements::ChildView;
-use warpui::ui_components::components::{Coords, UiComponentStyles};
-use warpui::{Element, Entity, View, ViewContext, ViewHandle};
+use wishui::elements::ChildView;
+use wishui::ui_components::components::{Coords, UiComponentStyles};
+use wishui::{Element, Entity, View, ViewContext, ViewHandle};
 
 use super::auth_manager::AuthManager;
 use super::auth_manager::AuthManagerEvent;
@@ -39,10 +39,10 @@ use super::auth_view_body::AuthViewBodyEvent;
 use super::credentials::RefreshToken;
 use super::login_failure_notification::{self, LoginFailureReason};
 use super::UserUid;
-use warpui::actions::StandardAction;
+use wishui::actions::StandardAction;
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([
         // Bindings for paste require the StandardAction and CustomAction binding to work on all platforms.

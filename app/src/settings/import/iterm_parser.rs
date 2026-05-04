@@ -6,8 +6,8 @@ use itertools::Itertools;
 use palette::Srgba;
 use pathfinder_color::ColorU;
 use plist::{Dictionary, Value};
-use warp_core::ui::theme::{AnsiColors, TerminalColors, WarpTheme};
-use warpui::{
+use wish_core::ui::theme::{AnsiColors, TerminalColors, WarpTheme};
+use wishui::{
     fonts::FontInfo, keymap::Keystroke, platform::mac::utils::unicode_char_to_key, DisplayIdx,
 };
 
@@ -310,7 +310,7 @@ pub struct ITermGlobalHotkeyWindow {
     keystroke: ITermKeystroke,
     autohide: bool,
     /// Which screen the hotkey window should open on. -1 = any screen,
-    /// -2 = screen with cursor (not supported in Warp), and >= 0 is the index of the screen.
+    /// -2 = screen with cursor (not supported in Wish), and >= 0 is the index of the screen.
     screen: i64,
     /// How the quake window displays. 2 is pin to top, 5 is bottom, 6 is left, and 7 is right.
     screen_type: i64,
@@ -714,7 +714,7 @@ impl ParseableConfig for ITermProfile {
         };
 
         let mouse_and_scroll_reporting = match (self.mouse_reporting, self.scroll_reporting) {
-            // Since this is the Warp default, return None.
+            // Since this is the Wish default, return None.
             (true, true) => None,
             (mouse_reporting, scroll_reporting) => Some(MouseAndScrollReporting {
                 mouse_reporting,
@@ -833,7 +833,7 @@ impl ParseableConfig for ITermProfile {
             self.working_directory = None;
         }
 
-        // Warp's default is not to open windows with a custom size,
+        // Wish's default is not to open windows with a custom size,
         // so there is nothing to check against.
         if self.rows == default_profile.rows {
             self.rows = None;
@@ -841,7 +841,7 @@ impl ParseableConfig for ITermProfile {
         if self.columns == default_profile.columns {
             self.columns = None;
         }
-        // iTerm's presets are the same as Warp's
+        // iTerm's presets are the same as Wish's
         if self.transparency == default_profile.transparency {
             self.transparency = None;
         }

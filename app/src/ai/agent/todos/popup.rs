@@ -1,15 +1,15 @@
 use crate::ai::blocklist::{BlocklistAIContextEvent, BlocklistAIContextModel};
 use pathfinder_color::ColorU;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::Fill;
-use warpui::elements::{
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::Fill;
+use wishui::elements::{
     ClippedScrollStateHandle, ClippedScrollable, Dismiss, Empty, Expanded, ParentElement,
     SavePosition, ScrollTarget, ScrollToPositionMode, ScrollbarWidth, Shrinkable,
 };
-use warpui::fonts::FamilyId;
-use warpui::ModelHandle;
-use warpui::SingletonEntity;
-use warpui::{
+use wishui::fonts::FamilyId;
+use wishui::ModelHandle;
+use wishui::SingletonEntity;
+use wishui::{
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, DropShadow, Flex,
         MainAxisSize, Radius, Text,
@@ -50,7 +50,7 @@ struct Styles {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([FixedBinding::new(
         "escape",
@@ -124,9 +124,9 @@ impl AgentTodosPopupView {
 
     fn render_header(
         &self,
-        app: &warpui::AppContext,
+        app: &wishui::AppContext,
         todo_list: &AIAgentTodoList,
-    ) -> Box<dyn warpui::Element> {
+    ) -> Box<dyn wishui::Element> {
         let appearance = Appearance::as_ref(app);
         let styles = self.styles(appearance);
         let theme = appearance.theme();
@@ -159,7 +159,7 @@ impl View for AgentTodosPopupView {
         "AgentTodosPopup"
     }
 
-    fn render(&self, app: &warpui::AppContext) -> Box<dyn warpui::Element> {
+    fn render(&self, app: &wishui::AppContext) -> Box<dyn wishui::Element> {
         let Some(todo_list) = self
             .ai_context_model
             .as_ref(app)
@@ -271,7 +271,7 @@ impl View for AgentTodosPopupView {
             ScrollbarWidth::Auto,
             theme.nonactive_ui_detail().into(),
             theme.active_ui_detail().into(),
-            warpui::elements::Fill::None,
+            wishui::elements::Fill::None,
         )
         .with_overlayed_scrollbar()
         .finish();

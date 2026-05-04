@@ -20,22 +20,22 @@ use repo_metadata::repositories::DetectedRepositories;
 use std::path::PathBuf;
 use std::sync::Arc;
 use string_offset::CharOffset;
-use warp_core::ui::appearance::Appearance;
 use warp_editor::content::buffer::InitialBufferState;
 use warp_editor::render::element::VerticalExpansionBehavior;
-use warpui::elements::Empty;
-use warpui::platform::WindowStyle;
-use warpui::{App, Element as _, ModelHandle, ViewHandle};
+use wish_core::ui::appearance::Appearance;
+use wishui::elements::Empty;
+use wishui::platform::WindowStyle;
+use wishui::{App, Element as _, ModelHandle, ViewHandle};
 
 #[derive(Default)]
 struct TestView;
 
-impl warpui::Entity for TestView {
+impl wishui::Entity for TestView {
     type Event = ();
 }
 
-impl warpui::View for TestView {
-    fn render(&self, _: &warpui::AppContext) -> Box<dyn warpui::Element> {
+impl wishui::View for TestView {
+    fn render(&self, _: &wishui::AppContext) -> Box<dyn wishui::Element> {
         Empty::new().finish()
     }
 
@@ -44,7 +44,7 @@ impl warpui::View for TestView {
     }
 }
 
-impl warpui::TypedActionView for TestView {
+impl wishui::TypedActionView for TestView {
     type Action = ();
 }
 

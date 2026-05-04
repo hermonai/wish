@@ -13,7 +13,7 @@ use crate::{
     themes::theme::color::internal_colors,
 };
 use settings::Setting;
-use warpui::{
+use wishui::{
     elements::{
         Border, ChildView, Container, CornerRadius, DropTarget, Element, Flex, Hoverable,
         ParentElement, Radius, SavePosition, Stack,

@@ -5,12 +5,12 @@ use crate::search::FilterChipRenderer as CommonFilterChipRenderer;
 use crate::search::QueryFilter;
 use crate::util::color::{ContrastingColor, MinimumAllowedContrast};
 use pathfinder_color::ColorU;
-use warpui::elements::{
+use wishui::elements::{
     ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Flex, Hoverable, Icon,
     MouseStateHandle, ParentElement, Radius, Text,
 };
-use warpui::platform::Cursor;
-use warpui::{Element, EventContext};
+use wishui::platform::Cursor;
+use wishui::{Element, EventContext};
 
 /// Trait to render filter chips for the command palette.
 pub trait FilterChipRenderer: crate::search::FilterChipRenderer {
@@ -147,7 +147,7 @@ impl FilterChipRenderer for QueryFilter {
 
 mod styles {
     use crate::themes::theme::{Blend, Fill, WarpTheme};
-    use warpui::elements::{Border, MouseState};
+    use wishui::elements::{Border, MouseState};
 
     /// Size of the border when the query filter is hovered.
     const HOVERED_BORDER_SIZE: f32 = 2.;

@@ -1,1 +1,1 @@
-pub use warp_core::ui::theme::color::internal_colors::*;
+pub use wish_core::ui::theme::color::internal_colors::*;

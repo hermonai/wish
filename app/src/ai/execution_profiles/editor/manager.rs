@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use warpui::{Entity, EntityId, ModelContext, SingletonEntity, WindowId};
+use wishui::{Entity, EntityId, ModelContext, SingletonEntity, WindowId};
 
 use crate::{
     ai::execution_profiles::profiles::ClientProfileId,

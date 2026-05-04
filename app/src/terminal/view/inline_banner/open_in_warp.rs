@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use warpui::{elements::MouseStateHandle, fonts::Weight, Element, EntityId};
+use wishui::{elements::MouseStateHandle, fonts::Weight, Element, EntityId};
 
 use crate::{
     appearance::Appearance,
@@ -18,13 +18,13 @@ use super::{
 };
 
 #[derive(Clone, Copy, Debug)]
-pub enum OpenInWarpBannerAction {
+pub enum OpenInWishBannerAction {
     OpenFile,
     LearnMore,
     Close,
 }
 
-pub struct OpenInWarpBannerState {
+pub struct OpenInWishBannerState {
     pub id: InlineBannerId,
     pub target: OpenablePath,
     pub session: Arc<Session>,
@@ -33,7 +33,7 @@ pub struct OpenInWarpBannerState {
     close_button_mouse_state: MouseStateHandle,
 }
 
-impl OpenInWarpBannerState {
+impl OpenInWishBannerState {
     pub fn new(id: InlineBannerId, openable_path: OpenablePath, session: Arc<Session>) -> Self {
         Self {
             id,
@@ -46,11 +46,11 @@ impl OpenInWarpBannerState {
     }
 }
 
-/// Given an openable file, format a file-specific title for the Open in Warp banner.
+/// Given an openable file, format a file-specific title for the Open in Wish banner.
 fn file_title_text(openable_path: &OpenablePath) -> String {
     match openable_path.file_type {
         OpenableFileType::Markdown => {
-            "Did you know that Warp can directly display Markdown files?".to_string()
+            "Did you know that Wish can directly display Markdown files?".to_string()
         }
         OpenableFileType::Code | OpenableFileType::Text => {
             cfg_if::cfg_if! {
@@ -61,13 +61,13 @@ fn file_title_text(openable_path: &OpenablePath) -> String {
 
                     match language.as_ref().map(|language| language.display_name()) {
                         Some(display_name) => {
-                            format!("Did you know that Warp can directly edit {display_name} files?")
+                            format!("Did you know that Wish can directly edit {display_name} files?")
                         }
-                        None => "Did you know that Warp can directly edit code?".to_string(),
+                        None => "Did you know that Wish can directly edit code?".to_string(),
                     }
                 } else {
                     // The `languages` crate is not available on WASM, so use a fallback message.
-                    "Did you know that Warp can directly edit code?".to_string()
+                    "Did you know that Wish can directly edit code?".to_string()
                 }
             }
         }
@@ -75,20 +75,20 @@ fn file_title_text(openable_path: &OpenablePath) -> String {
 }
 
 pub fn render_open_in_warp_banner(
-    state: &OpenInWarpBannerState,
+    state: &OpenInWishBannerState,
     view_id: EntityId,
     appearance: &Appearance,
 ) -> Box<dyn Element> {
     let button_text = match state.target.file_type {
-        OpenableFileType::Markdown => "View in Warp",
-        OpenableFileType::Code | OpenableFileType::Text => "Edit in Warp",
+        OpenableFileType::Markdown => "View in Wish",
+        OpenableFileType::Code | OpenableFileType::Text => "Edit in Wish",
     };
 
     let open_button = InlineBannerTextButton {
         text: button_text.to_string(),
         text_color: appearance.theme().active_ui_text_color().into_solid(),
         button_state: InlineBannerButtonState {
-            on_click_event: TerminalAction::OpenInWarpBanner(OpenInWarpBannerAction::OpenFile),
+            on_click_event: TerminalAction::OpenInWishBanner(OpenInWishBannerAction::OpenFile),
             mouse_state_handle: state.open_button_mouse_state.clone(),
         },
         font: InlineBannerTextButtonFont {
@@ -103,7 +103,7 @@ pub fn render_open_in_warp_banner(
         text: "Learn more".to_string(),
         text_color: appearance.theme().active_ui_text_color().into_solid(),
         button_state: InlineBannerButtonState {
-            on_click_event: TerminalAction::OpenInWarpBanner(OpenInWarpBannerAction::LearnMore),
+            on_click_event: TerminalAction::OpenInWishBanner(OpenInWishBannerAction::LearnMore),
             mouse_state_handle: state.learn_more_button_mouse_state.clone(),
         },
         font: Default::default(),
@@ -112,7 +112,7 @@ pub fn render_open_in_warp_banner(
     };
 
     let close_button = InlineBannerCloseButton(InlineBannerButtonState {
-        on_click_event: TerminalAction::OpenInWarpBanner(OpenInWarpBannerAction::Close),
+        on_click_event: TerminalAction::OpenInWishBanner(OpenInWishBannerAction::Close),
         mouse_state_handle: state.close_button_mouse_state.clone(),
     });
 

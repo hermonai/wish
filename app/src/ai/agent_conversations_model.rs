@@ -30,14 +30,14 @@ use session_sharing_protocol::common::SessionId;
 use std::collections::{HashMap, HashSet};
 use std::time::Duration;
 use warp_cli::agent::Harness;
-use warp_core::execution_mode::AppExecutionMode;
-use warp_core::features::FeatureFlag;
-use warp_core::report_error;
-use warp_core::ui::theme::{color::internal_colors, WarpTheme};
-use warpui::color::ColorU;
-use warpui::r#async::Timer;
-use warpui::windowing::{StateEvent, WindowManager};
-use warpui::{
+use wish_core::execution_mode::AppExecutionMode;
+use wish_core::features::FeatureFlag;
+use wish_core::report_error;
+use wish_core::ui::theme::{color::internal_colors, WarpTheme};
+use wishui::color::ColorU;
+use wishui::r#async::Timer;
+use wishui::windowing::{StateEvent, WindowManager};
+use wishui::{
     duration_with_jitter, AppContext, Entity, EntityId, ModelContext, RequestState,
     SingletonEntity, WindowId,
 };

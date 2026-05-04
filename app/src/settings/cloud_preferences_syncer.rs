@@ -7,11 +7,11 @@ use std::{
 use lazy_static::lazy_static;
 use settings::{Setting as _, SyncToCloud};
 use std::time::Duration;
-use warp_core::settings::ChangeEventReason;
-use warp_core::user_preferences::GetUserPreferences;
-use warpui::r#async::Timer;
-use warpui::{Entity, ModelContext, SingletonEntity};
 use warpui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
+use wish_core::settings::ChangeEventReason;
+use wish_core::user_preferences::GetUserPreferences;
+use wishui::r#async::Timer;
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use crate::{
     auth::auth_state::AuthState,
@@ -39,7 +39,7 @@ use crate::{
     workspaces::user_workspaces::UserWorkspaces,
 };
 
-use warp_core::execution_mode::AppExecutionMode;
+use wish_core::execution_mode::AppExecutionMode;
 
 use super::{
     cloud_preferences::{CloudPreferencesSettings, CloudPreferencesSettingsChangedEvent},
@@ -112,7 +112,7 @@ pub fn initialize_cloud_preferences_syncer(
     CloudPreferencesSyncer::new(force_local_wins_on_startup, toml_file_path, ctx)
 }
 
-/// Handles syncing CloudPreferences (the Warp Drive objects) and local Settings models that
+/// Handles syncing CloudPreferences (the Wish Drive objects) and local Settings models that
 /// have been created using the define_settings_group macro.
 pub struct CloudPreferencesSyncer {
     // A channel used for debouncing local settings updates so that we don't spam the

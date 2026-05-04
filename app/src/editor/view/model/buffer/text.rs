@@ -8,8 +8,8 @@ use std::{
 };
 use string_offset::{ByteOffset, CharOffset};
 use sum_tree::{self, SeekBias, SumTree};
-use warpui::text::point::Point;
-use warpui::text_layout::TextStyle;
+use wishui::text::point::Point;
+use wishui::text_layout::TextStyle;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 enum Run {

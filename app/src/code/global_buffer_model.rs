@@ -9,14 +9,14 @@ use futures_util::stream::AbortHandle;
 use lsp::types::TextDocumentContentChangeEvent;
 use lsp::{LspManagerModel, LspServerLogLevel, LspServerModel};
 use vec1::vec1;
-use warp_core::features::FeatureFlag;
 use warp_editor::content::buffer::Buffer;
 use warp_editor::content::diff::{text_diff, TextDiff};
 use warp_editor::content::edit::PreciseDelta;
 use warp_editor::content::version::BufferVersion;
 use warp_util::content_version::ContentVersion;
 use warp_util::file::{FileId, FileLoadError, FileSaveError};
-use warpui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle};
+use wish_core::features::FeatureFlag;
+use wishui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle};
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "local_fs")] {

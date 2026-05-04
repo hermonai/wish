@@ -196,7 +196,7 @@ fn finish_restore_fetch_uses_server_cursor_when_sqlite_is_absent() {
     use crate::server::server_api::ai::MockAIClient;
     use crate::server::server_api::ServerApiProvider;
     use std::sync::Arc;
-    use warpui::App;
+    use wishui::App;
 
     App::test((), |mut app| async move {
         let _v2_guard = FeatureFlag::OrchestrationV2.override_enabled(true);
@@ -208,7 +208,7 @@ fn finish_restore_fetch_uses_server_cursor_when_sqlite_is_absent() {
         // the in-memory cursor to be 42 (max(0, 42)).
         let conversation = AIConversation::new(false);
         let conversation_id = conversation.id();
-        let terminal_view_id = warpui::EntityId::new();
+        let terminal_view_id = wishui::EntityId::new();
         history_model.update(&mut app, |model, ctx| {
             model.restore_conversations(terminal_view_id, vec![conversation], ctx);
         });
@@ -258,7 +258,7 @@ fn handle_event_batch_persists_max_seq_to_history_model() {
     use crate::test_util::settings::initialize_settings_for_tests;
     use crate::{GlobalResourceHandles, GlobalResourceHandlesProvider};
     use std::sync::Arc;
-    use warpui::App;
+    use wishui::App;
 
     App::test((), |mut app| async move {
         let _v2_guard = FeatureFlag::OrchestrationV2.override_enabled(true);
@@ -277,7 +277,7 @@ fn handle_event_batch_persists_max_seq_to_history_model() {
         let mut conversation = AIConversation::new(false);
         conversation.set_run_id("550e8400-e29b-41d4-a716-446655440200".to_string());
         let conversation_id: AIConversationId = conversation.id();
-        let terminal_view_id = warpui::EntityId::new();
+        let terminal_view_id = wishui::EntityId::new();
         history_model.update(&mut app, |model, ctx| {
             model.restore_conversations(terminal_view_id, vec![conversation], ctx);
         });
@@ -355,7 +355,7 @@ fn finish_restore_fetch_no_ops_when_conversation_deleted_mid_flight() {
     use crate::server::server_api::ai::MockAIClient;
     use crate::server::server_api::ServerApiProvider;
     use std::sync::Arc;
-    use warpui::App;
+    use wishui::App;
 
     App::test((), |mut app| async move {
         let _v2_guard = FeatureFlag::OrchestrationV2.override_enabled(true);
@@ -365,7 +365,7 @@ fn finish_restore_fetch_no_ops_when_conversation_deleted_mid_flight() {
         let mut conversation = AIConversation::new(false);
         conversation.set_run_id("550e8400-e29b-41d4-a716-446655440300".to_string());
         let conversation_id = conversation.id();
-        let terminal_view_id = warpui::EntityId::new();
+        let terminal_view_id = wishui::EntityId::new();
         history_model.update(&mut app, |model, ctx| {
             model.restore_conversations(terminal_view_id, vec![conversation], ctx);
         });
@@ -424,7 +424,7 @@ fn finish_restore_fetch_err_does_not_resurrect_deleted_conversation() {
     use crate::server::server_api::ai::MockAIClient;
     use crate::server::server_api::ServerApiProvider;
     use std::sync::Arc;
-    use warpui::App;
+    use wishui::App;
 
     App::test((), |mut app| async move {
         let _v2_guard = FeatureFlag::OrchestrationV2.override_enabled(true);
@@ -434,7 +434,7 @@ fn finish_restore_fetch_err_does_not_resurrect_deleted_conversation() {
         let mut conversation = AIConversation::new(false);
         conversation.set_run_id("550e8400-e29b-41d4-a716-446655440500".to_string());
         let conversation_id = conversation.id();
-        let terminal_view_id = warpui::EntityId::new();
+        let terminal_view_id = wishui::EntityId::new();
         history_model.update(&mut app, |model, ctx| {
             model.restore_conversations(terminal_view_id, vec![conversation], ctx);
         });
@@ -489,7 +489,7 @@ fn on_conversation_removed_prunes_stale_child_run_id_from_parent() {
     use crate::server::server_api::ai::MockAIClient;
     use crate::server::server_api::ServerApiProvider;
     use std::sync::Arc;
-    use warpui::App;
+    use wishui::App;
 
     App::test((), |mut app| async move {
         let _v2_guard = FeatureFlag::OrchestrationV2.override_enabled(true);
@@ -501,7 +501,7 @@ fn on_conversation_removed_prunes_stale_child_run_id_from_parent() {
         let child_run_id = "550e8400-e29b-41d4-a716-446655440600".to_string();
         child_conversation.set_run_id(child_run_id.clone());
         let child_id = child_conversation.id();
-        let terminal_view_id = warpui::EntityId::new();
+        let terminal_view_id = wishui::EntityId::new();
         history_model.update(&mut app, |model, ctx| {
             model.restore_conversations(terminal_view_id, vec![child_conversation], ctx);
         });
@@ -551,7 +551,7 @@ fn finish_restore_fetch_reconnects_sse_when_children_added_to_open_connection() 
     use crate::server::server_api::ai::MockAIClient;
     use crate::server::server_api::ServerApiProvider;
     use std::sync::Arc;
-    use warpui::App;
+    use wishui::App;
 
     App::test((), |mut app| async move {
         let _v2_guard = FeatureFlag::OrchestrationV2.override_enabled(true);
@@ -562,7 +562,7 @@ fn finish_restore_fetch_reconnects_sse_when_children_added_to_open_connection() 
         let mut conversation = AIConversation::new(false);
         conversation.set_run_id(own_run_id.to_string());
         let conversation_id = conversation.id();
-        let terminal_view_id = warpui::EntityId::new();
+        let terminal_view_id = wishui::EntityId::new();
         history_model.update(&mut app, |model, ctx| {
             model.restore_conversations(terminal_view_id, vec![conversation], ctx);
             model.update_conversation_status(
@@ -589,7 +589,7 @@ fn finish_restore_fetch_reconnects_sse_when_children_added_to_open_connection() 
         // bail and reconnect_sse would tear the connection down instead
         // of opening a new one.
         let (_, rx) = futures::channel::mpsc::unbounded::<SseStreamItem>();
-        let consumer_id = warpui::EntityId::new();
+        let consumer_id = wishui::EntityId::new();
         poller.update(&mut app, |me, _| {
             let stream = me.streams.entry(conversation_id).or_default();
             stream.event_cursor = 0;

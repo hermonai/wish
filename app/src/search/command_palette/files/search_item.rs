@@ -9,9 +9,9 @@ use crate::search::command_palette::mixer::CommandPaletteItemAction;
 use crate::search::command_palette::styles;
 use crate::search::item::{IconLocation, SearchItem};
 use crate::search::result_renderer::ItemHighlightState;
-use warpui::elements::{Align, ConstrainedBox, Container, Flex, Icon, ParentElement, Text};
-use warpui::fonts::{Properties, Weight};
-use warpui::{AppContext, Element, SingletonEntity};
+use wishui::elements::{Align, ConstrainedBox, Container, Flex, Icon, ParentElement, Text};
+use wishui::fonts::{Properties, Weight};
+use wishui::{AppContext, Element, SingletonEntity};
 
 use crate::search::files::icon::icon_from_file_path;
 use crate::ui_components::render_file_search_row::{render_file_search_row, FileSearchRowOptions};

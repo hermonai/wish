@@ -16,8 +16,8 @@ use crate::{
     BlocklistAIHistoryModel,
 };
 use warp_multi_agent_api as api;
-use warpui::{integration::AssertionCallback, integration_assert, EntityId};
-use warpui::{integration::AssertionOutcome, SingletonEntity};
+use wishui::{integration::AssertionCallback, integration_assert, EntityId};
+use wishui::{integration::AssertionOutcome, SingletonEntity};
 
 type TextAssertion = Box<dyn Fn(&str) -> bool + 'static>;
 type ActionAssertion = Box<dyn Fn(&AIAgentActionType) -> bool + 'static>;

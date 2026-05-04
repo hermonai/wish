@@ -7,8 +7,8 @@ use std::{
     process,
 };
 use typed_path::UnixPathBuf;
-use warp_core::channel::{Channel, ChannelState};
 use warp_util::path::{canonicalize_git_bash_path, is_msys2_path, warp_shell_path};
+use wish_core::channel::{Channel, ChannelState};
 
 use crate::{
     terminal::{
@@ -29,14 +29,14 @@ pub const BASH_SHELL_PATH: &str = "/bin/bash";
 pub const FISH_SHELL_PATH: &str = "/bin/fish";
 
 /// Returns an iterator of additional PATH entries to append to the shell's PATH.
-/// * On macOS, this includes `$APP_PATH/Contents/Resources/bin`, in which we put a wrapper around the Warp CLI.
+/// * On macOS, this includes `$APP_PATH/Contents/Resources/bin`, in which we put a wrapper around the Wish CLI.
 /// * On all other platforms, this is empty.
 pub fn extra_path_entries() -> impl Iterator<Item = PathBuf> {
     cfg_if::cfg_if! {
         if #[cfg(target_os = "macos")] {
             use itertools::Either;
 
-            if let Some(resources_path) = warp_core::paths::bundled_resources_dir() {
+            if let Some(resources_path) = wish_core::paths::bundled_resources_dir() {
                 let bin_path = resources_path.join("bin");
                 Either::Left(std::iter::once(bin_path))
             } else {
@@ -49,7 +49,7 @@ pub fn extra_path_entries() -> impl Iterator<Item = PathBuf> {
 }
 
 /// Returns `true` if the given `path_or_command` is a valid, executable command or path to a
-/// executable binary for one of Warp's supported shell types (bash, fish, zsh).
+/// executable binary for one of Wish's supported shell types (bash, fish, zsh).
 pub fn is_valid_path_or_command_for_supported_shell(path_or_command: &str) -> bool {
     supported_shell_path_and_type(path_or_command).is_some()
 }
@@ -628,7 +628,7 @@ fn arguments_for_session_spawning_command(
                     // `-f no-mark-prompt` disables OSC 133 (the non-standard FinalTerm escape codes).
                     // Fish's implementation of this breaks Warp by emitting `OSC 133 A` but not
                     // `OSC 133 B` afterwards, which we have assumed. This is a temporary workaround.
-                    // See this issue: https://github.com/warpdotdev/Warp/issues/7588
+                    // See this issue: https://github.com/hermonai/wish/issues/7588
                     r#"exec '{}' -f no-mark-prompt --login --init-command '{}'"#,
                     resolved_shell_path,
                     init_shell_script_for_shell(ShellType::Fish, &crate::ASSETS)

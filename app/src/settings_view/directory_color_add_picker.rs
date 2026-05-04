@@ -6,7 +6,7 @@ use ai::index::full_source_code_embedding::manager::{
 };
 use settings::Setting;
 use warp_util::path::user_friendly_path;
-use warpui::{
+use wishui::{
     elements::{
         Border, ChildView, ConstrainedBox, Container, CrossAxisAlignment, Flex, Hoverable,
         MainAxisSize, MouseStateHandle, ParentElement, Text,

@@ -8,8 +8,8 @@ use regex::escape;
 use std::path::PathBuf;
 use string_offset::ByteOffset;
 use warp_ripgrep::search::{Match as RipgrepMatch, Submatch};
-use warpui::r#async::SpawnedFutureHandle;
-use warpui::{Entity, ModelContext, ModelSpawner};
+use wishui::r#async::SpawnedFutureHandle;
+use wishui::{Entity, ModelContext, ModelSpawner};
 
 const START_BATCH_AFTER_COUNT: usize = 50;
 const MAX_BATCH_SIZE: usize = 512;

@@ -20,7 +20,7 @@ use warp_editor::{
     model::{CoreEditorModel, PlainTextEditorModel},
     selection::{TextDirection, TextUnit},
 };
-use warpui::{text::point::Point, SingletonEntity, ViewContext};
+use wishui::{text::point::Point, SingletonEntity, ViewContext};
 
 impl VimHandler for CodeEditorView {
     fn insert_char(&mut self, c: char, ctx: &mut ViewContext<Self>) {
@@ -154,7 +154,7 @@ impl VimHandler for CodeEditorView {
     ) {
         // Selection logic is almost the same for all operators, so capture that in a closure first.
         let selection_change =
-            |model: &mut CodeEditorModel, ctx: &mut warpui::ModelContext<CodeEditorModel>| {
+            |model: &mut CodeEditorModel, ctx: &mut wishui::ModelContext<CodeEditorModel>| {
                 match operand {
                     VimOperand::Motion {
                         motion,

@@ -6,7 +6,7 @@
 
 use settings::Setting as _;
 use std::time::Duration;
-use warp::{
+use wish::{
     features::FeatureFlag,
     integration_testing::{
         step::new_step_with_default_assertions,
@@ -14,13 +14,13 @@ use warp::{
     },
     settings::FontSettings,
 };
-use warpui::{async_assert_eq, integration::TestStep, SingletonEntity};
+use wishui::{async_assert_eq, integration::TestStep, SingletonEntity};
 
 use super::{new_builder, Builder};
 
 /// Helper: returns the path to the TOML settings file.
 fn toml_file_path() -> std::path::PathBuf {
-    warp::settings::user_preferences_toml_file_path()
+    wish::settings::user_preferences_toml_file_path()
 }
 
 /// Verifies the full settings hot-reload pipeline end-to-end: the filesystem

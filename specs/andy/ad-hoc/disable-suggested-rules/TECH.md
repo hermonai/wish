@@ -38,7 +38,7 @@ The `feature_flag` field causes the setting to be excluded from the user-facing 
 Add the getter to `impl AISettings`:
 
 ```rust
-pub fn is_rule_suggestions_enabled(&self, app: &warpui::AppContext) -> bool {
+pub fn is_rule_suggestions_enabled(&self, app: &wishui::AppContext) -> bool {
     self.is_active_ai_enabled(app) && *self.rule_suggestions_enabled_internal
 }
 ```

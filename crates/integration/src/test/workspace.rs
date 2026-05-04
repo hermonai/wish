@@ -3,10 +3,10 @@
 use std::fs;
 
 use settings::Setting as _;
-use warp::integration_testing::terminal::assert_long_running_block_executing_for_single_terminal_in_tab;
-use warp::integration_testing::view_getters::terminal_view;
-use warp::integration_testing::workspace::{assert_tab_count, press_native_modal_button};
-use warp::{
+use wish::integration_testing::terminal::assert_long_running_block_executing_for_single_terminal_in_tab;
+use wish::integration_testing::view_getters::terminal_view;
+use wish::integration_testing::workspace::{assert_tab_count, press_native_modal_button};
+use wish::{
     cmd_or_ctrl_shift,
     integration_testing::{
         pane_group::assert_focused_pane_index,
@@ -19,7 +19,7 @@ use warp::{
     settings::PaneSettings,
     workspace::NEW_TAB_BUTTON_POSITION_ID,
 };
-use warpui::{async_assert, integration::TestStep, SingletonEntity};
+use wishui::{async_assert, integration::TestStep, SingletonEntity};
 
 use crate::{util::skip_if_powershell_core_2303, Builder};
 

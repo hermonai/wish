@@ -1,10 +1,10 @@
 use pathfinder_color::ColorU;
-use warp_core::ui::Icon;
-use warpui::assets::asset_cache::{AssetCache, AssetSource, AssetState};
-use warpui::geometry::rect::RectF;
-use warpui::geometry::vector::{vec2f, Vector2F};
-use warpui::image_cache::{AnimatedImageBehavior, CacheOption, FitType, Image, ImageCache};
-use warpui::{
+use wish_core::ui::Icon;
+use wishui::assets::asset_cache::{AssetCache, AssetSource, AssetState};
+use wishui::geometry::rect::RectF;
+use wishui::geometry::vector::{vec2f, Vector2F};
+use wishui::image_cache::{AnimatedImageBehavior, CacheOption, FitType, Image, ImageCache};
+use wishui::{
     elements::{CornerRadius, Fill, Point, Radius},
     event::DispatchedEvent,
     AfterLayoutContext, AppContext, Element, EventContext, LayoutContext, PaintContext,

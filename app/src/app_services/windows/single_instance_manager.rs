@@ -2,8 +2,8 @@ use std::sync::LazyLock;
 
 use ipc::ServerBuilder;
 use parking_lot::Mutex;
-use warp_core::channel::ChannelState;
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wish_core::channel::ChannelState;
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use windows::core::Error;
 use windows::Win32::Foundation::{CloseHandle, GetLastError, ERROR_ALREADY_EXISTS, HANDLE};
@@ -45,7 +45,7 @@ static SOLE_INSTANCE_MUTEX: LazyLock<Mutex<Result<Option<MutexHandle>, Error>>> 
     LazyLock::new(|| Mutex::new(try_create_mutex()));
 
 pub(super) fn uri_named_pipe_name() -> String {
-    format!("Warp{:?}_URI_CHANNEL", ChannelState::channel())
+    format!("Wish{:?}_URI_CHANNEL", ChannelState::channel())
 }
 
 fn try_create_mutex() -> Result<Option<MutexHandle>, Error> {
@@ -55,9 +55,9 @@ fn try_create_mutex() -> Result<Option<MutexHandle>, Error> {
     //   session namespace"
     //
     // NOTE: This lock name must stay in sync with `AppMutexName` in
-    // `script/windows/windows-installer.iss`, which the installer uses to detect whether Warp is
+    // `script/windows/windows-installer.iss`, which the installer uses to detect whether Wish is
     // running.
-    let name = format!("Local\\Warp{:?}_SingleInstance", ChannelState::channel())
+    let name = format!("Local\\Wish{:?}_SingleInstance", ChannelState::channel())
         .encode_utf16()
         .chain(std::iter::once(0))
         .collect::<Vec<u16>>();

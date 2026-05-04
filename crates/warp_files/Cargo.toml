@@ -2,7 +2,7 @@
 name = "warp_files"
 version = "0.1.0"
 edition = "2021"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 publish.workspace = true
 license.workspace = true
 
@@ -12,9 +12,9 @@ async-channel.workspace = true
 async-fs.workspace = true
 futures.workspace = true
 thiserror.workspace = true
-warpui.workspace = true
+wishui.workspace = true
 remote_server.workspace = true
-warp_core.workspace = true
+wish_core.workspace = true
 warp_util.workspace = true
 watcher.workspace = true
 notify-debouncer-full.workspace = true

@@ -6,7 +6,7 @@ use serde::{
 use serde_yaml::Value;
 use strum::VariantNames as _;
 use strum_macros::{Display, EnumString, VariantNames};
-use warpui::{AppContext, SingletonEntity};
+use wishui::{AppContext, SingletonEntity};
 
 use std::{collections::HashMap, fmt, result::Result, str::FromStr};
 

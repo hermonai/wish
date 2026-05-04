@@ -26,12 +26,12 @@ use std::collections::{HashMap, HashSet};
 use std::sync::mpsc::SyncSender;
 use warp_graphql::scalars::time::ServerTimestamp;
 
-use warpui::{AppContext, Entity, ModelContext, SingletonEntity};
+use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 use crate::cloud_object::CloudObject;
 use chrono::{DateTime, Duration, Utc};
 use rand::Rng;
-use warp_core::features::FeatureFlag;
+use wish_core::features::FeatureFlag;
 
 use super::generic_string_model::GenericStringObjectId;
 
@@ -1098,7 +1098,7 @@ impl CloudModel {
             .count()
     }
 
-    /// Number of cloud objects that have errored in some way and are visible in the Warp Drive index
+    /// Number of cloud objects that have errored in some way and are visible in the Wish Drive index
     pub fn num_visible_errored_objects(&self) -> usize {
         self.objects_by_id
             .values()

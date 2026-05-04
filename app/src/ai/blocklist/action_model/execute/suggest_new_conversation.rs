@@ -1,5 +1,5 @@
 use futures::{future::BoxFuture, FutureExt};
-use warpui::{Entity, ModelContext};
+use wishui::{Entity, ModelContext};
 
 use crate::ai::agent::{
     AIAgentAction, AIAgentActionResultType, AIAgentActionType, SuggestNewConversationResult,

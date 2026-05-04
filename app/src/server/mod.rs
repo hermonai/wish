@@ -3,6 +3,9 @@ pub mod cloud_objects;
 pub mod datetime_ext;
 pub mod experiments;
 pub mod graphql;
+pub mod hermon_agents;
+pub mod hermon_auth;
+pub mod hermon_service;
 pub mod ids;
 pub mod network_log_pane_manager;
 pub mod network_log_view;
@@ -14,4 +17,4 @@ pub mod telemetry;
 pub(crate) mod telemetry_ext;
 pub mod voice_transcriber;
 
-pub use warp_core::operating_system_info::OperatingSystemInfo;
+pub use wish_core::operating_system_info::OperatingSystemInfo;

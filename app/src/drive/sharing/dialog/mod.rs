@@ -36,21 +36,21 @@ use inheritance::{InheritanceDetails, InheritanceState};
 use itertools::Itertools;
 use pathfinder_geometry::vector::vec2f;
 use session_sharing_protocol::common::{Guest, PendingGuest, SessionId, TeamAclData};
-use warp_core::ui::appearance::Appearance;
 use warp_editor::editor::NavigationKey;
-use warpui::elements::{
+use wish_core::ui::appearance::Appearance;
+use wishui::elements::{
     Align, ChildAnchor, ChildView, Fill, Highlight, MainAxisSize, MouseStateHandle,
     OffsetPositioning, ParentAnchor, PositionedElementAnchor, PositionedElementOffsetBounds,
     SavePosition, ScrollStateHandle, Scrollable, ScrollableElement, ScrollbarWidth, Shrinkable,
     Stack, UniformList, UniformListState,
 };
-use warpui::fonts::{Properties, Weight};
-use warpui::platform::Cursor;
-use warpui::ui_components::button::{ButtonVariant, TextAndIcon, TextAndIconAlignment};
-use warpui::ui_components::components::Coords;
-use warpui::FocusContext;
-use warpui::WeakViewHandle;
-use warpui::{
+use wishui::fonts::{Properties, Weight};
+use wishui::platform::Cursor;
+use wishui::ui_components::button::{ButtonVariant, TextAndIcon, TextAndIconAlignment};
+use wishui::ui_components::components::Coords;
+use wishui::FocusContext;
+use wishui::WeakViewHandle;
+use wishui::{
     clipboard::ClipboardContent,
     elements::{
         Border, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Dismiss, Empty, Flex,
@@ -198,7 +198,7 @@ pub enum SharingDialogAction {
 }
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([FixedBinding::new(
         "escape",
@@ -392,7 +392,7 @@ impl SharingDialog {
         }
     }
 
-    /// The Warp Drive server ID for the target object. `None` if the target is not a Warp Drive
+    /// The Wish Drive server ID for the target object. `None` if the target is not a Wish Drive
     /// object or AI conversation.
     fn target_cloud_object_id(&self, app: &AppContext) -> Option<ServerId> {
         match self.target.as_ref() {
@@ -404,7 +404,7 @@ impl SharingDialog {
         }
     }
 
-    /// The targeted Warp Drive object, or `None` if the target is not a known Warp Drive object.
+    /// The targeted Wish Drive object, or `None` if the target is not a known Wish Drive object.
     fn target_cloud_object<'a>(&self, app: &'a AppContext) -> Option<&'a dyn CloudObject> {
         self.target_cloud_object_id(app)
             .and_then(|id| CloudModel::as_ref(app).get_by_uid(&id.uid()))
@@ -578,7 +578,7 @@ impl SharingDialog {
     /// Report a telemetry event for opening this sharing dialog.
     ///
     /// This should be called by views that contain a sharing dialog whenever they open it (i.e.
-    /// panes and the Warp Drive index).
+    /// panes and the Wish Drive index).
     pub fn report_open(&self, source: SharingDialogSource, ctx: &mut ViewContext<Self>) {
         let event = match self.target.as_ref() {
             Some(ShareableObject::WarpDriveObject(id)) => {
@@ -1433,7 +1433,7 @@ impl SharingDialog {
             invite_button = invite_button.disabled();
         }
 
-        // For Warp Drive targets, we can't update permissions while there's a pending change.
+        // For Wish Drive targets, we can't update permissions while there's a pending change.
         if self
             .target_cloud_object(app)
             .is_some_and(|object| object.metadata().has_pending_online_only_change())

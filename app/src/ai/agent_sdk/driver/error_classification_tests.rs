@@ -46,8 +46,8 @@ fn not_logged_in_is_error_with_auth_required() {
         Some(PlatformErrorCode::AuthenticationRequired)
     );
     assert!(
-        update.message.contains("WARP_API_KEY"),
-        "message should mention WARP_API_KEY: {:?}",
+        update.message.contains("WISH_API_KEY"),
+        "message should mention WISH_API_KEY: {:?}",
         update.message
     );
 }

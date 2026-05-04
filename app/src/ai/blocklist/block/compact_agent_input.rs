@@ -1,5 +1,5 @@
 //! Compact free-form text input used by inline AI block actions.
-use warpui::{
+use wishui::{
     presenter::ChildView, AppContext, Element, Entity, FocusContext, SingletonEntity, View,
     ViewContext, ViewHandle,
 };

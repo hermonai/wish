@@ -361,8 +361,8 @@ fn test_lifecycle_event_type_from_proto_includes_cancelled_and_blocked() {
 #[test]
 fn restored_v1_child_conversation_re_registers_lifecycle_subscription() {
     use crate::ai::agent::conversation::AIConversation;
-    use warp_core::features::FeatureFlag;
-    use warpui::{App, EntityId};
+    use wish_core::features::FeatureFlag;
+    use wishui::{App, EntityId};
 
     App::test((), |mut app| async move {
         // V1 path is gated on `!OrchestrationV2`.

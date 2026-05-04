@@ -3,7 +3,7 @@ use std::io;
 use clap_complete::aot::{Shell, generate};
 
 use crate::{Args, binary_name};
-use warp_core::channel::ChannelState;
+use wish_core::channel::ChannelState;
 
 /// Generate shell completions for the Warp CLI and write them to stdout.
 pub fn generate_to_stdout(shell: Option<Shell>) -> anyhow::Result<()> {

@@ -1,4 +1,4 @@
-use warpui::{
+use wishui::{
     elements::{
         self, Align, Border, CacheOption, ConstrainedBox, Container, Element, Image, ParentElement,
         Text,
@@ -7,10 +7,10 @@ use warpui::{
 };
 
 use super::red_notification_dot::RedNotificationDot;
-use warp_core::ui::{external_product_icon::ExternalProductIcon, icons::Icon};
+use wish_core::ui::{external_product_icon::ExternalProductIcon, icons::Icon};
 
 use pathfinder_geometry::vector::vec2f;
-use warpui::elements::{ChildAnchor, OffsetPositioning, ParentAnchor, ParentOffsetBounds, Stack};
+use wishui::elements::{ChildAnchor, OffsetPositioning, ParentAnchor, ParentOffsetBounds, Stack};
 
 pub enum AvatarContent {
     /// Rendered as capital initial of the given display name.

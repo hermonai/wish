@@ -1,6 +1,6 @@
 use crate::appearance::Appearance;
 use crate::ui_components::blended_colors;
-use warpui::{
+use wishui::{
     elements::{
         Border, Container, CornerRadius, CrossAxisAlignment, Expanded, Flex, Hoverable,
         MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius,
@@ -123,7 +123,7 @@ impl<T: 'static> View for ToggleableItemsView<T> {
         "ToggleableItemsView"
     }
 
-    fn keymap_context(&self, _app: &AppContext) -> warpui::keymap::Context {
+    fn keymap_context(&self, _app: &AppContext) -> wishui::keymap::Context {
         let mut context = Self::default_keymap_context();
         if !self.items.is_empty() {
             context.set.insert(HAS_ITEMS);

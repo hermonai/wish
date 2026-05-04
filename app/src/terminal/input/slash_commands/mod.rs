@@ -8,12 +8,12 @@ pub use data_source::*;
 pub use view::{CloseReason, InlineSlashCommandView, SlashCommandsEvent};
 
 use ai::skills::SkillReference;
-use warp_core::features::FeatureFlag;
-use warp_core::send_telemetry_from_ctx;
-use warp_core::ui::appearance::Appearance;
-use warp_core::ui::theme::AnsiColorIdentifier;
-use warpui::clipboard::ClipboardContent;
-use warpui::{SingletonEntity, ViewContext};
+use wish_core::features::FeatureFlag;
+use wish_core::send_telemetry_from_ctx;
+use wish_core::ui::appearance::Appearance;
+use wish_core::ui::theme::AnsiColorIdentifier;
+use wishui::clipboard::ClipboardContent;
+use wishui::{SingletonEntity, ViewContext};
 
 #[cfg(not(target_family = "wasm"))]
 use crate::ai::agent::conversation::AIConversationId;
@@ -52,7 +52,7 @@ use crate::TelemetryEvent;
 #[cfg(not(target_family = "wasm"))]
 use warp_cli::agent::Harness;
 #[cfg(not(target_family = "wasm"))]
-use warpui::AppContext;
+use wishui::AppContext;
 
 #[derive(Debug, Clone)]
 pub enum AcceptSlashCommandOrSavedPrompt {
@@ -574,7 +574,7 @@ impl Input {
                             Ok(metadata) if metadata.is_file() => {
                                 use crate::util::file::external_editor;
 
-                                ctx.dispatch_typed_action(&TerminalAction::OpenCodeInWarp {
+                                ctx.dispatch_typed_action(&TerminalAction::OpenCodeInWish {
                                     path: file_path,
                                     layout: external_editor::settings::EditorLayout::SplitPane,
                                     line_col: parsed_path.line_and_column_num,

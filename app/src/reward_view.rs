@@ -1,5 +1,5 @@
-use warp_core::ui::builder::UiBuilder;
-use warpui::{
+use wish_core::ui::builder::UiBuilder;
+use wishui::{
     accessibility::{AccessibilityContent, WarpA11yRole},
     elements::{Align, Container, Element, Flex, MouseStateHandle, ParentElement},
     keymap::FixedBinding,
@@ -23,9 +23,9 @@ const TITLE_FONT_SIZE: f32 = 20.;
 const TITLE_MARGIN_BOTTOM: f32 = 25.;
 // Constants for the subtitle
 const SUBTITLE_SENT_REFERRAL: &str =
-    "You earned an exclusive Warp theme for referring someone to Warp.";
+    "You earned an exclusive Wish theme for referring someone to Wish.";
 const SUBTITLE_RECEIVED_REFERRAL: &str =
-    "You earned an exclusive Warp theme for being referred to Warp.";
+    "You earned an exclusive Wish theme for being referred to Wish.";
 const SUBTITLE_FONT_SIZE: f32 = 14.;
 const SUBTITLE_MARGIN_BOTTOM: f32 = 40.;
 // Constants for the button
@@ -37,7 +37,7 @@ const BUTTON_MARGIN_BOTTOM: f32 = 14.;
 const ACCESSIBILITY_HELP: &str = "Press enter to open the theme chooser or escape to dismiss.";
 
 pub fn init(app: &mut AppContext) {
-    use warpui::keymap::macros::*;
+    use wishui::keymap::macros::*;
 
     app.register_fixed_bindings([FixedBinding::new(
         "enter",

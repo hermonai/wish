@@ -37,7 +37,7 @@ directive @provides on FIELD_DEFINITION
 directive @requires on FIELD_DEFINITION
 
 """
-AIConversation represents an AI agent conversation that can be shared via Warp Drive.
+AIConversation represents an AI agent conversation that can be shared via Wish Drive.
 """
 type AIConversation {
   """
@@ -716,7 +716,7 @@ type ConfirmFileArtifactUploadOutput implements Response {
 union ConfirmFileArtifactUploadResult = ConfirmFileArtifactUploadOutput | UserFacingError
 
 """
-A Warp Drive entity that can contain other objects. Today, all objects are either
+A Wish Drive entity that can contain other objects. Today, all objects are either
 inside a folder or at the root of a drive.
 """
 union Container = FolderContainer | Space
@@ -2025,7 +2025,7 @@ type ManagedSecretRawValue {
   value: String!
 }
 
-"""Type of Warp-managed secret values."""
+"""Type of Wish-managed secret values."""
 enum ManagedSecretType {
   ANTHROPIC_API_KEY
   ANTHROPIC_BEDROCK_ACCESS_KEY

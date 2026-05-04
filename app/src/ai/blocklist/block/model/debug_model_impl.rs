@@ -1,4 +1,4 @@
-use warpui::{AppContext, ViewContext};
+use wishui::{AppContext, ViewContext};
 
 use crate::ai::{
     agent::{

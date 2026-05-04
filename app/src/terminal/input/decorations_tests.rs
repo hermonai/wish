@@ -1,4 +1,4 @@
-use warpui::{text_layout::TextStyle, App};
+use wishui::{text_layout::TextStyle, App};
 
 use crate::{
     appearance::Appearance,
@@ -45,7 +45,7 @@ fn test_decorations_with_multibyte_chars() {
                 .update(ctx, |sessions, _ctx| {
                     // Wait until external commands have been loaded.
                     let session = sessions.get(session_id).expect("session should exist");
-                    warpui::r#async::block_on(session.load_external_commands());
+                    wishui::r#async::block_on(session.load_external_commands());
                 });
             session_id
         });

@@ -1,5 +1,5 @@
 use crate::{channel::ChannelState, server::ids::ServerId};
-use warpui::AppContext;
+use wishui::AppContext;
 
 /// Shared admin panel actions and utilities for settings views
 pub struct AdminActions;
@@ -18,7 +18,7 @@ impl AdminActions {
 
     /// Open the support email link
     pub fn contact_support(ctx: &mut AppContext) {
-        ctx.open_url("mailto:support@warp.dev");
+        ctx.open_url("mailto:support@hermon.ai");
     }
 }
 

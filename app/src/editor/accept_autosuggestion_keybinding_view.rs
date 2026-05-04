@@ -13,24 +13,24 @@ use crate::util::bindings::{
 use crate::workspace::WorkspaceAction;
 use lazy_static::lazy_static;
 use pathfinder_geometry::vector::vec2f;
-use warp_core::ui::theme::Fill;
-use warpui::elements::{Border, ChildView, Flex, ParentElement};
-use warpui::elements::{
+use wish_core::ui::theme::Fill;
+use wishui::elements::{Border, ChildView, Flex, ParentElement};
+use wishui::elements::{
     ConstrainedBox, Container, CrossAxisAlignment, Radius, DEFAULT_UI_LINE_HEIGHT_RATIO,
 };
-use warpui::keymap::Keystroke;
-use warpui::platform::Cursor;
-use warpui::ui_components::components::{UiComponent, UiComponentStyles};
-use warpui::ui_components::keyboard_shortcut::KeyboardShortcut;
-use warpui::ViewContext;
-use warpui::{
+use wishui::keymap::Keystroke;
+use wishui::platform::Cursor;
+use wishui::ui_components::components::{UiComponent, UiComponentStyles};
+use wishui::ui_components::keyboard_shortcut::KeyboardShortcut;
+use wishui::ViewContext;
+use wishui::{
     elements::{
         ChildAnchor, CornerRadius, Element, Hoverable, MouseStateHandle, OffsetPositioning,
         ParentAnchor, ParentOffsetBounds, Stack,
     },
     AppContext, SingletonEntity,
 };
-use warpui::{Entity, TypedActionView, View, ViewHandle};
+use wishui::{Entity, TypedActionView, View, ViewHandle};
 
 use super::EditorElement;
 

@@ -7,7 +7,7 @@ use std::time::Duration;
 use dashmap::DashMap;
 use futures::channel::oneshot;
 use futures::io::{AsyncRead, AsyncWrite};
-use warpui::r#async::{executor, FutureExt as _};
+use wishui::r#async::{executor, FutureExt as _};
 
 use crate::proto::{
     client_message, server_message, Abort, Authenticate, ClientMessage, DeleteFile, ErrorCode,
@@ -18,8 +18,8 @@ use crate::proto::{
 
 use crate::protocol::{self, ProtocolError, RequestId};
 
-use warp_core::SessionId;
-use warpui::r#async::TransportStream;
+use wish_core::SessionId;
+use wishui::r#async::TransportStream;
 
 /// Default request timeout (2 minutes).
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(120);

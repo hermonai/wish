@@ -6,7 +6,7 @@ use anyhow::bail;
 use async_channel::Receiver;
 use instant::Instant;
 use std::{pin::pin, sync::Arc};
-use warpui::r#async::{SpawnedFutureHandle, Timer};
+use wishui::r#async::{SpawnedFutureHandle, Timer};
 
 use futures_util::{stream::AbortHandle, SinkExt, StreamExt};
 
@@ -32,11 +32,11 @@ use session_sharing_protocol::{
 };
 
 use std::time::Duration;
-use warp_core::features::FeatureFlag;
-use warpui::{
+use websocket::{Message, Sink, Stream, WebsocketMessage as _};
+use wish_core::features::FeatureFlag;
+use wishui::{
     Entity, ModelContext, ModelHandle, RequestState, RetryOption, SingletonEntity, WeakViewHandle,
 };
-use websocket::{Message, Sink, Stream, WebsocketMessage as _};
 
 use crate::{
     auth::{auth_state::AuthState, AuthStateProvider, UserUid},

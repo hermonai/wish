@@ -11,7 +11,7 @@ use crate::{
     workflows::workflow::Workflow,
     workspaces::{team::Team, user_workspaces::UserWorkspaces, workspace::Workspace},
 };
-use warpui::{async_assert, async_assert_eq, integration::TestStep, SingletonEntity};
+use wishui::{async_assert, async_assert_eq, integration::TestStep, SingletonEntity};
 
 fn set_and_assert_network_status(status: NetworkStatusKind) -> TestStep {
     TestStep::new("Set and assert network status")
@@ -43,7 +43,7 @@ pub fn go_online() -> TestStep {
 }
 
 pub fn join_a_workspace() -> TestStep {
-    TestStep::new("Join a Warp Drive workspace")
+    TestStep::new("Join a Wish Drive workspace")
         .with_action(move |app, _, _| {
             UserWorkspaces::handle(app).update(app, |user_workspaces, ctx| {
                 let workspace_uid = "workspace_uid123456789".to_string().into();

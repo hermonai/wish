@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::HashMap};
 
 use chrono::{Duration, Utc};
 use warp_graphql::scalars::time::ServerTimestamp;
-use warpui::{AppContext, Entity, ModelContext, SingletonEntity};
+use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 use crate::{
     auth::{AuthStateProvider, UserUid},
@@ -162,7 +162,7 @@ impl CloudViewModel {
             .map(|object| object.space(app))
     }
 
-    /// Get the current user's access level on a Warp Drive object.
+    /// Get the current user's access level on a Wish Drive object.
     ///
     /// This is based on the client's current view of the object permissions, which may be stale. The
     /// server is the source of truth for all permission data, and it may reject a request that the
@@ -212,7 +212,7 @@ impl CloudViewModel {
         }
     }
 
-    /// Get the current user's editability state for a Warp Drive object.
+    /// Get the current user's editability state for a Wish Drive object.
     pub fn object_editability(
         &self,
         object_uid: &ObjectUid,

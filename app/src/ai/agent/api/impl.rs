@@ -2,8 +2,8 @@ use std::{collections::HashMap, sync::Arc};
 
 use crate::{ai::agent::redaction, terminal::model::session::SessionType};
 use futures_util::StreamExt;
-use warp_core::features::FeatureFlag;
 use warp_multi_agent_api as api;
+use wish_core::features::FeatureFlag;
 
 use crate::server::server_api::ServerApi;
 
@@ -186,7 +186,7 @@ fn get_supported_tools(params: &RequestParams) -> Vec<api::ToolType> {
                 supported_tools.push(api::ToolType::UploadFileArtifact);
             }
         }
-        Some(SessionType::WarpifiedRemote { host_id: Some(_) }) => {
+        Some(SessionType::WishifiedRemote { host_id: Some(_) }) => {
             // Remote session with a known host — enable tools that route
             // through RemoteServerClient. The host_id is only populated
             // after a successful connection handshake, so its presence is a
@@ -194,7 +194,7 @@ fn get_supported_tools(params: &RequestParams) -> Vec<api::ToolType> {
             // SearchCodebase remains disabled (follow-up work).
             supported_tools.extend(&[api::ToolType::ReadFiles, api::ToolType::ApplyFileDiffs]);
         }
-        Some(SessionType::WarpifiedRemote { host_id: None }) => {
+        Some(SessionType::WishifiedRemote { host_id: None }) => {
             // Feature flag off or not yet connected — no remote tools.
         }
     }
@@ -246,10 +246,10 @@ fn get_supported_cli_agent_tools(params: &RequestParams) -> Vec<api::ToolType> {
             supported_cli_agent_tools
                 .extend(&[api::ToolType::ReadFiles, api::ToolType::SearchCodebase]);
         }
-        Some(SessionType::WarpifiedRemote { host_id: Some(_) }) => {
+        Some(SessionType::WishifiedRemote { host_id: Some(_) }) => {
             supported_cli_agent_tools.push(api::ToolType::ReadFiles);
         }
-        Some(SessionType::WarpifiedRemote { host_id: None }) => {}
+        Some(SessionType::WishifiedRemote { host_id: None }) => {}
     }
 
     supported_cli_agent_tools

@@ -1,6 +1,6 @@
 use ai::skills::SkillReference;
-use warpui::elements::ChildView;
-use warpui::{Element, Entity, ModelHandle, View, ViewContext, ViewHandle};
+use wishui::elements::ChildView;
+use wishui::{Element, Entity, ModelHandle, View, ViewContext, ViewHandle};
 
 use crate::ai::blocklist::agent_view::AgentViewController;
 use crate::search::data_source::Query;
@@ -14,7 +14,7 @@ use crate::terminal::input::suggestions_mode_model::{
     InputSuggestionsModeEvent, InputSuggestionsModeModel,
 };
 use crate::terminal::model::session::active_session::ActiveSession;
-use warpui::EntityId;
+use wishui::EntityId;
 
 #[derive(Debug, Clone)]
 pub enum InlineSkillSelectorEvent {
@@ -156,7 +156,7 @@ impl View for InlineSkillSelectorView {
         "InlineSkillSelectorView"
     }
 
-    fn render(&self, _app: &warpui::AppContext) -> Box<dyn Element> {
+    fn render(&self, _app: &wishui::AppContext) -> Box<dyn Element> {
         ChildView::new(&self.menu_view).finish()
     }
 }

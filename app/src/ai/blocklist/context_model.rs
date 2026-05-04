@@ -16,8 +16,8 @@ use crate::ai::{
 use super::agent_view::{AgentViewController, AgentViewEntryOrigin, EnterAgentViewError};
 use ai::project_context::model::ProjectContextModel;
 use parking_lot::FairMutex;
-use warp_core::features::FeatureFlag;
-use warpui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
+use wish_core::features::FeatureFlag;
+use wishui::{AppContext, Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
 
 use crate::ai::agent::conversation::{AIConversationAutoexecuteMode, ConversationStatus};
 use crate::{
@@ -294,7 +294,7 @@ impl BlocklistAIContextModel {
         // In sandboxed/autonomous mode (SDK mode with --sandboxed flag), automatically set
         // conversations to RunToCompletion mode so they don't wait for user confirmation.
         let pending_query_state =
-            if warp_core::execution_mode::AppExecutionMode::as_ref(ctx).is_sandboxed() {
+            if wish_core::execution_mode::AppExecutionMode::as_ref(ctx).is_sandboxed() {
                 PendingQueryState::New {
                     autoexecute_override: AIConversationAutoexecuteMode::RunToCompletion,
                 }

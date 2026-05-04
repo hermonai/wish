@@ -1,6 +1,6 @@
 [package]
 name = "input_classifier"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Hermon AI <support.ai>"]
 edition = "2024"
 publish.workspace = true
 license.workspace = true

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use warp_core::report_error;
-use warpui::{Entity, ModelContext, SingletonEntity};
+use wish_core::report_error;
+use wishui::{Entity, ModelContext, SingletonEntity};
 
 use crate::auth::AuthStateProvider;
 use crate::server::server_api::{auth::AuthClient, ServerApiProvider};

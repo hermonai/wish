@@ -1,6 +1,6 @@
-use warp_core::ui::appearance::Appearance;
 use warp_server_client::cloud_object::ServerPermissions;
-use warpui::{
+use wish_core::ui::appearance::Appearance;
+use wishui::{
     platform::WindowStyle, AddSingletonModel, App, SingletonEntity, TypedActionView, ViewHandle,
 };
 
@@ -103,7 +103,7 @@ fn create_notebook(app: &mut App) -> SyncId {
 fn set_object_in_error(app: &mut App, cloud_object_type_and_id: &CloudObjectTypeAndId) {
     CloudModel::handle(app).update(
         app,
-        |cloud_model, _ctx: &mut warpui::ModelContext<'_, CloudModel>| {
+        |cloud_model, _ctx: &mut wishui::ModelContext<'_, CloudModel>| {
             if let Some(object) = cloud_model.get_mut_by_uid(&cloud_object_type_and_id.uid()) {
                 object.set_pending_content_changes_status(CloudObjectSyncStatus::Errored);
             }
