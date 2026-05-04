@@ -169,6 +169,22 @@ pub enum WorkspaceAction {
     CopyVersion(&'static str),
     /// Open the Wish welcome page in a new tab. Accessible from Settings → About.
     ShowWelcomePage,
+    /// Trigger a refresh of [`crate::ai::agent_registry::AgentRegistryModel`]
+    /// from the Hermon backend. Dispatched by the "Refresh" button on the
+    /// Built-in Agents settings page.
+    RefreshAgentRegistry,
+    /// Toggle the expansion state of an agent card on the Built-in
+    /// Agents settings page. Identifies the agent by slug (stable across
+    /// registry refreshes — see [`crate::ai::agent_registry::ui_state`]).
+    ToggleAgentDetails {
+        slug: String,
+    },
+    /// Copy an agent's slug to the system clipboard. Useful for pasting
+    /// into chat as an `@<slug>` reference once command-palette
+    /// integration is built.
+    CopyAgentSlug {
+        slug: String,
+    },
     DownloadNewVersion,
     ConfigureKeybindingSettings {
         keybinding_name: Option<String>,
@@ -767,6 +783,9 @@ impl WorkspaceAction {
             | ApplyUpdate
             | CopyVersion(_)
             | ShowWelcomePage
+            | RefreshAgentRegistry
+            | ToggleAgentDetails { .. }
+            | CopyAgentSlug { .. }
             | DownloadNewVersion
             | ConfigureKeybindingSettings { .. }
             | ExportAllWarpDriveObjects

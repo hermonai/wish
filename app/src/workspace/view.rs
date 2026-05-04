@@ -20049,6 +20049,44 @@ impl TypedActionView for Workspace {
             ShowWelcomePage => {
                 self.add_welcome_tab(ctx);
             }
+            RefreshAgentRegistry => {
+                // Dispatched from the Built-in Agents settings page. We
+                // route through here (rather than calling the model
+                // directly from the click handler) because the click
+                // closure receives an `EventContext`, which doesn't
+                // implement the model-update traits — this handler runs
+                // under `ViewContext<Workspace>` where it does.
+                let registry = crate::ai::agent_registry::AgentRegistryModel::handle(ctx);
+                registry.update(ctx, |reg, ctx| reg.refresh(ctx));
+            }
+            ToggleAgentDetails { slug } => {
+                // Dispatched when the user clicks an agent card on the
+                // Built-in Agents settings page. Updates the per-page
+                // UI state singleton; the page subscribes to it and
+                // re-renders to show/hide the expanded details panel.
+                //
+                // We don't validate that `slug` actually exists in the
+                // registry here. If a stale slug arrives (e.g., a
+                // refresh just removed it), the UI state will still
+                // toggle to it harmlessly — the next render simply
+                // won't find a matching card to draw the expansion
+                // under, and the user effectively sees nothing
+                // expanded. That degrades gracefully to "click again
+                // to recover."
+                let ui_state =
+                    crate::ai::agent_registry::BuiltInAgentsUiState::handle(ctx);
+                let slug = slug.clone();
+                ui_state.update(ctx, move |state, ctx| state.toggle(&slug, ctx));
+            }
+            CopyAgentSlug { slug } => {
+                // Slugs are short, stable handles. Users will paste
+                // them into chat as `@<slug>` references once the
+                // command-palette integration is built. Until then the
+                // copy is still useful for documentation, scripting,
+                // and CLI invocation.
+                ctx.clipboard()
+                    .write(ClipboardContent::plain_text(slug.clone()));
+            }
             DownloadNewVersion => self.download_new_version(ctx),
             ConfigureKeybindingSettings { keybinding_name } => {
                 self.show_keyboard_settings(keybinding_name.as_deref(), ctx)

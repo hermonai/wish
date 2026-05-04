@@ -77,6 +77,7 @@ mod about_page;
 mod admin_actions;
 mod agent_assisted_environment_modal;
 mod ai_page;
+mod builtin_agents_page;
 mod appearance_page;
 mod billing_and_usage;
 mod billing_and_usage_page;
@@ -189,6 +190,8 @@ pub enum SettingsSection {
     About,
     #[default]
     Account,
+    /// Browse all available agents (Hermon-fetched + built-in SDLC).
+    BuiltInAgents,
     MCPServers,
     BillingAndUsage,
     Appearance,
@@ -231,6 +234,7 @@ impl Display for SettingsSection {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             SettingsSection::BillingAndUsage => write!(f, "Billing and usage"),
+            SettingsSection::BuiltInAgents => write!(f, "Built-in Agents"),
             SettingsSection::Keybindings => write!(f, "Keyboard shortcuts"),
             SettingsSection::SharedBlocks => write!(f, "Shared blocks"),
             SettingsSection::MCPServers => write!(f, "MCP Servers"),
@@ -970,6 +974,7 @@ macro_rules! update_page {
             SettingsPageViewHandle::BillingAndUsage(handle) => $ctx.update_view(handle, $update),
             SettingsPageViewHandle::MCPServers(handle) => $ctx.update_view(handle, $update),
             SettingsPageViewHandle::WarpDrive(handle) => $ctx.update_view(handle, $update),
+            SettingsPageViewHandle::BuiltInAgents(handle) => $ctx.update_view(handle, $update),
         }
     };
 }
@@ -1049,6 +1054,10 @@ impl SettingsView {
 
         // About page
         let about_page_handle = ctx.add_view(AboutPageView::new);
+
+        // Built-in Agents page (lists everything in AgentRegistryModel).
+        let builtin_agents_page_handle =
+            ctx.add_view(builtin_agents_page::BuiltInAgentsPageView::new);
 
         // AI page
         let ai_page_handle = ctx.add_typed_action_view(AISettingsPageView::new);
@@ -1178,6 +1187,7 @@ impl SettingsView {
             SettingsPage::new(environments_page_handle.clone()),
             SettingsPage::new(privacy_page_handle),
             SettingsPage::new(about_page_handle),
+            SettingsPage::new(builtin_agents_page_handle),
         ]);
 
         // Build sidebar nav items. AI page is presented as an "Agents" umbrella
@@ -1206,6 +1216,7 @@ impl SettingsView {
             SettingsNavItem::Page(SettingsSection::Teams),
             SettingsNavItem::Page(SettingsSection::Appearance),
             SettingsNavItem::Page(SettingsSection::Features),
+            SettingsNavItem::Page(SettingsSection::BuiltInAgents),
             SettingsNavItem::Page(SettingsSection::Keybindings),
             SettingsNavItem::Page(SettingsSection::Wishify),
             SettingsNavItem::Page(SettingsSection::Referrals),
@@ -1962,6 +1973,7 @@ impl SettingsView {
             SettingsPageViewHandle::MCPServers(v) => v.as_ref(app).should_render(app),
             SettingsPageViewHandle::Code(v) => v.as_ref(app).should_render(app),
             SettingsPageViewHandle::WarpDrive(v) => v.as_ref(app).should_render(app),
+            SettingsPageViewHandle::BuiltInAgents(v) => v.as_ref(app).should_render(app),
         }
     }
 

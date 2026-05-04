@@ -1366,6 +1366,12 @@ fn initialize_app(
     ctx.add_singleton_model(|_| NetworkLogPaneManager::default());
     ctx.add_singleton_model(|_| pricing::PricingInfoModel::new());
     ctx.add_singleton_model(server::hermon_service::HermonServiceModel::new);
+    // Must be registered after HermonServiceModel — the registry queries
+    // it for the active client during refresh.
+    ctx.add_singleton_model(crate::ai::agent_registry::AgentRegistryModel::new);
+    // UI-only state for the Built-in Agents settings page (currently:
+    // which card is expanded). Order-independent of the registry.
+    ctx.add_singleton_model(crate::ai::agent_registry::BuiltInAgentsUiState::new);
     ctx.add_singleton_model(|ctx| {
         // Not using the *Provider types isn't ideal, but it's worth it for the ability to move managed secrets to a separate crate.
         ManagedSecretManager::new(
