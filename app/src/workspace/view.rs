@@ -20087,6 +20087,19 @@ impl TypedActionView for Workspace {
                 ctx.clipboard()
                     .write(ClipboardContent::plain_text(slug.clone()));
             }
+            SetAgentSearchQuery { query } => {
+                // Dispatched on every keystroke in the Built-in Agents
+                // page's search box. We forward to the UI state
+                // singleton, which emits `SearchQueryChanged`; the
+                // page is subscribed and re-renders with the filtered
+                // list.
+                let ui_state =
+                    crate::ai::agent_registry::BuiltInAgentsUiState::handle(ctx);
+                let query = query.clone();
+                ui_state.update(ctx, move |state, ctx| {
+                    state.set_search_query(query, ctx);
+                });
+            }
             DownloadNewVersion => self.download_new_version(ctx),
             ConfigureKeybindingSettings { keybinding_name } => {
                 self.show_keyboard_settings(keybinding_name.as_deref(), ctx)

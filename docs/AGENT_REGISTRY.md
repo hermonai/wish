@@ -159,6 +159,18 @@ intended consumption pattern:
    `WorkspaceAction::CopyAgentSlug { slug }`. Slugs are the stable
    user-facing reference (e.g., `@wish-coder` in chat once the
    command-palette integration ships).
+6. **Search filter** — a single-line text input at the top of the
+   page filters which cards are visible. Each keystroke dispatches
+   `WorkspaceAction::SetAgentSearchQuery { query }`, which updates
+   `BuiltInAgentsUiState`. The page reads the query during render
+   and applies `filter::matches_query()` (a pure predicate, fully
+   unit-tested) to the entry list. Match is case-insensitive
+   substring across name, slug, type label, description, tool IDs,
+   capabilities, and source label; multi-word queries require every
+   token to match somewhere. The status row switches to
+   "M of N agents match" when the filter is active. The
+   `matches_query` predicate is reusable — the future picker modal
+   and command palette will share the same implementation.
 
 ## Why UI state is its own singleton
 

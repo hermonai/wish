@@ -27,6 +27,11 @@ pub enum BuiltInAgentsUiStateEvent {
     /// The set of expanded agent cards changed. Subscribers should
     /// re-render to reflect the new state.
     ExpansionChanged,
+    /// The search query changed. Subscribers should re-render to
+    /// reflect the new filter. Kept distinct from `ExpansionChanged`
+    /// so future consumers (e.g., a per-card highlight service) can
+    /// subscribe to only the events they care about.
+    SearchQueryChanged,
 }
 
 /// UI state for the Built-in Agents settings page.
@@ -37,6 +42,10 @@ pub struct BuiltInAgentsUiState {
     /// could in principle change if a synthesized built-in is replaced
     /// by a Hermon-fetched override of the same slug.
     expanded_slug: Option<String>,
+    /// Free-text search query the user has entered into the page's
+    /// search box. Empty when no filter is active. The page applies
+    /// this via [`super::filter::matches_query`] when rendering.
+    search_query: String,
 }
 
 impl Entity for BuiltInAgentsUiState {
@@ -46,11 +55,31 @@ impl Entity for BuiltInAgentsUiState {
 impl SingletonEntity for BuiltInAgentsUiState {}
 
 impl BuiltInAgentsUiState {
-    /// Construct the UI state with no card expanded.
+    /// Construct the UI state with no card expanded and no active
+    /// search filter.
     pub fn new(_ctx: &mut ModelContext<Self>) -> Self {
         Self {
             expanded_slug: None,
+            search_query: String::new(),
         }
+    }
+
+    /// The current search query string, possibly empty.
+    pub fn search_query(&self) -> &str {
+        &self.search_query
+    }
+
+    /// Set the search query.
+    ///
+    /// Always emits [`BuiltInAgentsUiStateEvent::SearchQueryChanged`],
+    /// even if the value didn't change. This keeps the API
+    /// predictable for callers — the page's editor subscription
+    /// dispatches one of these per keystroke, and the cost of an
+    /// extra notify on a no-op (e.g., the user hitting an unrelated
+    /// modifier) is negligible.
+    pub fn set_search_query(&mut self, query: String, ctx: &mut ModelContext<Self>) {
+        self.search_query = query;
+        ctx.emit(BuiltInAgentsUiStateEvent::SearchQueryChanged);
     }
 
     /// The currently-expanded slug, if any.
@@ -106,6 +135,7 @@ mod tests {
     fn new_state() -> BuiltInAgentsUiState {
         BuiltInAgentsUiState {
             expanded_slug: None,
+            search_query: String::new(),
         }
     }
 
@@ -120,10 +150,17 @@ mod tests {
     fn is_expanded_is_slug_specific() {
         let s = BuiltInAgentsUiState {
             expanded_slug: Some("wish-coder".into()),
+            search_query: String::new(),
         };
         assert!(s.is_expanded("wish-coder"));
         assert!(!s.is_expanded("wish-planner"));
         assert!(!s.is_expanded("wish-coder "));  // trailing space matters
+    }
+
+    #[test]
+    fn starts_with_empty_search_query() {
+        let s = new_state();
+        assert_eq!(s.search_query(), "");
     }
 
     #[test]

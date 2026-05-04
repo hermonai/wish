@@ -185,6 +185,14 @@ pub enum WorkspaceAction {
     CopyAgentSlug {
         slug: String,
     },
+    /// Update the active search query for the Built-in Agents page.
+    /// Dispatched on every text change in the page's search input;
+    /// the workspace handler forwards to
+    /// [`crate::ai::agent_registry::BuiltInAgentsUiState`], which
+    /// emits a `SearchQueryChanged` event the page subscribes to.
+    SetAgentSearchQuery {
+        query: String,
+    },
     DownloadNewVersion,
     ConfigureKeybindingSettings {
         keybinding_name: Option<String>,
@@ -786,6 +794,7 @@ impl WorkspaceAction {
             | RefreshAgentRegistry
             | ToggleAgentDetails { .. }
             | CopyAgentSlug { .. }
+            | SetAgentSearchQuery { .. }
             | DownloadNewVersion
             | ConfigureKeybindingSettings { .. }
             | ExportAllWarpDriveObjects

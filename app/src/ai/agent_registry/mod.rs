@@ -21,12 +21,19 @@
 //! ```
 
 pub mod builtin;
+pub mod filter;
 pub mod model;
 pub mod ui_state;
 
 #[cfg(test)]
 mod tests;
 
+// Re-export the filter predicate that the settings page consumes
+// directly. The label helpers (`agent_type_label`, `source_label`)
+// stay accessible via `filter::agent_type_label` etc. — they're
+// used at the page level too but referenced through the
+// `filter::` path to keep this re-export surface tight.
+pub use filter::matches_query;
 pub use model::{
     AgentRegistryEvent, AgentRegistryModel, AgentSource, RegistryEntry, RegistryStatus,
 };

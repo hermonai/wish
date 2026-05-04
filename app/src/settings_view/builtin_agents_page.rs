@@ -30,7 +30,7 @@ use std::time::Instant;
 
 use wishui::{
     elements::{
-        Container, CrossAxisAlignment, Element, Flex, Hoverable, MainAxisAlignment,
+        ChildView, Container, CrossAxisAlignment, Element, Flex, Hoverable, MainAxisAlignment,
         MouseStateHandle, ParentElement,
     },
     platform::Cursor,
@@ -43,10 +43,14 @@ use wishui::{
 };
 
 use crate::ai::agent_registry::{
-    AgentRegistryEvent, AgentRegistryModel, AgentSource, BuiltInAgentsUiState,
+    matches_query, AgentRegistryEvent, AgentRegistryModel, AgentSource, BuiltInAgentsUiState,
     BuiltInAgentsUiStateEvent, RegistryEntry, RegistryStatus,
 };
 use crate::appearance::Appearance;
+use crate::editor::{
+    EditorView, Event as EditorEvent, PropagateAndNoOpNavigationKeys, SingleLineEditorOptions,
+    TextOptions,
+};
 use crate::workspace::WorkspaceAction;
 
 use super::{
@@ -65,6 +69,14 @@ use super::{
 /// settings infrastructure boilerplate (search filtering, page chrome).
 pub struct BuiltInAgentsPageView {
     page: PageType<Self>,
+    /// Single-line text editor used for the in-page search box.
+    ///
+    /// Owned by the view (rather than the widget) so the view can
+    /// subscribe to its `EditorEvent` stream and dispatch
+    /// [`WorkspaceAction::SetAgentSearchQuery`] on each keystroke.
+    /// The widget reads the handle off the view at render time to
+    /// render the editor's `ChildView` inside the page layout.
+    search_editor: ViewHandle<EditorView>,
 }
 
 impl BuiltInAgentsPageView {
@@ -77,10 +89,10 @@ impl BuiltInAgentsPageView {
             ctx.notify();
         });
 
-        // Re-render whenever the user expands/collapses a card.
-        // The UI state lives in its own singleton (separate from the
-        // registry) so the registry's API isn't polluted with
-        // presentation events.
+        // Re-render whenever the user expands/collapses a card or
+        // changes the search query. Both events come from the same
+        // singleton — separate event variants let future consumers
+        // narrow their interest, but the page cares about both.
         let ui_state = BuiltInAgentsUiState::handle(ctx);
         ctx.subscribe_to_model(
             &ui_state,
@@ -89,8 +101,51 @@ impl BuiltInAgentsPageView {
             },
         );
 
+        // Build the search editor. Single-line, UI-styled, with the
+        // up/down arrow keys propagating (rather than navigating
+        // editor lines) so the page-level scrolling can use them in
+        // future without conflict.
+        let search_editor = {
+            let appearance = Appearance::as_ref(ctx);
+            let options = SingleLineEditorOptions {
+                text: TextOptions {
+                    font_size_override: Some(appearance.ui_font_size()),
+                    ..Default::default()
+                },
+                propagate_and_no_op_vertical_navigation_keys:
+                    PropagateAndNoOpNavigationKeys::Always,
+                ..Default::default()
+            };
+            ctx.add_typed_action_view(|ctx| EditorView::single_line(options, ctx))
+        };
+
+        // Set the placeholder up-front. Done after construction
+        // because `set_placeholder_text` needs `&mut ctx`.
+        search_editor.update(ctx, |editor, ctx| {
+            editor.set_placeholder_text("Search agents…", ctx);
+        });
+
+        // On every text edit, push the new query into the UI state
+        // singleton via the workspace action system. We deliberately
+        // don't call `set_search_query` directly from this closure —
+        // the action route lets the dispatch be observed by other
+        // potential subscribers (telemetry, command palette
+        // integration) without having to chain extra subscriptions.
+        ctx.subscribe_to_view(&search_editor, |me, _, event, ctx| {
+            if let EditorEvent::Edited(_) = event {
+                let query = me.search_editor.as_ref(ctx).buffer_text(ctx);
+                // The `ViewContext` flavor of `dispatch_typed_action`
+                // takes the action by `&dyn Action` (vs the
+                // `EventContext` flavor used in click handlers, which
+                // takes by value). Build the action and pass a
+                // reference here.
+                ctx.dispatch_typed_action(&WorkspaceAction::SetAgentSearchQuery { query });
+            }
+        });
+
         BuiltInAgentsPageView {
             page: PageType::new_monolith(BuiltInAgentsPageWidget::default(), None, false),
+            search_editor,
         }
     }
 }
@@ -199,17 +254,19 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
     type View = BuiltInAgentsPageView;
 
     fn search_terms(&self) -> &str {
-        // Searched against when the user types in the settings search
-        // box. We deliberately keep this list short and focused on the
-        // page topic — agent names themselves aren't indexed here
-        // (each agent renders its own searchable text in the body).
+        // Searched against when the user types in the **settings**
+        // search box (the global one in the sidebar) — distinct from
+        // the per-page search box this page also exposes. We keep
+        // this list short and topic-focused; the in-page search box
+        // covers per-agent matching.
         "agents builtin sdlc planner coder reviewer tester debugger \
-         deployer documenter refactorer security orchestrator hermon"
+         deployer documenter refactorer security orchestrator hermon \
+         search filter"
     }
 
     fn render(
         &self,
-        _view: &BuiltInAgentsPageView,
+        view: &BuiltInAgentsPageView,
         appearance: &Appearance,
         app: &AppContext,
     ) -> Box<dyn Element> {
@@ -218,6 +275,20 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
 
         let entries = registry_ref.entries();
         let status = registry_ref.status();
+
+        // Read UI state for both expansion and search query.
+        let ui_state_handle = BuiltInAgentsUiState::handle(app);
+        let ui_state = ui_state_handle.as_ref(app);
+        let query = ui_state.search_query();
+
+        // Pre-filter entries before rendering. Doing the filter in
+        // one pass — rather than per-card — also lets us count
+        // matches for the status row.
+        let filtered: Vec<&RegistryEntry> = if query.trim().is_empty() {
+            entries.iter().collect()
+        } else {
+            entries.iter().filter(|e| matches_query(e, query)).collect()
+        };
 
         let ui_builder = appearance.ui_builder();
 
@@ -296,8 +367,31 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
             .with_child(refresh_button)
             .finish();
 
+        // ── Search row ────────────────────────────────────────────
+        // The search editor itself lives on the view; we just embed
+        // it as a child element here. Wrapped in a `Container` with
+        // a subtle background fill and rounded corners so it reads
+        // visually like a search box — without depending on the
+        // SearchBar wrapper component (which adds chrome we don't
+        // need here).
+        let search_input = Container::new(ChildView::new(&view.search_editor).finish())
+            .with_padding_left(10.)
+            .with_padding_right(10.)
+            .with_padding_top(6.)
+            .with_padding_bottom(6.)
+            .with_background(appearance.theme().surface_1())
+            .with_corner_radius(CornerRadius::with_all(Radius::Pixels(6.)))
+            .with_margin_bottom(12.)
+            .finish();
+
         // ── Status row ────────────────────────────────────────────
-        let status_text = format_status(status, entries.len());
+        // When a filter is active, show "M of N agents match";
+        // otherwise show the standard status (loaded/refreshing/etc).
+        let status_text = if query.trim().is_empty() {
+            format_status(status, entries.len())
+        } else {
+            format!("{} of {} agents match", filtered.len(), entries.len())
+        };
         let status_widget = ui_builder
             .span(status_text)
             .with_style(UiComponentStyles {
@@ -308,11 +402,16 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
             .with_margin_bottom(20.)
             .finish();
 
-        // ── Empty state ───────────────────────────────────────────
-        // The registry is *always* seeded with built-ins, so a truly
-        // empty list should never happen. We handle it defensively
-        // for robustness in case future code paths drain the
-        // registry.
+        // ── Empty states ──────────────────────────────────────────
+        // Two distinct kinds of "empty":
+        //
+        // 1. The registry itself is empty. Defensive — the registry
+        //    is always seeded with built-ins, so this should be
+        //    unreachable, but we render a placeholder so future code
+        //    paths that drain it don't blow up the page.
+        // 2. The registry has agents but the search filter excluded
+        //    them all. Distinct messaging tells the user *why* the
+        //    list looks empty.
         if entries.is_empty() {
             let empty_msg = ui_builder
                 .paragraph("No agents available.")
@@ -321,6 +420,24 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
             return Flex::column()
                 .with_cross_axis_alignment(CrossAxisAlignment::Stretch)
                 .with_child(header_row)
+                .with_child(search_input)
+                .with_child(status_widget)
+                .with_child(empty_msg)
+                .finish();
+        }
+
+        if filtered.is_empty() {
+            let empty_msg = ui_builder
+                .paragraph(format!(
+                    "No agents match \"{}\". Clear the search box to see all {} agents.",
+                    query, entries.len()
+                ))
+                .build()
+                .finish();
+            return Flex::column()
+                .with_cross_axis_alignment(CrossAxisAlignment::Stretch)
+                .with_child(header_row)
+                .with_child(search_input)
                 .with_child(status_widget)
                 .with_child(empty_msg)
                 .finish();
@@ -330,14 +447,10 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
         let mut column = Flex::column().with_cross_axis_alignment(CrossAxisAlignment::Stretch);
 
         column = column.with_child(header_row);
+        column = column.with_child(search_input);
         column = column.with_child(status_widget);
 
-        // Read the expansion state once up-front so each card can
-        // check `is_expanded` without re-fetching from the singleton.
-        let ui_state_handle = BuiltInAgentsUiState::handle(app);
-        let ui_state = ui_state_handle.as_ref(app);
-
-        for entry in entries {
+        for entry in filtered {
             let mouse_states = self.card_mouse_states_for(&entry.agent.slug);
             let is_expanded = ui_state.is_expanded(&entry.agent.slug);
             column = column.with_child(render_agent_card(
