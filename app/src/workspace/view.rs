@@ -3836,6 +3836,8 @@ impl Workspace {
             if self.should_trigger_get_started_onboarding(ctx) {
                 self.trigger_get_started_onboarding(ctx);
             } else if shell.is_some() {
+                // Open the user's terminal so the app is immediately
+                // usable...
                 self.add_new_session_tab_with_default_mode(
                     NewSessionSource::Window,
                     previous_active_window,
@@ -3844,11 +3846,53 @@ impl Workspace {
                     false, /* hide_homepage */
                     ctx,
                 );
-                self.check_and_trigger_onboarding(ctx);
+
+                // On the very first launch, show the full agent
+                // onboarding carousel (intro slide → intention →
+                // customize → theme → project → agent) regardless of
+                // auth state. The carousel is dispatched into the
+                // terminal pane we just created, so it overlays the
+                // prompt until dismissed.
+                //
+                // We use the AGENT onboarding (not legacy) because
+                // that's the slide deck that contains the
+                // `IntroSlide` with "Welcome to Wish" + "Get started"
+                // — matching the surface in the user's screenshot.
+                //
+                // This deliberately bypasses
+                // `check_and_trigger_onboarding`'s auth gate, which
+                // suppresses onboarding for anonymous / logged-out
+                // users. The carousel itself doesn't require auth;
+                // only the optional Hermon login slide does. New
+                // local users deserve the same discoverability that
+                // signed-in users get.
+                //
+                // The `welcome_page_shown` flag gates this to once
+                // per device. After dismissal the same carousel
+                // stays accessible via Help → Show Welcome Page.
+                if !*GeneralSettings::as_ref(ctx).welcome_page_shown {
+                    self.show_welcome_onboarding(ctx);
+                    GeneralSettings::handle(ctx).update(ctx, |settings, ctx| {
+                        if let Err(e) =
+                            settings.welcome_page_shown.set_value(true, ctx)
+                        {
+                            log::warn!(
+                                "Failed to mark welcome page as shown: {e}"
+                            );
+                        }
+                    });
+                } else {
+                    // For users who have already seen the welcome
+                    // tour, run the standard onboarding-state
+                    // bookkeeping (telemetry banners, agent-mode
+                    // hints) that lives in `check_and_trigger_onboarding`.
+                    self.check_and_trigger_onboarding(ctx);
+                }
             } else {
-                // Show the Wish welcome palette on first launch so new users
-                // can discover features before dropping into a terminal. The
-                // welcome page is also accessible later via Settings → About.
+                // No shell available (e.g., headless). Welcome is the
+                // best landing surface; show it regardless of the
+                // first-launch flag because there's no terminal to
+                // fall back to.
                 self.add_welcome_tab(ctx);
             }
             false
@@ -6775,6 +6819,41 @@ impl Workspace {
     fn trigger_legacy_onboarding(&self, ctx: &mut ViewContext<Self>) {
         self.dispatch_onboarding(
             TerminalAction::OnboardingFlow(OnboardingVersion::Legacy),
+            ctx,
+        );
+    }
+
+    /// Dispatch the full agent-onboarding slide carousel — intro,
+    /// intention, customization, theme picker, project picker, agent
+    /// slide — to the active terminal pane.
+    ///
+    /// Used as the *welcome page* for both first-launch (gated by
+    /// the `general.welcome_page_shown` setting) and the **Help →
+    /// Show Welcome Page** menu item. Unlike
+    /// [`Self::trigger_agent_onboarding`], this version is intended
+    /// for users who haven't authenticated yet (or who are running
+    /// in pure-local mode), so it skips the
+    /// `should_show_agent_onboarding` auth checks and just dispatches
+    /// the same `TerminalAction::OnboardingFlow` payload that the
+    /// post-login flow uses.
+    ///
+    /// Why agent onboarding rather than legacy: the agent flow is the
+    /// surface that hosts `IntroSlide` ("Welcome to Wish" + "Get
+    /// started" button + "Already have an account? Log in"), which
+    /// matches the visual intent of the welcome page. The legacy
+    /// onboarding renders a different (older) layout that doesn't
+    /// include the IntroSlide.
+    fn show_welcome_onboarding(&self, ctx: &mut ViewContext<Self>) {
+        let version = if FeatureFlag::AgentView.is_enabled() {
+            AgentOnboardingVersion::AgentModality {
+                has_project: false,
+                intention: OnboardingIntention::AgentDrivenDevelopment,
+            }
+        } else {
+            AgentOnboardingVersion::UniversalInput { has_project: false }
+        };
+        self.dispatch_onboarding(
+            TerminalAction::OnboardingFlow(OnboardingVersion::Agent(version)),
             ctx,
         );
     }
@@ -20047,7 +20126,20 @@ impl TypedActionView for Workspace {
             }
             CopyVersion(version) => self.copy_version(version, ctx),
             ShowWelcomePage => {
-                self.add_welcome_tab(ctx);
+                // Re-show the full agent onboarding carousel — intro
+                // slide through the optional Hermon login slide.
+                // Dispatched by **Help → Show Welcome Page** and the
+                // **Settings → About → Show Welcome Page** button.
+                //
+                // The carousel renders into the active terminal pane.
+                // If no terminal session is open (e.g., the user is
+                // staring at an empty workspace), we fall back to
+                // adding a fresh terminal first so the onboarding
+                // dispatcher has a target view.
+                if self.active_session_view(ctx).is_none() {
+                    self.add_terminal_tab(/* hide_homepage */ true, ctx);
+                }
+                self.show_welcome_onboarding(ctx);
             }
             RefreshAgentRegistry => {
                 // Dispatched from the Built-in Agents settings page. We
@@ -22264,15 +22356,29 @@ impl View for Workspace {
                 && self.vertical_tabs_panel_open;
 
             if is_vertical {
-                // Anchor the menu below the vertical-tabs + button.
+                // Anchor the menu below the vertical-tabs + button. The anchor
+                // side mirrors which side the tabs panel itself is on, so the
+                // menu always expands inward and stays inside the window.
+                //
+                // Cherry-picked from upstream warpdotdev/warp commit 6ea1a52 (#9492).
+                let tabs_side =
+                    Self::tabs_panel_side(&TabSettings::as_ref(app).header_toolbar_chip_selection);
+                let (anchor, child_anchor) = match tabs_side {
+                    PanelPosition::Left => {
+                        (PositionedElementAnchor::BottomLeft, ChildAnchor::TopLeft)
+                    }
+                    PanelPosition::Right => {
+                        (PositionedElementAnchor::BottomRight, ChildAnchor::TopRight)
+                    }
+                };
                 stack.add_positioned_overlay_child(
                     ChildView::new(&self.new_session_dropdown_menu).finish(),
                     OffsetPositioning::offset_from_save_position_element(
                         vertical_tabs::VERTICAL_TABS_ADD_TAB_POSITION_ID,
                         vec2f(0., 4.),
                         PositionedElementOffsetBounds::WindowBySize,
-                        PositionedElementAnchor::BottomLeft,
-                        ChildAnchor::TopLeft,
+                        anchor,
+                        child_anchor,
                     ),
                 );
             } else {

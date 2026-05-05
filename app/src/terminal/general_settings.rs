@@ -172,4 +172,18 @@ define_settings_group!(GeneralSettings, settings: [
         sync_to_cloud: SyncToCloud::Globally(RespectUserSyncSetting::Yes),
         private: true,
     },
+    // One-time flag tracking whether the Wish welcome page has been
+    // shown to this user. The page is shown automatically on first
+    // launch (when this is false), and is also accessible later via
+    // the Help menu and Settings → About. We intentionally don't sync
+    // this to the cloud — the welcome page is a per-device discovery
+    // surface, and re-showing it on a fresh install is the right
+    // default rather than a regression.
+    welcome_page_shown: WelcomePageShown {
+        type: bool,
+        default: false,
+        supported_platforms: SupportedPlatforms::ALL,
+        sync_to_cloud: SyncToCloud::Never,
+        private: true,
+    },
 ]);

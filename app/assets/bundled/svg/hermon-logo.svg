@@ -1,0 +1,12 @@
+<svg width="38" height="30" viewBox="0 0 38 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!--
+  Hermon mark: a stylized "H" with two rounded pillars and a thick
+  horizontal beam. Fill spec matches `wish-logo-neutral.svg` so the
+  Icon rendering pipeline applies the active theme color (passed via
+  `Icon::new("..", logo_fill)` in `about_page.rs`) consistently.
+  The shape reads as an "H" at every size from 16px (dock badge) to
+  92px (about page), and is clearly distinct from the W silhouette
+  inherited from the upstream brand.
+-->
+<path d="M3.5 1C2.39543 1 1.5 1.89543 1.5 3V27C1.5 28.1046 2.39543 29 3.5 29H7.5C8.60457 29 9.5 28.1046 9.5 27V18H28.5V27C28.5 28.1046 29.3954 29 30.5 29H34.5C35.6046 29 36.5 28.1046 36.5 27V3C36.5 1.89543 35.6046 1 34.5 1H30.5C29.3954 1 28.5 1.89543 28.5 3V12H9.5V3C9.5 1.89543 8.60457 1 7.5 1H3.5Z" fill="#FAF9F6" fill-opacity="0.15"/>
+</svg>

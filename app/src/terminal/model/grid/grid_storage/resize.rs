@@ -1,3 +1,8 @@
+// The code in this file is adapted from the alacritty_terminal crate under the
+// Apache license; see: crates/warp_terminal/src/model/LICENSE-ALACRITTY.
+//
+// Cherry-picked from upstream warpdotdev/warp commit 59c6a48 (#9707).
+
 //! Grid resize and reflow.
 
 use std::cmp::{min, Ordering};

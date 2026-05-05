@@ -102,7 +102,12 @@ impl SettingsWidget for AboutPageWidget {
                 .with_child(
                     Container::new(
                         ConstrainedBox::new(
-                            Icon::new("bundled/svg/wish-logo-neutral.svg", logo_fill).finish(),
+                            // Hermon-branded "H" mark. The asset path follows
+                            // the design team's "a1" naming convention
+                            // (`hermon-logo-a1.svg`); replacing this single
+                            // file globally rebrands every surface that
+                            // uses it.
+                            Icon::new("bundled/svg/hermon-logo-a1.svg", logo_fill).finish(),
                         )
                         .with_height(72.)
                         .with_width(92.)

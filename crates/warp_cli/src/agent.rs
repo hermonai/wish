@@ -195,7 +195,7 @@ pub enum AgentProfileCommand {
 /// Agent-related subcommands.
 #[derive(Debug, Clone, Subcommand)]
 pub enum AgentCommand {
-    /// Run a new Oz agent.
+    /// Run a New Hermon agent.
     Run(RunAgentArgs),
     /// Dispatch an Oz agent that runs remotely.
     RunCloud(RunCloudArgs),

@@ -29,8 +29,8 @@ Out-of-scope references that must be preserved as "Oz" (verified by grep):
   `"Oz Cloud API Keys"` and its `FromStr` round-trip.
 - `app/src/terminal/view/ambient_agent/harness_selector.rs:62` — `Harness::Oz`
   display name "Oz" in the cloud agent harness menu.
-- `app/src/ai/blocklist/agent_view/zero_state_block.rs:388, 404` — "New Oz cloud
-  agent conversation" / "New Oz agent conversation". Zero-state copy is not
+- `app/src/ai/blocklist/agent_view/zero_state_block.rs:388, 404` — "New Hermon cloud
+  agent conversation" / "New Hermon agent conversation". Zero-state copy is not
   covered by issue #1063 and must not be touched in this PR.
 - "Oz changelog" toggle labels in `ai_page.rs` (`OtherAIWidget`) are kept as
   "Oz changelog" because they refer to Oz platform release notes, not the

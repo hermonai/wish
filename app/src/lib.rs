@@ -1372,6 +1372,10 @@ fn initialize_app(
     // UI-only state for the Built-in Agents settings page (currently:
     // which card is expanded). Order-independent of the registry.
     ctx.add_singleton_model(crate::ai::agent_registry::BuiltInAgentsUiState::new);
+    // Client-side SDLC task tracking — backs the Tasks panel and
+    // the conversation-inline annotation surface. See
+    // `crate::ai::agent_tasks` for the architecture.
+    ctx.add_singleton_model(crate::ai::agent_tasks::AgentTaskRegistryModel::new);
     ctx.add_singleton_model(|ctx| {
         // Not using the *Provider types isn't ideal, but it's worth it for the ability to move managed secrets to a separate crate.
         ManagedSecretManager::new(

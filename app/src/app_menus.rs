@@ -923,12 +923,34 @@ fn make_new_help_menu() -> Menu {
     Menu::new(
         "Help",
         vec![
+            // "Show Welcome Page" — opens the same welcome tab that
+            // first-time users see on launch. Useful for users who
+            // dismissed the page and want to revisit the feature
+            // tour, or who arrived via an in-place migration that
+            // skipped the first-run flow.
+            welcome_menu_item(),
+            MenuItem::Separator,
             feedback_menu_item(),
             link_menu_item("Wish Documentation...", links::USER_DOCS_URL.into()),
             link_menu_item("GitHub Issues...", links::GITHUB_ISSUES_URL.into()),
             link_menu_item("Wish Community...", links::SLACK_URL.into()),
         ],
     )
+}
+
+/// Menu item that opens the Wish welcome page in a new tab.
+///
+/// Implementation mirrors [`feedback_menu_item`] — dispatches a
+/// global action that the root view routes to the active workspace.
+fn welcome_menu_item() -> MenuItem {
+    MenuItem::Custom(CustomMenuItem::new(
+        "Show Welcome Page",
+        move |ctx| {
+            ctx.dispatch_global_action("root_view:show_welcome_page", &());
+        },
+        no_updates,
+        None,
+    ))
 }
 
 fn make_launch_config_menu_items(ctx: &mut AppContext) -> Vec<MenuItem> {

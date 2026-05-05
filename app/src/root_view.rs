@@ -312,6 +312,7 @@ pub fn init(app: &mut AppContext) {
     );
     app.add_global_action("root_view:open_launch_config", open_launch_config);
     app.add_global_action("root_view:send_feedback", send_feedback);
+    app.add_global_action("root_view:show_welcome_page", show_welcome_page);
     app.add_global_action("root_view:detach_tab_immediate", |arg, ctx| {
         let _ = detach_tab_with_transfer(arg, ctx);
     });
@@ -620,6 +621,25 @@ fn send_feedback(_: &(), ctx: &mut AppContext) {
         });
     } else {
         ctx.open_url(&crate::util::links::feedback_form_url());
+    }
+}
+
+/// Open the Wish welcome page as a new tab in the active workspace.
+///
+/// This is the global-action entry point used by both the Help menu
+/// item and any other top-level surface. It routes through the active
+/// workspace's typed-action handler so the welcome tab is added to
+/// the right window. If no workspace is active (rare — e.g., a
+/// settings-only window), the action is a no-op rather than spawning
+/// a new window, since the welcome page is intrinsically a workspace
+/// tab.
+fn show_welcome_page(_: &(), ctx: &mut AppContext) {
+    if let Some(workspace) = active_workspace(ctx) {
+        workspace.update(ctx, |workspace, ctx| {
+            workspace.handle_action(&WorkspaceAction::ShowWelcomePage, ctx);
+        });
+    } else {
+        log::debug!("show_welcome_page: no active workspace; ignoring");
     }
 }
 
