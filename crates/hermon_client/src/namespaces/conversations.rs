@@ -52,7 +52,10 @@ impl ConversationsNamespace {
             if let Some(s) = f.status {
                 params.push((
                     "status".to_string(),
-                    serde_json::to_string(&s).unwrap().trim_matches('"').to_string(),
+                    serde_json::to_string(&s)
+                        .unwrap()
+                        .trim_matches('"')
+                        .to_string(),
                 ));
             }
             if let Some(s) = f.search {

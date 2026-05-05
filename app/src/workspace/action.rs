@@ -167,32 +167,7 @@ pub enum WorkspaceAction {
     ApplyUpdate,
     LogOut,
     CopyVersion(&'static str),
-    /// Open the Wish welcome page in a new tab. Accessible from Settings → About.
     ShowWelcomePage,
-    /// Trigger a refresh of [`crate::ai::agent_registry::AgentRegistryModel`]
-    /// from the Hermon backend. Dispatched by the "Refresh" button on the
-    /// Built-in Agents settings page.
-    RefreshAgentRegistry,
-    /// Toggle the expansion state of an agent card on the Built-in
-    /// Agents settings page. Identifies the agent by slug (stable across
-    /// registry refreshes — see [`crate::ai::agent_registry::ui_state`]).
-    ToggleAgentDetails {
-        slug: String,
-    },
-    /// Copy an agent's slug to the system clipboard. Useful for pasting
-    /// into chat as an `@<slug>` reference once command-palette
-    /// integration is built.
-    CopyAgentSlug {
-        slug: String,
-    },
-    /// Update the active search query for the Built-in Agents page.
-    /// Dispatched on every text change in the page's search input;
-    /// the workspace handler forwards to
-    /// [`crate::ai::agent_registry::BuiltInAgentsUiState`], which
-    /// emits a `SearchQueryChanged` event the page subscribes to.
-    SetAgentSearchQuery {
-        query: String,
-    },
     DownloadNewVersion,
     ConfigureKeybindingSettings {
         keybinding_name: Option<String>,
@@ -223,6 +198,21 @@ pub enum WorkspaceAction {
     },
     ShowUpgrade,
     ShowReferralSettingsPage,
+    RefreshAgentRegistry,
+    ToggleAgentDetails {
+        slug: String,
+    },
+    CopyAgentSlug {
+        slug: String,
+    },
+    SetAgentSearchQuery {
+        query: String,
+    },
+    ClearCompletedTasks,
+    CreateDemoTasks,
+    DismissTask {
+        task_id: String,
+    },
     JoinSlack,
     ViewUserDocs,
     ViewLatestChangelog,
@@ -272,23 +262,14 @@ pub enum WorkspaceAction {
         tab_index: usize,
         tab_position: RectF,
     },
-    HandoffPendingTransfer {
-        target_window_id: WindowId,
-        insertion_index: usize,
-    },
-    ReverseHandoff {
-        target_window_id: WindowId,
-        target_insertion_index: usize,
-    },
     DropTab,
-    FinalizeDropTab,
-    /// Toggles the left panel. In Code Mode V1 this toggles Wish Drive.
+    /// Toggles the left panel. In Code Mode V1 this toggles Warp Drive.
     /// In Code Mode V2 this toggles the left panel which contains both the project explorer and
-    /// Wish Drive. This happens as explicit action from the user.
+    /// Warp Drive. This happens as explicit action from the user.
     ToggleLeftPanel,
-    /// Toggles directly to the Wish Drive tab of the left panel in Code Mode V2
+    /// Toggles directly to the Warp Drive tab of the left panel in Code Mode V2
     ToggleWarpDrive,
-    /// Unconditionally opens Wish Drive. This is used in the case of user lifecycle
+    /// Unconditionally opens Warp Drive. This is used in the case of user lifecycle
     /// events like new user onboarding or when the user joins a team.
     OpenWarpDrive,
     /// Toggles the right panel. This happens as an explicit action from the user.
@@ -351,7 +332,7 @@ pub enum WorkspaceAction {
     SignupAnonymousUser,
     SignInAnonymousWebUser,
     OpenLink(String),
-    /// On WASM, opens a given URL in the desktop Wish app (if installed) or redirects to download page.
+    /// On WASM, opens a given URL in the desktop Warp app (if installed) or redirects to download page.
     #[cfg(target_family = "wasm")]
     OpenLinkOnDesktop(url::Url),
     ReopenClosedSession,
@@ -523,10 +504,10 @@ pub enum WorkspaceAction {
     QueuePromptForConversation {
         prompt: String,
     },
-    /// Install the Wish CLI command to /usr/local/bin
+    /// Install the Warp CLI command to /usr/local/bin
     #[cfg(target_os = "macos")]
     InstallCLI,
-    /// Uninstall the Wish CLI command from /usr/local/bin
+    /// Uninstall the Warp CLI command from /usr/local/bin
     #[cfg(target_os = "macos")]
     UninstallCLI,
     UndoRevertInCodeReviewPane {
@@ -791,10 +772,6 @@ impl WorkspaceAction {
             | ApplyUpdate
             | CopyVersion(_)
             | ShowWelcomePage
-            | RefreshAgentRegistry
-            | ToggleAgentDetails { .. }
-            | CopyAgentSlug { .. }
-            | SetAgentSearchQuery { .. }
             | DownloadNewVersion
             | ConfigureKeybindingSettings { .. }
             | ExportAllWarpDriveObjects
@@ -813,6 +790,13 @@ impl WorkspaceAction {
             | TogglePalette { mode: _, source: _ }
             | ShowUpgrade
             | ShowReferralSettingsPage
+            | RefreshAgentRegistry
+            | ToggleAgentDetails { .. }
+            | CopyAgentSlug { .. }
+            | SetAgentSearchQuery { .. }
+            | ClearCompletedTasks
+            | CreateDemoTasks
+            | DismissTask { .. }
             | JoinSlack
             | ViewUserDocs
             | ViewLatestChangelog
@@ -858,10 +842,7 @@ impl WorkspaceAction {
             | CreateTeamAIPrompt
             | OpenInExplorer { .. }
             | DragTab { .. }
-            | HandoffPendingTransfer { .. }
-            | ReverseHandoff { .. }
             | StartTabDrag
-            | FinalizeDropTab
             | ToggleLeftPanel
             | ToggleWarpDrive
             | OpenWarpDrive

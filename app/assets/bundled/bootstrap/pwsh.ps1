@@ -1,11 +1,11 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Scope = 'Function', Target = 'Wish-*', Justification = 'Wish-* functions are ours')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Scope = 'Function', Target = 'Warp-*', Justification = 'Warp-* functions are ours')]
 param()
 
 # Wrap things in a module to avoid cluttering the global scope. We assign it to '$null' to suppress
 # the console output from creating the module.
 # NOTE: If you do need a function to be global and also have access to variables in this scope, add
 # the function name to the 'Export-ModuleMember' call at the end.
-$null = New-Module -Name Wish-Module -ScriptBlock {
+$null = New-Module -Name Warp-Module -ScriptBlock {
     # Byte sequence used to signal the start of an OSC for Warp JSON messages.
     $oscStart = "$([char]0x1b)]9278;"
 
@@ -18,14 +18,14 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
     $oscEnd = "$([char]0x07)"
 
     # Writes a hex-encoded JSON message to the PTY.
-    function Wish-Send-JsonMessage([System.Collections.Hashtable]$table) {
+    function Warp-Send-JsonMessage([System.Collections.Hashtable]$table) {
         $json = ConvertTo-Json -InputObject $table -Compress
         # Sends a message to the controlling terminal as an OSC control sequence.
         # TODO(CORE-2718): Determine if we need to hex encode the payload.
         # Note that because the JSON string may contain characters that we don't control (including
         # unicode), we encode it as hexadecimal string to avoid prematurely calling unhook if
         # one of the bytes in JSON is 9c (ST) or other (CAN, SUB, ESC).
-        $encodedMessage = Wish-Encode-HexString $json
+        $encodedMessage = Warp-Encode-HexString $json
         Write-Host -NoNewline "$oscStart$oscJsonMarker$oscParamSeparator$encodedMessage$oscEnd"
     }
 
@@ -46,13 +46,13 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
 
         $oscResetGrid = "$([char]0x1b)]9279$oscEnd"
 
-        function Wish-Send-ResetGridOSC() {
+        function Warp-Send-ResetGridOSC() {
             Write-Host -NoNewline $oscResetGrid
         }
 
         # Safely attempt to get Node.js version if available. Avoid literal 'node' invocation
         # to satisfy PSUseCompatibleCommands across target platforms.
-        function Wish-TryGet-NodeVersion {
+        function Warp-TryGet-NodeVersion {
             try {
                 $cmd = Get-Command -CommandType Application node 2>$null
                 if ($null -eq $cmd) { return '' }
@@ -68,7 +68,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         }
 
         # Encode a string as hex-encoded UTF-8.
-        function Wish-Encode-HexString([string]$str) {
+        function Warp-Encode-HexString([string]$str) {
             [BitConverter]::ToString([System.Text.Encoding]::UTF8.GetBytes($str)).Replace('-', '')
         }
 
@@ -76,18 +76,18 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         # sequences for generator output.
         #
         # The payload of the OSC is "<content_length>;<hex-encoded content>".
-        function Wish-Send-GeneratorOutputOsc {
+        function Warp-Send-GeneratorOutputOsc {
             param([string]$message)
 
-            $hexEncodedMessage = Wish-Encode-HexString $message
+            $hexEncodedMessage = Warp-Encode-HexString $message
             $byteCount = [System.Text.Encoding]::ASCII.GetByteCount($hexEncodedMessage)
 
             Write-Host -NoNewline "$oscStartGeneratorOutput$byteCount;$hexEncodedMessage$oscEndGeneratorOutput"
-            Wish-Send-ResetGridOSC
+            Warp-Send-ResetGridOSC
         }
 
         # Do not run this in the main thread. It mucks around with some env vars
-        function Wish-Run-InBandGenerator {
+        function Warp-Run-InBandGenerator {
             [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '', Justification = 'We actually need it')]
             param([string]$commandId, [string]$command)
 
@@ -115,7 +115,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                 $stringifiedOutput = $rawOutput -join "$([char]0x0a)"
 
                 # This is a best-effort attempt to get an error code.
-                # We cannot duplicate our error code logic from Wish-Precmd
+                # We cannot duplicate our error code logic from Warp-Precmd
                 # b/c Invoke-Expression will swallow the value of $? and always
                 # return true. So we do our best to return a legit error code
                 Write-Output "$commandId;$stringifiedOutput;$exitCode"
@@ -134,7 +134,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         [decimal]([DateTime]::UtcNow - [DateTime]::new(1970, 1, 1, 0, 0, 0, 0)).Ticks / 1e7
     }
 
-    function Wish-Bootstrapped {
+    function Warp-Bootstrapped {
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', 'WARP_BOOTSTRAPPED', Justification = 'False positive as we are assigning to global')]
         param([decimal]$rcStartTime, [decimal]$rcEndTime)
 
@@ -221,11 +221,11 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                 shell_path = (Get-Process -Id $PID).Path
             }
         }
-        Wish-Send-JsonMessage $bootstrappedMsg
+        Warp-Send-JsonMessage $bootstrappedMsg
         $global:WARP_BOOTSTRAPPED = 1
     }
 
-    function Wish-Preexec([string]$command) {
+    function Warp-Preexec([string]$command) {
         $HOST.UI.RawUI.WindowTitle = $command
         $preexecMsg = @{
             hook = 'Preexec'
@@ -233,34 +233,34 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                 command = $command
             }
         }
-        Wish-Send-JsonMessage $preexecMsg
-        Wish-Send-ResetGridOSC
+        Warp-Send-JsonMessage $preexecMsg
+        Warp-Send-ResetGridOSC
 
         # If this preexec is called for user command, kill ongoing generator command jobs and clean
         # up the bookkeeping temp files used to bookkeep.
-        if (-not "$command" -match '^Wish-Run-GeneratorCommand') {
-            Wish-Stop-ActiveThread
+        if (-not "$command" -match '^Warp-Run-GeneratorCommand') {
+            Warp-Stop-ActiveThread
         }
 
         # Clean up any completed warp jobs so they do not show up on the user's 'get-job'
-        # comands
-        Wish-Clean-CompletedThread
+        # commands
+        Warp-Clean-CompletedThread
 
-        # Remove any instance of the 'Wish-Run-GeneratorCommand' call from the user's history
-        Clear-History -CommandLine 'Wish-Run-GeneratorCommand*'
+        # Remove any instance of the 'Warp-Run-GeneratorCommand' call from the user's history
+        Clear-History -CommandLine 'Warp-Run-GeneratorCommand*'
     }
 
-    function Wish-Finish-Update([string]$updateId) {
+    function Warp-Finish-Update([string]$updateId) {
         $updateMsg = @{
             hook = 'FinishUpdate'
             value = @{
                 update_id = $updateId
             }
         }
-        Wish-Send-JsonMessage $updateMsg
+        Warp-Send-JsonMessage $updateMsg
     }
 
-    function Wish-Handle-DistUpgrade {
+    function Warp-Handle-DistUpgrade {
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '', Justification = 'We actually need it')]
         param([string]$sourceFileName)
 
@@ -288,11 +288,11 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
     # 2. We need to make sure that we are calling the Application git, and not
     #    an alias or cmdlet named Git
     #
-    # NOTE: Inlining this call in the function has a weird side effect of outputing
+    # NOTE: Inlining this call in the function has a weird side effect of outputting
     #    an escape sequence '^[i'. Since it made it more convenient to have a wrapper
     #    function anyway, I have not investigated this, but in case someone is working
     #    on this in the future, beware attempting to inline this function.
-    function Wish-Git {
+    function Warp-Git {
         $GIT_OPTIONAL_LOCKS = $env:GIT_OPTIONAL_LOCKS
         $env:GIT_OPTIONAL_LOCKS = 0
         try {
@@ -308,7 +308,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
     #
     # Make sure when you call this you call it with -ErrorAction SilentlyContinue
     # or it will print out error information when it is invoked.
-    function Wish-Restore-ErrorStatus {
+    function Warp-Restore-ErrorStatus {
         [CmdletBinding()]
         param([boolean]$status, [int]$code)
 
@@ -325,11 +325,11 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
 
     # Tracks whether or not powershell is unable to find a command.
     # See the $ExecutionContext.InvokeCommand.CommandNotFoundAction where it is set to $true,
-    # and both $ExecutionContext.InvokeCommand.PostCommandLookupAction and Wish-Precmd where
+    # and both $ExecutionContext.InvokeCommand.PostCommandLookupAction and Warp-Precmd where
     # it is set to $false.
     $script:commandNotFound = $false
 
-    function Wish-Configure-PSReadLine {
+    function Warp-Configure-PSReadLine {
         # Set-PSReadLineKeyHandler is the PowerShell equivalent of zsh's bindkey.
         Set-PSReadLineKeyHandler -Chord 'Alt+2' -Function BackwardDeleteLine
 
@@ -347,7 +347,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                     buffer = $inputBuffer
                 }
             }
-            Wish-Send-JsonMessage $inputBufferMsg
+            Warp-Send-JsonMessage $inputBufferMsg
             [Microsoft.PowerShell.PSConsoleReadLine]::BackwardDeleteLine()
             # This is triggered after precmd, so output here goes to the "early output" handler,
             # i.e. the background block. This clears the line the cursor is on. We clear it out b/c
@@ -364,32 +364,32 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         # Is the equivalent of warp_change_prompt_modes_to_ps1 in other shells
         Set-PSReadLineKeyHandler -Chord 'Alt+p' -ScriptBlock {
             $env:WARP_HONOR_PS1 = '1'
-            Wish-Redraw-Prompt
+            Warp-Redraw-Prompt
         }
 
         # Sets the prompt mode to warp prompt
         # Is the equivalent of warp_change_prompt_modes_to_warp_prompt in other shells
         Set-PSReadLineKeyHandler -Chord 'Alt+w' -ScriptBlock {
             $env:WARP_HONOR_PS1 = '0'
-            Wish-Redraw-Prompt
+            Warp-Redraw-Prompt
         }
 
         Set-PSReadLineOption -AddToHistoryHandler {
             param([string]$line)
 
-            if ($line -match '^Wish-Run-GeneratorCommand') {
+            if ($line -match '^Warp-Run-GeneratorCommand') {
                 return $false
             }
             return $true
         }
 
-        Wish-Disable-PSPrediction
+        Warp-Disable-PSPrediction
     }
 
-    # Force use of the Inline PredictionViewStyle. The ListView style can occassionally cause some
+    # Force use of the Inline PredictionViewStyle. The ListView style can occasionally cause some
     # flickering when using Warp and it doesn't matter what the value of this setting is because
     # Warp has its own input editor.
-    function Wish-Disable-PSPrediction {
+    function Warp-Disable-PSPrediction {
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseCompatibleCommands', '', Justification = 'Errors are ignored')]
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock', '', Justification = 'Errors expected')]
         param()
@@ -400,8 +400,8 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         }
     }
 
-    function Wish-Precmd {
-        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '', Justification = 'Wish-Git should use positionals')]
+    function Warp-Precmd {
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '', Justification = 'Warp-Git should use positionals')]
         param([bool]$status, [int]$code)
         # Our logic here is:
         #
@@ -441,10 +441,10 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                 next_block_id = "precmd-${global:_warpSessionId}-$blockId"
             }
         }
-        Wish-Send-JsonMessage $commandFinishedMsg
-        Wish-Send-ResetGridOSC
+        Warp-Send-JsonMessage $commandFinishedMsg
+        Warp-Send-ResetGridOSC
 
-        Wish-Configure-PSReadLine
+        Warp-Configure-PSReadLine
 
         # If this is being called for a generator command, short circuit and send an unpopulated
         # precmd payload (except for pwd), since we don't re-render the prompt after generator commands
@@ -467,7 +467,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                     is_after_in_band_command = $true
                 }
             }
-            Wish-Send-JsonMessage $precmdMsg
+            Warp-Send-JsonMessage $precmdMsg
         } else {
             # TODO(CORE-2678): Figure out resetting bindkeys here
 
@@ -524,7 +524,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                             }
 
                             if ($inGitRepo) {
-                                $nodeVersion = Wish-TryGet-NodeVersion
+                                $nodeVersion = Warp-TryGet-NodeVersion
                             }
                         }
                     } catch {
@@ -540,12 +540,12 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                 $hasGitCommand = Get-Command -CommandType Application git 2>$null
                 if ($hasGitCommand) {
                     # This is deliberately not using || b/c || only works in Powershell >=7
-                    $gitBranchTmp = Wish-Git symbolic-ref --short HEAD 2>$null
+                    $gitBranchTmp = Warp-Git symbolic-ref --short HEAD 2>$null
                     if ($null -ne $gitBranchTmp) {
                         $gitBranch = $gitBranchTmp
                         $gitHead = $gitBranchTmp
                     } else {
-                        $gitHeadTmp = Wish-Git rev-parse --short HEAD 2>$null
+                        $gitHeadTmp = Warp-Git rev-parse --short HEAD 2>$null
                         if ($null -ne $gitHeadTmp) {
                             $gitHead = $gitHeadTmp
                         }
@@ -575,7 +575,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                     kube_config = $kubeConfig
                 }
             }
-            Wish-Send-JsonMessage $precmdMsg
+            Warp-Send-JsonMessage $precmdMsg
         }
     }
 
@@ -610,7 +610,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         [string]$Command
     }
 
-    function Wish-Run-GeneratorCommandImpl {
+    function Warp-Run-GeneratorCommandImpl {
         param(
             [WarpGeneratorCommand[]]$commands
         )
@@ -631,10 +631,10 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
             $ps.AddScript({
                     param([string]$loc, [string]$commandId, [string]$command)
                     Set-Location $loc
-                    Wish-Run-InBandGenerator -commandId $commandId -command "$command"
+                    Warp-Run-InBandGenerator -commandId $commandId -command "$command"
                 }).AddParameters(@($PWD.Path, $commandId, "$command")) | Out-Null
 
-            $script:threadInner["Wish-Inner-$jobNumber-$batchNumber"] = $psInner
+            $script:threadInner["Warp-Inner-$jobNumber-$batchNumber"] = $psInner
             $batchNumber++
 
             @{
@@ -671,7 +671,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
                     } catch {
                         $output = "$commandId;1;"
                     }
-                    Wish-Send-GeneratorOutputOsc $output
+                    Warp-Send-GeneratorOutputOsc $output
                 }
             }).AddParameters(@($jobs)) | Out-Null
 
@@ -679,16 +679,16 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         # not stopping it as we do not want to block the main thread.
         $async = $psOuter.BeginInvoke()
 
-        $script:threadOuter["Wish-Outer-$jobNumber"] = $psOuter
+        $script:threadOuter["Warp-Outer-$jobNumber"] = $psOuter
     }
 
-    function Wish-Stop-ActiveThread {
+    function Warp-Stop-ActiveThread {
         $script:threadInner.values | ForEach-Object {
             $_.Stop()
         }
     }
 
-    function Wish-Clean-CompletedThread {
+    function Warp-Clean-CompletedThread {
         # Powershell instances states > 2 are terminal.
         # See https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.psinvocationstate
         if ($script:threadInner.Count -gt 0) {
@@ -713,7 +713,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         }
     }
 
-    function Wish-Run-GeneratorCommand {
+    function Warp-Run-GeneratorCommand {
         [CmdletBinding()]
         param(
             [parameter(ValueFromRemainingArguments = $true)][string[]]$passedArgs
@@ -746,9 +746,9 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         }
 
         try {
-            Wish-Run-GeneratorCommandImpl -commands $jobs
+            Warp-Run-GeneratorCommandImpl -commands $jobs
         } finally {
-            # NOTE: for some reason the Wish-Restore-ErrorStatus does not work
+            # NOTE: for some reason the Warp-Restore-ErrorStatus does not work
             # for this function, so we are inlining it in here.
             $global:LASTEXITCODE = $code
             if ($status -eq $false) {
@@ -763,7 +763,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
 
     }
 
-    function Wish-Render-Prompt {
+    function Warp-Render-Prompt {
         param([bool]$status, [int]$code, [bool]$isGeneratorCommand)
 
         # If this is a generator command, we do not want to recompute
@@ -787,7 +787,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         return $basePrompt
     }
 
-    function Wish-Decorate-Prompt {
+    function Warp-Decorate-Prompt {
         param([string]$basePrompt)
 
         $e = "$([char]0x1b)"
@@ -820,7 +820,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
     $script:dontRunPrecmdForPrompt = $false
     # Redraws the prompt. Since our prompt also triggers the precmd hook
     # we need to signal that we do not want that to happen
-    function Wish-Redraw-Prompt {
+    function Warp-Redraw-Prompt {
         param()
 
         $y = $Host.UI.RawUI.CursorPosition.Y
@@ -832,27 +832,27 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         }
     }
 
-    function Wish-Prompt {
+    function Warp-Prompt {
         param()
 
         # We need to capture all the data related to exit codes and such
         # as soon as possible for a few reasons
         # 1. We need to make sure that these values are as fresh as possible
-        #    and are not impacted by our Wish- functions
-        # 2. After we finish running Wish-Precmd and Wish-Render-Prompt, we want to set these values
+        #    and are not impacted by our Warp- functions
+        # 2. After we finish running Warp-Precmd and Warp-Render-Prompt, we want to set these values
         #    back to what they were originally
         $status = $?
         $code = $LASTEXITCODE
         $isGeneratorCommand = [bool]($script:generatorCommand -eq $true)
 
         if ($script:dontRunPrecmdForPrompt -ne $true) {
-            Wish-Precmd -status $status -code $code
+            Warp-Precmd -status $status -code $code
         }
 
         $script:preexecHandled = $false
 
-        $renderedPrompt = Wish-Render-Prompt -status $status -code $code -isGeneratorCommand $isGeneratorCommand
-        $decoratedPrompt = Wish-Decorate-Prompt -basePrompt $renderedPrompt
+        $renderedPrompt = Warp-Render-Prompt -status $status -code $code -isGeneratorCommand $isGeneratorCommand
+        $decoratedPrompt = Warp-Decorate-Prompt -basePrompt $renderedPrompt
         $extraLines = ($decoratedPrompt -split "$([char]0x0a)").Length - 1
         Set-PSReadLineOption -ExtraPromptLineCount $extraLines
 
@@ -898,7 +898,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
             hook = 'Clear'
             value = @{}
         }
-        Wish-Send-JsonMessage $inputBufferMsg
+        Warp-Send-JsonMessage $inputBufferMsg
     }
 
     function clear() {
@@ -906,10 +906,10 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
             hook = 'Clear'
             value = @{}
         }
-        Wish-Send-JsonMessage $inputBufferMsg
+        Warp-Send-JsonMessage $inputBufferMsg
     }
 
-    function Wish-Finish-Bootstrap {
+    function Warp-Finish-Bootstrap {
         param([decimal]$rcStartTime, [decimal]$rcEndTime)
         # This is the closest we can get in PowerShell to a proper preexec hook. We wrap the
         # invocation of PSConsoleHostReadline, and call our preexec hook before returning the
@@ -919,7 +919,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
         $function:global:PSConsoleHostReadLine = {
             $line = & $script:oldPSConsoleHostReadLine
 
-            Wish-Preexec "$line"
+            Warp-Preexec "$line"
 
             $line
         }
@@ -934,9 +934,9 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
             # automatically by PowerShell internals. Runspace is for user-submitted/configured stuff.
             # However, Runspace still includes stuff like the prompt function, PostCommandLookupAction,
             # and the stuff we set during this bootstrap. So, add a condition to prevent preexec from
-            # triggering in those cases. Note that we prefix our own functions with the "Wish-" prefix
+            # triggering in those cases. Note that we prefix our own functions with the "Warp-" prefix
             # so that we can ignore them here.
-            if ($EventArgs.CommandOrigin -ne 'Runspace' -or ($commandLine -match '^prompt$|^Wish-')) {
+            if ($EventArgs.CommandOrigin -ne 'Runspace' -or ($commandLine -match '^prompt$|^Warp-')) {
                 return
             }
             $script:commandNotFound = $true
@@ -944,8 +944,8 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
 
         # This sets up our wrapper around $function:prompt, which runs the precmd hook
         # and computes the user's custom prompt.
-        $function:global:prompt = (Get-Command Wish-Prompt).ScriptBlock
-        Wish-Bootstrapped -rcStartTime $rcStartTime -rcEndTime $rcEndTime
+        $function:global:prompt = (Get-Command Warp-Prompt).ScriptBlock
+        Warp-Bootstrapped -rcStartTime $rcStartTime -rcEndTime $rcEndTime
     }
 
     ###########################################################
@@ -954,13 +954,13 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
 
     # Send a precmd message to the terminal to differentiate between the warp
     # bootstrap logic pasted into the PTY and the output of shell startup files.
-    Wish-Precmd -status $global:? -code $global:LASTEXITCODE
+    Warp-Precmd -status $global:? -code $global:LASTEXITCODE
 
-    Export-ModuleMember -Function clear, Clear-Host, Get-EpochTime, Wish-Finish-Update, Wish-Handle-DistUpgrade, Wish-Run-GeneratorCommand, Wish-Finish-Bootstrap
+    Export-ModuleMember -Function clear, Clear-Host, Get-EpochTime, Warp-Finish-Update, Warp-Handle-DistUpgrade, Warp-Run-GeneratorCommand, Warp-Finish-Bootstrap
 }
 
 # Finally, get ready to source the user's RC files. This must be done in the global scope (not
-# inside Wish-Module) in order to obey the expected scoping in PowerShell's typical startup process.
+# inside Warp-Module) in order to obey the expected scoping in PowerShell's typical startup process.
 . {
     $rcStartTime = Get-EpochTime
     # Source the user's RC files
@@ -1003,7 +1003,7 @@ $null = New-Module -Name Wish-Module -ScriptBlock {
     # and then reset the prompt to our current noop prompt.
     $global:_warpOriginalPrompt = $function:global:prompt
 
-    Wish-Finish-Bootstrap -rcStartTime $rcStartTime -rcEndTime $rcEndTime
+    Warp-Finish-Bootstrap -rcStartTime $rcStartTime -rcEndTime $rcEndTime
     Remove-Variable -Name enterHandler, ctrlcHandler, rcStartTime, rcEndTime -Scope global -ErrorAction Ignore
 
     # Restore the process's original execution policy now that the user's RC files have been loaded.

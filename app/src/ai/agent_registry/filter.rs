@@ -88,7 +88,8 @@ pub fn matches_query(entry: &RegistryEntry, query: &str) -> bool {
 /// fields), but the function returns them in priority order so
 /// future scoring/highlight logic has a stable basis to work from.
 fn searchable_fields(entry: &RegistryEntry) -> Vec<String> {
-    let mut fields = Vec::with_capacity(8 + entry.agent.tools.len() + entry.agent.capabilities.len());
+    let mut fields =
+        Vec::with_capacity(8 + entry.agent.tools.len() + entry.agent.capabilities.len());
     fields.push(entry.agent.name.clone());
     fields.push(entry.agent.slug.clone());
     fields.push(agent_type_label(&entry.agent.agent_type).to_string());

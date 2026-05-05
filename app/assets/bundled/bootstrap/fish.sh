@@ -11,7 +11,7 @@ begin
 set -l saved_fish_private_mode $fish_private_mode
 set -g fish_private_mode 1
 
-# Disable fish autosuggestions - because input goes through Wish's editor instead,
+# Disable fish autosuggestions - because input goes through Warp's editor instead,
 # they are never actionable, and the extra output can cause problems.
 set -g fish_autosuggestion_enabled 0
 
@@ -165,7 +165,7 @@ function warp_preexec --on-event fish_preexec
     # If this preexec is called for user command, kill ongoing generator command jobs.
     if test (! string match -q "warp_run_generator_command*" $argv[1])
         for pid in $_warp_generator_pids
-            # Surpress stderr output; kill writes to stderr if any of the given
+            # Suppress stderr output; kill writes to stderr if any of the given
             # PIDS are not running (which might rarely be the case due to race
             # conditions in checking which PIDS to cancel and this kill command.
             kill -9 $pids >/dev/null 2>/dev/null
@@ -238,7 +238,7 @@ function warp_update_prompt_vars
 end
 
 # Changes the WARP_HONOR_PS1 variable to 1, to indicate we want to use the user's custom prompt. Restores
-# the original fish prompt functions (which we set to empty for Wish prompt) by calling warp_update_prompt_vars
+# the original fish prompt functions (which we set to empty for Warp prompt) by calling warp_update_prompt_vars
 # to refresh the prompt. We force a repaint of the prompt to ensure the change is reflected immediately.
 function warp_change_prompt_modes_to_ps1
   set -x WARP_HONOR_PS1 "1"
@@ -249,8 +249,8 @@ function warp_change_prompt_modes_to_ps1
   commandline -f repaint
 end
 
-# Changes the WARP_HONOR_PS1 variable to 0, to indicate we want to use the Wish prompt. Saves and clears
-# the fish prompt functions (which we set to empty for Wish prompt) by calling warp_update_prompt_vars
+# Changes the WARP_HONOR_PS1 variable to 0, to indicate we want to use the Warp prompt. Saves and clears
+# the fish prompt functions (which we set to empty for Warp prompt) by calling warp_update_prompt_vars
 # to refresh the prompt. We force a repaint of the prompt to ensure the change is reflected immediately.
 function warp_change_prompt_modes_to_warp_prompt
   set -x WARP_HONOR_PS1 "0"
@@ -311,7 +311,7 @@ function warp_precmd --on-event fish_prompt --on-event fish_posterror
     # We use the ESC-p bindkey for this ("p" for PS1/custom prompt).
     bind \ep warp_change_prompt_modes_to_ps1
 
-    # We use the ESC-w bindkey for this ("w" for Wish prompt).
+    # We use the ESC-w bindkey for this ("w" for Warp prompt).
     bind \ew warp_change_prompt_modes_to_warp_prompt
 
     bind \ei warp_report_input
@@ -401,8 +401,8 @@ function warp_precmd --on-event fish_prompt --on-event fish_posterror
     warp_update_prompt_vars
     # This is used solely for prompt previews, when we're using prompt markers with combined grid.
     # We need to use this since fish does not have a way to ignore printable characters for cursor
-    # positioning (unlike zsh/bash), so we need a separate mechansim to send the prompt to Warp
-    # in the case of Wish prompt (for previewing the PS1). We send an escaped version of the raw prompt
+    # positioning (unlike zsh/bash), so we need a separate mechanism to send the prompt to Warp
+    # in the case of Warp prompt (for previewing the PS1). We send an escaped version of the raw prompt
     # bytes via a hex string (in a JSON payload) to Warp.
     # Note that we are CALLING the `warp_original_fish_prompt` function on the next line and assigning the
     # outputted string to the local variable `raw_prompt_for_preview`.
@@ -523,7 +523,7 @@ function warp_init_shell
 end
 
 # Add a key binding to report the current input buffer to Warp. We can override
-# any user-defined binds here because user input goes through Wish's editor, not
+# any user-defined binds here because user input goes through Warp's editor, not
 # the fish line editor.
 # This is arbitrarily bound to ESC-i in all supported shells ("i" for input).
 # Binding to ESC-1 caused bootstrap failures with vi keybindings.

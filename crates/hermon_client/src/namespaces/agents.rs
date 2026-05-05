@@ -55,13 +55,19 @@ impl AgentsNamespace {
             if let Some(t) = f.agent_type {
                 params.push((
                     "agentType".to_string(),
-                    serde_json::to_string(&t).unwrap().trim_matches('"').to_string(),
+                    serde_json::to_string(&t)
+                        .unwrap()
+                        .trim_matches('"')
+                        .to_string(),
                 ));
             }
             if let Some(v) = f.visibility {
                 params.push((
                     "visibility".to_string(),
-                    serde_json::to_string(&v).unwrap().trim_matches('"').to_string(),
+                    serde_json::to_string(&v)
+                        .unwrap()
+                        .trim_matches('"')
+                        .to_string(),
                 ));
             }
             if let Some(s) = f.search {
@@ -143,11 +149,7 @@ impl AgentsNamespace {
     }
 
     /// Clone an agent (fork from existing).
-    pub async fn clone_agent(
-        &self,
-        agent_id: &str,
-        new_name: &str,
-    ) -> Result<Agent, HermonError> {
+    pub async fn clone_agent(&self, agent_id: &str, new_name: &str) -> Result<Agent, HermonError> {
         let path = format!("/v1/agents/{agent_id}/clone");
         let body = serde_json::json!({ "name": new_name });
         let opts = RequestOptions::post(path).with_body(&body);

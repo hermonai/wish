@@ -4,6 +4,7 @@ pub mod bonus_grant_notification_model;
 #[cfg(target_os = "macos")]
 mod cli_install;
 mod close_session_confirmation_dialog;
+pub(crate) mod cross_window_tab_drag;
 pub mod delete_conversation_confirmation_dialog;
 mod global_actions;
 pub mod header_toolbar_editor;
@@ -100,6 +101,7 @@ pub use toast_stack::ToastStack;
 
 pub fn init(app: &mut AppContext) {
     app.add_singleton_model(|_| WorkspaceRegistry::new());
+    app.add_singleton_model(|_| cross_window_tab_drag::CrossWindowTabDrag::new());
     use wishui::keymap::macros::*;
     app.register_binding_validator::<Workspace>(is_binding_pty_compliant);
 
@@ -229,13 +231,13 @@ pub fn init(app: &mut AppContext) {
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
                     "workspace:install_opencode_warp_plugin",
-                    "[Debug] Install OpenCode Wish plugin",
+                    "[Debug] Install OpenCode Warp plugin",
                     WorkspaceAction::InstallOpenCodeWarpPlugin,
                 )
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
                     "workspace:use_local_opencode_warp_plugin",
-                    "[Debug] Use local OpenCode Wish plugin (testing only)",
+                    "[Debug] Use local OpenCode Warp plugin (testing only)",
                     WorkspaceAction::UseLocalOpenCodeWarpPlugin,
                 )
                 .with_context_predicate(id!("Workspace")),
@@ -763,7 +765,7 @@ pub fn init(app: &mut AppContext) {
         .with_custom_action(CustomAction::ToggleGlobalSearch),
         EditableBinding::new(
             LEFT_PANEL_WARP_DRIVE_BINDING_NAME,
-            BindingDescription::new("Left Panel: Wish Drive"),
+            BindingDescription::new("Left Panel: Warp Drive"),
             WorkspaceAction::ToggleWarpDrive,
         )
         .with_group(bindings::BindingGroup::Navigation.as_str())
@@ -789,8 +791,8 @@ pub fn init(app: &mut AppContext) {
         .with_linux_or_windows_key_binding("alt-shift-F"),
         EditableBinding::new(
             TOGGLE_WARP_DRIVE_BINDING_NAME,
-            BindingDescription::new("Toggle Wish Drive")
-                .with_custom_description(bindings::MAC_MENUS_CONTEXT, "Wish Drive"),
+            BindingDescription::new("Toggle Warp Drive")
+                .with_custom_description(bindings::MAC_MENUS_CONTEXT, "Warp Drive"),
             WorkspaceAction::ToggleWarpDrive,
         )
         .with_context_predicate(id!("Workspace") & id!(flags::ENABLE_WARP_DRIVE)),
@@ -915,7 +917,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "workspace:terminate_app",
-            "Quit Wish",
+            "Quit Warp",
             WorkspaceAction::TerminateApp,
         )
         .with_context_predicate(id!("Workspace"))
@@ -1020,7 +1022,7 @@ pub fn init(app: &mut AppContext) {
         EditableBinding::new(
             // If you rename this name, please update the name in command_palette/action/data_source.rs
             "workspace:search_drive",
-            "Search Wish Drive",
+            "Search Warp Drive",
             WorkspaceAction::OpenPalette {
                 mode: PaletteMode::WarpDrive,
                 source: PaletteSource::Keybinding,
@@ -1075,7 +1077,7 @@ pub fn init(app: &mut AppContext) {
     if cfg!(not(target_family = "wasm")) {
         app.register_editable_bindings([EditableBinding::new(
             "workspace:export_all_warp_drive_objects",
-            "Export all Wish Drive objects",
+            "Export all Warp Drive objects",
             WorkspaceAction::ExportAllWarpDriveObjects,
         )
         .with_group(bindings::BindingGroup::Settings.as_str())
@@ -1088,14 +1090,14 @@ pub fn init(app: &mut AppContext) {
         app.register_editable_bindings([
             EditableBinding::new(
                 "workspace:install_cli",
-                "Install Wish CLI command",
+                "Install Oz CLI command",
                 WorkspaceAction::InstallCLI,
             )
             .with_group(bindings::BindingGroup::Settings.as_str())
             .with_context_predicate(id!("Workspace")),
             EditableBinding::new(
                 "workspace:uninstall_cli",
-                "Uninstall Wish CLI command",
+                "Uninstall Oz CLI command",
                 WorkspaceAction::UninstallCLI,
             )
             .with_group(bindings::BindingGroup::Settings.as_str())
@@ -1114,7 +1116,7 @@ pub fn init(app: &mut AppContext) {
             )
             .with_context_predicate(id!("Workspace") & !id!("UpdateToastVisible"))
             .with_group(bindings::BindingGroup::Settings.as_str())
-            // Note that while the changelog resides in WishEssentials, we should gate access to
+            // Note that while the changelog resides in WarpEssentials, we should gate access to
             // the changelog based on whether WarpEssentials is an available view.
             .with_enabled(|| ContextFlag::WarpEssentials.is_enabled()),
             // When the update toast is visible, register the keybinding as well.
@@ -1148,14 +1150,14 @@ pub fn init(app: &mut AppContext) {
         .with_custom_action(CustomAction::NewAgentModePane),
         EditableBinding::new(
             "workspace:toggle_ai_assistant",
-            "Toggle Wish AI",
+            "Toggle Warp AI",
             WorkspaceAction::ToggleAIAssistant,
         )
         .with_enabled(|| !FeatureFlag::AgentMode.is_enabled())
         .with_context_predicate(id!("Workspace") & id!(flags::IS_ANY_AI_ENABLED))
         .with_group(bindings::BindingGroup::WarpAi.as_str())
         // We use the same custom action as AM so that we don't have
-        // two mac menu items for AM vs Wish AI since they are mutually exclusive.
+        // two mac menu items for AM vs Warp AI since they are mutually exclusive.
         .with_custom_action(CustomAction::NewAgentModePane),
     ]);
 
@@ -1396,7 +1398,7 @@ fn add_open_setting_pages_as_editable_binding(app: &mut AppContext) {
         EditableBinding::new(
             "workspace:show_settings_about_page",
             BindingDescription::new("Open Settings: About")
-                .with_custom_description(bindings::MAC_MENUS_CONTEXT, "About Wish"),
+                .with_custom_description(bindings::MAC_MENUS_CONTEXT, "About Warp"),
             WorkspaceAction::ShowSettingsPage(SettingsSection::About),
         )
         .with_group(bindings::BindingGroup::Settings.as_str())
@@ -1420,8 +1422,8 @@ fn add_open_setting_pages_as_editable_binding(app: &mut AppContext) {
         .with_context_predicate(id!("Workspace")),
         EditableBinding::new(
             "workspace:show_settings_warpify_page",
-            BindingDescription::new("Open Settings: Wishify")
-                .with_custom_description(bindings::MAC_MENUS_CONTEXT, "Configure Wishify..."),
+            BindingDescription::new("Open Settings: Warpify")
+                .with_custom_description(bindings::MAC_MENUS_CONTEXT, "Configure Warpify..."),
             WorkspaceAction::ShowSettingsPage(SettingsSection::Wishify),
         )
         .with_group(bindings::BindingGroup::Settings.as_str())
@@ -1515,7 +1517,7 @@ fn add_overflow_menu_items_as_editable_binding(app: &mut AppContext) {
         #[cfg(not(target_family = "wasm"))]
         EditableBinding::new(
             "workspace:view_logs",
-            "View Wish logs",
+            "View Warp logs",
             WorkspaceAction::ViewLogs,
         )
         .with_context_predicate(id!("Workspace")),

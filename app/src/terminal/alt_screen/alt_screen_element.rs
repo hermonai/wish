@@ -38,7 +38,7 @@ use wishui::text::SelectionType;
 use super::{should_intercept_mouse, should_intercept_scroll};
 use std::ops::{Deref as _, Range};
 use std::sync::Arc;
-use wishui::elements::{Axis, Fill, Point as UiPoint, ScrollData, ScrollableElement};
+use wishui::elements::{Axis, Point as UiPoint, ScrollData, ScrollableElement};
 use wishui::fonts::Properties;
 use wishui::geometry::rect::RectF;
 use wishui::geometry::vector::Vector2F;
@@ -722,15 +722,6 @@ impl Element for AltScreenElement {
             get_secret_obfuscation_mode(app).and(&grid.get_secret_obfuscation());
 
         let mut sampler = model.alt_screen().bg_color_sampler.lock();
-        if let Some(bg_color) = sampler.most_common() {
-            if !bg_color.is_fully_transparent() {
-                if let Some(bounds) = self.bounds {
-                    ctx.scene
-                        .draw_rect_without_hit_recording(bounds)
-                        .with_background(Fill::Solid(bg_color));
-                }
-            }
-        }
         sampler.reset();
 
         // Render grid cells. Since the alt screen has no scrollback we can always start at index 0.

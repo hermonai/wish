@@ -11,9 +11,7 @@
 //! deterministic synthetic IDs derived from the slug so downstream callers
 //! don't have to special-case "no ID yet" cases.
 
-use hermon_client::types::agent::{
-    Agent, AgentVisibility, CreateAgentRequest,
-};
+use hermon_client::types::agent::{Agent, AgentVisibility, CreateAgentRequest};
 use hermon_client::types::sdlc;
 
 /// Owner ID stamped on locally-synthesized built-in agents.
@@ -125,8 +123,7 @@ mod tests {
         // Sanity check that the conversion preserves slugs — slugs are the
         // public API for user-facing references like @wish-coder.
         let agents = builtin_agents();
-        let slugs: std::collections::HashSet<_> =
-            agents.iter().map(|a| a.slug.as_str()).collect();
+        let slugs: std::collections::HashSet<_> = agents.iter().map(|a| a.slug.as_str()).collect();
         assert!(slugs.contains(sdlc::slugs::PLANNER));
         assert!(slugs.contains(sdlc::slugs::CODER));
         assert!(slugs.contains(sdlc::slugs::REVIEWER));

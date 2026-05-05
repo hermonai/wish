@@ -202,10 +202,7 @@ pub enum TaskAnnotation {
     },
     /// A search (grep/glob) was run. `query` is the pattern,
     /// `match_count` is the number of hits.
-    Search {
-        query: String,
-        match_count: usize,
-    },
+    Search { query: String, match_count: usize },
     /// A free-form note from the agent ("Background task completed",
     /// "2 shells running", etc.). Rendered as plain text in the
     /// panel.

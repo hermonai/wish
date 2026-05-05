@@ -77,10 +77,10 @@ mod about_page;
 mod admin_actions;
 mod agent_assisted_environment_modal;
 mod ai_page;
-mod builtin_agents_page;
 mod appearance_page;
 mod billing_and_usage;
 mod billing_and_usage_page;
+mod builtin_agents_page;
 mod code_page;
 mod delete_environment_confirmation_dialog;
 mod directory_color_add_picker;
@@ -99,6 +99,7 @@ mod platform_page;
 mod privacy;
 mod privacy_page;
 mod referrals_page;
+pub(crate) mod sdlc_tasks_page;
 mod settings_file_footer;
 pub(crate) mod settings_page;
 mod show_blocks_view;
@@ -192,6 +193,8 @@ pub enum SettingsSection {
     Account,
     /// Browse all available agents (Hermon-fetched + built-in SDLC).
     BuiltInAgents,
+    /// Live view of SDLC agent tool invocations (Tasks panel).
+    SdlcTasks,
     MCPServers,
     BillingAndUsage,
     Appearance,
@@ -235,6 +238,7 @@ impl Display for SettingsSection {
         match self {
             SettingsSection::BillingAndUsage => write!(f, "Billing and usage"),
             SettingsSection::BuiltInAgents => write!(f, "Built-in Agents"),
+            SettingsSection::SdlcTasks => write!(f, "SDLC Tasks"),
             SettingsSection::Keybindings => write!(f, "Keyboard shortcuts"),
             SettingsSection::SharedBlocks => write!(f, "Shared blocks"),
             SettingsSection::MCPServers => write!(f, "MCP Servers"),
@@ -473,6 +477,10 @@ pub mod flags {
     /// When set, ctrl-enter should accept a prompt suggestion rather than insert a newline.
     /// This flag is set by the terminal Input when there's a pending passive code diff.
     pub const CTRL_ENTER_ACCEPTS_PROMPT_SUGGESTION: &str = "CtrlEnterAcceptsPromptSuggestion";
+    /// When set, the terminal input owns Page Up / Page Down so the editor's fixed bindings
+    /// should not match.
+    pub const TERMINAL_INPUT_PAGE_KEYS_HANDLED_BY_INPUT: &str =
+        "TerminalInputPageKeysHandledByInput";
     pub const HAS_PENDING_PROMPT_SUGGESTION: &str = "HasPendingPromptSuggestion";
     pub const ACTIVE_AGENT_VIEW: &str = "ActiveAgentView";
     pub const ACTIVE_INLINE_AGENT_VIEW: &str = "ActiveInlineAgentView";
@@ -975,6 +983,7 @@ macro_rules! update_page {
             SettingsPageViewHandle::MCPServers(handle) => $ctx.update_view(handle, $update),
             SettingsPageViewHandle::WarpDrive(handle) => $ctx.update_view(handle, $update),
             SettingsPageViewHandle::BuiltInAgents(handle) => $ctx.update_view(handle, $update),
+            SettingsPageViewHandle::SdlcTasks(handle) => $ctx.update_view(handle, $update),
         }
     };
 }
@@ -1058,6 +1067,9 @@ impl SettingsView {
         // Built-in Agents page (lists everything in AgentRegistryModel).
         let builtin_agents_page_handle =
             ctx.add_view(builtin_agents_page::BuiltInAgentsPageView::new);
+
+        // SDLC Tasks page (live agent tool/task registry).
+        let sdlc_tasks_page_handle = ctx.add_view(sdlc_tasks_page::SdlcTasksPageView::new);
 
         // AI page
         let ai_page_handle = ctx.add_typed_action_view(AISettingsPageView::new);
@@ -1188,6 +1200,7 @@ impl SettingsView {
             SettingsPage::new(privacy_page_handle),
             SettingsPage::new(about_page_handle),
             SettingsPage::new(builtin_agents_page_handle),
+            SettingsPage::new(sdlc_tasks_page_handle),
         ]);
 
         // Build sidebar nav items. AI page is presented as an "Agents" umbrella
@@ -1217,6 +1230,7 @@ impl SettingsView {
             SettingsNavItem::Page(SettingsSection::Appearance),
             SettingsNavItem::Page(SettingsSection::Features),
             SettingsNavItem::Page(SettingsSection::BuiltInAgents),
+            SettingsNavItem::Page(SettingsSection::SdlcTasks),
             SettingsNavItem::Page(SettingsSection::Keybindings),
             SettingsNavItem::Page(SettingsSection::Wishify),
             SettingsNavItem::Page(SettingsSection::Referrals),
@@ -1974,6 +1988,7 @@ impl SettingsView {
             SettingsPageViewHandle::Code(v) => v.as_ref(app).should_render(app),
             SettingsPageViewHandle::WarpDrive(v) => v.as_ref(app).should_render(app),
             SettingsPageViewHandle::BuiltInAgents(v) => v.as_ref(app).should_render(app),
+            SettingsPageViewHandle::SdlcTasks(v) => v.as_ref(app).should_render(app),
         }
     }
 

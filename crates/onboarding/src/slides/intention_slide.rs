@@ -11,8 +11,8 @@ use wishui::prelude::Align;
 use wishui::{
     elements::{
         Border, ClippedScrollStateHandle, ConstrainedBox, Container, CornerRadius,
-        CrossAxisAlignment, Flex, FormattedTextElement, Hoverable, MainAxisAlignment, MainAxisSize,
-        MouseStateHandle, ParentElement, Radius,
+        CrossAxisAlignment, Flex, FormattedTextElement, Hoverable, Icon as AssetIcon,
+        MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius,
     },
     fonts::Weight,
     keymap::Keystroke,
@@ -73,10 +73,12 @@ impl IntentionSlide {
         let theme = appearance.theme();
 
         let logo_fill = internal_colors::fg_overlay_4(theme);
-        let logo = ConstrainedBox::new(Icon::WarpLogoLight.to_warpui_icon(logo_fill).finish())
-            .with_width(64.)
-            .with_height(64.)
-            .finish();
+        let logo = ConstrainedBox::new(
+            AssetIcon::new("bundled/svg/hermon-logo-a1.svg", logo_fill).finish(),
+        )
+        .with_width(64.)
+        .with_height(64.)
+        .finish();
 
         let title = appearance
             .ui_builder()

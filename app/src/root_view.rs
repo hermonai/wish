@@ -20,11 +20,11 @@ use crate::interval_timer::IntervalTimer;
 use crate::launch_configs::launch_config;
 use crate::linear::LinearIssueWork;
 use crate::notebooks::manager::NotebookSource;
-use crate::settings::AISettings;
 use crate::settings::apply_onboarding_settings;
 use crate::settings::cloud_preferences_syncer::{
     CloudPreferencesSyncer, CloudPreferencesSyncerEvent,
 };
+use crate::settings::AISettings;
 use crate::workspace::tab_settings::TabSettings;
 use onboarding::{
     AgentOnboardingEvent, AgentOnboardingView, OnboardingIntention, SelectedSettings,
@@ -35,62 +35,62 @@ use crate::report_if_error;
 use crate::server::cloud_objects::update_manager::UpdateManager;
 use crate::server::experiments::is_free_user_no_ai_experiment_active;
 use crate::server::ids::SyncId;
-use crate::server::server_api::ServerApiProvider;
 use crate::server::server_api::auth::UserAuthenticationError;
+use crate::server::server_api::ServerApiProvider;
 use crate::server::telemetry::LaunchConfigUiLocation;
 use crate::settings::QuakeModeSettings;
 use crate::settings::ThemeSettings;
-use crate::settings_view::OpenTeamsSettingsModalArgs;
-use crate::settings_view::SettingsSection;
 use crate::settings_view::flags;
 use crate::settings_view::mcp_servers_page::MCPServersSettingsPage;
+use crate::settings_view::OpenTeamsSettingsModalArgs;
+use crate::settings_view::SettingsSection;
 use crate::terminal::available_shells::AvailableShell;
 use crate::terminal::general_settings::GeneralSettings;
 use crate::terminal::keys_settings::KeysSettings;
 use crate::terminal::shell::ShellType;
-use crate::terminal::view::{TerminalAction, cell_size_and_padding};
+use crate::terminal::view::{cell_size_and_padding, TerminalAction};
 use crate::themes::onboarding_theme_picker_themes;
 use crate::themes::theme::{AnsiColorIdentifier, Blend, Fill, ThemeKind, WarpThemeConfig};
 use crate::uri::OpenMCPSettingsArgs;
 use crate::util::bindings::{self, is_binding_pty_compliant};
-use crate::util::traffic_lights::{TrafficLightData, TrafficLightMouseStates, traffic_light_data};
+use crate::util::traffic_lights::{traffic_light_data, TrafficLightData, TrafficLightMouseStates};
 use crate::view_components::DismissibleToast;
 use crate::window_settings::WindowSettings;
-use crate::workspace::WorkspaceAction;
 use crate::workspace::hoa_onboarding::mark_hoa_onboarding_completed;
+use crate::workspace::WorkspaceAction;
 use crate::workspaces::team_tester::TeamTesterStatus;
 use crate::workspaces::update_manager::TeamUpdateManager;
 use crate::workspaces::user_workspaces::{UserWorkspaces, UserWorkspacesEvent};
-use crate::{ChannelState, features::FeatureFlag};
-use crate::{GlobalResourceHandles, GlobalResourceHandlesProvider, send_telemetry_from_app_ctx};
 use crate::{
-    UpdateQuakeModeEventArg,
     app_state::{AppState, PaneUuid, WindowSnapshot},
     autoupdate::{RequestType, UpdateReady},
     changelog_model::ChangelogRequestType,
     pane_group::{NewTerminalOptions, PanesLayout},
     send_telemetry_from_ctx,
     server::{server_api::ServerTime, telemetry::TelemetryEvent},
+    UpdateQuakeModeEventArg,
 };
 use crate::{
     auth::auth_override_warning_modal::{AuthOverrideWarningModal, AuthOverrideWarningModalEvent},
     auth::auth_view_modal::{AuthView, AuthViewVariant},
     server::server_api::ServerApi,
-    workspace::{PaneViewLocator, Workspace, view::OnboardingTutorial},
+    workspace::{view::OnboardingTutorial, PaneViewLocator, Workspace, WorkspaceRegistry},
 };
+use crate::{features::FeatureFlag, ChannelState};
+use crate::{send_telemetry_from_app_ctx, GlobalResourceHandles, GlobalResourceHandlesProvider};
 use anyhow::Result;
 use cfg_if::cfg_if;
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use parking_lot::Mutex;
 use pathfinder_geometry::rect::RectF;
-use pathfinder_geometry::vector::{Vector2F, vec2f};
+use pathfinder_geometry::vector::{vec2f, Vector2F};
 use serde::{Deserialize, Serialize};
 use session_sharing_protocol::common::SessionId;
 use settings::Setting as _;
 use std::path::Path;
-use std::sync::Arc;
 use std::sync::mpsc::SyncSender;
+use std::sync::Arc;
 use std::{collections::HashMap, path::PathBuf};
 use url::Url;
 use wish_core::context_flag::ContextFlag;
@@ -110,12 +110,11 @@ use wishui::elements::{
     Border, ChildAnchor, OffsetPositioning, ParentAnchor, ParentElement, ParentOffsetBounds, Stack,
 };
 use wishui::rendering::OnGPUDeviceSelected;
-use wishui::{AddWindowOptions, DisplayId, DisplayIdx, SingletonEntity, id};
+use wishui::{id, AddWindowOptions, DisplayId, SingletonEntity};
 use wishui::{
-    AppContext, Element, Entity, EntityId, TypedActionView, View, ViewContext, ViewHandle,
-    WindowId,
     platform::{WindowBounds, WindowStyle},
     presenter::ChildView,
+    AppContext, Element, Entity, TypedActionView, View, ViewContext, ViewHandle, WindowId,
 };
 use wishui::{FocusContext, NextNewWindowsHasThisWindowsBoundsUponClose};
 
@@ -243,29 +242,6 @@ pub struct CreateEnvironmentArg {
     pub repos: Vec<String>,
 }
 
-/// Arguments for the immediate tab detach action dispatched during drag.
-/// This contains minimal info needed to identify which tab to detach.
-pub struct DetachTabImmediateArg {
-    /// Index of the tab to detach
-    pub tab_index: usize,
-    /// Pre-calculated window position for the new window (in screen coordinates).
-    /// This is calculated to position the window so the mouse is in the tab bar region.
-    pub window_position: Option<Vector2F>,
-    /// Source window ID - the window containing the tab to detach.
-    /// We need this because the active window might be the preview window.
-    pub source_window_id: WindowId,
-}
-
-/// Pre-gathered information for creating a transferred window.
-/// This is used when the caller already has access to the workspace (e.g., from within a view method)
-/// and cannot rely on workspace lookup (which fails during view updates).
-pub struct TabTransferInfo {
-    pub transferred_tab: crate::workspace::view::TransferredTab,
-    pub window_size: Vector2F,
-    pub window_position: Vector2F,
-    pub source_window_id: WindowId,
-}
-
 impl CreateEnvironmentArg {
     /// Formats the `/create-environment` slash command invocation.
     pub fn to_query(&self) -> String {
@@ -312,10 +288,6 @@ pub fn init(app: &mut AppContext) {
     );
     app.add_global_action("root_view:open_launch_config", open_launch_config);
     app.add_global_action("root_view:send_feedback", send_feedback);
-    app.add_global_action("root_view:show_welcome_page", show_welcome_page);
-    app.add_global_action("root_view:detach_tab_immediate", |arg, ctx| {
-        let _ = detach_tab_with_transfer(arg, ctx);
-    });
     app.add_global_action(
         "root_view:toggle_quake_mode_window",
         toggle_quake_mode_window,
@@ -543,17 +515,7 @@ fn maybe_register_global_window_shortcuts(
 /// Find the root [`Workspace`] view for the active window.
 fn active_workspace(ctx: &mut AppContext) -> Option<ViewHandle<Workspace>> {
     let window_id = ctx.windows().active_window()?;
-    ctx.views_of_type::<Workspace>(window_id)
-        .and_then(|views| views.first().cloned())
-}
-
-/// Find the root [`Workspace`] view for a specific window.
-pub fn workspace_for_window(
-    window_id: WindowId,
-    ctx: &mut AppContext,
-) -> Option<ViewHandle<Workspace>> {
-    ctx.views_of_type::<Workspace>(window_id)
-        .and_then(|views| views.first().cloned())
+    WorkspaceRegistry::as_ref(ctx).get(window_id, ctx)
 }
 
 fn open_launch_config(arg: &OpenLaunchConfigArg, ctx: &mut AppContext) {
@@ -624,92 +586,29 @@ fn send_feedback(_: &(), ctx: &mut AppContext) {
     }
 }
 
-/// Open the Wish welcome page as a new tab in the active workspace.
-///
-/// This is the global-action entry point used by both the Help menu
-/// item and any other top-level surface. It routes through the active
-/// workspace's typed-action handler so the welcome tab is added to
-/// the right window. If no workspace is active (rare — e.g., a
-/// settings-only window), the action is a no-op rather than spawning
-/// a new window, since the welcome page is intrinsically a workspace
-/// tab.
-fn show_welcome_page(_: &(), ctx: &mut AppContext) {
-    if let Some(workspace) = active_workspace(ctx) {
-        workspace.update(ctx, |workspace, ctx| {
-            workspace.handle_action(&WorkspaceAction::ShowWelcomePage, ctx);
-        });
-    } else {
-        log::debug!("show_welcome_page: no active workspace; ignoring");
-    }
-}
-
-/// Handler for tab detachment using the transferable views framework.
-/// Instead of extracting and recreating views, this transfers the PaneGroup view tree directly.
-/// Returns the new window ID if successful.
-pub fn detach_tab_with_transfer(
-    arg: &DetachTabImmediateArg,
-    ctx: &mut AppContext,
-) -> Option<WindowId> {
-    let Some(source_workspace) = workspace_for_window(arg.source_window_id, ctx) else {
-        log::warn!(
-            "No workspace found for source window {:?}",
-            arg.source_window_id
-        );
-        return None;
-    };
-
-    let transferred_tab = source_workspace.read(ctx, |workspace, ctx| {
-        workspace.get_tab_transfer_info(arg.tab_index, ctx)
-    })?;
-
-    let window_size = ctx
-        .windows()
-        .platform_window(arg.source_window_id)
-        .map(|window| window.as_ctx().size())
-        .unwrap_or(*FALLBACK_WINDOW_SIZE);
-
-    let window_position = arg.window_position.unwrap_or_default();
-
-    let info = TabTransferInfo {
-        transferred_tab,
-        window_size,
-        window_position,
-        source_window_id: arg.source_window_id,
-    };
-
-    let (new_window_id, _transferred_view_ids) = create_transferred_window(info, false, ctx);
-
-    source_workspace.update(ctx, |workspace, ctx| {
-        workspace.remove_tab_without_undo(arg.tab_index, ctx);
-    });
-
-    Some(new_window_id)
-}
-
 /// Creates a new window with the transferred pane group.
-/// This function takes pre-gathered TabTransferInfo, allowing it to be called
-/// from within a view method where workspace lookup would fail.
 ///
-/// If `for_drag` is true, the window is created without stealing focus (for drag preview).
+/// If `is_tab_drag_preview` is true, the window is created without stealing
+/// focus so it can follow the cursor during a tab drag.
 ///
-/// Returns the new window ID and the list of transferred view entity IDs.
-/// The transferred view IDs are needed by `tab_drag::on_tab_drag` to track which
-/// views must follow the tab during subsequent handoff/reverse-handoff cycles.
+/// Returns the new window ID.
 pub fn create_transferred_window(
-    info: TabTransferInfo,
-    for_drag: bool,
+    transferred_tab: crate::workspace::view::TransferredTab,
+    source_window_id: WindowId,
+    window_size: Vector2F,
+    window_position: Vector2F,
+    is_tab_drag_preview: bool,
     ctx: &mut AppContext,
-) -> (WindowId, Vec<EntityId>) {
+) -> WindowId {
     let global_resource_handles = GlobalResourceHandlesProvider::handle(ctx)
         .as_ref(ctx)
         .get()
         .clone();
     let window_settings = WindowSettings::handle(ctx).as_ref(ctx);
 
-    let window_bounds =
-        WindowBounds::ExactPosition(RectF::new(info.window_position, info.window_size));
+    let window_bounds = WindowBounds::ExactPosition(RectF::new(window_position, window_size));
 
-    let window_style = if for_drag {
+    let window_style = if is_tab_drag_preview {
         WindowStyle::PositionedNoFocus
     } else {
         WindowStyle::Normal
@@ -729,35 +628,34 @@ pub fn create_transferred_window(
             let mut view = RootView::new(
                 global_resource_handles.clone(),
                 NewWorkspaceSource::TransferredTab {
-                    tab_color: info.transferred_tab.color,
-                    custom_title: info.transferred_tab.custom_title.clone(),
-                    left_panel_open: info.transferred_tab.left_panel_open,
-                    vertical_tabs_panel_open: info.transferred_tab.vertical_tabs_panel_open,
-                    right_panel_open: info.transferred_tab.right_panel_open,
-                    is_right_panel_maximized: info.transferred_tab.is_right_panel_maximized,
-                    for_drag_preview: for_drag,
+                    tab_color: transferred_tab.color,
+                    custom_title: transferred_tab.custom_title.clone(),
+                    left_panel_open: transferred_tab.left_panel_open,
+                    vertical_tabs_panel_open: transferred_tab.vertical_tabs_panel_open,
+                    right_panel_open: transferred_tab.right_panel_open,
+                    is_right_panel_maximized: transferred_tab.is_right_panel_maximized,
+                    is_tab_drag_preview,
                 },
                 ctx,
             );
-            if !for_drag {
+            if !is_tab_drag_preview {
                 view.focus(ctx);
             }
             view
         },
     );
 
-    let pane_group_id = info.transferred_tab.pane_group.id();
-    let transferred_view_ids =
-        ctx.transfer_view_tree_to_window(pane_group_id, info.source_window_id, new_window_id);
+    let pane_group_id = transferred_tab.pane_group.id();
+    ctx.transfer_view_tree_to_window(pane_group_id, source_window_id, new_window_id);
 
-    if let Some(new_workspace) = workspace_for_window(new_window_id, ctx) {
+    if let Some(new_workspace) = WorkspaceRegistry::as_ref(ctx).get(new_window_id, ctx) {
         new_workspace.update(ctx, |workspace, ctx| {
-            workspace.adopt_transferred_pane_group(info.transferred_tab.pane_group.clone(), ctx);
+            workspace.adopt_transferred_pane_group(transferred_tab.pane_group.clone(), ctx);
         });
     } else {
         log::warn!("Failed to find workspace in newly created window {new_window_id:?}");
     }
-    (new_window_id, transferred_view_ids)
+    new_window_id
 }
 
 #[cfg(feature = "crash_reporting")]
@@ -791,19 +689,6 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
 
         // Check whether user has enabled session restoration.
         if *GeneralSettings::as_ref(ctx).restore_session {
-            let persisted_normal_window_count = app_state
-                .windows
-                .iter()
-                .filter(|window| !window.quake_mode)
-                .count();
-            if persisted_normal_window_count > 0 && app_state.active_window_index.is_none() {
-                log::warn!(
-                    "Ignoring persisted Wish window state because no active window was saved; \
-                     opening a fresh window instead"
-                );
-                return;
-            }
-
             let mut active_index = None;
             let mut normal_window_count = 0;
             for (idx, window) in app_state.windows.iter().enumerate() {
@@ -827,7 +712,7 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
                         AddWindowOptions {
                             window_style: WindowStyle::Pin,
                             window_bounds: WindowBounds::ExactPosition(frame_args.window_bounds),
-                            title: Some("Wish".to_owned()),
+                            title: Some("Warp".to_owned()),
                             fullscreen_state: window.fullscreen_state,
                             background_blur_radius_pixels,
                             background_blur_texture,
@@ -869,8 +754,8 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
                     } else {
                         ctx.add_window(
                             AddWindowOptions {
-                                window_bounds: restored_window_bounds(window, ctx),
-                                title: Some("Wish".to_owned()),
+                                window_bounds: WindowBounds::new(window.bounds),
+                                title: Some("Warp".to_owned()),
                                 fullscreen_state: window.fullscreen_state,
                                 background_blur_radius_pixels,
                                 background_blur_texture,
@@ -921,8 +806,8 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
                     .expect("Window should exist at idx");
                 ctx.add_window(
                     AddWindowOptions {
-                        window_bounds: restored_window_bounds(window, ctx),
-                        title: Some("Wish".to_owned()),
+                        window_bounds: WindowBounds::new(window.bounds),
+                        title: Some("Warp".to_owned()),
                         fullscreen_state: window.fullscreen_state,
                         background_blur_radius_pixels,
                         background_blur_texture,
@@ -945,47 +830,6 @@ fn open_from_restored(arg: &OpenFromRestoredArg, ctx: &mut AppContext) {
             }
         }
     }
-}
-
-fn restored_window_bounds(window: &WindowSnapshot, ctx: &AppContext) -> WindowBounds {
-    let Some(bounds) = window.bounds else {
-        return WindowBounds::Default;
-    };
-
-    if !restored_bounds_are_visible(bounds, ctx) {
-        log::warn!("Ignoring restored Wish window bounds outside visible displays: {bounds:?}");
-        return WindowBounds::Default;
-    }
-
-    WindowBounds::new(Some(bounds))
-}
-
-fn restored_bounds_are_visible(bounds: RectF, ctx: &AppContext) -> bool {
-    if bounds.width() <= 0. || bounds.height() <= 0. {
-        return false;
-    }
-
-    let mut saw_display_bounds = false;
-    for display_idx in 0..ctx.windows().display_count() {
-        let display_idx = if display_idx == 0 {
-            DisplayIdx::Primary
-        } else {
-            DisplayIdx::External(display_idx - 1)
-        };
-
-        if let Some(display_bounds) = ctx.windows().bounds_for_display_idx(display_idx) {
-            saw_display_bounds = true;
-            if bounds.intersects(display_bounds) {
-                return true;
-            }
-        }
-    }
-
-    if !saw_display_bounds {
-        return bounds.intersects(ctx.windows().active_display_bounds());
-    }
-
-    false
 }
 
 fn path_if_directory(path: &Path) -> Option<&Path> {
@@ -1294,7 +1138,7 @@ fn open_new_with_shell(shell: &Option<AvailableShell>, ctx: &mut AppContext) {
 /// Global action that performs a few steps:
 /// 1. Open a new tab, or open a window if there is none.
 /// 2. Set the terminal input buffer to a command that should open a subshell
-/// 3. Set a flag that we should automatically bootstrap that subshell if its we can boostrap its
+/// 3. Set a flag that we should automatically bootstrap that subshell if its we can bootstrap its
 /// [`ShellType`].
 fn open_new_tab_insert_subshell_command_and_bootstrap_if_supported(
     arg: &SubshellCommandArg,
@@ -1335,7 +1179,7 @@ fn default_window_options(window_settings: &WindowSettings, ctx: &AppContext) ->
     AddWindowOptions {
         window_style,
         window_bounds: next_bounds,
-        title: Some("Wish".to_owned()),
+        title: Some("Warp".to_owned()),
         background_blur_radius_pixels: Some(*window_settings.background_blur_radius),
         background_blur_texture: *window_settings.background_blur_texture,
         on_gpu_driver_selected: on_gpu_driver_selected_callback(),
@@ -1520,7 +1364,7 @@ fn toggle_quake_mode_window(global_resource_handles: &GlobalResourceHandles, ctx
                 AddWindowOptions {
                     window_style: WindowStyle::Pin,
                     window_bounds: WindowBounds::ExactPosition(config.window_bounds),
-                    title: Some("Wish".to_owned()),
+                    title: Some("Warp".to_owned()),
                     background_blur_radius_pixels: Some(*window_settings.background_blur_radius),
                     background_blur_texture: *window_settings.background_blur_texture,
                     // Ignore the quake window for positioning the next window
@@ -1592,11 +1436,11 @@ fn toggle_quake_mode_window(global_resource_handles: &GlobalResourceHandles, ctx
     };
 }
 
-/// This action will show or hide all of Wish's windows except the quake window
+/// This action will show or hide all of Warp's windows except the quake window
 ///
-/// - If Wish is active and has any windows, hide those windows.
-/// - If Wish is hidden, show all windows.
-/// - If Wish is active but has 0 normal windows, create a new window with a new session.
+/// - If Warp is active and has any windows, hide those windows.
+/// - If Warp is hidden, show all windows.
+/// - If Warp is active but has 0 normal windows, create a new window with a new session.
 fn show_or_hide_non_quake_mode_windows(_: &(), ctx: &mut AppContext) {
     let quake_window_id = get_quake_mode_state(ctx).map(|state| state.window_id);
     let non_quake_mode_window_ids = ctx
@@ -1682,7 +1526,7 @@ pub enum NewWorkspaceSource {
         /// Whether the right panel was maximized in the source tab
         is_right_panel_maximized: bool,
         /// Whether this transferred tab window is currently being used as a drag preview.
-        for_drag_preview: bool,
+        is_tab_drag_preview: bool,
     },
 }
 
@@ -1848,12 +1692,6 @@ impl RootView {
                     if FeatureFlag::ForceLogin.is_enabled() {
                         // ForceLogin is true for Preview
                         AuthOnboardingState::Auth(workspace_args.into())
-                    } else if Self::should_start_in_workspace_without_login() {
-                        // Wish should be useful as a local development environment without
-                        // requiring backend credentials at launch. Cloud-backed services still
-                        // request auth at the point of use through their existing gated-feature
-                        // flows.
-                        AuthOnboardingState::Terminal(workspace_args.create_workspace(ctx))
                     } else if should_show_pre_login_onboarding {
                         let workspace_args_box: Box<WorkspaceArgs> = workspace_args.into();
                         let onboarding_view = Self::create_agent_onboarding_view(ctx);
@@ -1864,6 +1702,12 @@ impl RootView {
                             onboarding_view,
                             target: AuthOnboardingTarget::Workspace(workspace_args_box),
                         }
+                    } else if Self::should_start_in_workspace_without_login() {
+                        // Wish should be useful as a local development environment without
+                        // requiring backend credentials at launch. Cloud-backed services still
+                        // request auth at the point of use through their existing gated-feature
+                        // flows.
+                        AuthOnboardingState::Terminal(workspace_args.create_workspace(ctx))
                     } else {
                         AuthOnboardingState::Auth(workspace_args.into())
                     }
@@ -2323,11 +2167,9 @@ impl RootView {
                 // auto-opened for discoverability.
                 if matches!(selected_settings, SelectedSettings::Terminal { .. }) {
                     AISettings::handle(ctx).update(ctx, |settings, ctx| {
-                        report_if_error!(
-                            settings
-                                .has_auto_opened_conversation_list
-                                .set_value(true, ctx)
-                        );
+                        report_if_error!(settings
+                            .has_auto_opened_conversation_list
+                            .set_value(true, ctx));
                     });
                 }
 
@@ -3149,15 +2991,7 @@ impl RootView {
                     }
                 }
                 UserAuthenticationError::Unexpected(err) => {
-                    if ChannelState::server_root_url().starts_with("http://localhost") {
-                        log::warn!(
-                            "Unable to fetch user from local Hermon backend; continuing offline: {err:#}"
-                        );
-                    } else {
-                        log::error!(
-                            "Encountered unexpected error when trying to fetch user: {err:#}"
-                        );
-                    }
+                    log::error!("Encountered unexpected error when trying to fetch user: {err:#}");
                 }
                 UserAuthenticationError::InvalidStateParameter => {}
                 UserAuthenticationError::MissingStateParameter => {}

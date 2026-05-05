@@ -806,6 +806,9 @@ fn init_common(launch_mode: &LaunchMode, timer: Option<&mut IntervalTimer>) -> R
         timer.mark_interval_end("LOG_FILE_SETUP_COMPLETE");
     }
 
+    #[cfg(windows)]
+    platform::windows::check_redirection_guard();
+
     // Adjust resource limits early, before doing other work, to ensure that
     // any children we spawn (like the terminal server) inherit our adjusted
     // rlimits.
@@ -1043,11 +1046,6 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
         ctx.add_singleton_model(move |_ctx| ::settings::PublicPreferences::new(public_preferences));
         ctx.add_singleton_model(move |_ctx| private_preferences);
         let startup_toml_parse_error = startup_toml_parse_error;
-
-        // Tell the settings crate whether the TOML settings file is active.
-        // This must happen after preferences are registered but before settings
-        // are initialized, so the routing logic picks the correct backend.
-        ::settings::set_settings_file_enabled(FeatureFlag::SettingsFile.is_enabled());
 
         #[cfg(enable_crash_recovery)]
         ctx.add_singleton_model(move |_ctx| crash_recovery);
@@ -2923,7 +2921,7 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         #[cfg(feature = "transfer_control_tool")]
         FeatureFlag::TransferControlTool,
         #[cfg(feature = "warpify_footer")]
-        FeatureFlag::WarpifyFooter,
+        FeatureFlag::WishifyFooter,
         #[cfg(feature = "solo_user_byok")]
         FeatureFlag::SoloUserByok,
         #[cfg(feature = "skip_firebase_anonymous_user")]

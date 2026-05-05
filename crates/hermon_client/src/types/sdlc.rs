@@ -5,8 +5,7 @@
 //! planning through deployment and monitoring.
 
 use super::agent::{
-    AgentModelConfig, AgentParameters, AgentToolRef, AgentType, AgentVisibility,
-    CreateAgentRequest,
+    AgentModelConfig, AgentParameters, AgentToolRef, AgentType, AgentVisibility, CreateAgentRequest,
 };
 
 /// All built-in SDLC agent slugs for programmatic access.
@@ -644,7 +643,10 @@ mod tests {
     #[test]
     fn orchestrator_is_orchestrator_type() {
         let agents = builtin_agents();
-        let orch = agents.iter().find(|a| a.slug == slugs::ORCHESTRATOR).unwrap();
+        let orch = agents
+            .iter()
+            .find(|a| a.slug == slugs::ORCHESTRATOR)
+            .unwrap();
         assert_eq!(orch.agent_type, AgentType::Orchestrator);
     }
 }

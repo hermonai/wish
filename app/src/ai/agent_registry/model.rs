@@ -34,9 +34,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Instant;
 
-use hermon_client::types::agent::{
-    Agent, AgentFilters, AgentType, AgentVisibility,
-};
+use hermon_client::types::agent::{Agent, AgentFilters, AgentType, AgentVisibility};
 use hermon_client::HermonClient;
 use wishui::{Entity, ModelContext, SingletonEntity};
 
@@ -236,9 +234,7 @@ impl AgentRegistryModel {
         let client = match service.as_ref(ctx).client().cloned() {
             Some(c) => c,
             None => {
-                log::debug!(
-                    "AgentRegistry refresh skipped: Hermon service is not configured"
-                );
+                log::debug!("AgentRegistry refresh skipped: Hermon service is not configured");
                 return;
             }
         };
@@ -271,10 +267,7 @@ impl AgentRegistryModel {
                 self.by_slug = by_slug;
                 self.by_id = by_id;
 
-                self.set_status(
-                    RegistryStatus::Loaded { at: Instant::now() },
-                    ctx,
-                );
+                self.set_status(RegistryStatus::Loaded { at: Instant::now() }, ctx);
 
                 if changed {
                     ctx.emit(AgentRegistryEvent::AgentsChanged);
@@ -307,9 +300,8 @@ impl AgentRegistryModel {
     /// context. Hermon agents come first (in their original order),
     /// followed by built-ins whose slug isn't already claimed.
     pub fn merge(hermon_agents: Vec<Agent>, builtin: Vec<Agent>) -> Vec<RegistryEntry> {
-        let mut entries: Vec<RegistryEntry> = Vec::with_capacity(
-            hermon_agents.len() + builtin.len(),
-        );
+        let mut entries: Vec<RegistryEntry> =
+            Vec::with_capacity(hermon_agents.len() + builtin.len());
         let mut seen_slugs: std::collections::HashSet<String> =
             std::collections::HashSet::with_capacity(hermon_agents.len());
 

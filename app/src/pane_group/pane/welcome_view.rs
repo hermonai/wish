@@ -7,7 +7,7 @@ use wish_core::context_flag::ContextFlag;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::theme::color::internal_colors;
 use wishui::elements::{
-    Align, ChildView, ConstrainedBox, Container, CrossAxisAlignment, Flex, Icon, MainAxisAlignment,
+    Align, ConstrainedBox, Container, CrossAxisAlignment, Flex, Icon, MainAxisAlignment,
     MainAxisSize, MouseStateHandle, ParentElement,
 };
 use wishui::keymap::EditableBinding;
@@ -325,10 +325,7 @@ impl View for WelcomeView {
         // `close(ctx)`, opening a new terminal tab and dismissing the
         // welcome view.
         let get_started_button = ui_builder
-            .button(
-                ButtonVariant::Accent,
-                self.get_started_mouse_state.clone(),
-            )
+            .button(ButtonVariant::Accent, self.get_started_mouse_state.clone())
             .with_text_label("Get started".to_string())
             .with_style(UiComponentStyles {
                 font_size: Some(15.),
@@ -393,7 +390,11 @@ impl View for WelcomeView {
             .with_child(logo)
             .with_child(Container::new(title).with_margin_top(20.).finish())
             .with_child(Container::new(subtitle).with_margin_top(12.).finish())
-            .with_child(Container::new(get_started_button).with_margin_top(28.).finish())
+            .with_child(
+                Container::new(get_started_button)
+                    .with_margin_top(28.)
+                    .finish(),
+            )
             .with_child(Container::new(login_button).with_margin_top(80.).finish())
             .finish();
 
@@ -466,13 +467,10 @@ impl WelcomeView {
     /// the `update` closure gives us a fresh borrow of the context
     /// that doesn't conflict with the singleton-handle borrow.
     fn open_login_url(&self, ctx: &mut ViewContext<Self>) {
-        crate::auth::AuthManager::handle(ctx).update(
-            ctx,
-            |auth_manager, inner_ctx| {
-                let url = auth_manager.sign_in_url();
-                inner_ctx.open_url(&url);
-            },
-        );
+        crate::auth::AuthManager::handle(ctx).update(ctx, |auth_manager, inner_ctx| {
+            let url = auth_manager.sign_in_url();
+            inner_ctx.open_url(&url);
+        });
     }
 }
 

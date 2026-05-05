@@ -12,7 +12,7 @@ The installer is a single executable that takes care of:
 
 
 `windows-installer.iss` is an **Inno Setup script**:
-a configuration file for building a Wish installer.
+a configuration file for building a Warp installer.
 The Inno Setup Compiler takes a script file and generates an installer executable.
 This is roughly equivalent to the bundling process on MacOS.
 
@@ -28,18 +28,18 @@ However, it requires the Inno Setup compiler to be turned into a `.exe` file.
 
 First, ensure you've set up your environment.
 * Download and install the [Inno Setup Compiler](https://jrsoftware.org/isdl.php).
-* Run `cargo build` to ensure the installer uses the latest version of Wish.
+* Run `cargo build` to ensure the installer uses the latest version of Warp.
 
 ### Option 1: Use the CLI
 1. Add the Inno Setup Command-line Compiler executable to your shell path.
 By default, it is located at `C:\Program Files (x86)\Inno Setup 6\ISCC.exe`.
 2. Compile the installer:
 ```shell
-iscc .\script\windows\windows-installer.iss`.
+iscc .\script\windows\windows-installer.iss
 ```
 3. Run the generated executable:
 ```shell
-.\script\windows\Output\Wish-Windows-Setup.exe`.
+.\script\windows\Output\Warp-Windows-Setup.exe
 ```
 
 The script begins with a series of preprocessor definitions.

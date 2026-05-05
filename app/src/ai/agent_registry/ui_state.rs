@@ -154,7 +154,7 @@ mod tests {
         };
         assert!(s.is_expanded("wish-coder"));
         assert!(!s.is_expanded("wish-planner"));
-        assert!(!s.is_expanded("wish-coder "));  // trailing space matters
+        assert!(!s.is_expanded("wish-coder ")); // trailing space matters
     }
 
     #[test]

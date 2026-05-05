@@ -625,7 +625,8 @@ mod tests {
 
     #[test]
     fn agent_stream_event_invocation_started() {
-        let json = r#"{"kind":"invocation.started","invocationId":"inv-1","conversationId":"conv-1"}"#;
+        let json =
+            r#"{"kind":"invocation.started","invocationId":"inv-1","conversationId":"conv-1"}"#;
         let e: types::agent::AgentStreamEvent = serde_json::from_str(json).unwrap();
         matches!(e, types::agent::AgentStreamEvent::InvocationStarted { .. });
     }
@@ -731,7 +732,10 @@ mod tests {
         let s: types::drive::DriveSyncState = serde_json::from_str(json).unwrap();
         assert_eq!(s.cursor, "cur-abc");
         assert!(s.has_more);
-        assert_eq!(s.changes[0].change_type, types::drive::SyncChangeType::Updated);
+        assert_eq!(
+            s.changes[0].change_type,
+            types::drive::SyncChangeType::Updated
+        );
     }
 
     // ── Conversation types ────────────────────────────────────────

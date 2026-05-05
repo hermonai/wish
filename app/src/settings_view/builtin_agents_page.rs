@@ -306,8 +306,7 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
         // builder rather than as a free-standing variable because
         // `Box<dyn Element>` doesn't implement `Clone` — every element must
         // have exactly one parent.
-        let subtitle_text =
-            "All AI agents available to invoke from Wish. Built-in SDLC \
+        let subtitle_text = "All AI agents available to invoke from Wish. Built-in SDLC \
              agents are shipped with the app; agents fetched from your \
              Hermon backend (if configured) appear above them.";
 
@@ -430,7 +429,8 @@ impl SettingsWidget for BuiltInAgentsPageWidget {
             let empty_msg = ui_builder
                 .paragraph(format!(
                     "No agents match \"{}\". Clear the search box to see all {} agents.",
-                    query, entries.len()
+                    query,
+                    entries.len()
                 ))
                 .build()
                 .finish();
@@ -594,7 +594,10 @@ fn render_agent_card(
         .finish();
 
     // ── Slug + model line ────────────────────────────────────────
-    let model_str = format!("{}/{}", entry.agent.model.provider_id, entry.agent.model.model_id);
+    let model_str = format!(
+        "{}/{}",
+        entry.agent.model.provider_id, entry.agent.model.model_id
+    );
     let slug_model_line = ui_builder
         .span(format!("{} · {}", entry.agent.slug, model_str))
         .with_style(UiComponentStyles {
@@ -745,11 +748,7 @@ fn render_details_panel(entry: &RegistryEntry, appearance: &Appearance) -> Box<d
     // Helper to add a labeled section. We use a closure-like inline
     // builder rather than a function because each call mutates the
     // outer `sections` builder.
-    fn build_section(
-        appearance: &Appearance,
-        label: &str,
-        body: String,
-    ) -> Box<dyn Element> {
+    fn build_section(appearance: &Appearance, label: &str, body: String) -> Box<dyn Element> {
         let ui_builder = appearance.ui_builder();
         let theme = appearance.theme();
         let label_widget = ui_builder
@@ -789,13 +788,15 @@ fn render_details_panel(entry: &RegistryEntry, appearance: &Appearance) -> Box<d
     }
 
     if let Some(prompt) = entry.agent.system_prompt.as_ref() {
-        sections =
-            sections.with_child(build_section(appearance, "System prompt", prompt.clone()));
+        sections = sections.with_child(build_section(appearance, "System prompt", prompt.clone()));
     }
 
     if let Some(instructions) = entry.agent.instructions.as_ref() {
-        sections =
-            sections.with_child(build_section(appearance, "Instructions", instructions.clone()));
+        sections = sections.with_child(build_section(
+            appearance,
+            "Instructions",
+            instructions.clone(),
+        ));
     }
 
     if let Some(params) = entry.agent.parameters.as_ref() {
@@ -854,11 +855,7 @@ enum BadgeKind {
 ///
 /// Badges use the theme's foreground color with reduced opacity so they
 /// remain legible across light/dark themes without hand-tuning.
-fn render_badge(
-    appearance: &Appearance,
-    text: String,
-    _kind: BadgeKind,
-) -> Box<dyn Element> {
+fn render_badge(appearance: &Appearance, text: String, _kind: BadgeKind) -> Box<dyn Element> {
     // For now all badge kinds render the same — uniform pill style.
     // Future: per-kind color accents (e.g., Hermon = accent color).
     let ui_builder = appearance.ui_builder();
@@ -921,10 +918,7 @@ mod tests {
 
     #[test]
     fn format_status_loaded_includes_count() {
-        let s = format_status(
-            &RegistryStatus::Loaded { at: Instant::now() },
-            42,
-        );
+        let s = format_status(&RegistryStatus::Loaded { at: Instant::now() }, 42);
         assert!(s.contains("42"));
         assert!(s.contains("loaded"));
     }

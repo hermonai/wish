@@ -23,18 +23,14 @@ fn pending_can_advance_directly_to_terminal() {
     // the approval modal) should be allowed to skip Running.
     assert!(TaskStatus::Pending.can_transition_to(&TaskStatus::Completed));
     assert!(TaskStatus::Pending.can_transition_to(&TaskStatus::Cancelled));
-    assert!(TaskStatus::Pending.can_transition_to(&TaskStatus::Failed {
-        error: "x".into()
-    }));
+    assert!(TaskStatus::Pending.can_transition_to(&TaskStatus::Failed { error: "x".into() }));
 }
 
 #[test]
 fn running_can_advance_to_each_terminal() {
     assert!(TaskStatus::Running.can_transition_to(&TaskStatus::Completed));
     assert!(TaskStatus::Running.can_transition_to(&TaskStatus::Cancelled));
-    assert!(TaskStatus::Running.can_transition_to(&TaskStatus::Failed {
-        error: "x".into()
-    }));
+    assert!(TaskStatus::Running.can_transition_to(&TaskStatus::Failed { error: "x".into() }));
 }
 
 #[test]
@@ -42,9 +38,7 @@ fn terminal_states_are_sticky() {
     // Once Completed/Failed/Cancelled, cannot go back to Running.
     assert!(!TaskStatus::Completed.can_transition_to(&TaskStatus::Running));
     assert!(!TaskStatus::Cancelled.can_transition_to(&TaskStatus::Running));
-    let failed = TaskStatus::Failed {
-        error: "x".into(),
-    };
+    let failed = TaskStatus::Failed { error: "x".into() };
     assert!(!failed.can_transition_to(&TaskStatus::Running));
     // And cannot transition between different terminals.
     assert!(!TaskStatus::Completed.can_transition_to(&TaskStatus::Cancelled));
@@ -65,20 +59,14 @@ fn is_active_matches_intuition() {
     assert!(TaskStatus::Running.is_active());
     assert!(!TaskStatus::Completed.is_active());
     assert!(!TaskStatus::Cancelled.is_active());
-    assert!(!TaskStatus::Failed {
-        error: "x".into(),
-    }
-    .is_active());
+    assert!(!TaskStatus::Failed { error: "x".into() }.is_active());
 }
 
 #[test]
 fn is_failure_only_for_failed() {
     assert!(!TaskStatus::Completed.is_failure());
     assert!(!TaskStatus::Cancelled.is_failure());
-    assert!(TaskStatus::Failed {
-        error: "x".into()
-    }
-    .is_failure());
+    assert!(TaskStatus::Failed { error: "x".into() }.is_failure());
 }
 
 // ── Annotation rendering ─────────────────────────────────────────────
@@ -204,7 +192,11 @@ fn dummy_task(id: &str, status: TaskStatus) -> AgentTask {
         tool: ToolKind::Bash,
         status: status.clone(),
         started_at: now,
-        completed_at: if status.is_terminal() { Some(now) } else { None },
+        completed_at: if status.is_terminal() {
+            Some(now)
+        } else {
+            None
+        },
         annotations: vec![],
         background: false,
         metadata: std::collections::HashMap::new(),
@@ -229,7 +221,10 @@ fn duration_uses_now_for_active_tasks() {
     let task = dummy_task("a", TaskStatus::Running);
     let d = task.duration();
     // Should be >= 0 and a small positive value.
-    assert!(d.as_millis() < 1000, "running task duration {d:?} surprisingly large");
+    assert!(
+        d.as_millis() < 1000,
+        "running task duration {d:?} surprisingly large"
+    );
 }
 
 #[test]
@@ -282,11 +277,7 @@ fn active_filter_excludes_terminal_tasks() {
         dummy_task("c", TaskStatus::Completed),
         dummy_task("d", TaskStatus::Cancelled),
     ]);
-    let active: Vec<_> = r
-        .active_tasks()
-        .iter()
-        .map(|t| t.id.as_str())
-        .collect();
+    let active: Vec<_> = r.active_tasks().iter().map(|t| t.id.as_str()).collect();
     assert_eq!(active.len(), 2);
     assert!(active.contains(&"a"));
     assert!(active.contains(&"b"));

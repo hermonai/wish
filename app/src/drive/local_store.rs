@@ -388,7 +388,10 @@ fn generate_id() -> String {
     let now_millis = LocalObjectMetadata::now_millis();
     let rand_bits = RNG.with(|cell| {
         // Numerical Recipes LCG constants
-        let next = cell.get().wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        let next = cell
+            .get()
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
         cell.set(next);
         (next >> 33) as u32
     });
@@ -417,7 +420,12 @@ mod tests {
     fn create_then_list_returns_one() {
         let (store, _dir) = fresh_store();
         let obj = store
-            .create("test workflow".into(), DriveObjectType::Workflow, None, None)
+            .create(
+                "test workflow".into(),
+                DriveObjectType::Workflow,
+                None,
+                None,
+            )
             .unwrap();
         assert!(obj.id.starts_with("local:"));
         assert_eq!(obj.name, "test workflow");
@@ -526,12 +534,7 @@ mod tests {
         let mut seen = std::collections::HashSet::new();
         for i in 0..50 {
             let obj = store
-                .create(
-                    format!("item-{i}"),
-                    DriveObjectType::Workflow,
-                    None,
-                    None,
-                )
+                .create(format!("item-{i}"), DriveObjectType::Workflow, None, None)
                 .unwrap();
             assert!(seen.insert(obj.id.clone()), "duplicate id: {}", obj.id);
         }

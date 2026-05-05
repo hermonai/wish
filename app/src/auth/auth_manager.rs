@@ -72,7 +72,7 @@ pub enum AuthManagerEvent {
     AttemptedLoginGatedFeature {
         auth_view_variant: AuthViewVariant,
     },
-    // The current user is anonymous and the client has received a browser intent to sign in with a different Wish account.
+    // The current user is anonymous and the client has received a browser intent to sign in with a different Warp account.
     // Holds an auth payload from the received browser intent.
     LoginOverrideDetected(AuthRedirectPayload),
     /// Failed to mint a new custom token for an anonymous user.
@@ -267,7 +267,7 @@ impl AuthManager {
 
     /// Authenticate asynchronously using the OAuth2 device authorization flow.
     ///
-    /// This is only used by the Wish CLI if running on a devic that does not have the Wish app installed.
+    /// This is only used by the Warp CLI if running on a device that does not have the Warp app installed.
     #[cfg_attr(target_family = "wasm", allow(dead_code))]
     pub fn authorize_device(&self, ctx: &mut ModelContext<Self>) {
         // Clear any stale user state so old credentials don't interfere
@@ -481,7 +481,7 @@ impl AuthManager {
                     |_, _, _| {},
                 );
 
-                // Once the user is authenticated, attempt to report the sandbox that Wish is running in, if any.
+                // Once the user is authenticated, attempt to report the sandbox that Warp is running in, if any.
                 ctx.spawn(
                     async { warp_isolation_platform::detect() },
                     |_, platform, ctx| {
@@ -840,7 +840,7 @@ impl AuthManager {
 
     /// Returns whether an auth redirect that failed state validation should be
     /// silently dropped rather than surfaced as an error. This covers the
-    /// "user clicks the browser's 'Take me to Wish' button twice" case: once
+    /// "user clicks the browser's 'Take me to Warp' button twice" case: once
     /// they're fully logged in, a second redirect targeting the same user is
     /// redundant and should not produce a user-visible error.
     fn should_silently_ignore_stale_redirect(&self, incoming_user_uid: &Option<UserUid>) -> bool {

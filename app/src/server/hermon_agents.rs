@@ -12,8 +12,7 @@ use hermon_client::types::agent::{
 };
 use hermon_client::types::common::{Page, PageParams};
 use hermon_client::types::conversation::{
-    Conversation, ConversationFilters, ConversationMessage, ConversationSummary,
-    SendMessageRequest,
+    Conversation, ConversationFilters, ConversationMessage, ConversationSummary, SendMessageRequest,
 };
 use hermon_client::types::drive::{
     CreateDriveObjectRequest, DriveListFilters, DriveObject, DriveSyncState,
@@ -102,10 +101,7 @@ impl HermonAgentService {
     }
 
     /// Delete a custom agent.
-    pub async fn delete_agent(
-        &self,
-        agent_id: &str,
-    ) -> Result<(), hermon_client::HermonError> {
+    pub async fn delete_agent(&self, agent_id: &str) -> Result<(), hermon_client::HermonError> {
         self.client.agents.delete(agent_id).await
     }
 
@@ -146,7 +142,10 @@ impl HermonAgentService {
         conversation_id: &str,
         page: Option<PageParams>,
     ) -> Result<Page<ConversationMessage>, hermon_client::HermonError> {
-        self.client.conversations.messages(conversation_id, page).await
+        self.client
+            .conversations
+            .messages(conversation_id, page)
+            .await
     }
 
     /// Send a message to a conversation with streaming response.
@@ -233,10 +232,6 @@ impl HermonAgentService {
 
     /// Get Hermon server version.
     pub async fn server_version(&self) -> Option<String> {
-        self.client
-            .version()
-            .await
-            .ok()
-            .map(|v| v.version)
+        self.client.version().await.ok().map(|v| v.version)
     }
 }

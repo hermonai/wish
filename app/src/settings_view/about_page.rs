@@ -68,7 +68,7 @@ impl SettingsWidget for AboutPageWidget {
 
         let logo_fill = theme.foreground();
 
-        let version = ChannelState::app_version().unwrap_or("v#.##.###");
+        let version = ChannelState::app_version().unwrap_or(env!("CARGO_PKG_VERSION"));
 
         let version_text = ui_builder
             .span(version.to_string())
@@ -137,7 +137,10 @@ impl SettingsWidget for AboutPageWidget {
                 .with_child(
                     Container::new(
                         ui_builder
-                            .button(ButtonVariant::Secondary, self.welcome_button_mouse_state.clone())
+                            .button(
+                                ButtonVariant::Secondary,
+                                self.welcome_button_mouse_state.clone(),
+                            )
                             .with_text_label("Show Welcome Page".to_string())
                             .build()
                             .on_click(|ctx, _, _| {

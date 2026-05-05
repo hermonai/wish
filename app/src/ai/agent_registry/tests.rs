@@ -5,9 +5,7 @@
 //! refresh path is tested separately in integration tests against a
 //! mocked Hermon client.
 
-use hermon_client::types::agent::{
-    Agent, AgentModelConfig, AgentType, AgentVisibility,
-};
+use hermon_client::types::agent::{Agent, AgentModelConfig, AgentType, AgentVisibility};
 
 use super::model::{AgentRegistryModel, AgentSource, RegistryEntry};
 
@@ -47,7 +45,10 @@ fn fixture_agent(id: &str, slug: &str, name: &str) -> Agent {
 #[test]
 fn merge_with_only_builtin() {
     let entries = AgentRegistryModel::merge(Vec::new(), super::builtin::builtin_agents());
-    assert!(!entries.is_empty(), "built-ins should populate the registry");
+    assert!(
+        !entries.is_empty(),
+        "built-ins should populate the registry"
+    );
     assert!(
         entries.iter().all(|e| e.source == AgentSource::BuiltIn),
         "all entries should be tagged BuiltIn when there are no Hermon agents"
@@ -87,10 +88,8 @@ fn merge_concatenates_disjoint_sets() {
 fn merge_hermon_overrides_builtin_with_same_slug() {
     // Pretend Hermon has a customized "wish-coder".
     let hermon_coder = fixture_agent("hermon-id-1", "wish-coder", "Custom Coder");
-    let entries = AgentRegistryModel::merge(
-        vec![hermon_coder.clone()],
-        super::builtin::builtin_agents(),
-    );
+    let entries =
+        AgentRegistryModel::merge(vec![hermon_coder.clone()], super::builtin::builtin_agents());
 
     // The slug appears exactly once...
     let coder_entries: Vec<_> = entries

@@ -138,8 +138,11 @@ impl AgentTaskRegistryModel {
     /// Terminal tasks, newest first — what the panel's "Completed"
     /// section renders.
     pub fn completed_tasks(&self) -> Vec<&AgentTask> {
-        let mut completed: Vec<&AgentTask> =
-            self.tasks.iter().filter(|t| t.status.is_terminal()).collect();
+        let mut completed: Vec<&AgentTask> = self
+            .tasks
+            .iter()
+            .filter(|t| t.status.is_terminal())
+            .collect();
         completed.sort_by(|a, b| {
             b.completed_at
                 .unwrap_or_else(Instant::now)
@@ -282,9 +285,7 @@ impl AgentTaskRegistryModel {
         let Some(&index) = self.by_id.get(id) else {
             return false;
         };
-        self.tasks[index]
-            .metadata
-            .insert(key.into(), value.into());
+        self.tasks[index].metadata.insert(key.into(), value.into());
         true
     }
 
@@ -314,11 +315,7 @@ impl AgentTaskRegistryModel {
 
     /// Set the maximum number of terminal tasks retained.
     /// Triggers a prune if the new limit is below the current count.
-    pub fn set_max_completed_tasks(
-        &mut self,
-        max: usize,
-        ctx: &mut ModelContext<Self>,
-    ) {
+    pub fn set_max_completed_tasks(&mut self, max: usize, ctx: &mut ModelContext<Self>) {
         self.max_completed = max;
         self.prune_to_limit(ctx);
     }
@@ -338,9 +335,7 @@ impl AgentTaskRegistryModel {
         }
         // Sort terminal indices by `completed_at` ascending so we
         // remove the oldest first.
-        terminal_indices.sort_by_key(|&i| {
-            self.tasks[i].completed_at.unwrap_or_else(Instant::now)
-        });
+        terminal_indices.sort_by_key(|&i| self.tasks[i].completed_at.unwrap_or_else(Instant::now));
         let drop_count = terminal_indices.len() - self.max_completed;
         let mut drop_set: std::collections::HashSet<usize> =
             terminal_indices.iter().take(drop_count).copied().collect();

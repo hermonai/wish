@@ -1,206 +1,100 @@
-<h1 align="center">
-  <a href="https://wish.hermon.ai">Wish</a>
-</h1>
+<a href="https://www.warp.dev">
+    <img width="1024" alt="Warp Agentic Development Environment product preview" src="https://github.com/user-attachments/assets/9976b2da-2edd-4604-a36c-8fd53719c6d4" />
+</a>
 
 <p align="center">
-  <strong>The agentic development environment from Hermon AI.</strong><br/>
-  GPU-rendered terminal · built-in SDLC agents · cloud sync via Hermon
-</p>
-
-<p align="center">
-  <a href="https://wish.hermon.ai">Website</a>
+  <a href="https://www.warp.dev">Website</a>
   ·
-  <a href="https://www.hermon.ai">Hermon AI</a>
+  <a href="https://www.warp.dev/code">Code</a>
   ·
-  <a href="https://github.com/hermonai/hermon">Hermon Backend</a>
+  <a href="https://www.warp.dev/agents">Agents</a>
   ·
-  <a href="docs/HERMON_ECOSYSTEM.md">Ecosystem</a>
+  <a href="https://www.warp.dev/terminal">Terminal</a>
+  ·
+  <a href="https://www.warp.dev/drive">Drive</a>
+  ·
+  <a href="https://docs.warp.dev">Docs</a>
+  ·
+  <a href="https://www.warp.dev/blog/how-warp-works">How Warp Works</a>
 </p>
 
 > [!NOTE]
-> Wish is derived from the open-source Warp project. Upstream notices and
-> license terms are preserved; see
-> [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md). The Hermon
-> AI–specific code, branding, and integrations live in this repository.
+> OpenAI is the founding sponsor of the new, open-source Warp repository, and the new agentic management workflows are powered by GPT models.
 
-## What is Wish?
+<h1></h1>
 
-Wish is a **terminal + agent IDE** for developers who want AI in the loop
-without leaving the command line. It pairs a GPU-rendered terminal with a
-fleet of purpose-built agents — planners, coders, reviewers, testers — and
-keeps your conversations, workflows, and credentials in sync across
-machines via the [Hermon](https://github.com/hermonai/hermon) control
-plane.
+## About
 
-Highlights:
-
-- **Built-in SDLC agent suite** — 10 agents (planner, coder, reviewer,
-  tester, debugger, deployer, documenter, refactorer, security,
-  orchestrator) that ship with the binary; see Settings → Built-in Agents
-  to browse them.
-- **Hermon-backed sync** — sessions, conversations, and Wish Drive content
-  follow you across devices when you sign in to Hermon.
-- **Local-first** — works fully offline against built-in agents and a
-  local LLM (Ollama or any OpenAI-compatible endpoint).
-- **Multi-shell, multi-platform** — bash, zsh, fish, PowerShell on
-  macOS / Linux / Windows.
-- **Open source** — AGPLv3 (terminal app) + MIT (UI core); see [Licensing](#licensing).
-
-## Ecosystem
-
-| Repo | Role |
-|------|------|
-| **wish** *(this repo)* | Rust agentic terminal — GPU-rendered, agent-aware |
-| [wishcode](https://github.com/hermonai/wishcode) | Electron desktop AI coding agent |
-| [hermon](https://github.com/hermonai/hermon) | Rust remote control plane (auth, orgs, model routing, telemetry) |
-| [wishd](https://github.com/hermonai/wishd) | Rust trusted local daemon (filesystem, git, process, terminal, indexing) |
-
-See [`docs/HERMON_ECOSYSTEM.md`](docs/HERMON_ECOSYSTEM.md) for an
-architectural overview.
-
-## Hermon Integration
-
-The [`hermon_client`](crates/hermon_client) crate provides a typed Rust
-HTTP client for the Hermon API, covering:
-
-- **Auth** — register, login, session management
-- **AI** — model routing with SSE streaming
-- **Agents** — CRUD, invoke, tool approval, system-agent listing
-- **Conversations** — history, message streaming, fork/archive
-- **Drive** — object storage and sync
-- **Telemetry** — event ingestion
-- **Orgs / Sessions** — user and device management
-
-This replaces the legacy upstream backend with Hermon's REST + SSE API
-surface. The crate is fully unit-tested (57 tests) and decoupled from UI.
+[Warp](https://www.warp.dev) is an agentic development environment, born out of the terminal. Use Warp's built-in coding agent, or bring your own CLI agent (Claude Code, Codex, Gemini CLI, and others).
 
 ## Installation
 
-> Pre-built binaries will live at [wish.hermon.ai](https://wish.hermon.ai).
-> Until then, build from source:
+You can [download Warp](https://www.warp.dev/download) and [read our docs](https://docs.warp.dev/) for platform-specific instructions.
 
-```bash
-git clone https://github.com/hermonai/wish
-cd wish
-./script/bootstrap   # one-time platform setup (Rust toolchain, deps)
-./script/run         # build and launch Wish
-```
+## Warp Contributions Overview Dashboard
 
-For the OSS variant (no proprietary upstream pieces):
-
-```bash
-cargo run --bin wish-oss
-```
-
-See [WISH.md](WISH.md) for the full engineering guide — coding style,
-testing, platform-specific notes, and architecture deep-dives.
-
-### Local development without Hermon
-
-Want to run Wish entirely on your machine — no cloud login, no
-backend? See [`docs/LOCAL_DEV.md`](docs/LOCAL_DEV.md) for:
-
-- Pure-local mode quick start
-- Ollama / local-LLM configuration
-- Local Hermon backend setup (gateway + dashboard)
-- Local-dev login flow
-- Local Wish Drive options
-- Showing the Agent Conversations / Wish Drive sidebar chips
-
-## Configuration
-
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `HERMON_API_URL` | `https://wish.hermon.ai` (or `http://localhost:8080` for local dev) | Hermon gateway URL |
-| `HERMON_DASHBOARD_URL` | `https://wish.hermon.ai` (or `http://localhost:3000` for local dev) | Dashboard URL |
-| `WISH_LOG` | `info` | Tracing log level |
-
-Per-user configuration lives at `~/.wish/settings.toml`. The first launch
-shows a Welcome page; you can re-open it any time via **Help → Show
-Welcome Page** or **Settings → About**.
+Explore [build.warp.dev](https://build.warp.dev) to:
+- Watch thousands of Oz agents triage issues, write specs, implement changes, and review PRs
+- View top contributors and in-flight features
+- Track your own issues with GitHub sign-in
+- Click into active agent sessions in a web-compiled Warp terminal
 
 ## Licensing
 
-- **WishUI** (the `wishui_core` and `wishui` crates) is derived from
-  WarpUI and licensed under the [MIT license](LICENSE-MIT).
-- **Everything else** in this repository is licensed under
-  [AGPL v3](LICENSE-AGPL).
+Warp's UI framework (the `wishui_core` and `wishui` crates) are licensed under the [MIT license](LICENSE-MIT).
+
+The rest of the code in this repository is licensed under the [AGPL v3](LICENSE-AGPL).
 
 ## Open Source & Contributing
 
-Wish's terminal client is fully open source. This fork preserves upstream
-attribution while evolving the product for Hermon AI. For the contribution
-flow inherited from upstream, read [CONTRIBUTING.md](CONTRIBUTING.md).
+Warp's client codebase is open source and lives in this repository. We welcome community contributions and have designed a lightweight workflow to help new contributors get started. For the full contribution flow, read our [CONTRIBUTING.md](CONTRIBUTING.md) guide.
 
 > [!TIP]
-> **Chat with the Hermon AI team and contributors** on
-> [Slack](https://www.hermon.ai/slack) — `#wish-contributors` is the best
-> channel for design discussion, pairing, and ad-hoc questions.
+> Maintaining a popular open-source project? [Apply for Oz credits](https://tally.so/r/LZWxqG) to bring [agentic workflows](https://github.com/warpdotdev/oz-for-oss) like issue triage, PR review, and community management to your repo.
 
-### Issue → spec → PR
+### Issue to PR
 
-Before filing, [search existing issues](https://github.com/hermonai/wish/issues).
-If nothing matches, [open a new issue](https://github.com/hermonai/wish/issues/new/choose)
-using the templates. Security vulnerabilities should be reported privately —
-see [CONTRIBUTING.md#reporting-security-issues](CONTRIBUTING.md#reporting-security-issues).
+Before filing, [search existing issues](https://github.com/warpdotdev/warp/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) for your bug or feature request. If nothing exists, [file an issue](https://github.com/warpdotdev/warp/issues/new/choose) using our templates. Security vulnerabilities should be reported privately as described in [CONTRIBUTING.md](CONTRIBUTING.md#reporting-security-issues).
 
-A maintainer triages each issue and may apply a readiness label:
+Once filed, a Warp maintainer reviews the issue and may apply a readiness label: [`ready-to-spec`](https://github.com/warpdotdev/warp/issues?q=is%3Aissue+is%3Aopen+label%3Aready-to-spec) signals the design is open for contributors to spec out, and [`ready-to-implement`](https://github.com/warpdotdev/warp/issues?q=is%3Aissue+is%3Aopen+label%3Aready-to-implement) signals the design is settled and code PRs are welcome. Anyone can pick up a labeled issue — mention **@oss-maintainers** on an issue if you'd like it considered for a readiness label.
 
-- `ready-to-spec` — design is open for contributors to spec
-- `ready-to-implement` — design is settled, code PRs welcome
+### Building the Repo Locally
 
-Mention **@oss-maintainers** if you'd like an issue considered for a
-readiness label.
-
-### Building from source
+To build and run Warp from source:
 
 ```bash
-./script/bootstrap   # platform-specific setup (Rust, deps)
-./script/run         # build and run Wish
+./script/bootstrap   # platform-specific setup
+./script/run         # build and run Warp
 ./script/presubmit   # fmt, clippy, and tests
 ```
 
-Cross-platform notes, agent runtime architecture, and the Hermon API
-surface are all documented in [WISH.md](WISH.md) and the
-[`docs/`](docs/) directory.
+See [WARP.md](WARP.md) for the full engineering guide, including coding style, testing, and platform-specific notes.
 
 ## Joining the Team
 
-Curious about Hermon AI? Visit [hermon.ai](https://www.hermon.ai).
+Interested in joining the team? See our [open roles](https://www.warp.dev/careers).
 
-## Support
+## Support and Questions
 
-1. **Wish product** — [wish.hermon.ai](https://wish.hermon.ai)
-2. **Hermon AI company** — [hermon.ai](https://www.hermon.ai)
-3. **Source code & issues** — [github.com/hermonai/wish](https://github.com/hermonai/wish)
-4. **Inherited Warp documentation** — still useful for unmodified upstream
-   behavior; see the upstream repo for reference.
+1. See our [docs](https://docs.warp.dev/) for a comprehensive guide to Warp's features.
+2. Join our [Slack Community](https://go.warp.dev/join-preview) to connect with other users and get help from the Warp team.
+3. Try our [Preview build](https://www.warp.dev/download-preview) to test the latest experimental features.
+4. Mention **@oss-maintainers** on any issue to escalate to the team — for example, if you encounter problems with the automated agents.
 
 ## Code of Conduct
 
-We ask everyone to be respectful and empathetic. This fork currently
-preserves the upstream
-[Code of Conduct](CODE_OF_CONDUCT.md) while Hermon AI project governance
-is finalized.
+We ask everyone to be respectful and empathetic. Warp follows the [Code of Conduct](CODE_OF_CONDUCT.md). To report violations, email warp-coc at warp.dev.
 
 ## Open Source Dependencies
 
-A non-exhaustive shout-out to the open-source projects that made Wish (and
-upstream Warp before it) possible:
+We'd like to call out a few of the [open source dependencies](https://docs.warp.dev/help/licenses) that have helped Warp to get off the ground:
 
-- [Tokio](https://github.com/tokio-rs/tokio) — async runtime
-- [NuShell](https://github.com/nushell/nushell) — shell parser
-- [Fig Completion Specs](https://github.com/withfig/autocomplete)
-- [Alacritty](https://github.com/alacritty/alacritty) — terminal emulator
-- [Hyper](https://github.com/hyperium/hyper) — HTTP
-- [FontKit](https://github.com/servo/font-kit)
-- [Core-Foundation](https://github.com/servo/core-foundation-rs)
-- [Smol](https://github.com/smol-rs/smol)
-
----
-
-<sub>
-Wish is derived from <a href="https://github.com/warpdotdev/warp">Warp</a>.
-Upstream attribution lives in
-<a href="docs/UPSTREAM_ATTRIBUTION.md">UPSTREAM_ATTRIBUTION.md</a>.
-</sub>
+* [Tokio](https://github.com/tokio-rs/tokio)
+* [NuShell](https://github.com/nushell/nushell)
+* [Fig Completion Specs](https://github.com/withfig/autocomplete)
+* [Warp Server Framework](https://github.com/seanmonstar/warp)
+* [Alacritty](https://github.com/alacritty/alacritty)
+* [Hyper HTTP library](https://github.com/hyperium/hyper)
+* [FontKit](https://github.com/servo/font-kit)
+* [Core-foundation](https://github.com/servo/core-foundation-rs)
+* [Smol](https://github.com/smol-rs/smol)

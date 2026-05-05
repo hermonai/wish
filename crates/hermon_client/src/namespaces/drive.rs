@@ -48,13 +48,19 @@ impl DriveNamespace {
             if let Some(t) = f.object_type {
                 params.push((
                     "objectType".to_string(),
-                    serde_json::to_string(&t).unwrap().trim_matches('"').to_string(),
+                    serde_json::to_string(&t)
+                        .unwrap()
+                        .trim_matches('"')
+                        .to_string(),
                 ));
             }
             if let Some(v) = f.visibility {
                 params.push((
                     "visibility".to_string(),
-                    serde_json::to_string(&v).unwrap().trim_matches('"').to_string(),
+                    serde_json::to_string(&v)
+                        .unwrap()
+                        .trim_matches('"')
+                        .to_string(),
                 ));
             }
             if let Some(s) = f.search {
@@ -104,10 +110,7 @@ impl DriveNamespace {
     }
 
     /// Get the content of a drive object.
-    pub async fn get_content(
-        &self,
-        object_id: &str,
-    ) -> Result<DriveObjectContent, HermonError> {
+    pub async fn get_content(&self, object_id: &str) -> Result<DriveObjectContent, HermonError> {
         let path = format!("/v1/drive/objects/{object_id}/content");
         self.http.request(RequestOptions::get(path)).await
     }
