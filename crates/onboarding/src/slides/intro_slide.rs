@@ -140,7 +140,7 @@ impl IntroSlide {
 
         let logo_fill = internal_colors::fg_overlay_4(theme);
         let logo =
-            ConstrainedBox::new(Icon::new("bundled/svg/hermon-logo-a1.svg", logo_fill).finish())
+            ConstrainedBox::new(Icon::new("bundled/svg/hermon-logo.svg", logo_fill).finish())
                 .with_width(64.)
                 .with_height(64.)
                 .finish();

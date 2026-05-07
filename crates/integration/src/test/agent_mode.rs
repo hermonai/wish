@@ -147,7 +147,7 @@ fn restored_agent_output_message(task_id: &str, request_id: &str) -> api::Messag
             api::message::AgentOutput {
                 text: concat!(
                     "Inline local images:\n",
-                    "![One](local.png) ![Two](local.png)\n\n",
+                    "![One](hermon-logo.png) ![Two](hermon-logo.png)\n\n",
                     "```mermaid\n",
                     "graph TD\n",
                     "A[Agent] --> B[Blocklist]\n",

@@ -18,7 +18,7 @@ on:
           - github_hosted
   workflow_call:
 
-name: Warp CI
+name: Wish CI
 
 env:
   CARGO_TERM_COLOR: always
@@ -543,7 +543,7 @@ jobs:
           if [[ ! -d $(brew --prefix clang-format) ]]; then
             brew install clang-format
           fi
-          ./script/run-clang-format.py -r --extensions 'c,h,cpp,m' ./crates/warpui/src/ ./app/src/
+          ./script/run-clang-format.py -r --extensions 'c,h,cpp,m' ./crates/wishui/src/ ./app/src/
 
   general-lint:
     name: Miscellaneous checks

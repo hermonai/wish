@@ -219,7 +219,7 @@ impl GetStartedView {
             .with_children([
                 Container::new(
                     ConstrainedBox::new(
-                        Icon::new("bundled/svg/wish-logo-neutral.svg", theme.foreground()).finish(),
+                        Icon::new("bundled/svg/hermon-logo.svg", theme.foreground()).finish(),
                     )
                     .with_height(40.)
                     .with_width(40.)

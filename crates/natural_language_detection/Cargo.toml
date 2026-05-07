@@ -1,5 +1,5 @@
 [package]
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 name = "natural_language_detection"
 version = "0.1.0"
 edition = "2021"

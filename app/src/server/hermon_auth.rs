@@ -54,12 +54,15 @@ pub fn create_client() -> Option<HermonClient> {
 /// Get the configured Hermon API (gateway) URL.
 ///
 /// Resolution order:
-/// 1. `HERMON_API_URL` env var — explicit developer override, highest priority
+/// 1. `HERMON_API_URL` or `WISH_API_URL` env var — explicit developer override, highest priority
 /// 2. Channel default:
 ///    - **Stable / Preview / Oss** → `https://wish.hermon.ai`  (production)
 ///    - **Local / Dev / Integration** → `http://localhost:8080` (local gateway)
 pub fn api_url() -> String {
     if let Ok(url) = std::env::var("HERMON_API_URL") {
+        return url;
+    }
+    if let Ok(url) = std::env::var("WISH_API_URL") {
         return url;
     }
 

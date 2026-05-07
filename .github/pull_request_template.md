@@ -17,7 +17,7 @@ How did you test this change? What automated tests did you add? If you didn't ad
 -->
 
 ## Agent Mode
-- [ ] Warp Agent Mode - This PR was created via Warp's AI Agent Mode
+- [ ] Wish Agent Mode - This PR was created via Wish's AI Agent Mode
 
 <!--
 ## Changelog Entries for Stable

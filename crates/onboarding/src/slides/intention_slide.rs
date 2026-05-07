@@ -73,12 +73,11 @@ impl IntentionSlide {
         let theme = appearance.theme();
 
         let logo_fill = internal_colors::fg_overlay_4(theme);
-        let logo = ConstrainedBox::new(
-            AssetIcon::new("bundled/svg/hermon-logo-a1.svg", logo_fill).finish(),
-        )
-        .with_width(64.)
-        .with_height(64.)
-        .finish();
+        let logo =
+            ConstrainedBox::new(AssetIcon::new("bundled/svg/hermon-logo.svg", logo_fill).finish())
+                .with_width(64.)
+                .with_height(64.)
+                .finish();
 
         let title = appearance
             .ui_builder()

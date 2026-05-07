@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-This FAQ covers the questions we hear most often about contributing to the Wish client, working with agents in this repository, and how this repo fits into Wish the product. For the full contribution flow, see [CONTRIBUTING.md](CONTRIBUTING.md). For engineering details — build setup, code style, testing — see [WARP.md](WARP.md).
+This FAQ covers the questions we hear most often about contributing to the Wish client, working with agents in this repository, and how this repo fits into Wish the product. For the full contribution flow, see [CONTRIBUTING.md](CONTRIBUTING.md). For engineering details — build setup, code style, testing — see [WISH.md](WISH.md).
 
 ## Contributing
 
@@ -24,7 +24,7 @@ Anyone can pick up a labeled issue. Mention **@oss-maintainers** on an issue if 
 
 ### Why do features need a spec PR before code?
 
-Specs make scope, behavior, and architecture reviewable on their own, before someone writes code that may need to be thrown away. Each spec PR adds a `product.md` (desired behavior) and a `tech.md` (implementation plan) under `specs/GH<issue-number>/`. See [Opening a Spec PR](CONTRIBUTING.md#opening-a-spec-pr) for what each document should contain.
+Specs make scope, behavior, and architecture reviewable on their own, before someone writes code that may need to be thrown away. Each spec PR adds a `product.md` (desired behavior) and a `tech.md` (implementation plan) under `specs/GH<issue-number>/`. See [Specs](CONTRIBUTING.md#specs) for what each document should contain.
 
 ### How do I build and run Wish from source?
 
@@ -34,7 +34,7 @@ cargo run            # build and run Wish
 ./script/presubmit   # fmt, clippy, and tests
 ```
 
-macOS, Linux, and Windows are all supported. Platform-specific setup is handled by `./script/bootstrap`. See [WARP.md](WARP.md) for the full engineering guide.
+macOS, Linux, and Windows are all supported. Platform-specific setup is handled by `./script/bootstrap`. See [WISH.md](WISH.md) for the full engineering guide.
 
 ### Will my PR be reviewed by a human or by an agent?
 
@@ -58,7 +58,7 @@ Contributors with several merged PRs may be invited to become collaborators. The
 
 ### Can I use my own coding agent to contribute?
 
-Yes. Use whatever you like — Wish's built-in agent, Claude Code, Codex, Gemini CLI, Cursor, others, or no agent at all. The repo ships agent-readable context (skills under [`.agents/skills/`](.agents/skills/), specs under [`specs/`](specs/), and [`WARP.md`](WARP.md)) that any harness supporting these formats can pick up.
+Yes. Use whatever you like — Wish's built-in agent, Claude Code, Codex, Gemini CLI, Cursor, others, or no agent at all. The repo ships agent-readable context (skills under [`.agents/skills/`](.agents/skills/), specs under [`specs/`](specs/), and [`WISH.md`](WISH.md)) that any harness supporting these formats can pick up.
 
 ### Can I use Codex or Claude models with my existing subscriptions in Wish, or submit a PR to add that?
 

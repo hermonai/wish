@@ -567,6 +567,23 @@ fn apply_scroll_multiplier(event: &mut Event, app: &AppContext) {
     }
 }
 
+fn ws_url_for_server_root(server_root_url: &str, path: &str) -> Option<String> {
+    let mut url = Url::parse(server_root_url).ok()?;
+    match url.scheme() {
+        "https" => {
+            let _ = url.set_scheme("wss");
+        }
+        "http" => {
+            let _ = url.set_scheme("ws");
+        }
+        _ => return None,
+    }
+    url.set_path(path);
+    url.set_query(None);
+    url.set_fragment(None);
+    Some(url.to_string())
+}
+
 /// Runs the app. If a subcommand was requested, it'll be run instead of the main application.
 pub fn run() -> Result<()> {
     // Perform any necessary platform-specific initialization.
@@ -580,10 +597,16 @@ pub fn run() -> Result<()> {
 
     // Server URL overrides are only honored on internal dev channels. Release channels silently
     // ignore `--server-root-url` / `--ws-server-url` / `--session-sharing-server-url` (and their
-    // `WARP_*` env-var equivalents) so shipped builds can't be redirected away from their
+    // `WISH_*` env-var equivalents) so shipped builds can't be redirected away from their
     // baked-in server URLs. See `Channel::allows_server_url_overrides`.
     if ChannelState::channel().allows_server_url_overrides() {
-        if let Some(url) = args.server_root_url() {
+        let server_root_url = args
+            .server_root_url()
+            .map(str::to_owned)
+            .or_else(|| std::env::var("WISH_API_URL").ok())
+            .or_else(|| std::env::var("HERMON_API_URL").ok());
+
+        if let Some(url) = server_root_url.as_deref() {
             if let Err(e) = ChannelState::override_server_root_url(url.to_owned()) {
                 eprintln!("Error: Invalid server root URL: {e:#}");
             }
@@ -593,11 +616,23 @@ pub fn run() -> Result<()> {
             if let Err(e) = ChannelState::override_ws_server_url(url.to_owned()) {
                 eprintln!("Error: Invalid websocket server URL: {e:#}");
             }
+        } else if let Some(root_url) = server_root_url.as_deref() {
+            if let Some(url) = ws_url_for_server_root(root_url, "graphql/v2") {
+                if let Err(e) = ChannelState::override_ws_server_url(url) {
+                    eprintln!("Error: Invalid derived websocket server URL: {e:#}");
+                }
+            }
         }
 
         if let Some(url) = args.session_sharing_server_url() {
             if let Err(e) = ChannelState::override_session_sharing_server_url(url.to_owned()) {
                 eprintln!("Error: Invalid session sharing server URL: {e:#}");
+            }
+        } else if let Some(root_url) = server_root_url.as_deref() {
+            if let Some(url) = ws_url_for_server_root(root_url, "sessions") {
+                if let Err(e) = ChannelState::override_session_sharing_server_url(url) {
+                    eprintln!("Error: Invalid derived session sharing server URL: {e:#}");
+                }
             }
         }
     }
@@ -963,7 +998,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
             || std::env::var("WARPUI_USE_REAL_DISPLAY_IN_INTEGRATION_TESTS").is_ok();
         app_builder.set_activate_on_launch(activate_on_launch);
 
-        let dev_icon = ASSETS.get("bundled/png/local.png")?;
+        let dev_icon = ASSETS.get("bundled/png/hermon-logo.png")?;
         app_builder.set_dev_icon(dev_icon);
 
         app_builder.set_menu_bar_builder(app_menus::menu_bar);
@@ -1374,6 +1409,10 @@ fn initialize_app(
     // the conversation-inline annotation surface. See
     // `crate::ai::agent_tasks` for the architecture.
     ctx.add_singleton_model(crate::ai::agent_tasks::AgentTaskRegistryModel::new);
+    // Wish chat conversations — the killer-feature surface that
+    // ties together AgentRegistry + AgentTaskRegistry +
+    // local/Hermon adapters. See `crate::ai::wish_conversation`.
+    ctx.add_singleton_model(crate::ai::wish_conversation::ConversationManagerModel::new);
     ctx.add_singleton_model(|ctx| {
         // Not using the *Provider types isn't ideal, but it's worth it for the ability to move managed secrets to a separate crate.
         ManagedSecretManager::new(

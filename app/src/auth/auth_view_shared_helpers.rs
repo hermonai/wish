@@ -5,7 +5,6 @@ use wish_core::ui::{
     appearance::Appearance,
     builder::UiBuilder,
     color::{darken, lighten},
-    theme::ColorScheme,
 };
 use wishui::{
     assets::asset_cache::AssetSource,
@@ -125,16 +124,12 @@ where
 }
 
 pub fn render_square_logo(appearance: &Appearance) -> Box<dyn Element> {
-    let image_path = if appearance.theme().inferred_color_scheme() == ColorScheme::LightOnDark {
-        "bundled/svg/wish-logo-light.svg"
-    } else {
-        "bundled/svg/wish-logo-dark.svg"
-    };
-
     ConstrainedBox::new(
         Container::new(
             Image::new(
-                AssetSource::Bundled { path: image_path },
+                AssetSource::Bundled {
+                    path: "bundled/svg/hermon-logo.svg",
+                },
                 CacheOption::BySize,
             )
             .finish(),

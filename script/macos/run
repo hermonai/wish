@@ -10,7 +10,7 @@
 #   WARP_BIN_NAME  — "wish" (local channel) or "wish-oss"
 #   WARP_CHANNEL   — "local" or "oss"
 #   FEATURES       — comma-separated cargo features (already normalized)
-# Must be called from the root directory of the warp repo.
+# Must be called from the root directory of the Wish repo.
 
 set -e
 
@@ -23,7 +23,7 @@ cd "${REPO_ROOT}"
 
 if [ "$WARP_CHANNEL" = "local" ]; then
     WARP_APP_PATH="target/debug/bundle/osx/WishLocal.app"
-    WARP_SCHEME_NAME="wishlocal"
+    WARP_SCHEME_NAME="${WISH_URL_SCHEME:-wish}"
 else
     WARP_APP_PATH="target/debug/bundle/osx/WishOss.app"
     WARP_SCHEME_NAME="wishoss"

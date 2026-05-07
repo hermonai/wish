@@ -64,7 +64,9 @@ fn test_passes_through_asset_cache_original() {
     let asset_cache = new_asset_cache();
     let image_cache = ImageCache::new();
 
-    let source = AssetSource::Bundled { path: "local.png" };
+    let source = AssetSource::Bundled {
+        path: "hermon-logo.png",
+    };
     let image_asset: AssetState<ImageType> = asset_cache.load_asset(source.clone());
     let AssetState::Loaded { data: image } = image_asset else {
         panic!("Bundled asset should be available immediately!");
@@ -102,7 +104,9 @@ fn test_passes_through_asset_cache_original_when_target_size_matches_source_size
     let asset_cache = new_asset_cache();
     let image_cache = ImageCache::new();
 
-    let source = AssetSource::Bundled { path: "local.png" };
+    let source = AssetSource::Bundled {
+        path: "hermon-logo.png",
+    };
     let image_asset: AssetState<ImageType> = asset_cache.load_asset(source.clone());
     let AssetState::Loaded { data: image } = image_asset else {
         panic!("Bundled asset should be available immediately!");
@@ -147,7 +151,9 @@ fn test_respects_max_dimensions_for_cacheoption_original() {
     let bounds = Vector2I::new(10, 10);
 
     let image = image_cache.image(
-        AssetSource::Bundled { path: "local.png" },
+        AssetSource::Bundled {
+            path: "hermon-logo.png",
+        },
         bounds,
         FitType::Cover,
         AnimatedImageBehavior::FullAnimation,
@@ -166,7 +172,9 @@ fn test_respects_max_dimensions_for_cacheoption_original() {
     assert_eq!(image.img.dimensions(), (1024, 1024));
 
     let image = image_cache.image(
-        AssetSource::Bundled { path: "local.png" },
+        AssetSource::Bundled {
+            path: "hermon-logo.png",
+        },
         bounds,
         FitType::Cover,
         AnimatedImageBehavior::FullAnimation,
@@ -280,7 +288,7 @@ fn test_first_frame_preview_does_not_regress_static_formats() {
     let image = load_bundled_image(
         &image_cache,
         &asset_cache,
-        "local.png",
+        "hermon-logo.png",
         Vector2I::new(16, 16),
         FitType::Contain,
         AnimatedImageBehavior::FirstFramePreview,
@@ -404,7 +412,9 @@ fn test_svg_text_rasterizes_with_loaded_system_fonts() {
 fn test_evict_image_drops_arc_for_resized_bysize() {
     let asset_cache = new_asset_cache();
     let image_cache = ImageCache::new();
-    let source = AssetSource::Bundled { path: "local.png" };
+    let source = AssetSource::Bundled {
+        path: "hermon-logo.png",
+    };
 
     // Request the image at a smaller size than its 1024x1024 source, which forces a resize
     // and allocates a fresh Arc<StaticImage> not shared with AssetCache.
@@ -448,7 +458,9 @@ fn test_evict_image_drops_arc_for_resized_bysize() {
 fn test_evict_size_drops_arc_only_for_targeted_entry() {
     let asset_cache = new_asset_cache();
     let image_cache = ImageCache::new();
-    let source = AssetSource::Bundled { path: "local.png" };
+    let source = AssetSource::Bundled {
+        path: "hermon-logo.png",
+    };
 
     // Cache the same asset at two distinct sizes.
     let small_bounds = Vector2I::new(32, 32);
@@ -528,7 +540,9 @@ fn test_respects_max_dimensions_for_cacheoption_bysize() {
     let bounds = Vector2I::new(768, 768);
 
     let image = image_cache.image(
-        AssetSource::Bundled { path: "local.png" },
+        AssetSource::Bundled {
+            path: "hermon-logo.png",
+        },
         bounds,
         FitType::Cover,
         AnimatedImageBehavior::FullAnimation,
@@ -547,7 +561,9 @@ fn test_respects_max_dimensions_for_cacheoption_bysize() {
     assert_eq!(image.img.dimensions(), (768, 768));
 
     let image = image_cache.image(
-        AssetSource::Bundled { path: "local.png" },
+        AssetSource::Bundled {
+            path: "hermon-logo.png",
+        },
         bounds,
         FitType::Cover,
         AnimatedImageBehavior::FullAnimation,

@@ -390,7 +390,9 @@ impl ChannelState {
             Channel::Dev => "wishdev",
             // Dummy value--integration tests shouldn't support URL schemes.
             Channel::Integration => "wishintegration",
-            Channel::Local => "wishlocal",
+            // Local builds use the canonical Wish callback scheme so local
+            // Hermon auth URLs do not leak an environment-specific scheme.
+            Channel::Local => "wish",
             Channel::Oss => "wishoss",
         }
     }

@@ -6,7 +6,7 @@ This file provides guidance when working with code in the Wish repository. Wish 
 
 ### Build and Run
 - `cargo run` - Build and run Wish locally
-- `./script/run` - Run wish-oss in dev channel
+- `./script/run` - Run the local Wish app bundle
 - `cargo build --bin oss` - Build the OSS binary
 - `cargo build --bin dev` - Build the dev binary
 - `cargo build --bin stable` - Build the stable binary
@@ -18,23 +18,26 @@ To connect to a local Hermon backend instance:
 # Dev/Local channel auto-connects to http://localhost:8080
 ./script/run
 
-# Override explicitly
+# Override explicitly; WISH_API_URL is accepted as an alias.
 HERMON_API_URL=http://localhost:8080 WISH_API_KEY=hk_your_key ./script/run
+WISH_API_URL=http://localhost:9090 WISH_URL_SCHEME=wish ./script/run
 ```
 
 Environment variables:
-- `HERMON_API_URL` - Hermon backend URL (dev default: `http://localhost:8080`, stable default: `https://api.hermon.ai`)
+- `HERMON_API_URL` / `WISH_API_URL` - Hermon/Wish backend URL (local/dev default: `http://localhost:8080`, production default: `https://wish.hermon.ai`)
+- `HERMON_DASHBOARD_URL` - Hermon dashboard URL for local tooling (local/dev default: `http://localhost:3000`)
+- `WISH_URL_SCHEME` - Optional macOS local bundle callback scheme override. Defaults to `wish`.
 - `WISH_API_KEY` - Hermon API key for auth (`hk_...` prefix)
 - `WISH_CHANNEL` - Channel override: `local`, `dev`, `stable`, `preview`, `oss`
 
 ### Channels and Binaries
 - **oss** (`./target/debug/wish-oss`) — OSS channel, all debug features enabled
-- **dev** (`./target/debug/dev`) — Dev channel, connects to local hermon by default
-- **stable** (`./target/debug/stable`) — Production channel, connects to api.hermon.ai
+- **dev** (`./target/debug/dev`) — Dev channel, connects to local Hermon by default
+- **stable** (`./target/debug/stable`) — Production channel, connects to wish.hermon.ai
 - **preview** (`./target/debug/preview`) — Preview channel with preview features + force-login
 
 ### Config Directories
-- `~/.wish/` — Shared Wish config for all desktop channels (migrated from legacy `~/.warp/`)
+- `~/.wish/` — Shared Wish config for all desktop channels
 - `~/.wish/code/` — Wishcode product config
 - `~/.wish/cli/` — Wish CLI product config
 

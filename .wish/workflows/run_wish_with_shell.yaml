@@ -1,0 +1,9 @@
+---
+name: "Run Wish locally with shell"
+command: "WARP_SHELL_PATH={{shell}} cargo run"
+description: "Runs Wish with the particular shell so devs don't need to change their login shell to test a different shell locally"
+arguments:
+  - name: shell
+    description: path of shell to use
+author: Hermon AI
+shells: []

@@ -1,11 +1,11 @@
 ---
 name: fix-errors
-description: Fix compilation errors, linting issues, and test failures in the warp Rust codebase. Covers presubmit checks, WASM-specific errors, and running specific tests. Use when the user hits build errors, clippy or fmt failures, test failures, or needs to run or interpret presubmit before a PR.
+description: Fix compilation errors, linting issues, and test failures in the Wish Rust codebase. Covers presubmit checks, WASM-specific errors, and running specific tests. Use when the user hits build errors, clippy or fmt failures, test failures, or needs to run or interpret presubmit before a PR.
 ---
 
 # fix-errors
 
-Fix compilation errors, linting issues, and test failures in the warp Rust codebase.
+Fix compilation errors, linting issues, and test failures in the Wish Rust codebase.
 
 ## Overview
 
@@ -50,7 +50,7 @@ cargo clippy --target wasm32-unknown-unknown --profile release-wasm-debug_assert
 
 **Objective-C/C/C++ formatting:**
 ```bash
-./script/run-clang-format.py -r --extensions 'c,h,cpp,m' ./crates/warpui/src/ ./app/src/
+./script/run-clang-format.py -r --extensions 'c,h,cpp,m' ./crates/wishui/src/ ./app/src/
 ```
 
 **All tests:**

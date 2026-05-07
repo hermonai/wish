@@ -267,7 +267,7 @@ impl View for WelcomeView {
     /// without needing to be logged in to Hermon.
     ///
     /// Layout (top to bottom, vertically centered on the pane):
-    ///   - Hermon "H" logo (`bundled/svg/hermon-logo-a1.svg`)
+    ///   - Hermon "H" logo (`bundled/svg/hermon-logo.svg`)
     ///   - "Welcome to Wish" — large foreground-color heading
     ///   - "A modern terminal with state of the art agents built in." —
     ///     dimmed subtitle
@@ -289,7 +289,7 @@ impl View for WelcomeView {
 
         // ── Logo ───────────────────────────────────────────────────
         let logo = ConstrainedBox::new(
-            Icon::new("bundled/svg/hermon-logo-a1.svg", theme.foreground()).finish(),
+            Icon::new("bundled/svg/hermon-logo.svg", theme.foreground()).finish(),
         )
         .with_height(64.)
         .with_width(64.)

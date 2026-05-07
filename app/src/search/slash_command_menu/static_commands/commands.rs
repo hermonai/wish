@@ -12,7 +12,7 @@ use super::Availability;
 pub static AGENT: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
     name: "/agent",
     description: "Start a new conversation",
-    icon_path: "bundled/svg/oz.svg",
+    icon_path: "bundled/svg/hermon-logo.svg",
     availability: Availability::AI_ENABLED.union(Availability::NOT_CLOUD_AGENT),
     auto_enter_ai_mode: false,
     argument: Some(Argument::optional().with_execute_on_selection()),
@@ -21,7 +21,7 @@ pub static AGENT: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
 pub static CLOUD_AGENT: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
     name: "/cloud-agent",
     description: "Start a new cloud agent conversation",
-    icon_path: "bundled/svg/oz-cloud.svg",
+    icon_path: "bundled/svg/hermon-logo.svg",
     availability: Availability::AI_ENABLED.union(Availability::NOT_CLOUD_AGENT),
     auto_enter_ai_mode: false,
     argument: Some(Argument::optional().with_execute_on_selection()),
@@ -282,7 +282,7 @@ pub static NEW: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
 pub static MODEL: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
     name: "/model",
     description: "Switch the base agent model",
-    icon_path: "bundled/svg/oz.svg",
+    icon_path: "bundled/svg/hermon-logo.svg",
     availability: Availability::AGENT_VIEW | Availability::AI_ENABLED,
     auto_enter_ai_mode: true,
     argument: None,
@@ -291,7 +291,7 @@ pub static MODEL: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
 pub static HOST: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
     name: "/host",
     description: "Switch the cloud agent execution host",
-    icon_path: "bundled/svg/oz-cloud.svg",
+    icon_path: "bundled/svg/hermon-logo.svg",
     availability: Availability::AGENT_VIEW
         | Availability::AI_ENABLED
         | Availability::CLOUD_AGENT_V2,
@@ -302,7 +302,7 @@ pub static HOST: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
 pub static HARNESS: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
     name: "/harness",
     description: "Switch the cloud agent harness",
-    icon_path: "bundled/svg/oz.svg",
+    icon_path: "bundled/svg/hermon-logo.svg",
     availability: Availability::AGENT_VIEW
         | Availability::AI_ENABLED
         | Availability::CLOUD_AGENT_V2,
@@ -348,7 +348,7 @@ pub const ORCHESTRATE_NAME: &str = "/orchestrate";
 pub static ORCHESTRATE: LazyLock<StaticCommand> = LazyLock::new(|| StaticCommand {
     name: ORCHESTRATE_NAME,
     description: "Break a task into subtasks and run them in parallel with multiple agents",
-    icon_path: "bundled/svg/oz.svg",
+    icon_path: "bundled/svg/hermon-logo.svg",
     availability: Availability::LOCAL | Availability::AI_ENABLED,
     auto_enter_ai_mode: true,
     argument: Some(Argument::optional().with_hint_text("<describe your task>")),

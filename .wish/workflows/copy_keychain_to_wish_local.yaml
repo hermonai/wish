@@ -1,0 +1,6 @@
+---
+name: "Copy WishDev Keychain to Wish local"
+command: "security add-generic-password -a User -U -s wish -w \"$(security find-generic-password -a User -s ai.hermon.Wish-Dev -w)\""
+description: "Copies the refresh token from WishDev into the local Wish app so that it can authenticate."
+author: Hermon AI
+shells: []

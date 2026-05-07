@@ -1,6 +1,6 @@
 [package]
 name = "markdown_parser"
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 version = "0.1.0"
 edition = "2024"
 publish.workspace = true

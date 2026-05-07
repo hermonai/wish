@@ -1,7 +1,7 @@
 [package]
 name = "languages"
 edition = "2021"
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 publish.workspace = true
 license.workspace = true
 

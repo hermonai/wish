@@ -2,12 +2,12 @@
 #
 # Updates the Info.plist file for a macOS app bundle to register supported file types and URL schemes.
 # This only applies the updates common to `script/bundle` and `script/run`.
-# Must be called from the root directory of the warp repo.
+# Must be called from the root directory of the Wish repo.
 
 set -e
 
 if [[ ! -d "script" ]]; then
-    echo "Run this script from the root of your warp repo."
+    echo "Run this script from the root of your Wish repo."
     exit 1
 fi
 

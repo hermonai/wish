@@ -1,46 +1,47 @@
 {
-  "fill" : "system-dark",
-  "groups" : [
+  "fill-specializations": [
     {
-      "layers" : [
-        {
-          "fill-specializations" : [
-            {
-              "value" : "none"
-            },
-            {
-              "appearance" : "dark",
-              "value" : "none"
-            }
-          ],
-          "image-name" : "Glyph.svg",
-          "name" : "Glyph"
-        },
-        {
-          "glass" : false,
-          "image-name" : "Guidelines.svg",
-          "name" : "Guidelines"
-        },
-        {
-          "fill" : "none",
-          "image-name" : "PLACE HERE.png",
-          "name" : "PLACE HERE"
-        }
-      ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.5
+      "value": {
+        "linear-gradient": [
+          "gray:0.19068,1.00000",
+          "gray:0.08158,1.00000"
+        ]
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "linear-gradient": [
+          "gray:0.08342,1.00000",
+          "gray:0.00000,1.00000"
+        ]
       }
     }
   ],
-  "supported-platforms" : {
-    "circles" : [
+  "groups": [
+    {
+      "layers": [
+        {
+          "blend-mode": "normal",
+          "glass": true,
+          "image-name": "hermon-logo.svg",
+          "name": "Hermon Logo"
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
+      }
+    }
+  ],
+  "supported-platforms": {
+    "circles": [
       "watchOS"
     ],
-    "squares" : "shared"
+    "squares": "shared"
   }
 }

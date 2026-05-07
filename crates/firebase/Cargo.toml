@@ -1,6 +1,6 @@
 [package]
 name = "firebase"
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 version = "0.1.0"
 edition = "2021"
 description = "Utilities for firebase client APIs"

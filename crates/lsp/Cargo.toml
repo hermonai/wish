@@ -2,7 +2,7 @@
 name = "lsp"
 version = "0.1.0"
 edition = "2021"
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 publish.workspace = true
 license.workspace = true
 description = "Language Server Protocol implementation for Warp"

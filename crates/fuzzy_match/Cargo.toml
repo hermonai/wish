@@ -1,6 +1,6 @@
 [package]
 name = "fuzzy_match"
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 version = "0.1.0"
 edition = "2021"
 description = "Performs fuzzy match with text against query"

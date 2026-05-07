@@ -19,5 +19,5 @@ Categories=System;TerminalEmulator;
 # Don't run this application within a terminal.
 Terminal=false
 
-# Register ourselves as the handler for wishlocal:// URLs.
-MimeType=x-scheme-handler/wishlocal;
+# Register ourselves as the handler for wish:// URLs.
+MimeType=x-scheme-handler/wish;

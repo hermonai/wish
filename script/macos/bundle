@@ -272,7 +272,7 @@ if [[ $RELEASE_CHANNEL = "local" ]]; then
     WARP_BIN="wish"
     BUNDLE_ID="ai.hermon.Wish-Local"
     WARP_APP_NAME="WishLocal"
-    WARP_SCHEME_NAME="wishlocal"
+    WARP_SCHEME_NAME="${WISH_URL_SCHEME:-wish}"
     FEATURES="$FEATURES,agent_mode_debug"
     # For local builds, use different versions of our bundled frameworks (e.g.:
     # Sentry).  This needs to be exported so it can be referenced by

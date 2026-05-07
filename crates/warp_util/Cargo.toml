@@ -1,6 +1,6 @@
 [package]
 name = "warp_util"
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 version = "0.1.0"
 edition = "2021"
 description = "General utilities and helpers used across warp crates"

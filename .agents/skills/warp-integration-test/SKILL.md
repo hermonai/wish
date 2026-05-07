@@ -1,13 +1,13 @@
 ---
 name: warp-integration-test
-description: Writes, runs, and debugs Warp integration tests using the custom Builder/TestStep framework in `crates/integration`. Use when adding a new integration test, fixing a failing integration test, wiring a test into the manual runner or nextest suite, or verifying end-to-end UI and terminal behavior in Warp.
+description: Writes, runs, and debugs Wish integration tests using the custom Builder/TestStep framework in `crates/integration`. Use when adding a new integration test, fixing a failing integration test, wiring a test into the manual runner or nextest suite, or verifying end-to-end UI and terminal behavior in Wish.
 ---
 
-# Warp Integration Tests
+# Wish Integration Tests
 
-Use this skill for Rust integration tests in Warp's custom framework under `crates/integration/`.
+Use this skill for Rust integration tests in Wish's custom framework under `crates/integration/`.
 
-These are not ordinary unit tests. They boot a real Warp app instance, give it an isolated test home directory, drive it with synthetic UI and terminal events, and poll assertions until success or timeout.
+These are not ordinary unit tests. They boot a real Wish app instance, give it an isolated test home directory, drive it with synthetic UI and terminal events, and poll assertions until success or timeout.
 
 ## Framework map
 
@@ -30,14 +30,14 @@ The core pieces are:
 - `crates/integration/tests/integration/shell_integration_tests.rs`
   - List of tests that must run against every shell or a specific shell matrix.
 - `crates/integration/src/builder.rs`
-  - Warp-specific wrapper around the lower-level WarpUI integration builder.
+  - Wish-specific wrapper around the lower-level WishUI integration builder.
   - Sets default timeout, hermetic home directory, shell rc files, user prefs, and real-display mode when requested.
-- `crates/warpui_core/src/integration/driver.rs`
+- `crates/wishui-core/src/integration/driver.rs`
   - Executes steps, handles retries, precondition reruns, screenshots, video capture, artifact export, and `on_finish`.
-- `crates/warpui_core/src/integration/step.rs`
+- `crates/wishui-core/src/integration/step.rs`
   - Defines `TestStep`, input/event APIs, assertion polling, step-to-step data passing, and screenshot/recording hooks.
 - `app/src/integration_testing/`
-  - High-level helpers and assertions for common Warp behaviors.
+  - High-level helpers and assertions for common Wish behaviors.
   - Prefer these helpers over raw low-level event plumbing whenever they fit.
 
 ## How the framework actually runs a test
@@ -54,7 +54,7 @@ The core pieces are:
 6. If an assertion returns `PreconditionFailed`, the binary exits with the rerun code and the outer harness retries the whole test.
 7. On success, failure, or cancellation, the driver can run `on_finish` and export artifacts/runtime tags.
 
-This means integration tests should be written for a hermetic environment. Do not rely on the developer's real shell dotfiles, home directory contents, or persisted Warp settings.
+This means integration tests should be written for a hermetic environment. Do not rely on the developer's real shell dotfiles, home directory contents, or persisted Wish settings.
 
 ## Where to put a new test
 
@@ -89,8 +89,8 @@ The normal shape is:
 
 ```rust
 use crate::Builder;
-use warp::integration_testing::step::new_step_with_default_assertions;
-use warp::integration_testing::terminal::{
+use wish::integration_testing::step::new_step_with_default_assertions;
+use wish::integration_testing::terminal::{
     clear_blocklist_to_remove_bootstrapped_blocks,
     execute_command_for_single_terminal_in_tab,
     wait_until_bootstrapped_single_pane_for_tab,
@@ -111,7 +111,7 @@ pub fn test_example() -> Builder {
             new_step_with_default_assertions("Assert some UI state")
                 .add_named_assertion("specific assertion name", |app, window_id| {
                     // inspect app state and return AssertionOutcome
-                    warpui::integration::AssertionOutcome::Success
+                    wishui::integration::AssertionOutcome::Success
                 }),
         )
 }
@@ -125,7 +125,7 @@ Prefer a small number of focused steps with descriptive names over a huge monoli
 
 Start here almost every time.
 
-Warp's wrapper automatically gives you:
+Wish's wrapper automatically gives you:
 
 - a per-test root directory
 - isolated `HOME`
@@ -148,7 +148,7 @@ Prefer this over reaching into the real filesystem.
 
 ### `with_user_defaults(...)`
 
-Use this to set persisted Warp preferences before the test starts.
+Use this to set persisted Wish preferences before the test starts.
 
 This is the right tool for settings backed by user preferences rather than environment variables.
 
@@ -343,7 +343,7 @@ WARPUI_PAUSE_INTEGRATION_TEST_AT_EVERY_STEP=1 cargo run -p integration --bin int
 
 ### Video and screenshots
 
-If the task is specifically about recording a test, collecting screenshots, or validating overlay/video artifacts, also use the `integration-test-video` skill (located at `.warp/skills/integration-test-video/SKILL.md`).
+If the task is specifically about recording a test, collecting screenshots, or validating overlay/video artifacts, also use the `integration-test-video` skill (located at `.wish/skills/integration-test-video/SKILL.md`).
 
 ### Environment variable gotcha
 

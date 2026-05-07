@@ -138,18 +138,18 @@ impl RootView {
                 LightboxImage {
                     source: LightboxImageSource::Resolved {
                         asset_source: AssetSource::Bundled {
-                            path: "bundled/png/dev.png",
+                            path: "bundled/png/hermon-logo.png",
                         },
                     },
-                    description: Some("First image (dev.png)".to_string()),
+                    description: Some("First image (hermon-logo.png)".to_string()),
                 },
                 LightboxImage {
                     source: LightboxImageSource::Resolved {
                         asset_source: AssetSource::Bundled {
-                            path: "bundled/png/dev.png",
+                            path: "bundled/png/hermon-logo.png",
                         },
                     },
-                    description: Some("Second image (also dev.png)".to_string()),
+                    description: Some("Second image (also hermon-logo.png)".to_string()),
                 },
             ],
             lightbox_current_index: 0,

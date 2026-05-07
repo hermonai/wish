@@ -1,6 +1,6 @@
 [package]
 name = "input_classifier"
-authors = ["Hermon AI <support.ai>"]
+authors = ["Hermon AI <support@hermon.ai>"]
 edition = "2024"
 publish.workspace = true
 license.workspace = true

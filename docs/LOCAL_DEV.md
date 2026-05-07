@@ -55,8 +55,11 @@ HERMON_DASHBOARD_URL=http://localhost:3000 \
 cargo run --bin wish
 ```
 
-The Hermon gateway listens on `:8080`, the dashboard on `:3000`. These
-URLs are also documented in [`HERMON_ECOSYSTEM.md`](HERMON_ECOSYSTEM.md).
+The Hermon gateway listens on `:8080`, the dashboard on `:3000`. Override
+ports with `HERMON_API_URL` or `WISH_API_URL`; local macOS bundles use the
+canonical `wish://` callback scheme by default, with `WISH_URL_SCHEME`
+available only when a special callback scheme is required. These URLs are
+also documented in [`HERMON_ECOSYSTEM.md`](HERMON_ECOSYSTEM.md).
 
 ### Local-dev login steps
 

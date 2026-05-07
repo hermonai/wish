@@ -104,10 +104,10 @@ impl SettingsWidget for AboutPageWidget {
                         ConstrainedBox::new(
                             // Hermon-branded "H" mark. The asset path follows
                             // the design team's "a1" naming convention
-                            // (`hermon-logo-a1.svg`); replacing this single
+                            // (`hermon-logo.svg`); replacing this single
                             // file globally rebrands every surface that
                             // uses it.
-                            Icon::new("bundled/svg/hermon-logo-a1.svg", logo_fill).finish(),
+                            Icon::new("bundled/svg/hermon-logo.svg", logo_fill).finish(),
                         )
                         .with_height(72.)
                         .with_width(92.)
