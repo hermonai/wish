@@ -110,7 +110,7 @@ use wishui::elements::{
     Border, ChildAnchor, OffsetPositioning, ParentAnchor, ParentElement, ParentOffsetBounds, Stack,
 };
 use wishui::rendering::OnGPUDeviceSelected;
-use wishui::{id, AddWindowOptions, DisplayId, SingletonEntity};
+use wishui::{id, AddWindowOptions, DisplayId, EntityId, SingletonEntity};
 use wishui::{
     platform::{WindowBounds, WindowStyle},
     presenter::ChildView,
@@ -121,7 +121,7 @@ use wishui::{FocusContext, NextNewWindowsHasThisWindowsBoundsUponClose};
 #[cfg(target_family = "wasm")]
 use crate::auth::web_handoff::{WebHandoffEvent, WebHandoffView};
 
-const WINDOW_TITLE: &str = "Wish";
+const WINDOW_TITLE: &str = "Warp";
 
 lazy_static! {
     static ref FALLBACK_WINDOW_SIZE: Vector2F = vec2f(800.0, 600.0);
@@ -332,6 +332,10 @@ pub fn init(app: &mut AppContext) {
     app.add_action(
         "root_view:handle_pane_navigation_event",
         RootView::focus_pane,
+    );
+    app.add_action(
+        "root_view:activate_tab_by_pane_group_id",
+        RootView::activate_tab_by_pane_group_id,
     );
     app.add_action("root_view:close_window", RootView::close_window);
     app.add_action("root_view:minimize_window", RootView::minimize_window);
@@ -1636,10 +1640,6 @@ pub struct RootView {
 }
 
 impl RootView {
-    fn should_start_in_workspace_without_login() -> bool {
-        !FeatureFlag::ForceLogin.is_enabled()
-    }
-
     pub fn new(
         global_resource_handles: GlobalResourceHandles,
         workspace_setting: NewWorkspaceSource,
@@ -1702,11 +1702,9 @@ impl RootView {
                             onboarding_view,
                             target: AuthOnboardingTarget::Workspace(workspace_args_box),
                         }
-                    } else if Self::should_start_in_workspace_without_login() {
-                        // Wish should be useful as a local development environment without
-                        // requiring backend credentials at launch. Cloud-backed services still
-                        // request auth at the point of use through their existing gated-feature
-                        // flows.
+                    } else if FeatureFlag::SkipFirebaseAnonymousUser.is_enabled() {
+                        // When SkipFirebaseAnonymousUser is enabled, skip the login screen
+                        // entirely and go directly into the workspace.
                         AuthOnboardingState::Terminal(workspace_args.create_workspace(ctx))
                     } else {
                         AuthOnboardingState::Auth(workspace_args.into())
@@ -2175,13 +2173,12 @@ impl RootView {
 
                 let is_logged_in = AuthStateProvider::as_ref(ctx).get().is_logged_in();
                 // If the user isn't logged in, only require login if the applied
-                // settings need an account (AI or Wish Drive enabled).
+                // settings need an account (AI or Warp Drive enabled).
                 let ai_enabled = selected_settings.is_ai_enabled();
                 let warp_drive_enabled = selected_settings.is_warp_drive_enabled();
                 // With old onboarding, we ask user to log in before onboarding, so don't do it after onboarding completes.
                 let requires_login = !is_logged_in
                     && (ai_enabled || warp_drive_enabled)
-                    && FeatureFlag::ForceLogin.is_enabled()
                     && FeatureFlag::OpenWarpNewSettingsModes.is_enabled();
 
                 if requires_login {
@@ -2447,6 +2444,20 @@ impl RootView {
         if let AuthOnboardingState::Terminal(workspace) = &self.auth_onboarding_state {
             workspace.update(ctx, |view, ctx| {
                 view.focus_pane(*pane_view_locator, ctx);
+            });
+        }
+        true
+    }
+
+    fn activate_tab_by_pane_group_id(
+        &mut self,
+        pane_group_id: &EntityId,
+        ctx: &mut ViewContext<Self>,
+    ) -> bool {
+        ctx.windows().show_window_and_focus_app(ctx.window_id());
+        if let AuthOnboardingState::Terminal(workspace) = &self.auth_onboarding_state {
+            workspace.update(ctx, |view, ctx| {
+                view.activate_tab_by_pane_group_id(*pane_group_id, ctx);
             });
         }
         true

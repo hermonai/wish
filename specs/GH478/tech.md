@@ -49,7 +49,7 @@ All file references are at HEAD on `master`.
 ### Renderer entry point
 
 - `app/src/appearance.rs:34` re-exports `Appearance` from
-  `warp_core::ui::appearance`.
+  `wish_core::ui::appearance`.
 - `app/src/appearance.rs:40–47` — `AppearanceManager`; subscribes to
   `ThemeSettings` (line 51) and pushes changes into `Appearance`.
 - `Appearance` today owns one `WarpTheme`. Per-tab overrides require
@@ -526,7 +526,7 @@ This addresses Oz concern 3 (`Appearance::theme_for` cannot return
 `&WarpTheme` for arbitrary overrides because `Appearance` only owns the
 global `WarpTheme` today).
 
-`Appearance` is extended in `warp_core::ui::appearance`:
+`Appearance` is extended in `wish_core::ui::appearance`:
 
 ```rust
 pub struct Appearance {

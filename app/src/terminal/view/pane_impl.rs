@@ -3,7 +3,9 @@
 use super::ambient_agent::is_cloud_agent_pre_first_exchange;
 use super::shared_session::adapter::Kind as SharedSessionKind;
 use super::{Event, PaneConfiguration, TerminalAction, TerminalViewState, Viewer};
-use crate::ai::agent::conversation::{AIConversation, ConversationStatus};
+use crate::ai::agent::conversation::{
+    AIConversation, ConversationStatus, ServerAIConversationMetadata,
+};
 use crate::ai::blocklist::agent_view::agent_view_bg_fill;
 use crate::ai::blocklist::agent_view::orchestration_conversation_links::parent_conversation_navigation_card;
 use crate::ai::blocklist::agent_view::render_orchestration_breadcrumbs;
@@ -294,6 +296,7 @@ impl TerminalView {
         if let Some(breadcrumbs) = render_orchestration_breadcrumbs(
             self.agent_view_controller.as_ref(app),
             self.mouse_states.parent_conversation_header_link.clone(),
+            self.mouse_states.breadcrumbs_horizontal_scroll.clone(),
             app,
         ) {
             return breadcrumbs;
@@ -949,14 +952,21 @@ impl TerminalView {
     /// the post-session pre-first-exchange phase (session ready, harness not started, no
     /// exchange yet). In either case the run is committed and we want the UI to read as busy.
     fn is_in_cloud_agent_setup_phase(&self, ctx: &AppContext) -> bool {
-        self.ambient_agent_view_model
+        if self
+            .ambient_agent_view_model
             .as_ref()
             .is_some_and(|model| model.as_ref(ctx).is_waiting_for_session())
-            || is_cloud_agent_pre_first_exchange(
-                self.ambient_agent_view_model.as_ref(),
-                &self.agent_view_controller,
-                ctx,
-            )
+        {
+            return true;
+        }
+
+        let model = self.model.lock();
+        is_cloud_agent_pre_first_exchange(
+            self.ambient_agent_view_model.as_ref(),
+            &self.agent_view_controller,
+            &model,
+            ctx,
+        )
     }
 
     /// Selected conversation status for chrome, or [`ConversationStatus::InProgress`] while the
@@ -1017,6 +1027,15 @@ impl TerminalView {
             .map(|conversation| {
                 self.selected_conversation_display_title_for_chrome(conversation, is_ambient_agent)
             })
+    }
+
+    /// Server metadata for the selected conversation, if any.
+    pub fn selected_conversation_server_metadata<'a>(
+        &'a self,
+        ctx: &'a AppContext,
+    ) -> Option<&'a ServerAIConversationMetadata> {
+        self.selected_conversation_for_user_facing_chrome(ctx)
+            .and_then(AIConversation::server_metadata)
     }
 
     pub fn selected_conversation_latest_user_prompt_for_tab_name(

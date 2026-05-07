@@ -48,8 +48,10 @@ use crate::{
     throttle::throttle,
     workspaces::user_workspaces::UserWorkspaces,
 };
+use ai::agent::orchestration_config::{OrchestrationConfig, OrchestrationConfigStatus};
 use ai::diff_validation::DiffDelta;
 use warp_editor::{model::RichTextEditorModel, render::model::RichTextStyles};
+use warp_multi_agent_api as maa_api;
 use wishui::color::ColorU;
 
 /// The frequency at which we check for modifications and save the AI document to the server.
@@ -60,13 +62,13 @@ struct AIDocumentSaveRequest {
     document_id: AIDocumentId,
 }
 
-/// The status of saving an AI Document to Wish Drive
+/// The status of saving an AI Document to Warp Drive
 pub enum AIDocumentSaveStatus {
-    /// Not being synced with Wish Drive at all
+    /// Not being synced with Warp Drive at all
     NotSaved,
-    /// Is being saved to Wish Drive, but has not finished yet
+    /// Is being saved to Warp Drive, but has not finished yet
     Saving,
-    /// Has been saved to Wish Drive
+    /// Has been saved to Warp Drive
     Saved,
 }
 
@@ -94,7 +96,7 @@ impl AIDocumentUserEditStatus {
 
 const PLAN_FOLDER_NAME: &str = "Plans";
 
-/// Represents a document queued for creation in Wish Drive.
+/// Represents a document queued for creation in Warp Drive.
 #[derive(Debug, Clone)]
 struct PendingDocument {
     id: AIDocumentId,
@@ -114,7 +116,7 @@ pub struct AIDocumentEarlierVersion {
 #[derive(Debug, Clone)]
 pub struct AIDocument {
     /// ID to sync with a cloud model with the server.
-    /// Set when a document is saved to Wish Drive.
+    /// Set when a document is saved to Warp Drive.
     pub sync_id: Option<SyncId>,
     pub title: String,
     pub version: AIDocumentVersion,
@@ -163,6 +165,16 @@ pub enum AIDocumentUpdateSource {
     Restoration,
 }
 
+/// Payload queued when the user edits the plan-card orchestration
+/// config block. Cleared after `send_request_input()` piggybacks it
+/// onto the outbound `UserInputs`.
+#[derive(Debug, Clone)]
+pub struct DirtyOrchestrationEvent {
+    pub plan_id: String,
+    pub config: OrchestrationConfig,
+    pub status: OrchestrationConfigStatus,
+}
+
 #[derive(Debug, Clone)]
 pub struct AIDocumentModel {
     documents: HashMap<AIDocumentId, AIDocument>,
@@ -179,12 +191,25 @@ pub struct AIDocumentModel {
     /// Mapping from (conversation_id, action_id, document_index) for streaming CreateDocuments
     /// tool calls to the corresponding AI document ID.
     streaming_create_documents: HashMap<(AIConversationId, AIAgentActionId, usize), AIDocumentId>,
+
+    /// Dirty event queued for the next outbound request.
+    /// Set when the user edits the config or toggles approval on the
+    /// plan card; cleared by the controller after piggybacking onto
+    /// the outbound `UserInputs`.
+    dirty_orchestration_events: HashMap<AIConversationId, DirtyOrchestrationEvent>,
 }
 
 impl AIDocumentModel {
     pub fn new(ctx: &mut ModelContext<Self>) -> Self {
         ctx.subscribe_to_model(&UpdateManager::handle(ctx), |me, event, ctx| {
             me.handle_update_manager_event(event, ctx);
+        });
+
+        // Subscribe to history events so we can hydrate the orchestration
+        // config from OrchestrationConfigSnapshot messages that arrive
+        // in the conversation's task message list.
+        ctx.subscribe_to_model(&BlocklistAIHistoryModel::handle(ctx), |me, event, ctx| {
+            me.handle_history_event_for_orchestration_config(event, ctx);
         });
 
         // Setup throttled save channel
@@ -203,6 +228,7 @@ impl AIDocumentModel {
             save_tx,
             pending_document_queue: Vec::new(),
             streaming_create_documents: HashMap::new(),
+            dirty_orchestration_events: HashMap::new(),
         }
     }
 
@@ -217,6 +243,7 @@ impl AIDocumentModel {
             save_tx,
             pending_document_queue: Vec::new(),
             streaming_create_documents: HashMap::new(),
+            dirty_orchestration_events: HashMap::new(),
         }
     }
 
@@ -236,7 +263,7 @@ impl AIDocumentModel {
         let content = document.editor.as_ref(ctx).markdown(ctx);
 
         let Some(owner) = Self::get_plan_owner(ctx) else {
-            log::warn!("Failed to get owner while saving AI Document to Wish Drive. Skipping");
+            log::warn!("Failed to get owner while saving AI Document to Warp Drive. Skipping");
             return false;
         };
 
@@ -291,7 +318,7 @@ impl AIDocumentModel {
         // If we're waiting on a Plans folder to complete creation, ensure the Plans folder exists
         // (creating it if needed) and if it has a ServerId, process the pending document queue.
         //
-        // NOTE: this handler runs for *all* Wish Drive object creations, so we must only create the
+        // NOTE: this handler runs for *all* Warp Drive object creations, so we must only create the
         // Plans folder when we actually have a plan notebook waiting to be created.
         if !self.pending_document_queue.is_empty() {
             if let Some(owner) = Self::get_plan_owner(ctx) {
@@ -367,7 +394,7 @@ impl AIDocumentModel {
         id
     }
 
-    /// Create a document from an existing Wish Drive notebook.
+    /// Create a document from an existing Warp Drive notebook.
     pub fn create_document_from_notebook(
         &mut self,
         ai_document_id: AIDocumentId,
@@ -900,7 +927,7 @@ impl AIDocumentModel {
             ctx,
         );
 
-        // Update the sync status of a document by checking if it exists in Wish Drive.
+        // Update the sync status of a document by checking if it exists in Warp Drive.
         let Some(doc) = self.documents.get(&id) else {
             return;
         };
@@ -1159,6 +1186,135 @@ impl AIDocumentModel {
                 true,
                 ctx,
             );
+        });
+    }
+
+    // ── Orchestration config: history event → hydration ──────────
+
+    fn handle_history_event_for_orchestration_config(
+        &mut self,
+        event: &BlocklistAIHistoryEvent,
+        ctx: &mut ModelContext<Self>,
+    ) {
+        // On restore, scan all restored conversations for the last snapshot.
+        if let BlocklistAIHistoryEvent::RestoredConversations {
+            conversation_ids, ..
+        } = event
+        {
+            for cid in conversation_ids {
+                self.scan_conversation_for_orchestration_config(*cid, ctx);
+            }
+        }
+    }
+
+    /// Scans all messages across all tasks in a restored conversation to find
+    /// the last `OrchestrationConfigSnapshot` and hydrate the config from it.
+    fn scan_conversation_for_orchestration_config(
+        &mut self,
+        conversation_id: AIConversationId,
+        ctx: &mut ModelContext<Self>,
+    ) {
+        // Clone the snapshot out of the history borrow so we can pass
+        // &mut ctx to hydrate below.
+        let snapshot = {
+            let history = BlocklistAIHistoryModel::as_ref(ctx);
+            let Some(conversation) = history.conversation(&conversation_id) else {
+                return;
+            };
+            // Find the *last* snapshot so we hydrate the most recent config.
+            conversation
+                .all_tasks()
+                .flat_map(|task| task.messages())
+                .filter_map(|message| {
+                    if let Some(maa_api::message::Message::OrchestrationConfigSnapshot(snapshot)) =
+                        &message.message
+                    {
+                        Some(snapshot.clone())
+                    } else {
+                        None
+                    }
+                })
+                .last()
+        };
+        if let Some(snapshot) = snapshot {
+            Self::hydrate_orchestration_config_from_snapshot(conversation_id, &snapshot, ctx);
+        }
+    }
+
+    // ── Orchestration config accessors ────────────────────────────
+
+    pub fn take_dirty_orchestration_event(
+        &mut self,
+        conversation_id: &AIConversationId,
+    ) -> Option<DirtyOrchestrationEvent> {
+        self.dirty_orchestration_events.remove(conversation_id)
+    }
+
+    /// Re-insert a dirty event that was taken but not successfully sent.
+    pub fn set_dirty_orchestration_event(
+        &mut self,
+        conversation_id: AIConversationId,
+        event: DirtyOrchestrationEvent,
+    ) {
+        self.dirty_orchestration_events
+            .insert(conversation_id, event);
+    }
+
+    /// Updates the conversation-level orchestration config and status.
+    /// Called from the plan card config block when the user edits a field
+    /// or toggles the approval switch.
+    pub fn set_orchestration_config(
+        &mut self,
+        conversation_id: AIConversationId,
+        config: OrchestrationConfig,
+        status: OrchestrationConfigStatus,
+        plan_id: Option<String>,
+        ctx: &mut ModelContext<Self>,
+    ) {
+        self.dirty_orchestration_events.insert(
+            conversation_id,
+            DirtyOrchestrationEvent {
+                plan_id: plan_id.clone().unwrap_or_default(),
+                config: config.clone(),
+                status,
+            },
+        );
+        BlocklistAIHistoryModel::handle(ctx).update(ctx, |history, hctx| {
+            if let Some(conversation) = history.conversation_mut(&conversation_id) {
+                conversation.set_orchestration_config(Some(config), status, plan_id);
+            }
+            hctx.emit(BlocklistAIHistoryEvent::OrchestrationConfigUpdated { conversation_id });
+        });
+    }
+
+    /// Hydrates the orchestration config from an in-history
+    /// `Message.OrchestrationConfigSnapshot`. Called during conversation
+    /// restore and on incoming `UpdateTaskMessage` / `AddMessagesToTask`
+    /// events that carry the snapshot.
+    fn hydrate_orchestration_config_from_snapshot(
+        conversation_id: AIConversationId,
+        snapshot: &maa_api::OrchestrationConfigSnapshot,
+        ctx: &mut ModelContext<Self>,
+    ) {
+        let config = snapshot
+            .config
+            .as_ref()
+            .map(OrchestrationConfig::from_proto);
+        let status = OrchestrationConfigStatus::from_proto(snapshot.status.as_ref());
+        let plan_id = if snapshot.plan_id.is_empty() {
+            None
+        } else {
+            Some(snapshot.plan_id.clone())
+        };
+
+        BlocklistAIHistoryModel::handle(ctx).update(ctx, |history, hctx| {
+            if let Some(conversation) = history.conversation_mut(&conversation_id) {
+                if conversation.set_orchestration_config(config, status, plan_id) {
+                    hctx.emit(BlocklistAIHistoryEvent::OrchestrationConfigUpdated {
+                        conversation_id,
+                    });
+                }
+            }
         });
     }
 

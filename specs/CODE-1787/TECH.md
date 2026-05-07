@@ -5,15 +5,15 @@ Product spec: `specs/CODE-1787/PRODUCT.md`
 Two independent bugs prevent quake mode from working correctly on Windows when triggered while a non-Warp application has foreground focus.
 
 ### Bug 1: focus not transferred
-`WinitWindow::focus()` in `crates/warpui/src/windowing/winit/window.rs:1080` had two branches: if the window was already visible it called `focus_window()`, otherwise it called `set_visible(true)` and relied on visibility implying focus. On Windows, `set_visible(true)` does not steal foreground focus from another application — an explicit `SetForegroundWindow` (via winit's `focus_window()`) is required. The quake window was hidden via `set_visible(false)`, so re-showing it always took the `set_visible(true)` branch and never called `focus_window()`.
+`WinitWindow::focus()` in `crates/wishui/src/windowing/winit/window.rs:1080` had two branches: if the window was already visible it called `focus_window()`, otherwise it called `set_visible(true)` and relied on visibility implying focus. On Windows, `set_visible(true)` does not steal foreground focus from another application — an explicit `SetForegroundWindow` (via winit's `focus_window()`) is required. The quake window was hidden via `set_visible(false)`, so re-showing it always took the `set_visible(true)` branch and never called `focus_window()`.
 
 ### Bug 2: incorrect window size
-All Windows monitor queries in `crates/warpui/src/windowing/winit/window/windows_wm.rs` routed through `get_active_window_handle()`, which requires a focused + visible Warp window. When no Warp window has focus, this fails and `active_display_bounds()` falls back to a hardcoded `DEFAULT_WINDOW_SIZE` (1280×800). The quake window is then sized as a percentage of that default instead of the actual display dimensions.
+All Windows monitor queries in `crates/wishui/src/windowing/winit/window/windows_wm.rs` routed through `get_active_window_handle()`, which requires a focused + visible Warp window. When no Warp window has focus, this fails and `active_display_bounds()` falls back to a hardcoded `DEFAULT_WINDOW_SIZE` (1280×800). The quake window is then sized as a percentage of that default instead of the actual display dimensions.
 
 ### Relevant code
-- `crates/warpui/src/windowing/winit/window.rs:1080-1092` — `WinitWindow::focus()`
-- `crates/warpui/src/windowing/winit/window/windows_wm.rs` — all Windows monitor query methods
-- `crates/warpui/src/windowing/winit/window.rs:222-227` — `WindowManager::show_window_and_focus_app` (calls `focus()`)
+- `crates/wishui/src/windowing/winit/window.rs:1080-1092` — `WinitWindow::focus()`
+- `crates/wishui/src/windowing/winit/window/windows_wm.rs` — all Windows monitor query methods
+- `crates/wishui/src/windowing/winit/window.rs:222-227` — `WindowManager::show_window_and_focus_app` (calls `focus()`)
 - `app/src/root_view.rs:1481-1507` — quake mode toggle, hidden→visible branch
 
 ## Proposed changes

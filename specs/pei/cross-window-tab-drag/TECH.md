@@ -21,7 +21,7 @@ The implementation therefore needs to coordinate source workspace state, target 
 - `app/src/app_state.rs` — `get_app_state` skips serialization while a drag is active.
 - `ui/src/core/app.rs` — `transfer_view_to_window` / `transfer_view_tree_to_window` / `transfer_structural_children`, focus-suppression hooks, view/window ownership state.
 - `ui/src/platform/mod.rs` — `WindowManager::ordered_window_ids`, `cancel_synthetic_drag`, `WindowStyle::PositionedNoFocus`, `TerminationMode::ContentTransferred`.
-- `crates/warpui/src/windowing/winit/window.rs` and `crates/warpui/src/platform/mac/{window.rs,objc/window.m}` — backend implementations of the platform contract.
+- `crates/wishui/src/windowing/winit/window.rs` and `crates/wishui/src/platform/mac/{window.rs,objc/window.m}` — backend implementations of the platform contract.
 - `crates/integration/src/test/workspace.rs` — integration coverage for detach, attach, reattach, reverse-handoff, and drop-outside flows; gated on the feature flag rather than the OS.
 
 ## 3. Architecture

@@ -135,11 +135,7 @@ pub(crate) fn build_chat_request(
     conversation: &Conversation,
     new_user_message: &str,
 ) -> ChatCompletionRequest {
-    let mut messages: Vec<ChatMessage> = conversation
-        .turns
-        .iter()
-        .map(turn_to_message)
-        .collect();
+    let mut messages: Vec<ChatMessage> = conversation.turns.iter().map(turn_to_message).collect();
     messages.push(ChatMessage {
         role: "user".to_string(),
         content: new_user_message.to_string(),
@@ -192,7 +188,11 @@ fn assistant_blocks_to_text(blocks: &[MessageBlock]) -> String {
             MessageBlock::ToolResult {
                 output, is_error, ..
             } => {
-                let prefix = if *is_error { "[tool-error]" } else { "[tool-result]" };
+                let prefix = if *is_error {
+                    "[tool-error]"
+                } else {
+                    "[tool-result]"
+                };
                 format!("{prefix} {output}")
             }
         })

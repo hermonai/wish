@@ -703,9 +703,13 @@ impl BlocklistAIHistoryModel {
         });
     }
 
-    /// Sets the active conversation ID. The active conversation is the one we're currently or have most recently streamed outputs for.
-    /// If you want to set what conversation the next query should follow up in / what is selected in the input selector,
-    /// use `context_model.set_pending_query_state` instead.
+    /// Sets the active conversation ID, transferring ownership from any other
+    /// terminal view that currently holds it.
+    ///
+    /// Use this when the user **explicitly navigates** to a conversation in a
+    /// different view (e.g. from the conversation history or command palette).
+    /// For automatic follow-ups during tool-call cycles, use [`Self::mark_active_conversation_id`]
+    /// instead — it updates the active pointer without touching other views.
     pub fn set_active_conversation_id(
         &mut self,
         conversation_id: AIConversationId,
@@ -717,12 +721,19 @@ impl BlocklistAIHistoryModel {
             .get(&terminal_view_id)
             .is_some_and(|conversation_ids| conversation_ids.contains(&conversation_id))
         {
-            log::warn!(
+            log::error!(
                 "Attempted to set active conversation ID for terminal view ID that does not own that conversation."
             );
             return;
         }
 
+        // Track previous owners we removed the conversation from so we can
+        // emit ownership-transfer events outside of the borrow of
+        // `live_conversation_ids_for_terminal_view`. The conversation rendering
+        // model assumes a single canonical owner per conversation, so each
+        // previous owner needs a chance to drop its now-stale rendered AI
+        // blocks.
+        let mut previous_owners: Vec<EntityId> = Vec::new();
         for (other_terminal_view, other_terminal_view_live_conversation_ids) in self
             .live_conversation_ids_for_terminal_view
             .iter_mut()
@@ -733,6 +744,7 @@ impl BlocklistAIHistoryModel {
                 .position(|id| *id == conversation_id)
             {
                 other_terminal_view_live_conversation_ids.remove(pos);
+                previous_owners.push(*other_terminal_view);
             }
 
             if self
@@ -747,6 +759,47 @@ impl BlocklistAIHistoryModel {
                     terminal_view_id: *other_terminal_view,
                 });
             }
+        }
+        for previous_terminal_view_id in previous_owners {
+            ctx.emit(BlocklistAIHistoryEvent::ConversationOwnershipTransferred {
+                conversation_id,
+                previous_terminal_view_id,
+                new_terminal_view_id: terminal_view_id,
+            });
+        }
+
+        self.active_conversation_for_terminal_view
+            .insert(terminal_view_id, conversation_id);
+
+        ctx.emit(BlocklistAIHistoryEvent::SetActiveConversation {
+            conversation_id,
+            terminal_view_id,
+        });
+    }
+
+    /// Marks a conversation as the active conversation for a terminal view
+    /// **without** removing it from other views.
+    ///
+    /// This is the non-transferring counterpart to [`Self::set_active_conversation_id`].
+    /// Use this during automatic follow-ups and request sending where the
+    /// conversation already belongs to this view and we only need to update
+    /// the "most recently streamed" pointer.
+    pub fn mark_active_conversation_id(
+        &mut self,
+        conversation_id: AIConversationId,
+        terminal_view_id: EntityId,
+        ctx: &mut ModelContext<Self>,
+    ) {
+        if !self
+            .live_conversation_ids_for_terminal_view
+            .get(&terminal_view_id)
+            .is_some_and(|conversation_ids| conversation_ids.contains(&conversation_id))
+        {
+            log::warn!(
+                "mark_active_conversation_id: conversation {conversation_id:?} is not in \
+                 terminal view {terminal_view_id:?} live list, skipping"
+            );
+            return;
         }
 
         self.active_conversation_for_terminal_view
@@ -1032,10 +1085,17 @@ impl BlocklistAIHistoryModel {
     ///
     /// The `prefix` parameter specifies the prefix added to the root task description
     /// (e.g., `FORK_PREFIX` for forks, `PRE_REWIND_PREFIX` for pre-rewind backups).
+    ///
+    /// When `preserve_task_ids` is true, the forked conversation reuses the source's task ids
+    /// instead of minting new ones. Used by local-to-cloud handoff so the local
+    /// fork's task store matches the cloud-side fork. The cloud agent's
+    /// `ClientAction`s reference those task ids; if we minted new ones locally
+    /// they would fail to resolve.
     pub fn fork_conversation(
         &mut self,
         source_conversation: &AIConversation,
         prefix: &str,
+        preserve_task_ids: bool,
         app: &AppContext,
     ) -> Result<AIConversation, anyhow::Error> {
         let tasks: Vec<warp_multi_agent_api::Task> = source_conversation
@@ -1043,7 +1103,8 @@ impl BlocklistAIHistoryModel {
             .filter_map(|t| t.source().cloned())
             .collect();
 
-        let updated_tasks_with_new_ids = update_forked_task_properties(tasks, prefix);
+        let updated_tasks_with_new_ids =
+            update_forked_task_properties(tasks, prefix, preserve_task_ids);
         let Some(sqlite_sender) = GlobalResourceHandlesProvider::as_ref(app)
             .get()
             .model_event_sender
@@ -1194,7 +1255,8 @@ impl BlocklistAIHistoryModel {
             ));
         }
 
-        let updated_tasks_with_new_ids = update_forked_task_properties(truncated_tasks, prefix);
+        let updated_tasks_with_new_ids =
+            update_forked_task_properties(truncated_tasks, prefix, false);
 
         let Some(sqlite_sender) = GlobalResourceHandlesProvider::as_ref(app)
             .get()
@@ -2205,10 +2267,30 @@ pub enum BlocklistAIHistoryEvent {
         terminal_view_id: EntityId,
     },
 
+    /// Emitted when a conversation moves between terminal views — i.e. when
+    /// `set_active_conversation_id` removes the conversation from the live
+    /// list of one or more `previous_terminal_view_id`s. The previous owners
+    /// must drop any rendered AI blocks for this conversation so the new
+    /// owner is the sole renderer; otherwise we end up with a transcript
+    /// split across panes (some blocks in the old view, new exchanges in the
+    /// new view). The `terminal_view_id()` accessor returns the previous
+    /// owner so existing per-view event filters do the right thing.
+    ConversationOwnershipTransferred {
+        conversation_id: AIConversationId,
+        previous_terminal_view_id: EntityId,
+        new_terminal_view_id: EntityId,
+    },
+
     /// Links an executor-minted request to a freshly-created
     /// conversation.
     NewConversationRequestComplete {
         request_id: crate::ai::blocklist::StartAgentRequestId,
+        conversation_id: AIConversationId,
+    },
+
+    /// Emitted when a conversation's orchestration config is updated reactively
+    /// from an incoming `OrchestrationConfigSnapshot` message.
+    OrchestrationConfigUpdated {
         conversation_id: AIConversationId,
     },
 }
@@ -2267,6 +2349,10 @@ impl BlocklistAIHistoryEvent {
             | BlocklistAIHistoryEvent::UpgradedTask {
                 terminal_view_id, ..
             }
+            | BlocklistAIHistoryEvent::ConversationOwnershipTransferred {
+                previous_terminal_view_id: terminal_view_id,
+                ..
+            }
             | BlocklistAIHistoryEvent::UpdatedConversationArtifacts {
                 terminal_view_id, ..
             }
@@ -2280,6 +2366,9 @@ impl BlocklistAIHistoryEvent {
             // NewConversationRequestComplete is executor-scoped and has no
             // terminal_view_id.
             BlocklistAIHistoryEvent::NewConversationRequestComplete { .. } => None,
+            // OrchestrationConfigUpdated is conversation-scoped and has no
+            // terminal_view_id.
+            BlocklistAIHistoryEvent::OrchestrationConfigUpdated { .. } => None,
         }
     }
 }
@@ -2433,12 +2522,33 @@ impl From<&AIAgentOutputStatus> for AIQueryHistoryOutputStatus {
 /// Updates the given tasks, which are presumed to be clones of tasks from a source conversation to be
 /// used to back a fork or copy of the source conversation.
 ///
-/// Reassigns new task IDs to each forked task to ensure task IDs remain globally unique and updates
-/// description of the root task, prepending it with the given prefix.
+/// When `preserve_task_ids` is false, reassigns new task IDs to each forked task to ensure task IDs
+/// remain globally unique. When true, leaves task IDs as-is so the local fork's task store matches
+/// an externally-known set of task ids whose ClientActions must resolve in the local fork.
+///
+/// Always prepends the given prefix to the root task's description.
 fn update_forked_task_properties(
     tasks: Vec<warp_multi_agent_api::Task>,
     prefix: &str,
+    preserve_task_ids: bool,
 ) -> Vec<warp_multi_agent_api::Task> {
+    if preserve_task_ids {
+        return tasks
+            .into_iter()
+            .map(|mut t| {
+                let is_root = t
+                    .dependencies
+                    .as_ref()
+                    .map(|deps| deps.parent_task_id.is_empty())
+                    .unwrap_or(true);
+                if is_root {
+                    t.description = format!("{}{}", prefix, t.description);
+                }
+                t
+            })
+            .collect();
+    }
+
     let mut old_to_new_task_ids = HashMap::new();
     fn get_new_task_id(new_ids: &mut HashMap<String, String>, old_task_id: &str) -> String {
         new_ids

@@ -26,6 +26,7 @@ pub(crate) mod conversation_status_ui;
 pub(crate) mod conversation_utils;
 pub(crate) mod document;
 pub(crate) mod get_relevant_files;
+pub mod harness_availability;
 pub(crate) mod harness_display;
 pub(crate) mod llms;
 pub mod local_llm;
