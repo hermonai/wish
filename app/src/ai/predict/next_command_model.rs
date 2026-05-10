@@ -18,13 +18,13 @@ use std::collections::HashMap;
 use std::sync::Arc;
 #[cfg(feature = "local_fs")]
 use std::time::Duration;
-use warp_completer::completer::{
+use wish_completer::completer::{
     self, expand_command_aliases, AliasExpansionResult, CompleterOptions,
     CompletionsFallbackStrategy, MatchStrategy,
 };
-use warp_completer::meta::Spanned;
-use warp_completer::parsers::hir::{Command, Expression, FlagType};
-use warp_completer::parsers::ParsedExpression;
+use wish_completer::meta::Spanned;
+use wish_completer::parsers::hir::{Command, Expression, FlagType};
+use wish_completer::parsers::ParsedExpression;
 use wish_core::features::FeatureFlag;
 #[cfg(feature = "local_fs")]
 use wishui::r#async::FutureExt;
@@ -39,7 +39,7 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "local_fs")] {
         use diesel::SqliteConnection;
         use std::path::PathBuf;
-        use warp_completer::parsers::hir::ArgType;
+        use wish_completer::parsers::hir::ArgType;
     }
 }
 

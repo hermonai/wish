@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::{
     elements::{
         ConstrainedBox, Container, DispatchEventResult, Element, Fill, Flex, ParentElement,

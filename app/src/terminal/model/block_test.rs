@@ -1306,7 +1306,7 @@ fn test_top_level_command_with_aliases() {
 
 #[test]
 fn test_mark_end_of_prompt_with_some_rows_in_flat_storage() {
-    use warp_terminal::model::grid::Dimensions as _;
+    use wish_terminal::model::grid::Dimensions as _;
 
     let mut block = TestBlockBuilder::new()
         // Set the number of visible rows to 1, so that the first row of the

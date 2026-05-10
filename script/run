@@ -26,6 +26,12 @@ FEATURES="gui"
 WARP_BIN_NAME="${WISH_BIN:-wish}"
 WARP_CHANNEL="${WISH_CHANNEL:-local}"
 
+# Local builds use hermon-server auth, not Firebase. Skip anonymous user
+# creation via Firebase to avoid confusing errors when Login Later is clicked.
+if [ "$WARP_CHANNEL" = "local" ]; then
+    FEATURES="$FEATURES,skip_firebase_anonymous_user"
+fi
+
 # Shared argument parsing. macOS-specific flags (--dont-open,
 # --open_with_launchd, --generate-schema) are forwarded through MAC_ARGS and
 # silently ignored on other platforms.

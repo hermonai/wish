@@ -2,8 +2,8 @@
 
 use std::cell::Cell;
 use std::rc::Rc;
-use warp_cli::agent::Harness;
-use warp_terminal::model::BlockId;
+use wish_cli::agent::Harness;
+use wish_terminal::model::BlockId;
 
 use crate::ai::agent::conversation::{AIConversationId, ConversationStatus};
 use crate::ai::agent::display_user_query_with_mode;
@@ -437,7 +437,7 @@ impl TerminalView {
         );
     }
 
-    /// Enters agent view for a live shared-session viewer of a non-oz cloud run, so every
+    /// Enters agent view for a live shared-session viewer of a non-hermon cloud run, so every
     /// viewer lands in the same agent-view chrome regardless of which entry point opened the
     /// conversation. Called from the `HarnessSelected` handler once the viewer has resolved
     /// the run's harness asynchronously.

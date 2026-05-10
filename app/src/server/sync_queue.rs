@@ -7,7 +7,7 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use warp_graphql::scalars::time::ServerTimestamp;
+use wish_graphql::scalars::time::ServerTimestamp;
 use wishui::{r#async::FutureId, Entity, ModelContext, RequestState, RetryOption, SingletonEntity};
 
 use lazy_static::lazy_static;

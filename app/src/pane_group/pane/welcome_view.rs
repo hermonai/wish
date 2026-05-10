@@ -6,9 +6,10 @@ use itertools::Itertools as _;
 use wish_core::context_flag::ContextFlag;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::theme::color::internal_colors;
+use wishui::assets::asset_cache::AssetSource;
 use wishui::elements::{
-    Align, ConstrainedBox, Container, CrossAxisAlignment, Flex, Icon, MainAxisAlignment,
-    MainAxisSize, MouseStateHandle, ParentElement,
+    Align, CacheOption, ConstrainedBox, Container, CrossAxisAlignment, Flex, Image,
+    MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement,
 };
 use wishui::keymap::EditableBinding;
 use wishui::platform::{Cursor, FilePickerConfiguration};
@@ -289,7 +290,13 @@ impl View for WelcomeView {
 
         // ── Logo ───────────────────────────────────────────────────
         let logo = ConstrainedBox::new(
-            Icon::new("bundled/svg/hermon-logo.svg", theme.foreground()).finish(),
+            Image::new(
+                AssetSource::Bundled {
+                    path: "bundled/svg/hermon-logo.svg",
+                },
+                CacheOption::BySize,
+            )
+            .finish(),
         )
         .with_height(64.)
         .with_width(64.)

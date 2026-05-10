@@ -1,5 +1,5 @@
 // The code in this file is adapted from the alacritty_terminal crate under the
-// Apache license; see: crates/warp_terminal/src/model/LICENSE-ALACRITTY.
+// Apache license; see: crates/wish_terminal/src/model/LICENSE-ALACRITTY.
 
 //! TTY related functionality.
 use crate::terminal::bootstrap::raw_init_shell_script_for_shell;
@@ -265,7 +265,7 @@ fn build_host_shell_command(
 
     // Specify terminal name and capabilities.
     builder.env("TERM", "xterm-256color");
-    builder.env("TERM_PROGRAM", "WarpTerminal");
+    builder.env("TERM_PROGRAM", "WishTerminal");
     // Advertise 24-bit color support.
     builder.env("COLORTERM", "truecolor");
 
@@ -280,11 +280,11 @@ fn build_host_shell_command(
         // plugins can do warp-specific version checks without worrying
         // that the version env var might be coming from a different terminal
         // (for ex., in the ssh case).
-        builder.env("WARP_CLIENT_VERSION", version);
+        builder.env("WISH_CLIENT_VERSION", version);
     } else {
         // Local builds don't have GIT_RELEASE_TAG, so app_version() is None.
         // Use "local" so plugins can still distinguish this from a missing value.
-        builder.env("WARP_CLIENT_VERSION", "local");
+        builder.env("WISH_CLIENT_VERSION", "local");
     }
 
     // Set the `SHELL` environment variable to match the path of the shell we are using.
@@ -405,7 +405,7 @@ fn spawn_command_in_pty(
 
     // Detect isolation platform outside pre_exec, since detect() is not async-signal-safe.
     #[cfg(any(target_os = "linux", target_os = "freebsd"))]
-    let is_isolated = warp_isolation_platform::detect().is_some();
+    let is_isolated = wish_isolation_platform::detect().is_some();
 
     unsafe {
         let fdlimit = libc::sysconf(libc::_SC_OPEN_MAX) as i32;
@@ -773,14 +773,14 @@ fn build_docker_sandbox_command(
     builder.env("USER", pw.name);
     builder.env("HOME", &home_dir);
     builder.env("TERM", "xterm-256color");
-    builder.env("TERM_PROGRAM", "WarpTerminal");
+    builder.env("TERM_PROGRAM", "WishTerminal");
     builder.env("COLORTERM", "truecolor");
     builder.env_remove("DESKTOP_STARTUP_ID");
     if let Some(version) = ChannelState::app_version() {
         builder.env("TERM_PROGRAM_VERSION", version);
-        builder.env("WARP_CLIENT_VERSION", version);
+        builder.env("WISH_CLIENT_VERSION", version);
     } else {
-        builder.env("WARP_CLIENT_VERSION", "local");
+        builder.env("WISH_CLIENT_VERSION", "local");
     }
     builder.env("SHELL", docker_starter.logical_shell_path());
     if let Some(window_id) = window_id {

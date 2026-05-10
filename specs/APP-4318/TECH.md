@@ -9,7 +9,7 @@ The Cloud Mode tombstone already exists and can render artifacts plus “Continu
 The feature must be gated behind a new client feature flag, `HandoffCloudCloud`. Enabling `HandoffCloudCloud` must imply `CloudModeSetupV2` is enabled. Runtime code may assume `CloudModeSetupV2` behavior whenever `HandoffCloudCloud` is enabled, so new call sites should check only `FeatureFlag::HandoffCloudCloud` unless they are still preserving old setup-v1 behavior.
 ## Proposed changes
 ### Feature flag and rollout invariant
-Add `FeatureFlag::HandoffCloudCloud` in `crates/warp_features/src/lib.rs` near `CloudModeSetupV2`. Do not add it to release/preview/dogfood lists until the full flow is ready for that audience. When it is added to any rollout list, add `CloudModeSetupV2` to the same list if it is not already there.
+Add `FeatureFlag::HandoffCloudCloud` in `crates/wish_features/src/lib.rs` near `CloudModeSetupV2`. Do not add it to release/preview/dogfood lists until the full flow is ready for that audience. When it is added to any rollout list, add `CloudModeSetupV2` to the same list if it is not already there.
 Add a small feature-flag test or helper assertion that encodes the dependency: any static rollout set containing `HandoffCloudCloud` must also contain `CloudModeSetupV2`. Runtime feature checks should assume that dependency rather than repeatedly checking both flags.
 ### Run/execution-aware client model
 Introduce explicit run identity and execution-scoped types in the ambient agent model layer. A minimal shape is:

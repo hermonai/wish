@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::features::FeatureFlag;
 use wish_core::user_preferences::GetUserPreferences;
 use wishui::{Entity, ModelContext, SingletonEntity};
@@ -28,7 +28,7 @@ pub struct HarnessAvailability {
 fn default_harnesses() -> Vec<HarnessAvailability> {
     vec![HarnessAvailability {
         harness: Harness::Oz,
-        display_name: "Warp".to_string(),
+        display_name: "Wish".to_string(),
         enabled: true,
     }]
 }

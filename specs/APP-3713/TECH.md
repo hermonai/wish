@@ -153,7 +153,7 @@ Read the primary info setting. For terminal panes:
 
 - **`Command`**: Current behavior — call `render_terminal_primary_line_for_view` with `Some(WarpIcon::Terminal)` prefix icon.
 - **`WorkingDirectory`**: Render a single-line row with the terminal icon (or agent status icon) + working directory text (start-clipped). This can be done by building a `Flex::row` directly:
-  - Add the kind icon (terminal icon for non-agent, status element for agent, `OzCloud` for ambient agent) — same icon logic as the current compact rendering.
+  - Add the kind icon (terminal icon for non-agent, status element for agent, `HermonCloud` for ambient agent) — same icon logic as the current compact rendering.
   - Add the working directory text with `ClipConfig::start()`.
 
 The icon is always determined by pane type / agent state, not by the primary info setting.

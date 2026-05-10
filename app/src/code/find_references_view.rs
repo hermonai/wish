@@ -8,7 +8,7 @@ use std::{collections::HashMap, path::PathBuf};
 use lsp::ReferenceLocation;
 use pathfinder_geometry::vector::Vector2F;
 use string_offset::CharOffset;
-use warp_files::FileModel;
+use wish_files::FileModel;
 use wish_core::ui::{
     appearance::Appearance, icons::Icon as WarpIcon, theme::color::internal_colors,
 };
@@ -33,7 +33,7 @@ use super::{
     global_buffer_model::GlobalBufferModel,
 };
 use crate::editor::InteractionState;
-use warp_editor::{
+use wish_editor::{
     content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
 };
 

@@ -5,7 +5,7 @@ use std::sync::Arc;
 use crate::remote_server::client::RemoteServerClient;
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
-use warp_completer::completer::{CommandExitStatus, CommandOutput};
+use wish_completer::completer::{CommandExitStatus, CommandOutput};
 use wish_core::command::ExitCode;
 use wish_core::SessionId;
 

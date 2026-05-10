@@ -108,7 +108,7 @@ pub enum CreateApiKeyModalAction {
 pub enum CreateApiKeyModalEvent {
     Close,
     Created {
-        api_key: warp_graphql::queries::api_keys::ApiKeyProperties,
+        api_key: wish_graphql::queries::api_keys::ApiKeyProperties,
     },
     Error {
         message: String,
@@ -260,7 +260,7 @@ impl CreateApiKeyModal {
         let expires_at = match self.expiration.days() {
             Some(days) => {
                 let t = Utc::now() + chrono::Duration::days(days);
-                Some(warp_graphql::scalars::Time::from(t))
+                Some(wish_graphql::scalars::Time::from(t))
             }
             None => None,
         };
@@ -294,7 +294,7 @@ impl CreateApiKeyModal {
             async move { server_api.create_api_key(final_name, team_id, expires_at).await },
             |me, res, ctx| {
                 match res {
-                    Ok(warp_graphql::mutations::generate_api_key::GenerateApiKeyResult::GenerateApiKeyOutput(output)) => {
+                    Ok(wish_graphql::mutations::generate_api_key::GenerateApiKeyResult::GenerateApiKeyOutput(output)) => {
                         // Notify parent to append
                         ctx.emit(CreateApiKeyModalEvent::Created { api_key: output.api_key });
                         // Switch to success view and show raw key
@@ -303,13 +303,13 @@ impl CreateApiKeyModal {
                         me.raw_key = Some(output.raw_api_key);
                         ctx.notify();
                     }
-                    Ok(warp_graphql::mutations::generate_api_key::GenerateApiKeyResult::UserFacingError(e)) => {
-                        let msg = warp_graphql::client::get_user_facing_error_message(e);
+                    Ok(wish_graphql::mutations::generate_api_key::GenerateApiKeyResult::UserFacingError(e)) => {
+                        let msg = wish_graphql::client::get_user_facing_error_message(e);
                         me.request_state = RequestState::Idle;
                         ctx.emit(CreateApiKeyModalEvent::Error { message: msg });
                         ctx.notify();
                     }
-                    Ok(warp_graphql::mutations::generate_api_key::GenerateApiKeyResult::Unknown) | Err(_) => {
+                    Ok(wish_graphql::mutations::generate_api_key::GenerateApiKeyResult::Unknown) | Err(_) => {
                         me.request_state = RequestState::Idle;
                         ctx.emit(CreateApiKeyModalEvent::Error { message: "Failed to create API key. Please try again.".to_string() });
                         ctx.notify();

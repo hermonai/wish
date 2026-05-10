@@ -1,4 +1,4 @@
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wishui::{AppContext, ModelHandle, SingletonEntity, View, ViewContext, ViewHandle};
 
 use crate::{

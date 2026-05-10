@@ -26,7 +26,7 @@ use pathfinder_geometry::vector::vec2f;
 use std::path::PathBuf;
 use string_offset::CharOffset;
 use vec1::vec1;
-use warp_editor::model::CoreEditorModel;
+use wish_editor::model::CoreEditorModel;
 use wish_core::features::FeatureFlag;
 use wish_core::ui::color::blend::Blend;
 

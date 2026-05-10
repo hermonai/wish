@@ -60,14 +60,34 @@ WishUI is the native UI foundation for Wish:
 
 The current WishUI scope is terminal/editor/agent workspace UI. It does not include 3D or spatial UI.
 
-## Backend Boundary
+## Hermon Backend
 
-Hermon is the future backend/control plane for Wish. See:
+Hermon is the backend control plane for Wish, providing multi-provider AI routing, conversation persistence, agent orchestration, and cloud services.
+
+### What works today
+
+- **Multi-provider AI streaming** via `POST /v1/ai/chat` with full tool-use lifecycle events (Anthropic, OpenAI, Gemini, Grok, Ollama)
+- **OpenAI-compatible surface** at `POST /v1/chat/completions` for drop-in compatibility
+- **Conversation persistence** with SQLite-backed local storage and cloud sync
+- **Wish Drive** for notebook, workflow, and file management
+- **Agent orchestration** with streaming tool-use events (`ToolUseStart`, `ToolUseDelta`, `ToolUseComplete`)
+
+### Configuration
+
+| Variable | Purpose |
+|----------|---------|
+| `HERMON_API_URL` | Hermon server base URL (default: `http://localhost:9100`) |
+| `ANTHROPIC_API_KEY` | Enables Anthropic/Claude models |
+| `OPENAI_API_KEY` | Enables OpenAI models |
+| `GEMINI_API_KEY` | Enables Google Gemini models |
+| `XAI_API_KEY` | Enables Grok models |
+
+Ollama is always available when running locally (no key needed). Each provider supports `*_BASE_URL` overrides.
+
+See also:
 
 - [Hermon Backend Integration](docs/HERMON_BACKEND_INTEGRATION.md)
 - [Wish/Hermon Protocol Boundary](docs/WISH_HERMON_PROTOCOL_BOUNDARY.md)
-
-The client should preserve existing upstream network/API behavior until Hermon-compatible replacements exist. New backend-facing work should document configuration such as `HERMON_API_URL` and `WISH_API_URL`.
 
 ## Licensing and Attribution
 

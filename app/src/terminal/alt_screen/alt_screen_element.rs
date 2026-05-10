@@ -28,7 +28,7 @@ use num_traits::Float as _;
 use parking_lot::FairMutex;
 use pathfinder_geometry::vector::vec2f;
 use vec1::Vec1;
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wish_core::features::FeatureFlag;
 use wishui::elements::new_scrollable::{NewScrollableElement, ScrollableAxis};
 use wishui::event::{KeyState, ModifiersState};

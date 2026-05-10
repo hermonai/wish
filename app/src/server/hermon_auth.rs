@@ -16,7 +16,7 @@ use hermon_client::{HermonClient, TokenStore};
 use wish_core::channel::ChannelState;
 
 /// The production Hermon API base URL.
-const PRODUCTION_HERMON_URL: &str = "https://wish.hermon.ai";
+const PRODUCTION_HERMON_URL: &str = "https://api.hermon.ai";
 
 /// The local development Hermon gateway URL.
 const DEV_GATEWAY_URL: &str = "http://localhost:8080";

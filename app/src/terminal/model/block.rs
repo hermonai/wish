@@ -16,7 +16,7 @@ use super::selection::ScrollDelta;
 use super::session::{command_executor, Sessions};
 pub use super::BlockId;
 use super::{bootstrap::BootstrapStage, find::RegexDFAs};
-use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 
 use crate::ai::agent::conversation::AIConversationId;
 use crate::ai::blocklist::agent_view::{AgentViewDisplayMode, AgentViewState};
@@ -54,8 +54,8 @@ use hex;
 use instant::Instant;
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::Vector2F;
-use warp_terminal::model::grid::Dimensions as _;
-use warp_util::path::user_friendly_path;
+use wish_terminal::model::grid::Dimensions as _;
+use wish_util::path::user_friendly_path;
 use wish_core::command::ExitCode;
 use wishui::units::{IntoLines, Lines};
 use wishui::{r#async::executor::Background, record_trace_event};
@@ -2179,7 +2179,7 @@ impl Block {
         let escape_char = session.shell_family().escape_char();
 
         // Parse the raw command string to get the top-level command.
-        let command = warp_completer::parsers::simple::top_level_command(
+        let command = wish_completer::parsers::simple::top_level_command(
             self.command_to_string(),
             escape_char,
         )?;
@@ -2189,7 +2189,7 @@ impl Block {
             .alias_value(command.as_str())
             .map(|s| s.to_owned())
             // An alias can technically expand into an entire command (e.g. "gl" => "PAGER=0 git log").
-            .and_then(|s| warp_completer::parsers::simple::top_level_command(s, escape_char))
+            .and_then(|s| wish_completer::parsers::simple::top_level_command(s, escape_char))
             // If alias expansion didn't work, then just return the original top-level command.
             .or(Some(command))
     }
@@ -2828,7 +2828,7 @@ impl Block {
     }
 
     pub fn grid_storage_lines(&self) -> usize {
-        use warp_terminal::model::grid::Dimensions as _;
+        use wish_terminal::model::grid::Dimensions as _;
 
         self.all_grids_iter()
             .map(|grid| grid.grid_storage().total_rows())

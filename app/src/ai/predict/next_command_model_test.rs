@@ -4,8 +4,8 @@ use crate::terminal::model::session::{
     command_executor::testing::TestCommandExecutor, SessionInfo,
 };
 use typed_path::TypedPathBuf;
-use warp_completer::signatures::CommandRegistry;
-use warp_completer::{meta::SpannedItem, parsers::ParsedToken};
+use wish_completer::signatures::CommandRegistry;
+use wish_completer::{meta::SpannedItem, parsers::ParsedToken};
 use wishui::App;
 
 use super::*;

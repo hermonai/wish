@@ -10,7 +10,7 @@ use session_sharing_protocol::common::SessionId as SharedSessionId;
 use session_sharing_protocol::sharer::SessionEndedReason;
 use strum_macros::EnumDiscriminants;
 use strum_macros::EnumIter;
-use warp_completer::completer::MatchType;
+use wish_completer::completer::MatchType;
 use wish_core::command::ExitCode;
 use wish_core::telemetry::EnablementState;
 use wish_core::telemetry::TelemetryEvent as TelemetryEventTrait;
@@ -2635,7 +2635,7 @@ pub enum TelemetryEvent {
     AgentManagementViewCopiedSessionLink,
     /// Detected that Wish is running in an isolated sandbox.
     DetectedIsolationPlatform {
-        platform: warp_isolation_platform::IsolationPlatformType,
+        platform: wish_isolation_platform::IsolationPlatformType,
     },
 
     AgentTipShown {
@@ -6741,7 +6741,7 @@ impl TelemetryEventDesc for TelemetryEventDiscriminants {
             Self::ObjectLinkCopied => "The web link to an object has been copied.",
             Self::FileTreeToggled => "Opened the file tree/project explorer",
             Self::GlobalSearchOpened => "Opened the global search view",
-            Self::GlobalSearchQueryStarted => "Started a global search (warp_ripgrep) search",
+            Self::GlobalSearchQueryStarted => "Started a global search (wish_ripgrep) search",
             Self::FileTreeItemAttachedAsContext => {
                 "Attached a file or directory as context from the file tree"
             }

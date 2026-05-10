@@ -124,7 +124,7 @@ use std::ops::Range;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::{cell::OnceCell, sync::Arc};
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 use wishui::elements::MainAxisAlignment;
 use wishui::elements::MainAxisSize;
 use wishui::elements::SecretRange;
@@ -139,8 +139,8 @@ use chrono::Duration;
 use itertools::Itertools;
 use secret_redaction::*;
 #[cfg(feature = "local_fs")]
-use warp_editor::content::edit::resolve_asset_source_relative_to_directory;
-use warp_editor::{
+use wish_editor::content::edit::resolve_asset_source_relative_to_directory;
+use wish_editor::{
     content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
 };
 use wishui::{
@@ -5535,7 +5535,7 @@ pub enum AIBlockEvent {
     #[cfg(feature = "local_fs")]
     OpenDetectedFilePath {
         absolute_path: PathBuf,
-        line_and_column_num: Option<warp_util::path::LineAndColumnArg>,
+        line_and_column_num: Option<wish_util::path::LineAndColumnArg>,
         target_override: Option<FileTarget>,
     },
     ShowLinkTooltip(RichContentLinkTooltipInfo),

@@ -2,7 +2,7 @@ use std::{collections::HashMap, ops::Range};
 
 use arborium::tree_sitter::{Node, Query, QueryCursor, Tree};
 use streaming_iterator::StreamingIterator;
-use warp_editor::content::buffer::Buffer;
+use wish_editor::content::buffer::Buffer;
 use wishui::text::point::Point;
 
 use super::highlight_query::TextBuffer;

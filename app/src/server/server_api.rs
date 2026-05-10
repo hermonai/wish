@@ -34,7 +34,7 @@ use prost::Message;
 use referral::ReferralsClient;
 use team::TeamClient;
 use url::Url;
-use warp_managed_secrets::client::ManagedSecretsClient;
+use wish_managed_secrets::client::ManagedSecretsClient;
 use wish_core::context_flag::ContextFlag;
 use wish_core::errors::{register_error, AnyhowErrorExt, ErrorExt};
 use wishui::{r#async::BoxFuture, ModelContext};
@@ -401,7 +401,7 @@ pub struct ServerApi {
     // We technically use OAuth2 for headless device authentication.
     oauth_client: self::auth::OAuth2Client,
     /// Cached ambient workload token for requests from ambient agents.
-    ambient_workload_token: Arc<Mutex<Option<warp_isolation_platform::WorkloadToken>>>,
+    ambient_workload_token: Arc<Mutex<Option<wish_isolation_platform::WorkloadToken>>>,
     /// The ambient agent task ID for requests from cloud agents.
     ambient_agent_task_id: Arc<RwLock<Option<AmbientAgentTaskId>>>,
     /// The source of agent runs (e.g. CLI, GitHub Action). Set once at startup and immutable.
@@ -517,7 +517,7 @@ impl ServerApi {
             .set_device_authorization_url(oauth2::DeviceAuthorizationUrl::from_url(device_url))
     }
 
-    pub fn send_graphql_request<'a, QF, O: warp_graphql::client::Operation<QF> + Send + 'a>(
+    pub fn send_graphql_request<'a, QF, O: wish_graphql::client::Operation<QF> + Send + 'a>(
         &'a self,
         operation: O,
         timeout: Option<Duration>,
@@ -551,7 +551,7 @@ impl ServerApi {
                 headers.insert(name.to_string(), value);
             }
 
-            let options = warp_graphql::client::RequestOptions {
+            let options = wish_graphql::client::RequestOptions {
                 auth_token: auth_token.bearer_token(),
                 timeout,
                 headers,

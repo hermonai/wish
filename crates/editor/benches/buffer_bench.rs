@@ -2,7 +2,7 @@ use std::fs;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use rand::{SeedableRng, rngs::StdRng};
-use warp_editor::content::{
+use wish_editor::content::{
     buffer::Buffer, selection_model::BufferSelectionModel, text::IndentBehavior,
 };
 use wishui::{App, ModelHandle};

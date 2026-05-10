@@ -40,7 +40,7 @@ pub struct GcpFederationConfig {
 /// Handle for GCP Workload Identity Federation credentials.
 ///
 /// The handle represents a GCP authentication config file that uses Workload
-/// Identity Federation to authenticate to GCP as a particular Oz agent run.
+/// Identity Federation to authenticate to GCP as a particular Hermon agent run.
 ///
 /// When the handle is dropped, the backing temporary files are deleted.
 pub struct GcpCredentials {

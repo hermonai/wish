@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use chrono::Local;
 use smol_str::SmolStr;
-use warp_editor::render::model::LineCount;
-use warp_util::path::EscapeChar;
+use wish_editor::render::model::LineCount;
+use wish_util::path::EscapeChar;
 use wishui::App;
 
 use super::{

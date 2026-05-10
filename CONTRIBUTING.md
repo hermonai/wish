@@ -77,7 +77,7 @@ Wish UI work should follow existing WishUI patterns:
 Feature flags live in the inherited feature flag system. When adding one:
 
 - Add the Cargo feature.
-- Add the `FeatureFlag` variant in `crates/warp_features/src/lib.rs`.
+- Add the `FeatureFlag` variant in `crates/wish_features/src/lib.rs`.
 - Add the runtime feature registration in `app/src/lib.rs`.
 - Prefer runtime checks such as `FeatureFlag::YourFlag.is_enabled()` unless the code cannot compile without a compile-time gate.
 - Remove flags and dead branches once the rollout is complete.

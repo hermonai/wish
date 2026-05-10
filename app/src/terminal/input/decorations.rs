@@ -18,7 +18,7 @@ use crate::{
 
 use super::Input;
 
-pub use warp_completer::{
+pub use wish_completer::{
     completer::SuggestionTypeName, util::parse_current_commands_and_tokens, ParsedTokenData,
     ParsedTokensSnapshot,
 };

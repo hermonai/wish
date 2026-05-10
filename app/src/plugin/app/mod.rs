@@ -71,7 +71,7 @@ impl PluginHost {
         #[cfg(feature = "completions_v2")]
         let server_builder =
             server_builder.with_service(service_impl::RegisterCommandSignatureServiceImpl::new(
-                warp_completer::signatures::CommandRegistry::global_instance(),
+                wish_completer::signatures::CommandRegistry::global_instance(),
             ));
 
         let (server, plugin_host_process) =

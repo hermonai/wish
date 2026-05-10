@@ -57,7 +57,7 @@ When the flag is **off**, both headers render identically to master.
 ### `app/src/lib.rs`
 - Wired `git_operations_in_code_review` cargo feature to `FeatureFlag::GitOperationsInCodeReview` runtime flag
 
-### `crates/warp_features/src/lib.rs`
+### `crates/wish_features/src/lib.rs`
 - `GitOperationsInCodeReview` removed from `DOGFOOD_FLAGS` (flag is off everywhere by default)
 
 ## Design Decisions

@@ -9,7 +9,7 @@ use async_channel::{self, Receiver, Sender};
 use async_trait::async_trait;
 use chrono::DateTime;
 use parking_lot::{Mutex, MutexGuard};
-use warp_terminal::model::Point;
+use wish_terminal::model::Point;
 use wish_core::command::ExitCode;
 use wishui::r#async::block_on;
 
@@ -17,13 +17,13 @@ use crate::safe_info;
 use crate::server::datetime_ext::DateTimeExt;
 use crate::terminal::event::ExecutedExecutorCommandEvent;
 use crate::terminal::shell::{Shell, ShellType};
-use warp_util::on_cancel::OnCancelFutureExt;
+use wish_util::on_cancel::OnCancelFutureExt;
 
 use crate::terminal::model::session::command_executor::{
     shared, CommandExecutor, ExecutorCommandEvent,
 };
 use crate::terminal::SizeInfo;
-use warp_completer::completer::{CommandExitStatus, CommandOutput};
+use wish_completer::completer::{CommandExitStatus, CommandOutput};
 
 use super::ExecuteCommandOptions;
 

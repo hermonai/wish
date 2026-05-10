@@ -9,18 +9,18 @@ Relevant code:
 - `app/src/ai/conversation_details_panel.rs (950-1028)` — `render_skill_section`, the closest existing precedent for a single icon + label row.
 - `app/src/ai/conversation_details_panel.rs (1426-1781)` — `View::render` composes the sidebar; sections are appended to a `Flex::column` in a fixed order with `FIELD_SPACING` / `HEADER_SPACING` margins. This is where the new row is inserted.
 - `app/src/ai/ambient_agents/task.rs (57-83)` — `AgentConfigSnapshot.harness: Option<HarnessConfig>`, where `HarnessConfig { harness_type: String }` — the source of truth for a task's harness once the snapshot is loaded.
-- `crates/warp_cli/src/agent.rs (118-138)` — `Harness` enum (`Oz` / `Claude` / `Gemini`) with `clap::ValueEnum`; `Harness::from_str` (via `ValueEnum`) is the canonical parser for `harness_type` strings (values: `oz`, `claude`, `gemini`).
+- `crates/wish_cli/src/agent.rs (118-138)` — `Harness` enum (`Oz` / `Claude` / `Gemini`) with `clap::ValueEnum`; `Harness::from_str` (via `ValueEnum`) is the canonical parser for `harness_type` strings (values: `oz`, `claude`, `gemini`).
 - `app/src/terminal/view/ambient_agent/harness_selector.rs (59-75)` — existing `display_name` / `icon_for` helpers used by the harness selector dropdown. We reuse and centralize these so the two surfaces cannot diverge.
 - `app/src/ai/conversation_details_panel_tests.rs` — existing unit-test harness (`App::test`) used for `ConversationDetailsData`.
 ## Proposed changes
 ### 1. Centralize harness display metadata
 Extract the display name + icon + brand color mapping out of `harness_selector.rs` into a small shared module (`app/src/ai/harness_display.rs`), exposing:
 - `pub fn display_name(harness: Harness) -> &'static str` → `"Warp Agent"`, `"Claude Code"`, `"Gemini CLI"`.
-- `pub fn icon_for(harness: Harness) -> Icon` → `Warp` / `ClaudeLogo` / `GeminiLogo`. Oz maps to `Icon::Warp` (not `Icon::OzCloud`) so first-party Warp surfaces visually match the existing skill row.
+- `pub fn icon_for(harness: Harness) -> Icon` → `Warp` / `ClaudeLogo` / `GeminiLogo`. Oz maps to `Icon::Warp` (not `Icon::HermonCloud`) so first-party Warp surfaces visually match the existing skill row.
 - `pub fn brand_color(harness: Harness) -> Option<ColorU>` → `None` for Oz (caller falls back to theme foreground), `CLAUDE_ORANGE` for Claude, `GEMINI_BLUE` for Gemini. `CLAUDE_ORANGE` is re-used from `crate::ai::blocklist`; `GEMINI_BLUE` mirrors the value already in `terminal::cli_agent`.
 - `pub fn parse_harness_type(raw: &str) -> Option<Harness>` — thin wrapper around `Harness::from_str(raw, /* ignore_case */ true)`. Unknown strings return `None`.
 - `impl From<AIAgentHarness> for Harness` — 1:1 map from the `ServerAIConversationMetadata.harness` enum (`Oz` / `ClaudeCode` / `Gemini`) to `Harness`. Used by the conversation-sourced constructors so they can resolve the real harness instead of hardcoding Oz.
-Update `harness_selector.rs` to call into this module. This renames the selector's `"Oz"` label to `"Warp Agent"` and swaps its leading icon from `Icon::OzCloud` to `Icon::Warp`, matching `PRODUCT.md` invariant 2 and keeping the two surfaces in sync.
+Update `harness_selector.rs` to call into this module. This renames the selector's `"Oz"` label to `"Warp Agent"` and swaps its leading icon from `Icon::HermonCloud` to `Icon::Warp`, matching `PRODUCT.md` invariant 2 and keeping the two surfaces in sync.
 ### 2. Data model: thread harness through `ConversationDetailsData`
 Add `harness: Option<Harness>` to `ConversationDetailsData`. Resolution per constructor:
 - `from_conversation` (WASM) — read `conversation.server_metadata().map(|m| Harness::from(m.harness))`; fall back to `Some(Harness::Oz)` when the conversation has no server metadata (pure local run).
@@ -60,5 +60,5 @@ Behavior invariants from `PRODUCT.md` map as follows:
 - Pre-PR — `./script/presubmit` (cargo fmt, cargo clippy, cargo nextest) per repo rules. No WASM-specific paths are added, so WASM build should be unaffected.
 ## Risks and mitigations
 - **Renaming "Oz" → "Warp Agent" in the existing harness selector.** Separate user-visible change on another surface. Required for invariant 2; centralizing in `harness_display.rs` prevents drift. If contested, we can parameterize per-surface without re-splitting the spec.
-- **Unknown `harness_type` strings from newer server versions.** Treating unknown strings as `None` means future harnesses temporarily render no row on older clients — strictly better than a wrong label. Mitigation: add the new `Harness` variant in `warp_cli` when the server does.
+- **Unknown `harness_type` strings from newer server versions.** Treating unknown strings as `None` means future harnesses temporarily render no row on older clients — strictly better than a wrong label. Mitigation: add the new `Harness` variant in `wish_cli` when the server does.
 - **`from_task_id` → `from_task` transition causing layout jump.** Placing the row below Creator means growth is downward-only, so nothing above moves. If product later wants the row higher, we'd need a reserved slot or crossfade; defer until asked.

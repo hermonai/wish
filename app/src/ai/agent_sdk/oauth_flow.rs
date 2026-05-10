@@ -5,7 +5,7 @@ use anyhow::{anyhow, Result};
 use wishui::r#async::Timer;
 
 use crate::server::server_api::integrations::IntegrationsClient;
-use warp_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
+use wish_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
 
 /// Shared helpers for OAuth-based connect flows (txId + polling).
 ///

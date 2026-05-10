@@ -14,7 +14,7 @@ use crate::view_components::action_button::{ActionButton, PrimaryTheme};
 use crate::workspace::WorkspaceAction;
 use std::path::Path;
 #[cfg(not(target_family = "wasm"))]
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 #[cfg(not(target_family = "wasm"))]
 use wish_core::features::FeatureFlag;
 use wish_core::paths::home_relative_path;

@@ -17,9 +17,9 @@ default-members = [
   "crates/markdown_parser",
   "crates/sum_tree",
   "crates/wishui",
-  "crates/warp_completer",
-  "crates/warp_terminal",
-  "crates/warp_util",
+  "crates/wish_completer",
+  "crates/wish_terminal",
+  "crates/wish_util",
 ]
 
 [workspace.package]
@@ -69,27 +69,27 @@ vim = { path = "crates/vim" }
 virtual-fs = { path = "crates/virtual_fs" }
 voice_input = { path = "crates/voice_input" }
 wish = { path = "app" }
-warp_cli = { path = "crates/warp_cli" }
-warp_completer = { path = "crates/warp_completer" }
+wish_cli = { path = "crates/wish_cli" }
+wish_completer = { path = "crates/wish_completer" }
 wish_core = { path = "crates/wish_core" }
-warp_editor = { path = "crates/editor" }
-warp_features = { path = "crates/warp_features" }
+wish_editor = { path = "crates/editor" }
+wish_features = { path = "crates/wish_features" }
 remote_server = { path = "crates/remote_server" }
-warp_files = { path = "crates/warp_files" }
-warp_graphql = { path = "crates/graphql" }
-warp_graphql_schema = { path = "crates/warp_graphql_schema" }
-warp_isolation_platform = { path = "crates/isolation_platform" }
-warp_js = { path = "crates/warp_js" }
-warp_logging = { path = "crates/warp_logging" }
-warp_managed_secrets = { path = "crates/managed_secrets" }
-warp_ripgrep = { path = "crates/warp_ripgrep" }
-warp_server_client = { path = "crates/warp_server_client" }
-warp_terminal = { path = "crates/warp_terminal" }
-warp_util = { path = "crates/warp_util" }
-warp_web_event_bus = { path = "crates/warp_web_event_bus" }
+wish_files = { path = "crates/wish_files" }
+wish_graphql = { path = "crates/graphql" }
+wish_graphql_schema = { path = "crates/wish_graphql_schema" }
+wish_isolation_platform = { path = "crates/isolation_platform" }
+wish_js = { path = "crates/wish_js" }
+wish_logging = { path = "crates/wish_logging" }
+wish_managed_secrets = { path = "crates/managed_secrets" }
+wish_ripgrep = { path = "crates/wish_ripgrep" }
+wish_server_client = { path = "crates/wish_server_client" }
+wish_terminal = { path = "crates/wish_terminal" }
+wish_util = { path = "crates/wish_util" }
+wish_web_event_bus = { path = "crates/wish_web_event_bus" }
 wishui = { path = "crates/wishui" }
 wishui_core = { package = "wishui-core", path = "crates/wishui-core" }
-warpui_extras = { path = "crates/warpui_extras", default-features = false }
+wishui_extras = { path = "crates/wishui_extras", default-features = false }
 watcher = { path = "crates/watcher" }
 websocket = { path = "crates/websocket" }
 

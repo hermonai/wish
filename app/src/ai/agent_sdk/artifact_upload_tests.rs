@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use chrono::Utc;
 use tempfile::tempdir;
-use warp_cli::artifact::UploadArtifactArgs;
+use wish_cli::artifact::UploadArtifactArgs;
 
 use super::*;
 use crate::ai::agent::api::ServerConversationToken;

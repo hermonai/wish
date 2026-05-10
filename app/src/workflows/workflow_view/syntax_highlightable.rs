@@ -4,8 +4,8 @@ use std::time::Duration;
 
 use async_channel::Sender;
 use string_offset::ByteOffset;
-use warp_completer::completer::SuggestionTypeName;
-use warp_completer::signatures::CommandRegistry;
+use wish_completer::completer::SuggestionTypeName;
+use wish_completer::signatures::CommandRegistry;
 use wish_core::ui::theme::AnsiColorIdentifier;
 use wishui::r#async::SpawnedFutureHandle;
 use wishui::ViewHandle;

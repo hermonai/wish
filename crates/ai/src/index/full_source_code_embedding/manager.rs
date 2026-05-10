@@ -618,7 +618,7 @@ impl CodebaseIndexManager {
         };
 
         let standardized_path =
-            match warp_util::standardized_path::StandardizedPath::from_local_canonicalized(
+            match wish_util::standardized_path::StandardizedPath::from_local_canonicalized(
                 repo_path,
             ) {
                 Ok(path) => path,

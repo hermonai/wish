@@ -52,7 +52,7 @@ impl FasttextClassifier {
 impl InputClassifier for FasttextClassifier {
     async fn detect_input_type(
         &self,
-        input: warp_completer::ParsedTokensSnapshot,
+        input: wish_completer::ParsedTokensSnapshot,
         context: &Context,
     ) -> InputType {
         let word_tokens = parse_query_into_tokens(input.buffer_text.as_str());
@@ -80,7 +80,7 @@ impl InputClassifier for FasttextClassifier {
 
     async fn classify_input(
         &self,
-        input: warp_completer::ParsedTokensSnapshot,
+        input: wish_completer::ParsedTokensSnapshot,
         context: &Context,
     ) -> anyhow::Result<ClassificationResult> {
         if let Ok(classification_result) =

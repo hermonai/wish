@@ -3,7 +3,7 @@
 Pairs with `PRODUCT.md`.
 
 ## Problem
-`ConversationEndedTombstoneView` reads `run_time` / `credits` / `artifacts` off the in-memory `AIConversation`. Non-Oz cloud runs don't materialize one (they produce a `CLIAgentConversation`), so all three stay empty. Cloud Oz uses values that under-report relative to the details panel: exchange-derived run time excludes the cloud lifecycle; `credits_spent()` excludes compute cost; conversation-side artifacts can lag the task copy. The artifact buttons row is also constructed eagerly in the constructor and never refreshed, so the async task fetch has nothing to push artifacts into.
+`ConversationEndedTombstoneView` reads `run_time` / `credits` / `artifacts` off the in-memory `AIConversation`. Non-Hermon Cloud runs don't materialize one (they produce a `CLIAgentConversation`), so all three stay empty. Hermon Cloud uses values that under-report relative to the details panel: exchange-derived run time excludes the cloud lifecycle; `credits_spent()` excludes compute cost; conversation-side artifacts can lag the task copy. The artifact buttons row is also constructed eagerly in the constructor and never refreshed, so the async task fetch has nothing to push artifacts into.
 
 Separately, both the tombstone and `ConversationDetailsPanel` unconditionally surface the `Continue locally` button on non-transcript runs. `ContinueConversationLocally` only forks Oz-harness conversations, so for non-Oz tasks the button is dead UI.
 
@@ -11,7 +11,7 @@ Separately, both the tombstone and `ConversationDetailsPanel` unconditionally su
 - `app/src/terminal/view/shared_session/conversation_ended_tombstone_view.rs` — `TombstoneDisplayData`, `from_conversation`, `enrich_from_task` (`#[cfg(not(target_family = "wasm"))]`), `render_metadata_row`, `render_action_buttons`.
 - `app/src/ai/conversation_details_panel.rs` — `ConversationDetailsData::from_task` (~line 310), `ConversationDetailsData::harness`, `ConversationDetailsPanel::continue_locally_conversation_id`. Consistency reference: sets both fields straight from the task.
 - `app/src/ai/ambient_agents/task.rs` — `AmbientAgentTask::run_time()` (`Option<chrono::Duration>`), `credits_used()` (`Option<f32>`), `AgentConfigSnapshot::harness` (`Option<HarnessConfig>`), `HarnessConfig::harness_type` (`Harness`).
-- `crates/warp_cli/src/agent.rs` — `Harness` enum (`Oz`, `Claude`, `Gemini`).
+- `crates/wish_cli/src/agent.rs` — `Harness` enum (`Oz`, `Claude`, `Gemini`).
 - `format_credits` (`app/src/ai/blocklist/view_util.rs`) and `human_readable_precise_duration` (`app/src/util/time_format.rs`) — already imported by the tombstone.
 
 ## Change
@@ -55,7 +55,7 @@ Notes:
 - No new fetches, no schema work, no GraphQL changes.
 
 ## Risks
-- **Cloud Oz numbers visibly change** (both up). Intentional; matches the details panel for the same run. No flag-gating; if surprising in dogfood, can hide behind `FeatureFlag::AgentHarness` after the fact.
+- **Hermon Cloud numbers visibly change** (both up). Intentional; matches the details panel for the same run. No flag-gating; if surprising in dogfood, can hide behind `FeatureFlag::AgentHarness` after the fact.
 - **Brief flash** as `from_conversation` values render before the async task fetch resolves and overwrites them. Same race the panel has today; acceptable.
 - **`Continue locally` flashes briefly on non-Oz tombstones** before the task fetch resolves. Conscious trade-off: hiding eagerly would also hide the button on local conversations and cloud Oz runs (we don't know the harness yet), which is worse.
 - **Snapshot missing harness on a non-Oz run** mis-shows `Continue locally` because `Some(snapshot) + harness == None` defaults to `Some(Oz)`. In practice the server always populates `harness` when a non-Oz run is dispatched; if that ever changes the gate becomes too permissive.

@@ -9,7 +9,7 @@ use pathfinder_color::ColorU;
 use rangemap::RangeMap;
 use similar::{ChangeTag, DiffOp, TextDiff};
 use string_offset::CharOffset;
-use warp_editor::{
+use wish_editor::{
     content::{edit::TemporaryBlock, version::BufferVersion},
     multiline::{AnyMultilineString, MultilineStr, MultilineString, LF},
     render::model::{Decoration, LineCount, LineDecoration},

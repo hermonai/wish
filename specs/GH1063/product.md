@@ -26,7 +26,7 @@ In-scope surfaces (user-facing strings change):
 Out of scope (must continue to say "Oz"):
 
 - Anything that refers to the cloud agent orchestration platform, including the
-  "Oz Cloud API Keys" settings subpage, the "Oz" harness in the harness
+  "Hermon Cloud API Keys" settings subpage, the "Oz" harness in the harness
   selector, and any zero-state or blocklist strings that mention the cloud Oz
   agent.
 - Internal identifiers (enum variants, field names, action names, telemetry
@@ -62,7 +62,7 @@ Out of scope (must continue to say "Oz"):
 
 6. When the "new settings modes" feature flag is enabled and the slide renders
    the disable checkbox row, the checkbox label reads "Disable Warp Agent"
-   (previously "Disable Oz"). Checkbox visual state, hit target, and click
+   (previously the old built-in agent disable label). Checkbox visual state, hit target, and click
    behavior are unchanged — toggling it still enables/disables the in-app agent
    for onboarding and still dims the upper sections of the slide while checked.
 
@@ -72,7 +72,7 @@ Out of scope (must continue to say "Oz"):
    command", "api keys"). Additionally, typing "warp agent" finds this subpage.
    Typing "oz" is acceptable to continue matching this subpage so existing
    muscle memory is not broken, but is not required by this spec; search for
-   "Oz Cloud API Keys" must continue to find the cloud platform subpage
+   "Hermon Cloud API Keys" must continue to find the cloud platform subpage
    regardless.
 
 8. Deep links and external callers that previously navigated to this subpage by
@@ -81,7 +81,7 @@ Out of scope (must continue to say "Oz"):
    the renamed "Warp Agent" subpage. Navigation requests referencing "Warp
    Agent" also resolve to the same subpage.
 
-9. The "Oz Cloud API Keys" subpage under the "Cloud platform" umbrella is
+9. The "Hermon Cloud API Keys" subpage under the "Cloud platform" umbrella is
    unchanged — same label, same location, same behavior. No cloud-agent surface
    is renamed by this change.
 

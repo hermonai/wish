@@ -40,7 +40,7 @@ use std::{collections::HashSet, path::Path};
 use string_offset::CharOffset;
 use vec1::{vec1, Vec1};
 use vim::vim::{Direction, InsertPosition, VimMode, VimModel, VimState, VimSubscriber};
-use warp_editor::{
+use wish_editor::{
     content::{
         buffer::{
             Buffer, BufferEditAction, EditOrigin, InitialBufferState, ToBufferCharOffset as _,
@@ -63,7 +63,7 @@ use warp_editor::{
     },
     search::{SearchEvent, Searcher, MATCH_FILL, SELECTED_MATCH_FILL},
 };
-use warp_util::content_version::ContentVersion;
+use wish_util::content_version::ContentVersion;
 use wish_core::platform::SessionPlatform;
 use wishui::{
     elements::{
@@ -877,21 +877,21 @@ impl CodeEditorView {
         let hidden_section_end = line_range.end.as_usize();
         let lines_to_unhide = match expansion_type {
             ExpansionType::Both => {
-                warp_editor::content::text::LineCount::from(hidden_section_start)
-                    ..warp_editor::content::text::LineCount::from(hidden_section_end)
+                wish_editor::content::text::LineCount::from(hidden_section_start)
+                    ..wish_editor::content::text::LineCount::from(hidden_section_end)
             }
             ExpansionType::ExpandDown => {
                 let end = hidden_section_end
                     .min(hidden_section_start + CODE_EDITOR_HIDDEN_SECTION_EXPANSION_LINES);
-                warp_editor::content::text::LineCount::from(hidden_section_start)
-                    ..warp_editor::content::text::LineCount::from(end)
+                wish_editor::content::text::LineCount::from(hidden_section_start)
+                    ..wish_editor::content::text::LineCount::from(end)
             }
             ExpansionType::ExpandUp => {
                 let start = hidden_section_start.max(
                     hidden_section_end.saturating_sub(CODE_EDITOR_HIDDEN_SECTION_EXPANSION_LINES),
                 );
-                warp_editor::content::text::LineCount::from(start)
-                    ..warp_editor::content::text::LineCount::from(hidden_section_end)
+                wish_editor::content::text::LineCount::from(start)
+                    ..wish_editor::content::text::LineCount::from(hidden_section_end)
             }
         };
         self.model.update(ctx, |model, ctx| {
@@ -997,12 +997,12 @@ impl CodeEditorView {
                 if let Some(results) = self.searcher.as_ref(ctx).results() {
                     if !results.matches.is_empty() {
                         // Convert all match ranges to selection offsets
-                        let selection_offsets: Vec<warp_editor::content::buffer::SelectionOffsets> =
+                        let selection_offsets: Vec<wish_editor::content::buffer::SelectionOffsets> =
                             results
                                 .matches
                                 .iter()
                                 .map(|match_result| {
-                                    warp_editor::content::buffer::SelectionOffsets {
+                                    wish_editor::content::buffer::SelectionOffsets {
                                         head: match_result.end,
                                         tail: match_result.start,
                                     }
@@ -1014,8 +1014,8 @@ impl CodeEditorView {
                             self.model.update(ctx, |model, ctx| {
                                 model.selection().update(ctx, |selection_model, ctx| {
                                     selection_model.update_selection(
-                                        warp_editor::content::buffer::BufferSelectAction::SetSelectionOffsets { selections },
-                                        warp_editor::content::buffer::AutoScrollBehavior::Selection,
+                                        wish_editor::content::buffer::BufferSelectAction::SetSelectionOffsets { selections },
+                                        wish_editor::content::buffer::AutoScrollBehavior::Selection,
                                         ctx,
                                     );
                                 });
@@ -1041,7 +1041,7 @@ impl CodeEditorView {
                     self.model.update(ctx, |model, ctx| {
                         model.update_content( |mut content_model, ctx| {
                             content_model.apply_edit(
-                                warp_editor::content::buffer::BufferEditAction::InsertAtCharOffsetRanges { edits: &edits },
+                                wish_editor::content::buffer::BufferEditAction::InsertAtCharOffsetRanges { edits: &edits },
                                 EditOrigin::UserInitiated,
                                 selection_model,
                                 ctx,
@@ -1093,7 +1093,7 @@ impl CodeEditorView {
                                 self.model.update(ctx, |model, ctx| {
                                     model.update_content(|mut content_model, ctx| {
                                         content_model.apply_edit(
-                                            warp_editor::content::buffer::BufferEditAction::InsertAtCharOffsetRanges { edits: &edits },
+                                            wish_editor::content::buffer::BufferEditAction::InsertAtCharOffsetRanges { edits: &edits },
                                             EditOrigin::UserInitiated,
                                             selection_model,
                                             ctx,
@@ -2008,8 +2008,8 @@ impl CodeEditorView {
                                 self.model.update(ctx, |model, ctx| {
                                     model.selection_model().update(ctx, |selection, ctx| {
                                         selection.update_selection(
-                                            warp_editor::content::buffer::BufferSelectAction::MoveRight,
-                                            warp_editor::content::buffer::AutoScrollBehavior::Selection,
+                                            wish_editor::content::buffer::BufferSelectAction::MoveRight,
+                                            wish_editor::content::buffer::AutoScrollBehavior::Selection,
                                             ctx,
                                         );
                                     });

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::PathBuf};
 
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wish_core::ui::theme::color::internal_colors;
 use wish_core::ui::Icon;
 use wishui::{

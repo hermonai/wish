@@ -2,7 +2,7 @@
 use crate::workspaces::user_workspaces::UserWorkspaces;
 use comfy_table::Cell;
 use serde::Serialize;
-use warp_cli::{
+use wish_cli::{
     provider::{ProviderCommand, ProviderType},
     GlobalOptions,
 };

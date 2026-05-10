@@ -1,4 +1,4 @@
-use warp_terminal::model::grid::cell::Flags;
+use wish_terminal::model::grid::cell::Flags;
 
 use crate::{
     terminal::model::{

@@ -59,8 +59,8 @@ pub const fn toml_path_hierarchy(path: &str) -> Option<&str> {
 
 use anyhow::{Context, Result};
 use serde::{Serialize, de::DeserializeOwned};
-use warp_features::FeatureFlag;
-use warpui_extras::user_preferences::UserPreferences;
+use wish_features::FeatureFlag;
+use wishui_extras::user_preferences::UserPreferences;
 use wishui::{AppContext, Entity, ModelContext};
 
 /// A newtype wrapper for the public preferences backend.
@@ -95,7 +95,7 @@ impl PublicPreferences {
     }
 
     /// Reloads the backing store from disk.
-    pub fn reload_from_disk(&self) -> Result<(), warpui_extras::user_preferences::Error> {
+    pub fn reload_from_disk(&self) -> Result<(), wishui_extras::user_preferences::Error> {
         self.0.reload_from_disk()
     }
 }

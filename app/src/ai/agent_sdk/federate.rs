@@ -2,9 +2,9 @@ use std::process;
 
 use anyhow::{anyhow, Result};
 use serde_json::json;
-use warp_cli::federate::{FederateCommand, IssueGcpTokenArgs, IssueTokenArgs};
-use warp_cli::{agent::OutputFormat, GlobalOptions};
-use warp_managed_secrets::ManagedSecretManager;
+use wish_cli::federate::{FederateCommand, IssueGcpTokenArgs, IssueTokenArgs};
+use wish_cli::{agent::OutputFormat, GlobalOptions};
+use wish_managed_secrets::ManagedSecretManager;
 use wish_core::{features::FeatureFlag, report_error};
 use wishui::{platform::TerminationMode, AppContext, SingletonEntity as _};
 
@@ -43,7 +43,7 @@ fn issue_token(
 
     ManagedSecretManager::handle(ctx).update(ctx, move |manager, ctx| {
         let future =
-            manager.issue_task_identity_token(warp_managed_secrets::client::IdentityTokenOptions {
+            manager.issue_task_identity_token(wish_managed_secrets::client::IdentityTokenOptions {
                 audience,
                 requested_duration: duration,
                 subject_template,

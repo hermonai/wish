@@ -113,7 +113,7 @@
 //! # use settings::macros::*;
 //! # use settings::manager::SettingsManager;
 //! # use settings::*;
-//! # use warpui_extras::user_preferences;
+//! # use wishui_extras::user_preferences;
 //! define_settings_group!(ExampleGroup, settings: [
 //!     bool_setting: BoolSetting {
 //!         type: bool,

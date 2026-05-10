@@ -1,6 +1,6 @@
 use comfy_table::Cell;
 use serde::Serialize;
-use warp_cli::{agent::AgentProfileCommand, GlobalOptions};
+use wish_cli::{agent::AgentProfileCommand, GlobalOptions};
 use wishui::{AppContext, ModelContext, SingletonEntity};
 
 use crate::ai::agent_sdk::output::{self, TableFormat};

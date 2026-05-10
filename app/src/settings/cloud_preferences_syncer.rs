@@ -7,7 +7,7 @@ use std::{
 use lazy_static::lazy_static;
 use settings::{Setting as _, SyncToCloud};
 use std::time::Duration;
-use warpui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
+use wishui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
 use wish_core::settings::ChangeEventReason;
 use wish_core::user_preferences::GetUserPreferences;
 use wishui::r#async::Timer;

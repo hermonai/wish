@@ -50,7 +50,7 @@ use crate::{
 };
 use ai::agent::orchestration_config::{OrchestrationConfig, OrchestrationConfigStatus};
 use ai::diff_validation::DiffDelta;
-use warp_editor::{model::RichTextEditorModel, render::model::RichTextStyles};
+use wish_editor::{model::RichTextEditorModel, render::model::RichTextStyles};
 use warp_multi_agent_api as maa_api;
 use wishui::color::ColorU;
 

@@ -1,4 +1,4 @@
-//! This module contains the code path for the [`warp_cli::Command::DumpDebugInfo`] subcommand.
+//! This module contains the code path for the [`wish_cli::Command::DumpDebugInfo`] subcommand.
 //!
 //! This is intended to never be used by a vast majority of users. This is only intended for users
 //! who are unable to run Warp and want to provide us, the dev team, with useful debugging

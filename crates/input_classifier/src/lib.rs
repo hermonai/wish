@@ -24,13 +24,13 @@ pub use onnx::{Model as OnnxModel, OnnxClassifier};
 pub trait InputClassifier: 'static + Send + Sync {
     async fn detect_input_type(
         &self,
-        input: warp_completer::ParsedTokensSnapshot,
+        input: wish_completer::ParsedTokensSnapshot,
         context: &Context,
     ) -> InputType;
 
     async fn classify_input(
         &self,
-        input: warp_completer::ParsedTokensSnapshot,
+        input: wish_completer::ParsedTokensSnapshot,
         context: &Context,
     ) -> anyhow::Result<ClassificationResult>;
 }

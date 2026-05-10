@@ -107,8 +107,8 @@ Mapped to PRODUCT.md invariants. Each row covers one or more invariants:
 - Region order (1–3): open a tab with all three region kinds; confirm titles → directories → branches and that omitting a region collapses cleanly (e.g. a notebook-only tab with no terminals shows only a title line).
 - Per-line titles + dedupe (4–6, 9): create a tab with multiple distinct work labels; confirm each renders on its own line. Add a duplicate normalized label (`  cargo   test  ` and `cargo test`) and confirm only one line.
 - Title overflow (7–8): create >3 unique labels; confirm exactly 3 visible lines plus `+ N more` and end-ellipsis on long single lines.
-- Status icon prefix (10–13): create a tab with a CLI agent, an Oz conversation, and a plain terminal command; confirm only the conversation lines have a status icon, status reflects current state, and the icon styling matches the Figma mock.
-- Status-first sort (5, 7): create a tab where the first-created pane is a plain terminal and a later pane is an Oz conversation; confirm the conversation line still renders before the terminal line in the title region. Add enough non-conversation labels that some would normally be cut off; confirm the `+ N more` overflow includes the non-conversation labels first while the conversation labels remain visible.
+- Status icon prefix (10–13): create a tab with a CLI agent, an Hermon Agent conversation, and a plain terminal command; confirm only the conversation lines have a status icon, status reflects current state, and the icon styling matches the Figma mock.
+- Status-first sort (5, 7): create a tab where the first-created pane is a plain terminal and a later pane is an Hermon Agent conversation; confirm the conversation line still renders before the terminal line in the title region. Add enough non-conversation labels that some would normally be cut off; confirm the `+ N more` overflow includes the non-conversation labels first while the conversation labels remain visible.
 - Prefix dedupe (14): two panes contribute the same conversation title with different statuses; the visible line shows the first-seen status.
 - Overflow has no prefix (15): >3 conversation labels; confirm the `+ N more` line has no icon.
 - Per-line directories (16–22): multi-directory tab renders each directory on its own line, deduped, capped at 3, with `+ N more`. Empty directory tab omits the region.
@@ -136,7 +136,7 @@ Mitigation: invariant 5 documents the new ordering explicitly (status-first, the
 
 ### Risk: Status changes do not trigger a re-render
 
-The summary card relies on the existing vertical-tabs render cycle. CLI agent session status and Oz conversation status changes already drive re-renders for the focused-session row; verify the summary aggregation runs on the same notify path.
+The summary card relies on the existing vertical-tabs render cycle. CLI agent session status and Hermon Agent conversation status changes already drive re-renders for the focused-session row; verify the summary aggregation runs on the same notify path.
 
 Mitigation: `build_vertical_tabs_summary_data` runs inside the existing render pass over `pane_group.visible_pane_ids()`. As long as the same `app.notify()` triggers fire (CLI agent session updates, conversation status updates), Summary mode picks them up. Add this to the manual validation pass: start a CLI agent in a Summary-mode tab and confirm the prefix icon transitions through running → idle.
 

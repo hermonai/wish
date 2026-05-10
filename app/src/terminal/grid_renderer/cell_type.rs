@@ -1,6 +1,6 @@
 // The color-mapping helpers (`compute_fg_rgb`, `compute_bg_rgb`, and
 // `get_override_color`) below are adapted from the alacritty_terminal crate
-// under the Apache license; see: crates/warp_terminal/src/model/LICENSE-ALACRITTY.
+// under the Apache license; see: crates/wish_terminal/src/model/LICENSE-ALACRITTY.
 
 use pathfinder_color::ColorU;
 

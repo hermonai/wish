@@ -4,7 +4,7 @@ Linear: [REMOTE-1218](https://linear.app/warpdotdev/issue/REMOTE-1218)
 
 ## 1. Problem
 
-When a non-Oz harness (e.g. Claude Code) runs via the agent driver, `setup_harness` installs the **Warp notification plugin** (`warp@claude-code-warp` from `warpdotdev/claude-code-warp`). Harness runs also need a separate **Oz platform plugin** (`warp-cloud@claude-code-warp` from `warpdotdev/claude-code-warp-internal`) that connects the third-party CLI to the Oz platform — exposing tools, skills, and hooks (e.g. artifact reporting). This is distinct from the notification plugin: the platform plugin is about Oz integration, not just notifications.
+When a non-Oz harness (e.g. Claude Code) runs via the agent driver, `setup_harness` installs the **Warp notification plugin** (`warp@claude-code-warp` from `warpdotdev/claude-code-warp`). Harness runs also need a separate **Hermon Cloud plugin** (`warp-cloud@claude-code-warp` from `warpdotdev/claude-code-warp-internal`) that connects the third-party CLI to the Hermon Cloud — exposing tools, skills, and hooks (e.g. artifact reporting). This is distinct from the notification plugin: the platform plugin is about Oz integration, not just notifications.
 
 Today, only (a) is installed. We need to also install (b) for all harness runs driven by the agent driver, while keeping (b) out of normal local interactive agent sessions.
 
@@ -45,7 +45,7 @@ The `claude-code-warp-internal` repo already defines the `warp-cloud` marketplac
 Add an optional platform plugin install method to the existing trait:
 
 ```rust
-/// Install the Oz platform plugin for this CLI agent, if one exists.
+/// Install the Hermon Cloud plugin for this CLI agent, if one exists.
 /// Default is a no-op (most agents don't have a platform plugin yet).
 async fn install_platform_plugin(&self) -> Result<(), PluginInstallError> {
     Ok(())
@@ -54,7 +54,7 @@ async fn install_platform_plugin(&self) -> Result<(), PluginInstallError> {
 
 Only `ClaudeCodePluginManager` overrides this. The default no-op means no changes needed for OpenCode or future agents that lack a platform plugin.
 
-We call this `install_platform_plugin` (not `install_cloud_plugin`) because this plugin connects the CLI to the Oz platform — it's not inherently cloud-only. Today we only install it via `setup_harness` (driver-initiated runs), but it could be exposed to local users in the future.
+We call this `install_platform_plugin` (not `install_cloud_plugin`) because this plugin connects the CLI to the Hermon Cloud — it's not inherently cloud-only. Today we only install it via `setup_harness` (driver-initiated runs), but it could be exposed to local users in the future.
 
 ### 4b. `ClaudeCodePluginManager::install_platform_plugin()`
 
@@ -144,7 +144,7 @@ sequenceDiagram
     Setup-->>Driver: Ok(())
     Driver->>Driver: prepare_harness / run_harness
     Driver->>CC: claude --session-id ... < prompt
-    Note over CC: Both plugins active:<br/>warp (notifications) + warp-cloud (Oz platform)
+    Note over CC: Both plugins active:<br/>warp (notifications) + warp-cloud (Hermon Cloud)
 ```
 
 ## 6. Risks and Mitigations

@@ -6,7 +6,7 @@ use pathfinder_geometry::vector::vec2f;
 use repo_metadata::RepoMetadataModel;
 use repo_metadata::{repositories::DetectedRepositories, watcher::DirectoryWatcher};
 #[cfg(feature = "local_fs")]
-use warp_files::FileModel;
+use wish_files::FileModel;
 use wish_core::ui::appearance::Appearance;
 use wishui::{platform::WindowStyle, App, SingletonEntity, View};
 

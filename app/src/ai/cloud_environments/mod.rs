@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use warp_server_client::cloud_object::Owner;
+use wish_server_client::cloud_object::Owner;
 
 use crate::{
     auth::AuthStateProvider,

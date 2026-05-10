@@ -24,3 +24,12 @@ pub fn mark_hoa_onboarding_completed(ctx: &AppContext) {
         serde_json::to_string(&true).expect("bool serializes to JSON"),
     );
 }
+
+/// Resets the onboarding completed flag so the HOA onboarding flow
+/// will be shown again on the next app launch.
+pub fn reset_hoa_onboarding(ctx: &AppContext) {
+    let _ = ctx.private_user_preferences().write_value(
+        HAS_COMPLETED_HOA_ONBOARDING_KEY,
+        serde_json::to_string(&false).expect("bool serializes to JSON"),
+    );
+}

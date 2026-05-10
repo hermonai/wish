@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43.89 76.34">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="5 5 57 57">
   <defs>
     <style>
       .cls-1 {
-        fill: #5270b2;
+        fill: #4f2d82;
         fill-rule: evenodd;
       }
     </style>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
-    <polygon class="cls-1" points="33.22 72.93 17.58 45.63 43.89 0 33.22 72.93"/>
-    <polygon class="cls-1" points="7.23 26.91 17.74 45.4 0 76.34 7.23 26.91"/>
+    <polygon class="cls-1" points="27.6 39.5 7.56 59.54 15.18 27.07 27.6 39.5"/>
+    <polygon class="cls-1" points="27.61 39.48 47.65 59.53 60.08 7.01 27.61 39.48"/>
   </g>
 </svg>

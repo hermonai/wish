@@ -1,4 +1,4 @@
-use warp_cli::RecoveryMechanism;
+use wish_cli::RecoveryMechanism;
 use wishui::{AppContext, SingletonEntity as _, ViewContext};
 
 use crate::crash_recovery::CrashRecovery;

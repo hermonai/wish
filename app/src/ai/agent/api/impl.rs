@@ -14,6 +14,12 @@ pub async fn generate_multi_agent_output(
     mut params: RequestParams,
     cancellation_rx: futures::channel::oneshot::Receiver<()>,
 ) -> Result<ResponseStream, ConvertToAPITypeError> {
+    // Route to local Ollama when the selected model is an Ollama model.
+    // This skips the hermon server auth flow entirely.
+    if params.model.as_str().starts_with("ollama:") {
+        return generate_local_ollama_output(params, cancellation_rx).await;
+    }
+
     let supported_tools = params
         .supported_tools_override
         .take()
@@ -259,6 +265,190 @@ fn get_supported_cli_agent_tools(params: &RequestParams) -> Vec<api::ToolType> {
     }
 
     supported_cli_agent_tools
+}
+
+// ── Local Ollama agent mode ──────────────────────────────────────────
+
+/// Drive an agent-mode request against a local Ollama endpoint instead
+/// of the remote Hermon server. Builds a minimal OpenAI-compatible
+/// chat-completion request, sends it to Ollama, and wraps the response
+/// in the `warp_multi_agent_api::ResponseEvent` stream format that the
+/// rest of the agent-mode UI expects.
+async fn generate_local_ollama_output(
+    params: RequestParams,
+    cancellation_rx: futures::channel::oneshot::Receiver<()>,
+) -> Result<ResponseStream, ConvertToAPITypeError> {
+    use crate::ai::local_llm::{ChatCompletionRequest, ChatCompletionResponse, ChatMessage};
+    use crate::ai::llms::ollama_base_url;
+    use crate::ai::wish_conversation::local_llm_adapter::chat_completions_url;
+    use crate::server::server_api::AIApiError;
+
+    let model_name = params
+        .model
+        .as_str()
+        .strip_prefix("ollama:")
+        .unwrap_or(params.model.as_str())
+        .to_string();
+
+    // Extract user message from the input.
+    let user_message = params
+        .input
+        .iter()
+        .find_map(|input| input.user_query())
+        .unwrap_or_default();
+
+    let base_url = ollama_base_url();
+    // Ollama's OpenAI-compatible endpoint lives under /v1.
+    let url = chat_completions_url(&format!("{base_url}/v1"));
+
+    let request = ChatCompletionRequest {
+        model: model_name,
+        messages: vec![ChatMessage {
+            role: "user".to_string(),
+            content: user_message,
+        }],
+        temperature: None,
+        max_tokens: None,
+        stream: false,
+    };
+
+    // Run the HTTP request (async).
+    let http_result = async {
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(120))
+            .build()
+            .map_err(|e| format!("HTTP client init failed: {e}"))?;
+
+        let resp = client
+            .post(&url)
+            .json(&request)
+            .send()
+            .await
+            .map_err(|e| format!("Ollama request failed (is Ollama running at {url}?): {e}"))?;
+
+        let status = resp.status();
+        let text = resp
+            .text()
+            .await
+            .map_err(|e| format!("Ollama response read failed: {e}"))?;
+
+        if !status.is_success() {
+            return Err(format!("Ollama returned HTTP {}: {}", status.as_u16(), text));
+        }
+
+        let parsed: ChatCompletionResponse = serde_json::from_str(&text)
+            .map_err(|e| format!("Ollama response parse error: {e}"))?;
+
+        let response_text = parsed
+            .choices
+            .into_iter()
+            .next()
+            .map(|c| c.message.content)
+            .unwrap_or_else(|| "No response from model.".to_string());
+
+        Ok::<String, String>(response_text)
+    }
+    .await;
+
+    // Build ResponseEvent stream.
+    let task_id = uuid::Uuid::new_v4().to_string();
+    let message_id = uuid::Uuid::new_v4().to_string();
+    let request_id = uuid::Uuid::new_v4().to_string();
+
+    match http_result {
+        Ok(response_text) => {
+            let events: Vec<Result<api::ResponseEvent, Arc<AIApiError>>> = vec![
+                // 1. StreamInit
+                Ok(api::ResponseEvent {
+                    r#type: Some(api::response_event::Type::Init(
+                        api::response_event::StreamInit {
+                            conversation_id: String::new(),
+                            request_id: request_id.clone(),
+                            run_id: String::new(),
+                        },
+                    )),
+                }),
+                // 2. ClientActions: CreateTask + AddMessagesToTask with AgentOutput
+                Ok(api::ResponseEvent {
+                    r#type: Some(api::response_event::Type::ClientActions(
+                        api::response_event::ClientActions {
+                            actions: vec![
+                                api::ClientAction {
+                                    action: Some(
+                                        api::client_action::Action::CreateTask(
+                                            api::client_action::CreateTask {
+                                                task: Some(api::Task {
+                                                    id: task_id.clone(),
+                                                    description: String::new(),
+                                                    dependencies: None,
+                                                    messages: vec![],
+                                                    summary: String::new(),
+                                                    server_data: String::new(),
+                                                }),
+                                            },
+                                        ),
+                                    ),
+                                },
+                                api::ClientAction {
+                                    action: Some(
+                                        api::client_action::Action::AddMessagesToTask(
+                                            api::client_action::AddMessagesToTask {
+                                                task_id: task_id.clone(),
+                                                messages: vec![api::Message {
+                                                    id: message_id,
+                                                    task_id: task_id.clone(),
+                                                    request_id: request_id.clone(),
+                                                    timestamp: None,
+                                                    server_message_data: String::new(),
+                                                    citations: vec![],
+                                                    message: Some(
+                                                        api::message::Message::AgentOutput(
+                                                            api::message::AgentOutput {
+                                                                text: response_text,
+                                                            },
+                                                        ),
+                                                    ),
+                                                }],
+                                            },
+                                        ),
+                                    ),
+                                },
+                            ],
+                        },
+                    )),
+                }),
+                // 3. StreamFinished with Done
+                Ok(api::ResponseEvent {
+                    r#type: Some(api::response_event::Type::Finished(
+                        api::response_event::StreamFinished {
+                            token_usage: vec![],
+                            should_refresh_model_config: false,
+                            request_cost: None,
+                            conversation_usage_metadata: None,
+                            reason: Some(
+                                api::response_event::stream_finished::Reason::Done(
+                                    api::response_event::stream_finished::Done {},
+                                ),
+                            ),
+                        },
+                    )),
+                }),
+            ];
+
+            let stream = futures_lite::stream::iter(events);
+            let output_stream = stream.take_until(cancellation_rx);
+            Ok(Box::pin(output_stream))
+        }
+        Err(error_message) => {
+            let (tx, rx) = async_channel::unbounded();
+            let _ = tx
+                .send(Err(Arc::new(AIApiError::Other(anyhow::anyhow!(
+                    "{error_message}"
+                )))))
+                .await;
+            Ok(Box::pin(rx))
+        }
+    }
 }
 
 #[cfg(test)]

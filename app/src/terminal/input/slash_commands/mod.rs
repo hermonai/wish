@@ -12,7 +12,7 @@ use std::path::PathBuf;
 
 use ai::skills::SkillReference;
 #[cfg(feature = "local_fs")]
-use warp_util::path::{CleanPathResult, LineAndColumnArg};
+use wish_util::path::{CleanPathResult, LineAndColumnArg};
 use wish_core::features::FeatureFlag;
 use wish_core::send_telemetry_from_ctx;
 use wish_core::ui::appearance::Appearance;
@@ -57,7 +57,7 @@ use crate::workflows::{WorkflowSelectionSource, WorkflowSource, WorkflowType};
 use crate::workspace::{ForkedConversationDestination, ToastStack, WorkspaceAction};
 use crate::TelemetryEvent;
 #[cfg(not(target_family = "wasm"))]
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 #[cfg(not(target_family = "wasm"))]
 use wishui::AppContext;
 
@@ -936,7 +936,8 @@ impl Input {
 
                 if !conversation_is_cloud_oz_for_slash_command(conversation_id, ctx) {
                     show_error_toast(
-                        "/continue-locally is only available for cloud Oz conversations".to_owned(),
+                        "/continue-locally is only available for cloud Hermon Agent conversations"
+                            .to_owned(),
                         ctx,
                     );
                     return true;
@@ -1323,7 +1324,7 @@ mod tests {
 
 /// Returns true when the conversation with `conversation_id` is associated with a cloud Oz
 /// `AmbientAgentTask`. Used as the defensive runtime gate for `/continue-locally` so a
-/// keybinding-triggered execution can't fall through onto a non-cloud-Oz conversation after
+/// keybinding-triggered execution can't fall through onto a non-cloud-Hermon Agent conversation after
 /// the menu has been recomputed. Mirrors `SlashCommandDataSource::active_conversation_is_cloud_oz`.
 #[cfg(not(target_family = "wasm"))]
 fn conversation_is_cloud_oz_for_slash_command(

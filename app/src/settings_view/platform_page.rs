@@ -85,10 +85,10 @@ impl PlatformPageView {
                                 let uid = gql_key.uid.into_inner();
                                 me.ensure_expire_button_for_key(ctx, uid.clone());
                                 let scope = match gql_key.owner_type {
-                                    warp_graphql::object_permissions::OwnerType::User => {
+                                    wish_graphql::object_permissions::OwnerType::User => {
                                         ApiKeyScope::Personal
                                     }
-                                    warp_graphql::object_permissions::OwnerType::Team => {
+                                    wish_graphql::object_permissions::OwnerType::Team => {
                                         ApiKeyScope::Team
                                     }
                                 };
@@ -212,8 +212,8 @@ impl PlatformPageView {
                 self.ensure_expire_button_for_key(ctx, uid.clone());
 
                 let scope = match api_key.owner_type {
-                    warp_graphql::object_permissions::OwnerType::User => ApiKeyScope::Personal,
-                    warp_graphql::object_permissions::OwnerType::Team => ApiKeyScope::Team,
+                    wish_graphql::object_permissions::OwnerType::User => ApiKeyScope::Personal,
+                    wish_graphql::object_permissions::OwnerType::Team => ApiKeyScope::Team,
                 };
                 let ui_key = APIKeyProperties::new(
                     uid,
@@ -355,7 +355,7 @@ impl SettingsWidget for PlatformPageWidget {
     type View = PlatformPageView;
 
     fn search_terms(&self) -> &str {
-        "oz cloud platform api keys authentication"
+        "hermon cloud platform api keys authentication"
     }
 
     fn render(
@@ -413,7 +413,7 @@ impl PlatformPageWidget {
             Flex::row()
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
                 .with_child(
-                    Text::new_inline("Oz Cloud API Keys", appearance.ui_font_family(), 16.)
+                    Text::new_inline("Hermon Cloud API Keys", appearance.ui_font_family(), 16.)
                         .with_style(Properties::default().weight(Weight::Bold))
                         .with_color(appearance.theme().active_ui_text_color().into())
                         .finish(),
@@ -690,7 +690,7 @@ impl PlatformPageWidget {
 
 impl SettingsPageMeta for PlatformPageView {
     fn section() -> SettingsSection {
-        SettingsSection::OzCloudAPIKeys
+        SettingsSection::HermonCloudAPIKeys
     }
 
     fn should_render(&self, ctx: &AppContext) -> bool {
@@ -721,6 +721,6 @@ impl SettingsPageMeta for PlatformPageView {
 
 impl From<ViewHandle<PlatformPageView>> for SettingsPageViewHandle {
     fn from(view_handle: ViewHandle<PlatformPageView>) -> Self {
-        SettingsPageViewHandle::OzCloudAPIKeys(view_handle)
+        SettingsPageViewHandle::HermonCloudAPIKeys(view_handle)
     }
 }

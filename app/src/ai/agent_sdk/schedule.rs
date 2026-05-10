@@ -2,12 +2,12 @@ use chrono::{DateTime, Utc};
 use comfy_table::Cell;
 use futures::future;
 use serde::Serialize;
-use warp_cli::schedule::{
+use wish_cli::schedule::{
     CreateScheduleArgs, DeleteScheduleArgs, GetScheduleArgs, PauseScheduleArgs, ScheduleCommand,
     ScheduleSubcommand, UnpauseScheduleArgs, UpdateScheduleArgs,
 };
-use warp_cli::{agent::OutputFormat, GlobalOptions};
-use warp_graphql::queries::get_scheduled_agent_history::ScheduledAgentHistory;
+use wish_cli::{agent::OutputFormat, GlobalOptions};
+use wish_graphql::queries::get_scheduled_agent_history::ScheduledAgentHistory;
 use wishui::platform::TerminationMode;
 use wishui::{AppContext, SingletonEntity};
 

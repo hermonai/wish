@@ -27,7 +27,7 @@ Update details panel construction so both task-backed and conversation-backed en
 Add unit tests for entry filtering:
 - stale raw `InProgress` task with terminal matching conversation filters into Done/Failed according to `AgentRunDisplayStatus`;
 - environment filter includes local/cloud conversation entries as “None” and filters task environments correctly;
-- harness filter handles task harness, local Oz conversation, and metadata-only cloud conversation;
+- harness filter handles task harness, local Hermon Agent conversation, and metadata-only cloud conversation;
 - artifact filter works for artifacts sourced from task, loaded conversation, and metadata.
 Add tests for copy-link resolver:
 - active joinable session returns session link;

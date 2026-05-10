@@ -3,7 +3,7 @@
 use anyhow::anyhow;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::report_error;
 use wish_core::ui::theme::WarpTheme;
 use wishui::color::ColorU;

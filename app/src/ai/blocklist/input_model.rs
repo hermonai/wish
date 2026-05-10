@@ -25,7 +25,7 @@ use crate::terminal::cli_agent_sessions::{
     CLIAgentInputState, CLIAgentSessionsModel, CLIAgentSessionsModelEvent,
 };
 use crate::PrivacySettings;
-use warp_completer::completer::CompletionContext;
+use wish_completer::completer::CompletionContext;
 
 use crate::{
     input_classifier::InputClassifierModel,
@@ -731,7 +731,7 @@ impl BlocklistAIInputModel {
                     futures_lite::future::yield_now().await;
 
                     let input =
-                        warp_completer::util::expand_aliases(input, &completion_context).await;
+                        wish_completer::util::expand_aliases(input, &completion_context).await;
 
                     futures_lite::future::yield_now().await;
 

@@ -142,13 +142,19 @@ pub enum HoaOnboardingAction {
     DirectorySelected(Result<String, FilePickerError>),
     ToggleWorktree,
     ToggleAutogenerateWorktreeBranchName,
+    ToggleDontShowAgain,
     Finish,
     Dismiss,
 }
 
 pub enum HoaOnboardingFlowEvent {
-    Completed(Option<SessionConfigSelection>),
-    Dismissed,
+    Completed {
+        selection: Option<SessionConfigSelection>,
+        dont_show_again: bool,
+    },
+    Dismissed {
+        dont_show_again: bool,
+    },
     StepChanged,
     /// Emitted just before toggling vertical/horizontal tabs so the workspace
     /// can pin the callout position before the layout shifts.
@@ -161,10 +167,14 @@ pub struct HoaOnboardingFlow {
     /// "See what's new". We show only the vertical-tabs callout with a
     /// "Dismiss" button and no progress dots.
     truncated_flow: bool,
+    /// When `true`, the onboarding flow will not be shown again on the next
+    /// app launch. Set by the "Don't show again" checkbox on the welcome banner.
+    dont_show_again: bool,
 
     // Step 1 state
     close_button: ViewHandle<ActionButton>,
     cta_button: ViewHandle<ActionButton>,
+    dont_show_again_mouse_state: MouseStateHandle,
 
     // Step 2 state
     horizontal_tabs_checkbox_mouse_state: MouseStateHandle,
@@ -246,8 +256,10 @@ impl HoaOnboardingFlow {
         Self {
             step: HoaOnboardingStep::WelcomeBanner,
             truncated_flow: false,
+            dont_show_again: false,
             close_button,
             cta_button,
+            dont_show_again_mouse_state: MouseStateHandle::default(),
             horizontal_tabs_checkbox_mouse_state: MouseStateHandle::default(),
             next_vtabs_button,
             dismiss_vtabs_button,
@@ -279,7 +291,9 @@ impl HoaOnboardingFlow {
     fn advance(&mut self, ctx: &mut ViewContext<Self>) {
         // In truncated mode, there are no steps after the vertical-tabs callout.
         if self.truncated_flow && self.step == HoaOnboardingStep::VerticalTabsCallout {
-            ctx.emit(HoaOnboardingFlowEvent::Dismissed);
+            ctx.emit(HoaOnboardingFlowEvent::Dismissed {
+                dont_show_again: self.dont_show_again,
+            });
             return;
         }
 
@@ -299,14 +313,15 @@ impl HoaOnboardingFlow {
     }
 
     fn finish(&mut self, ctx: &mut ViewContext<Self>) {
-        ctx.emit(HoaOnboardingFlowEvent::Completed(Some(
-            SessionConfigSelection {
+        ctx.emit(HoaOnboardingFlowEvent::Completed {
+            selection: Some(SessionConfigSelection {
                 session_type: self.selected_session_type(),
                 directory: self.selected_directory.clone(),
                 enable_worktree: self.enable_worktree,
                 autogenerate_worktree_branch_name: self.autogenerate_worktree_branch_name,
-            },
-        )));
+            }),
+            dont_show_again: self.dont_show_again,
+        });
     }
 
     fn dismiss(&mut self, ctx: &mut ViewContext<Self>) {
@@ -318,7 +333,9 @@ impl HoaOnboardingFlow {
             ctx.emit(HoaOnboardingFlowEvent::StepChanged);
             ctx.notify();
         } else {
-            ctx.emit(HoaOnboardingFlowEvent::Dismissed);
+            ctx.emit(HoaOnboardingFlowEvent::Dismissed {
+                dont_show_again: self.dont_show_again,
+            });
         }
     }
 
@@ -584,6 +601,8 @@ impl View for HoaOnboardingFlow {
                 let banner = welcome_banner::render_welcome_banner(
                     &self.close_button,
                     &self.cta_button,
+                    self.dont_show_again,
+                    self.dont_show_again_mouse_state.clone(),
                     appearance,
                 );
 
@@ -719,6 +738,10 @@ impl TypedActionView for HoaOnboardingFlow {
                         !self.autogenerate_worktree_branch_name;
                     ctx.notify();
                 }
+            }
+            HoaOnboardingAction::ToggleDontShowAgain => {
+                self.dont_show_again = !self.dont_show_again;
+                ctx.notify();
             }
             HoaOnboardingAction::Finish => {
                 self.finish(ctx);

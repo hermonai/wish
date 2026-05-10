@@ -181,7 +181,7 @@ fn test_log_out_clears_pending_auth_state() {
         // routes to `PersistedUser::remove_from_secure_storage`. That requires
         // a `SecureStorage` singleton, so register a no-op one for this test.
         app.update(|ctx| {
-            warpui_extras::secure_storage::register_noop("warp_test", ctx);
+            wishui_extras::secure_storage::register_noop("warp_test", ctx);
         });
 
         AuthManager::handle(&app).update(&mut app, |auth_manager, ctx| {

@@ -316,7 +316,7 @@ pub fn init_logging() {
     static INIT: Once = Once::new();
     INIT.call_once(|| {
         env_logger::builder()
-            .parse_filters("warp_editor=trace")
+            .parse_filters("wish_editor=trace")
             .is_test(true)
             .init();
     });

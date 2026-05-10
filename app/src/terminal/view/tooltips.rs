@@ -44,7 +44,7 @@ struct GridTooltipLink {
 #[cfg(feature = "local_fs")]
 fn open_in_warp_tooltip(
     path: std::path::PathBuf,
-    line_and_column_num: Option<warp_util::path::LineAndColumnArg>,
+    line_and_column_num: Option<wish_util::path::LineAndColumnArg>,
     detail_for_default: &mut Option<String>,
     mouse_state: MouseStateHandle,
     app: &AppContext,

@@ -41,7 +41,7 @@ The horizontal tab bar's chevron dropdown and the vertical tab bar's `+` button 
 
 1. **Agent** — Opens an agent tab. Shows ⌘T keybinding when default session mode is Agent. Icon: `LayoutAlt01`. Hidden if AI is disabled.
 3. **Terminal** — On macOS/Linux, opens a terminal tab directly and shows ⌘T when the default session mode is Terminal. Icon: `LayoutAlt01`. On Windows, this is a submenu parent that shows a sidecar with available shells on hover.
-3. **Cloud Oz** — Opens a cloud agent tab. Icon: `LayoutAlt01`. Hidden unless `AgentView` + `CloudMode` flags are enabled.
+3. **Hermon Cloud** — Opens a cloud agent tab. Icon: `LayoutAlt01`. Hidden unless `AgentView` + `CloudMode` flags are enabled.
 4. **Worktree in** → opens a repo sidecar on hover (see below). Icon: `Dataflow02`.
 5. **[User tab configs]** — One item per loaded tab config from `~/.warp/tab_configs/`. Icon: `LayoutAlt01` for non-worktree configs, `Dataflow02` for worktree configs. (Same detection logic as APP-3578.)
 6. **Separator**.
@@ -119,7 +119,7 @@ Clicking "New Tab Config" in the menu writes the starter tab-config template to 
 4. **No shells detected (Windows)**: The Terminal sidecar shows a single "Terminal" fallback item.
 5. **Worktree creation fails**: If `git worktree add` fails (e.g., branch already exists, not a git repo), the error is shown in the terminal output — same behavior as today when a tab config command fails.
 6. **Sidecar positioning**: Sidecars open to the right of the parent item, anchored to the hovered item's position.
-7. **Feature flags**: Terminal sidecar shells are gated behind `ShellSelector` (Windows only). Cloud Oz is gated behind `AgentView` + `CloudMode`. Tab configs section and Worktree in are gated behind `TabConfigs`.
+7. **Feature flags**: Terminal sidecar shells are gated behind `ShellSelector` (Windows only). Hermon Cloud is gated behind `AgentView` + `CloudMode`. Tab configs section and Worktree in are gated behind `TabConfigs`.
 
 ## Success Criteria
 

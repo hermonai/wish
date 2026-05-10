@@ -20,11 +20,11 @@ use num_traits::SaturatingSub;
 use pathfinder_geometry::{rect::RectF, vector::Vector2F};
 use string_offset::CharOffset;
 use vec1::Vec1;
-use warp_editor::{
+use wish_editor::{
     content::{buffer::InitialBufferState, text::IndentUnit},
     render::model::{Decoration, LineCount},
 };
-use warp_util::{
+use wish_util::{
     content_version::ContentVersion,
     file::{FileId, FileLoadError, FileSaveError},
     path::to_relative_path,

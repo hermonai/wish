@@ -40,11 +40,11 @@ impl AITip for CloudModeTip {
 pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
     vec![
         CloudModeTip::new(
-            "Install the Oz Slack integration to trigger agents from any channel or DM.",
+            "Install the Hermon Slack integration to trigger agents from any channel or DM.",
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/integrations/slack"),
         ),
         CloudModeTip::new(
-            "Build programmatic agents using Oz's TypeScript and Python SDKs.",
+            "Build programmatic agents using Hermon Agent's TypeScript and Python SDKs.",
             Some("https://wish.hermon.ai/docs/reference/api-and-sdk"),
         ),
         CloudModeTip::new(
@@ -52,11 +52,11 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/secrets"),
         ),
         CloudModeTip::new(
-            "View all your agent runs and their status in the Oz web app.",
+            "View all your agent runs and their status in the Hermon Cloud dashboard.",
             Some("https://wish.hermon.ai"),
         ),
         CloudModeTip::new(
-            "Join any Oz cloud agent run in real-time using Agent Session Sharing.",
+            "Join any Hermon Cloud agent run in real-time using Agent Session Sharing.",
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/viewing-cloud-agent-runs"),
         ),
         CloudModeTip::new(
@@ -72,11 +72,11 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/integrations/github-actions"),
         ),
         CloudModeTip::new(
-            "Run agents from GitHub Actions using the `oz-agent-action`.",
-            Some("https://github.com/warpdotdev/oz-agent-action"),
+            "Run agents from GitHub Actions using the `hermon-agent-action`.",
+            Some("https://github.com/hermonai/hermon-agent-action"),
         ),
         CloudModeTip::new(
-            "Call the Oz REST API to trigger agents from any backend service or internal tool.",
+            "Call the Hermon API to trigger agents from any backend service or internal tool.",
             Some("https://wish.hermon.ai/docs/reference/api-and-sdk"),
         ),
         CloudModeTip::new(
@@ -120,7 +120,7 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/platform"),
         ),
         CloudModeTip::new(
-            "View your teammates' agent runs in the Oz web app for shared visibility.",
+            "View your teammates' agent runs in the Hermon Cloud dashboard for shared visibility.",
             Some("https://wish.hermon.ai"),
         ),
         CloudModeTip::new(
@@ -176,7 +176,7 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/agent-platform/capabilities/mcp"),
         ),
         CloudModeTip::new(
-            "Build an internal Slack bot that delegates coding tasks to Oz agents.",
+            "Build an internal Slack bot that delegates coding tasks to Hermon agents.",
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/integrations/slack"),
         ),
         CloudModeTip::new(
@@ -184,15 +184,15 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/integrations/slack"),
         ),
         CloudModeTip::new(
-            "Use the Oz TypeScript SDK to build custom automation pipelines.",
+            "Use the Hermon TypeScript SDK to build custom automation pipelines.",
             Some("https://wish.hermon.ai/docs/reference/api-and-sdk"),
         ),
         CloudModeTip::new(
-            "Use the Oz Python SDK to integrate agents into your data pipelines.",
+            "Use the Hermon Python SDK to integrate agents into your data pipelines.",
             Some("https://wish.hermon.ai/docs/reference/api-and-sdk"),
         ),
         CloudModeTip::new(
-            "Monitor agent success rates and runtimes using the Oz API.",
+            "Monitor agent success rates and runtimes using the Hermon API.",
             Some("https://wish.hermon.ai/docs/reference/api-and-sdk"),
         ),
         CloudModeTip::new(

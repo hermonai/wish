@@ -11,7 +11,7 @@ mod package_installers;
 pub(crate) use history::UpArrowHistoryConfig;
 pub use view::Event;
 pub use view::TerminalView;
-pub use warp_terminal::shell::{self, ShellLaunchData};
+pub use wish_terminal::shell::{self, ShellLaunchData};
 use wishui::geometry::vector::Vector2F;
 use wishui::units::{IntoPixels, Lines, Pixels};
 use wishui::AppContext;

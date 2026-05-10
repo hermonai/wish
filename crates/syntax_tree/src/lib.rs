@@ -20,7 +20,7 @@ use rangemap::{RangeMap, RangeSet};
 use string_offset::{ByteOffset, CharOffset};
 use wishui::{color::ColorU, AppContext, Entity, ModelContext, WeakModelHandle};
 
-use warp_editor::{
+use wish_editor::{
     content::{
         buffer::{Buffer, BufferSnapshot},
         edit::PreciseDelta,

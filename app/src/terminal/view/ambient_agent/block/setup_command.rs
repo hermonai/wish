@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use parking_lot::FairMutex;
-use warp_terminal::model::BlockId;
+use wish_terminal::model::BlockId;
 use wish_core::ui::appearance::Appearance;
 use wishui::{
     prelude::{Container, Empty, MouseStateHandle},

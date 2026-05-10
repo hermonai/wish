@@ -7,7 +7,7 @@ use std::{
     process,
 };
 use typed_path::UnixPathBuf;
-use warp_util::path::{canonicalize_git_bash_path, is_msys2_path, warp_shell_path};
+use wish_util::path::{canonicalize_git_bash_path, is_msys2_path, warp_shell_path};
 use wish_core::channel::{Channel, ChannelState};
 
 use crate::{
@@ -526,7 +526,7 @@ impl WslShellStarter {
             .output();
         let home_dir =
             decode_wsl_path_result(command_result).filter(|s| !s.as_bytes().is_empty())?;
-        warp_util::path::convert_wsl_to_windows_host_path(
+        wish_util::path::convert_wsl_to_windows_host_path(
             &home_dir.to_typed_path(),
             &self.distribution,
         )

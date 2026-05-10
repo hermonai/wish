@@ -161,7 +161,7 @@ impl AmbientAgentEntryBlock {
             (Icon::ClockLoader, theme.ansi_fg_magenta())
         } else {
             (
-                Icon::OzCloud,
+                Icon::HermonCloud,
                 theme.main_text_color(theme.background()).into_solid(),
             )
         };

@@ -36,12 +36,12 @@ define_settings_group!(TestSettings, settings: [
 pub fn init_and_register_preferences(ctx: &mut AppContext) {
     ctx.add_singleton_model(move |_| {
         crate::PublicPreferences::new(Box::<
-            warpui_extras::user_preferences::in_memory::InMemoryPreferences,
+            wishui_extras::user_preferences::in_memory::InMemoryPreferences,
         >::default())
     });
     ctx.add_singleton_model(move |_| {
         crate::PrivatePreferences::new(Box::<
-            warpui_extras::user_preferences::in_memory::InMemoryPreferences,
+            wishui_extras::user_preferences::in_memory::InMemoryPreferences,
         >::default())
     });
 }
@@ -639,7 +639,7 @@ fn test_is_private_returns_true_for_private_setting() {
 
 #[test]
 fn test_public_setting_writes_to_public_prefs_when_flag_enabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -676,7 +676,7 @@ fn test_public_setting_writes_to_public_prefs_when_flag_enabled() {
 
 #[test]
 fn test_private_setting_writes_to_private_prefs_when_flag_enabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -722,7 +722,7 @@ fn test_private_setting_writes_to_private_prefs_when_flag_enabled() {
 
 #[test]
 fn test_new_from_storage_reads_from_correct_backend_when_flag_enabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -759,7 +759,7 @@ fn test_new_from_storage_reads_from_correct_backend_when_flag_enabled() {
 
 #[test]
 fn test_clear_value_clears_from_correct_backend() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -814,7 +814,7 @@ fn test_clear_value_clears_from_correct_backend() {
 
 #[test]
 fn test_public_setting_uses_private_prefs_when_flag_disabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(false);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(false);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -854,7 +854,7 @@ fn test_public_setting_uses_private_prefs_when_flag_disabled() {
 
 #[test]
 fn test_private_setting_uses_private_prefs_when_flag_disabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(false);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(false);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -887,7 +887,7 @@ fn test_private_setting_uses_private_prefs_when_flag_disabled() {
 
 #[test]
 fn test_new_from_storage_reads_from_private_backend_when_flag_disabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(false);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(false);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -983,7 +983,7 @@ fn test_manager_default_values_for_settings_file_excludes_private() {
 
 #[test]
 fn test_manager_read_local_setting_value_routes_when_flag_enabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -1030,7 +1030,7 @@ fn test_manager_read_local_setting_value_routes_when_flag_enabled() {
 
 #[test]
 fn test_manager_read_local_setting_value_falls_back_when_flag_disabled() {
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(false);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(false);
     wishui::App::test((), |mut app| async move {
         app.update(init_and_register_preferences);
         app.add_singleton_model(|_| SettingsManager::default());
@@ -1080,9 +1080,9 @@ fn test_manager_read_local_setting_value_falls_back_when_flag_disabled() {
 /// cloud preferences syncer clobbers them with stale cloud state.
 #[test]
 fn test_manager_read_local_setting_value_respects_hierarchy_with_settings_file() {
-    use warpui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
+    use wishui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
 
-    let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+    let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
     let dir = tempfile::tempdir().unwrap();
     let file_path = dir.path().join("settings.toml");
 
@@ -1097,7 +1097,7 @@ fn test_manager_read_local_setting_value_respects_hierarchy_with_settings_file()
         });
         app.add_singleton_model(|_| {
             crate::PrivatePreferences::new(Box::<
-                warpui_extras::user_preferences::in_memory::InMemoryPreferences,
+                wishui_extras::user_preferences::in_memory::InMemoryPreferences,
             >::default())
         });
         app.add_singleton_model(|_| SettingsManager::default());

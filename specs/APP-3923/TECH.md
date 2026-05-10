@@ -59,7 +59,7 @@ Added alongside `generate_shared_block_title` in `app/src/server/server_api/bloc
 Four module-scope consts (`MAX_DIFF_CHARS_FOR_AI = 16_000`, `MAX_UNTRACKED_FILE_BYTES = 4_000`, `BINARY_CHECK_BYTES = 1_024`, `MAX_PR_TITLE_BYTES = 200`) plus a `truncate_on_char_boundary` helper and three git-diff helpers, all `#[cfg(feature = "local_fs")]` with wasm stubs to match existing conventions in the file. All byte-length truncation uses `truncate_on_char_boundary` to avoid UTF-8 panics on diffs/source files containing non-ASCII text.
 - `get_diff_for_commit_message(repo_path, include_unstaged) -> Result<String>`
   - `git diff HEAD` when `include_unstaged`, else `git diff --cached`.
-  - When `include_unstaged`, iterates `git ls-files --others --exclude-standard -z` (NUL-separated to survive paths with spaces/non-ASCII), skips binaries via `warp_util::file_type::is_buffer_binary(&bytes[..BINARY_CHECK_BYTES])`, and appends synthetic unified-diff hunks for each new file (capped at `MAX_UNTRACKED_FILE_BYTES`) so the LLM sees new-file-only commits.
+  - When `include_unstaged`, iterates `git ls-files --others --exclude-standard -z` (NUL-separated to survive paths with spaces/non-ASCII), skips binaries via `wish_util::file_type::is_buffer_binary(&bytes[..BINARY_CHECK_BYTES])`, and appends synthetic unified-diff hunks for each new file (capped at `MAX_UNTRACKED_FILE_BYTES`) so the LLM sees new-file-only commits.
   - Final output truncated at `MAX_DIFF_CHARS_FOR_AI` with `\n... (diff truncated)` marker.
 - `get_diff_for_pr(repo_path) -> Result<String>`
   - Diffs `{base}..origin/{current}` when `git rev-parse --verify origin/{current}` succeeds, else `{base}..HEAD`.

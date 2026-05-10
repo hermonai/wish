@@ -5,7 +5,7 @@ use crate::{
 };
 use regex::Regex;
 use url::Url;
-use warp_util::path::{is_posix_portable_pathname, ShellFamily};
+use wish_util::path::{is_posix_portable_pathname, ShellFamily};
 use wishui::AppContext;
 
 use crate::root_view::SubshellCommandArg;

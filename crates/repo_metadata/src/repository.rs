@@ -10,7 +10,7 @@ use std::path::Path;
 use futures::future::ready;
 #[cfg(feature = "local_fs")]
 use ignore::gitignore::Gitignore;
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 use wishui::r#async::{BoxFuture, SpawnedFutureHandle};
 #[cfg(feature = "local_fs")]
 use wishui::SingletonEntity;

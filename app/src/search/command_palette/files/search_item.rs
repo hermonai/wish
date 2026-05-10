@@ -2,7 +2,7 @@ use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
 use std::fmt::Debug;
 use std::path::PathBuf;
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 
 use crate::appearance::Appearance;
 use crate::search::command_palette::mixer::CommandPaletteItemAction;

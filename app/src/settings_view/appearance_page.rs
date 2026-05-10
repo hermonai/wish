@@ -74,7 +74,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
 use wish_core::ui::theme::color::internal_colors;
 use wishui::elements::{
     Clipped, Empty, FormattedTextElement, MainAxisAlignment, MainAxisSize, Text, Wrap,
@@ -4706,7 +4706,7 @@ impl SettingsWidget for UseLatestUserPromptAsConversationTitleInTabNamesWidget {
                 })
                 .finish(),
             Some(
-                "Show the latest user prompt instead of the generated conversation title for Oz and third-party agent sessions in vertical tabs."
+                "Show the latest user prompt instead of the generated conversation title for Hermon Agent and third-party agent sessions in vertical tabs."
                     .to_string(),
             ),
         )

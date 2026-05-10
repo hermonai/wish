@@ -10,8 +10,8 @@ use crate::coding_panel_enablement_state::CodingPanelEnablementState;
 use async_channel::Sender;
 use pathfinder_geometry::vector::vec2f;
 use string_offset::{ByteOffset, CharCounter};
-use warp_editor::editor::NavigationKey;
-use warp_ripgrep::search::{Match as RipgrepMatch, Submatch};
+use wish_editor::editor::NavigationKey;
+use wish_ripgrep::search::{Match as RipgrepMatch, Submatch};
 
 use crate::code::icon_from_file_path;
 use crate::debounce::debounce;
@@ -984,7 +984,7 @@ impl GlobalSearchView {
         // Ancestor-dedup search roots so we don't search the same file twice
         // when terminal directories are nested (e.g. `~/code` + `~/code/a`).
         // Shared with `FileTreeView` for consistency.
-        self.search_roots = warp_util::path::group_roots_by_common_ancestor(&roots).roots;
+        self.search_roots = wish_util::path::group_roots_by_common_ancestor(&roots).roots;
         self.root_directories = roots;
     }
 

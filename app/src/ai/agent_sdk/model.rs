@@ -4,7 +4,7 @@ use crate::ai::agent_sdk::output::{self, TableFormat};
 use crate::ai::llms::LLMPreferences;
 use comfy_table::Cell;
 use serde::Serialize;
-use warp_cli::{model::ModelCommand, GlobalOptions};
+use wish_cli::{model::ModelCommand, GlobalOptions};
 use wishui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
 
 /// Handle model-related CLI commands.

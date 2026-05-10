@@ -101,7 +101,7 @@ fn main() -> anyhow::Result<()> {
 - `AppCallbacks::default()` — all fields `None`, no custom callbacks needed
 - `Box::new(())` — uses `impl AssetProvider for ()` (no-op, returns errors for all lookups)
 - The headless `App::run()` creates the mpsc event channel, marks the current thread as main, and enters the blocking event loop. The `Background` executor inside the App IS the tokio runtime — there is exactly one runtime in the process.
-- The headless wishui `App` infrastructure is proven in production (the Oz CLI uses it via `AppBuilder::new_headless` + `add_singleton_model` + `ModelSpawner`). It provides the full entity/model runtime with zero rendering overhead.
+- The headless wishui `App` infrastructure is proven in production (the Wish CLI uses it via `AppBuilder::new_headless` + `add_singleton_model` + `ModelSpawner`). It provides the full entity/model runtime with zero rendering overhead.
 
 **Logging:**
 
@@ -237,7 +237,7 @@ Add to `remote_server/Cargo.toml`:
 ## 6. Risks and Mitigations
 
 - **Client request/response matching**: Responses can arrive out of order once the server handles multiple message types concurrently. Mitigation: track in-flight requests by `request_id` with a `DashMap<RequestId, oneshot::Sender>`
-- **wishui compile footprint**: Pulling in `wishui` brings transitive deps (fonts, rendering stubs). These are dead code in the headless binary — same tradeoff as the Oz CLI. No runtime cost, only compile time.
+- **wishui compile footprint**: Pulling in `wishui` brings transitive deps (fonts, rendering stubs). These are dead code in the headless binary — same tradeoff as the Wish CLI. No runtime cost, only compile time.
 - **Main thread serialization**: All typed request handling runs on the main thread via the event loop. Handlers should be fast (in-memory dispatch and model coordination). Heavy work (filesystem I/O, tree building) must be offloaded to background tasks via `ctx.spawn()` or `ModelSpawner`.
 
 ## 7. Testing and Validation

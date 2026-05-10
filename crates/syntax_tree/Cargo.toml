@@ -10,7 +10,7 @@ license.workspace = true
 rangemap.workspace = true
 arborium.workspace = true
 wishui.workspace = true
-warp_editor.workspace = true
+wish_editor.workspace = true
 languages.workspace = true
 futures.workspace = true
 futures-lite.workspace = true
@@ -18,8 +18,8 @@ parking_lot.workspace = true
 log.workspace = true
 string-offset.workspace = true
 streaming-iterator = "0.1.9"
-warp_util.workspace = true
+wish_util.workspace = true
 
 [dev-dependencies]
-warp_editor = { workspace = true, features = ["test-util"] }
+wish_editor = { workspace = true, features = ["test-util"] }
 wishui = { workspace = true, features = ["test-util"] }

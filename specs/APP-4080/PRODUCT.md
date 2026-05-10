@@ -4,7 +4,7 @@
 
 Add a user setting named `Use latest user prompt as conversation title in tab names` that controls which conversation text Warp shows in vertical tabs for agent conversations.
 
-The setting is disabled by default. In the default disabled state, vertical tabs use conversation titles for both Oz agent conversations and plugin-backed third-party CLI agent sessions. When enabled, vertical tabs use the latest user prompt when one is available, consistently across the same agent conversation types.
+The setting is disabled by default. In the default disabled state, vertical tabs use conversation titles for both Hermon agent conversations and plugin-backed third-party CLI agent sessions. When enabled, vertical tabs use the latest user prompt when one is available, consistently across the same agent conversation types.
 
 The desired outcome is that Warp's default tab-name behavior uses stable, title-like conversation labels, while users who prefer prompt-based labels can explicitly opt into using the latest prompt.
 
@@ -14,7 +14,7 @@ Vertical tabs are a primary navigation surface for users who keep multiple termi
 
 Today, the behavior is inconsistent:
 
-- Oz agent conversations use the conversation title when available.
+- Hermon agent conversations use the conversation title when available.
 - Plugin-backed third-party CLI agent sessions use the latest user prompt ahead of title-like session metadata.
 
 That makes the same vertical-tabs surface feel unpredictable. Users cannot rely on "agent conversation text" meaning the same thing across Oz and third-party agents, and users who prefer prompt-based labels do not have a single opt-in setting that applies to both.
@@ -23,7 +23,7 @@ That makes the same vertical-tabs surface feel unpredictable. Users cannot rely 
 
 - Add one user-facing setting named `Use latest user prompt as conversation title in tab names`.
 - Default the setting to disabled, so tab names use conversation titles unless the user opts into prompt-based labels.
-- Apply the setting consistently to Oz agent conversations and plugin-backed third-party CLI agent sessions.
+- Apply the setting consistently to Hermon agent conversations and plugin-backed third-party CLI agent sessions.
 - Provide a prompt-based option for users who prefer the latest user prompt as the vertical-tab label.
 - Keep non-agent terminal panes and non-plugin-backed CLI agent detections on their current terminal fallback behavior.
 - Make vertical-tabs row text, vertical-tabs search, and vertical-tabs detail-sidecar text agree on the same selected conversation text.
@@ -60,7 +60,7 @@ The setting is disabled by default for all users.
 
 The setting applies only to agent conversations shown as terminal rows in the vertical tabs panel:
 
-- Oz agent conversations, including local agent conversations and cloud agent conversations shown in Warp.
+- Hermon agent conversations, including local agent conversations and cloud agent conversations shown in Warp.
 - Plugin-backed third-party CLI agent sessions, such as supported Claude Code, Codex, or similar sessions where Warp receives structured session metadata from the agent plugin.
 
 The setting does not apply to:
@@ -73,7 +73,7 @@ The setting does not apply to:
 
 When the setting is disabled, vertical tabs should show the best available conversation title for eligible agent rows. This is the default behavior.
 
-For Oz agent conversations:
+For Hermon agent conversations:
 
 - Show the generated conversation title when it exists and is non-empty.
 - If the generated title is not yet available, show the best available title fallback for the conversation, such as the initial user prompt or an explicit default title for empty conversations.
@@ -92,7 +92,7 @@ When a title becomes available or changes while the row is visible, the vertical
 
 When the setting is enabled, vertical tabs should show the latest available user prompt for eligible agent rows.
 
-For Oz agent conversations:
+For Hermon agent conversations:
 
 - Show the latest user-authored prompt in the active conversation when one exists.
 - If there is no user prompt yet, fall back to the same placeholder or terminal fallback that the default title behavior would use for an empty conversation.
@@ -164,13 +164,13 @@ If Warp normally syncs comparable AI display preferences across devices, this se
 
 1. A user can find a setting in the AI settings area named `Use latest user prompt as conversation title in tab names`.
 2. The setting is disabled by default.
-3. With the setting disabled, an Oz agent conversation row in vertical tabs shows the generated conversation title when one exists.
+3. With the setting disabled, an Hermon agent conversation row in vertical tabs shows the generated conversation title when one exists.
 4. With the setting disabled, a plugin-backed third-party CLI agent session row in vertical tabs shows title-like session metadata when one exists, instead of preferring the latest user prompt.
-5. With the setting enabled, an Oz agent conversation row in vertical tabs shows the latest user-authored prompt when one exists.
+5. With the setting enabled, an Hermon agent conversation row in vertical tabs shows the latest user-authored prompt when one exists.
 6. With the setting enabled, a plugin-backed third-party CLI agent session row in vertical tabs shows the latest user prompt when one exists.
 7. Oz and plugin-backed third-party CLI agent sessions follow the same setting semantics: disabled prefers title, enabled prefers latest user prompt.
 8. Empty or whitespace-only titles and prompts are ignored, and rows fall back to non-empty text rather than rendering blank labels.
-9. Empty Oz conversations continue to show existing placeholder copy such as `New agent conversation` or `New cloud agent`.
+9. Empty Hermon Agent conversations continue to show existing placeholder copy such as `New agent conversation` or `New cloud agent`.
 10. Third-party CLI agent sessions without plugin-backed metadata keep the existing terminal fallback behavior.
 11. Plain terminal rows keep the existing terminal title / last command / new session fallback behavior.
 12. Vertical-tabs primary row text, compact command/conversation subtitles, and detail-sidecar command/conversation text all use the same setting-driven conversation text for eligible agent rows.
@@ -183,9 +183,9 @@ If Warp normally syncs comparable AI display preferences across devices, this se
 ## Validation
 
 - **Default setting state**: Install or reset settings, open the AI settings area, and verify `Use latest user prompt as conversation title in tab names` is disabled by default.
-- **Oz title default**: Create an Oz conversation that receives a generated title. With vertical tabs enabled and the setting disabled, verify the row shows the generated title rather than the latest prompt text.
-- **Oz prompt enabled**: Enable the setting, send a follow-up prompt in the same Oz conversation, and verify the vertical-tabs conversation text updates to the latest user prompt.
-- **Oz empty conversation**: Start a new empty local Oz conversation and a new empty cloud agent conversation. Verify placeholder copy remains non-empty and appropriate.
+- **Hermon Agent title default**: Create an Hermon Agent conversation that receives a generated title. With vertical tabs enabled and the setting disabled, verify the row shows the generated title rather than the latest prompt text.
+- **Hermon Agent prompt enabled**: Enable the setting, send a follow-up prompt in the same Hermon Agent conversation, and verify the vertical-tabs conversation text updates to the latest user prompt.
+- **Oz empty conversation**: Start a new empty local Hermon Agent conversation and a new empty cloud agent conversation. Verify placeholder copy remains non-empty and appropriate.
 - **Third-party title default**: Start a plugin-backed third-party CLI agent session with title-like session metadata and a user prompt. With the setting disabled, verify the vertical-tab row shows the title-like metadata rather than the prompt.
 - **Third-party prompt enabled**: Enable the setting in the same plugin-backed session and verify the row shows the latest user prompt.
 - **Missing metadata fallback**: Test a plugin-backed third-party session before title-like metadata arrives. Verify the row falls back to prompt text when available and never renders blank text.

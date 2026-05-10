@@ -17,13 +17,13 @@ use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use typed_path::{TypedPath, TypedPathBuf, WindowsPath};
-use warp_util::path::{
+use wish_util::path::{
     convert_msys2_to_windows_native_path, convert_wsl_to_windows_host_path, msys2_exe_to_root,
     ShellFamily,
 };
 
 use version_compare::Version;
-use warp_completer::completer::{
+use wish_completer::completer::{
     CommandExitStatus, CommandOutput, PathSeparators, TopLevelCommandCaseSensitivity,
 };
 use wishui::{platform::OperatingSystem, Entity, ModelContext, SingletonEntity};
@@ -956,7 +956,7 @@ impl Session {
 
     pub fn home_dir(&self) -> Option<&str> {
         if cfg!(test) {
-            return warp_util::path::TEST_SESSION_HOME_DIR.as_deref();
+            return wish_util::path::TEST_SESSION_HOME_DIR.as_deref();
         }
 
         self.info.home_dir.as_deref()
@@ -999,9 +999,9 @@ impl Session {
     /// representation, or `None` when no conversion is appropriate.
     pub fn windows_path_converter(&self) -> Option<fn(&str) -> String> {
         if self.is_wsl() {
-            Some(warp_util::path::convert_windows_path_to_wsl)
+            Some(wish_util::path::convert_windows_path_to_wsl)
         } else if self.is_msys2() {
-            Some(warp_util::path::convert_windows_path_to_msys2)
+            Some(wish_util::path::convert_windows_path_to_msys2)
         } else {
             None
         }

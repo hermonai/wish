@@ -7,11 +7,11 @@ use crate::ai::blocklist::AIQueryHistory;
 use crate::input_suggestions::{filter_tab_suggestions, HistoryOrder};
 use crate::terminal::model::session::SessionId;
 use crate::terminal::HistoryEntry;
-use warp_completer::completer::{
+use wish_completer::completer::{
     EngineFileType, Match, MatchStrategy, MatchedSuggestion, Priority, Suggestion,
     SuggestionResults, SuggestionType, TopLevelCommandCaseSensitivity,
 };
-use warp_completer::meta::Span;
+use wish_completer::meta::Span;
 
 use super::{HistoryInputSuggestion, InputSuggestions, TabCompletionsPreselectOption};
 
@@ -36,7 +36,7 @@ fn test_basic_tab_prefix() {
         prefix_matched_suggestion("stash"),
         prefix_matched_suggestion("status"),
         prefix_matched_suggestion("stats/")
-            .with_file_type(warp_completer::completer::EngineFileType::Directory),
+            .with_file_type(wish_completer::completer::EngineFileType::Directory),
     ];
 
     let suggestion_results = SuggestionResults {

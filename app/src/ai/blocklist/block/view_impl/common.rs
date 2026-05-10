@@ -114,10 +114,10 @@ use crate::{
     search::slash_command_menu::static_commands::commands,
     settings::{FontSettings, InputSettings},
 };
-use warp_editor::content::{
+use wish_editor::content::{
     edit::resolve_asset_source_relative_to_directory, mermaid_diagram::mermaid_asset_source,
 };
-use warp_util::path::to_relative_path;
+use wish_util::path::to_relative_path;
 use wish_core::channel::ChannelState;
 use wishui::elements::shimmering_text::ShimmeringTextStateHandle;
 use wishui::elements::{Highlight, HighlightedRange};
@@ -2930,7 +2930,7 @@ pub(crate) fn resolve_absolute_file_path(
     shell_launch_data: Option<&ShellLaunchData>,
     home_dir: PathBuf,
 ) -> Option<PathBuf> {
-    use warp_util::path::CleanPathResult;
+    use wish_util::path::CleanPathResult;
 
     use crate::util::file::{absolute_path_if_valid, ShellPathType};
 

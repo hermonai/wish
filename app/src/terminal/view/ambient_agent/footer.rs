@@ -84,7 +84,7 @@ pub fn render_loading_footer(appearance: &Appearance) -> Box<dyn Element> {
 
     build_centered_footer(
         "Cloud agent starting up…".to_string(),
-        "You'll be able to interact with Oz soon".to_string(),
+        "You'll be able to interact with Hermon Agent soon".to_string(),
         header_color,
         body_color,
         background,

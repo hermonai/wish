@@ -1,4 +1,4 @@
-use warp_server_client::cloud_object::ServerPermissions;
+use wish_server_client::cloud_object::ServerPermissions;
 use wish_core::ui::appearance::Appearance;
 use wishui::{
     platform::WindowStyle, AddSingletonModel, App, SingletonEntity, TypedActionView, ViewHandle,

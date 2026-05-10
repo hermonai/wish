@@ -5,7 +5,7 @@
 //! icon, and brand color from here so the two surfaces cannot drift.
 
 use pathfinder_color::ColorU;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 
 use crate::ai::agent::conversation::AIAgentHarness;
 use crate::ai::blocklist::CLAUDE_ORANGE;

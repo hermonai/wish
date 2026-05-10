@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use string_offset::CharOffset;
-use warp_editor::render::model::BlockItem;
+use wish_editor::render::model::BlockItem;
 use wishui::{
     async_assert, async_assert_eq,
     integration::{AssertionCallback, AssertionOutcome, AssertionWithDataCallback},

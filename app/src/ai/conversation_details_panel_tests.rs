@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use chrono::{Local, Utc};
 use persistence::model::AgentConversationData;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use warp_multi_agent_api as api;
 use wish_core::features::FeatureFlag;
 use wishui::{App, EntityId, SingletonEntity};

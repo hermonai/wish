@@ -11,7 +11,7 @@ use wish_core::context_flag::ContextFlag;
 #[cfg(target_family = "wasm")]
 use crate::uri::web_intent_parser::open_url_on_desktop;
 
-use warp_editor::{
+use wish_editor::{
     editor::NavigationKey,
     model::{CoreEditorModel, RichTextEditorModel},
 };

@@ -11,8 +11,8 @@ use crate::workflows::WorkflowType;
 use serde::Serialize;
 use std::collections::HashMap;
 use string_offset::CharCounter;
-use warp_completer::signatures::CommandRegistry;
-use warp_completer::{util::parse_current_commands_and_tokens, ParsedTokensSnapshot};
+use wish_completer::signatures::CommandRegistry;
+use wish_completer::{util::parse_current_commands_and_tokens, ParsedTokensSnapshot};
 use wish_core::report_error;
 use wish_core::ui::theme::{AnsiColorIdentifier, AnsiColors};
 use wishui::clipboard::ClipboardContent;
@@ -154,7 +154,7 @@ impl CloudSetupGuideView {
         header_container.add_child(title);
 
         let subtitle = Text::new(
-            "Start Hermon cloud agents directly in Wish from an integration (Linear, Slack), with an event (GitHub, built-in schedule), or programmatically with the Oz SDK or CLI.",
+            "Start Hermon cloud agents directly in Wish from an integration (Linear, Slack), with an event (GitHub, built-in schedule), or programmatically with the Hermon SDK or CLI.",
             appearance.ui_font_family(),
             subtitle_font_size,
         )

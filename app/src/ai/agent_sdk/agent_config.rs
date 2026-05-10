@@ -4,9 +4,9 @@ use crate::ai::agent_sdk::oauth_flow::poll_oauth_until_terminal;
 use crate::ai::cloud_environments::GithubRepo;
 use crate::server::server_api::ai::AgentListItem;
 use crate::server::server_api::ServerApiProvider;
-use warp_cli::agent::ListAgentConfigsArgs;
-use warp_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
-use warp_graphql::queries::user_repo_auth_status::UserRepoAuthStatusEnum;
+use wish_cli::agent::ListAgentConfigsArgs;
+use wish_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
+use wish_graphql::queries::user_repo_auth_status::UserRepoAuthStatusEnum;
 use wishui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
 
 const MAX_LINE_WIDTH: usize = 90;

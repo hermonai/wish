@@ -43,7 +43,7 @@ use super::{
 };
 use crate::ai::ambient_agents::task::HarnessConfig;
 use crate::workspace::WorkspaceAction;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 
 /// Creates a test task with specified creator UID and updated_at time
 fn create_test_task(

@@ -202,7 +202,7 @@ let (icon, title) = if let Some(view_handle) = terminal_view_handle.as_ref() {
         let icon_element = if let Some(status) = conversation_status {
             render_status_element(&status, 12., appearance)
         } else if is_ambient {
-            WarpIcon::OzCloud icon element
+            WarpIcon::HermonCloud icon element
         } else {
             WarpIcon::Oz icon element
         };

@@ -5,7 +5,7 @@ use crate::{
 use chrono::{DateTime, Local};
 use std::fmt::{Display, Formatter};
 use std::path::PathBuf;
-use warp_editor::render::model::LineCount;
+use wish_editor::render::model::LineCount;
 use warp_multi_agent_api::{self as api};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]

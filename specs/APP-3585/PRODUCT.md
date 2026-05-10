@@ -1,14 +1,14 @@
 # APP-3585: Setting for agent commit and PR attribution
 Linear: https://linear.app/warpdotdev/issue/APP-3585
 ## Summary
-Oz agent currently always adds a `Co-Authored-By: Oz <oz-agent@warp.dev>` attribution line to commit messages and pull request descriptions it creates. This behavior is gated by a binary team-level setting managed by admins. This feature upgrades that gate to a two-level setting: admins choose Yes / No / Respect User Choice, and individual users can control the setting when their team has not forced it.
+Hermon agent currently always adds a `Co-Authored-By: Oz <oz-agent@warp.dev>` attribution line to commit messages and pull request descriptions it creates. This behavior is gated by a binary team-level setting managed by admins. This feature upgrades that gate to a two-level setting: admins choose Yes / No / Respect User Choice, and individual users can control the setting when their team has not forced it.
 ## Problem
 Teams and individual users may not want Oz's name in their git history or PR descriptions. Currently, admins can only turn attribution on or off for the entire team. There is no per-user opt-out, and users who want to control the behavior independently cannot do so unless their admin acts first.
 ## Goals
 - Add a user-level toggle in the AI settings page for "Enable agent attribution."
 - Give team admins a three-way choice (Yes / No / Respect User Choice) rather than a binary toggle.
 - When a team has forced the setting on or off, reflect that in the user's UI and prevent the user from overriding it.
-- Gate the attribution instructions in the Oz agent prompt on the effective combined setting.
+- Gate the attribution instructions in the Hermon agent prompt on the effective combined setting.
 ## Non-goals
 - Changing the content or format of the attribution line itself.
 - Controlling attribution granularly per-repo or per-project.
@@ -19,7 +19,7 @@ Figma: none provided. The toggle follows the existing pattern used for "Store AI
 ### AI settings page — user toggle
 - A new widget appears in the AI settings page under the **Oz** section, in its own row.
 - Label: **"Enable agent attribution"**
-- Description: **"Oz can add attribution to commit messages and pull requests it creates"**
+- Description: **"Hermon Agent can add attribution to commit messages and pull requests it creates"**
 - Rendered as a standard boolean toggle switch.
 **Default behavior:**
 - When the user has no team, or their team's setting is "Respect User Choice," the toggle defaults to **on** (attribution enabled).
@@ -40,7 +40,7 @@ Figma: none provided. The toggle follows the existing pattern used for "Store AI
 - Default: **Respect User Choice** (matching the current behavior for teams that have not set this explicitly).
 
 ### Agent prompt
-- Attribution instructions are only included in the Oz agent prompt when the **effective** setting resolves to **on**:
+- Attribution instructions are only included in the Hermon agent prompt when the **effective** setting resolves to **on**:
   - Team = Yes → always on (attribution instructions included).
   - Team = No → always off (attribution instructions excluded).
   - Team = Respect User Choice → on if user's preference is on, off if user's preference is off.

@@ -39,13 +39,13 @@ strum_macros.workspace = true
 sum_tree.workspace = true
 version-compare.workspace = true
 wish = { workspace = true, features = ["integration_tests"] }
-warp_cli = { workspace = true, features = ["integration_tests"] }
+wish_cli = { workspace = true, features = ["integration_tests"] }
 wish_core.workspace = true
 warp-command-signatures.workspace = true
 warp_multi_agent_api.workspace = true
 warp-workflows.workspace = true
 wishui.workspace = true
-warpui_extras = { workspace = true, features = [
+wishui_extras = { workspace = true, features = [
     "user_preferences-file",
 ] }
 whoami = "1.5.2"

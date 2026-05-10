@@ -110,11 +110,21 @@ impl ChannelState {
         Ok(())
     }
 
+    pub fn override_hermon_root_url(url: impl Into<Cow<'static, str>>) -> Result<(), ParseError> {
+        let url = url.into();
+        Url::parse(&url)?;
+        CHANNEL_STATE.lock().config.hermon_config.hermon_root_url = url;
+        Ok(())
+    }
+
     pub fn uses_staging_server() -> bool {
         let Ok(url) = Url::parse(Self::server_root_url().as_ref()) else {
             return false;
         };
-        url.host_str() == Some("staging.warp.dev")
+        matches!(
+            url.host_str(),
+            Some("staging.warp.dev") | Some("staging.hermon.ai")
+        )
     }
 
     /// Returns the canonical identifier for the application.

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 
 use futures::future::BoxFuture;
 use futures::FutureExt;
@@ -437,7 +437,7 @@ async fn run_grep(
 #[cfg(not(target_family = "wasm"))]
 async fn run_ripgrep(queries: &[String], absolute_path: String) -> Result<GrepResult, GrepError> {
     let path = PathBuf::from(absolute_path);
-    let result = warp_ripgrep::search::search(queries, &[path], false, false).await;
+    let result = wish_ripgrep::search::search(queries, &[path], false, false).await;
 
     match result {
         Ok(matches) => {

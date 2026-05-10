@@ -3,7 +3,7 @@
 use std::cmp;
 
 use fuzzy_match::{match_indices_case_insensitive, FuzzyMatchResult};
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wish_core::ui::theme::Fill;
 use wishui::{
     color::ColorU,

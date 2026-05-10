@@ -23,7 +23,7 @@ use pathfinder_geometry::{
     vector::{vec2f, Vector2F},
 };
 use vim::vim::{MotionType, VimMode};
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wish_core::features::FeatureFlag;
 use wish_core::ui::appearance::DEFAULT_UI_FONT_SIZE;
 use wishui::event::KeyState;

@@ -2,7 +2,7 @@ use std::{collections::HashMap, future::Future, sync::Arc, time::Duration};
 
 use vec1::vec1;
 
-use warp_graphql::managed_secrets::ManagedSecret;
+use wish_graphql::managed_secrets::ManagedSecret;
 use wish_core::features::FeatureFlag;
 use wishui::{Entity, SingletonEntity};
 
@@ -15,7 +15,7 @@ use crate::{
     envelope::UploadKey,
     gcp::{self, GcpWorkloadIdentityFederationError, GcpWorkloadIdentityFederationToken},
 };
-use warp_graphql::queries::task_secrets::ManagedSecretValue as GqlManagedSecretValue;
+use wish_graphql::queries::task_secrets::ManagedSecretValue as GqlManagedSecretValue;
 
 /// Singleton model for working with Wish-managed secrets.
 pub struct ManagedSecretManager {
@@ -165,7 +165,7 @@ impl ManagedSecretManager {
         async move {
             // We only need the workload token for the duration of the request.
             let workload_token =
-                warp_isolation_platform::issue_workload_token(Some(Duration::from_mins(5))).await?;
+                wish_isolation_platform::issue_workload_token(Some(Duration::from_mins(5))).await?;
             let gql_secrets = client
                 .get_task_secrets(task_id, workload_token.token)
                 .await?;

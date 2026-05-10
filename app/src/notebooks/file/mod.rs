@@ -5,7 +5,7 @@ use std::{
 };
 
 use pathfinder_geometry::vector::vec2f;
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
 #[cfg(feature = "local_fs")]
 use wishui::clipboard::ClipboardContent;
 use wishui::{
@@ -64,11 +64,11 @@ use super::{
 use crate::code::editor_management::CodeSource;
 #[cfg(feature = "local_fs")]
 use crate::util::openable_file_type::FileTarget;
-use warp_editor::model::CoreEditorModel;
+use wish_editor::model::CoreEditorModel;
 #[cfg(feature = "local_fs")]
-use warp_files::{FileModel, FileModelEvent};
+use wish_files::{FileModel, FileModelEvent};
 #[cfg(feature = "local_fs")]
-use warp_util::file::FileId;
+use wish_util::file::FileId;
 use wish_core::ui::icons::ICON_DIMENSIONS;
 
 pub use crate::util::openable_file_type::is_markdown_file;
@@ -120,7 +120,7 @@ pub enum FileNotebookEvent {
     OpenFileWithTarget {
         path: PathBuf,
         target: FileTarget,
-        line_col: Option<warp_util::path::LineAndColumnArg>,
+        line_col: Option<wish_util::path::LineAndColumnArg>,
     },
 }
 
@@ -153,7 +153,7 @@ impl From<ContextMenuAction> for FileNotebookAction {
 }
 
 /// Information about the notebook's backing file.
-// TODO: This should probably build on the `warp_files` abstractions.
+// TODO: This should probably build on the `wish_files` abstractions.
 #[derive(Debug, Clone)]
 enum SourceFile {
     Local {

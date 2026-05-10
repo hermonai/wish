@@ -27,7 +27,7 @@ use crate::{
 };
 use futures::channel::oneshot;
 use futures::FutureExt;
-use warp_graphql::queries::get_scheduled_agent_history::ScheduledAgentHistory;
+use wish_graphql::queries::get_scheduled_agent_history::ScheduledAgentHistory;
 use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]

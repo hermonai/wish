@@ -11,14 +11,14 @@ use std::path::Path;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::{cmp, mem};
-use warp_editor::content::anchor::Anchor;
-use warp_editor::content::edit::EditDelta;
-use warp_editor::content::find::{SearchConfig, SearchResults};
-use warp_editor::content::selection_model::BufferSelectionModel;
-use warp_editor::content::version::BufferVersion;
-use warp_editor::multiline::{AnyMultilineString, MultilineString, LF};
-use warp_editor::render::model::{AutoScrollMode, LineCount, StyleUpdateAction};
-use warp_editor::selection::TextDirection;
+use wish_editor::content::anchor::Anchor;
+use wish_editor::content::edit::EditDelta;
+use wish_editor::content::find::{SearchConfig, SearchResults};
+use wish_editor::content::selection_model::BufferSelectionModel;
+use wish_editor::content::version::BufferVersion;
+use wish_editor::multiline::{AnyMultilineString, MultilineString, LF};
+use wish_editor::render::model::{AutoScrollMode, LineCount, StyleUpdateAction};
+use wish_editor::selection::TextDirection;
 use wish_core::platform::SessionPlatform;
 use wish_core::send_telemetry_from_ctx;
 use wish_core::ui::theme::Fill;
@@ -47,8 +47,8 @@ use vim::{
     vim_a_quote, vim_a_word, vim_find_char_on_line, vim_find_matching_bracket, vim_inner_block,
     vim_inner_paragraph, vim_inner_quote, vim_inner_word, vim_word_iterator_from_offset,
 };
-use warp_editor::content::buffer::{ShouldAutoscroll, VimInsertPoint};
-use warp_editor::{
+use wish_editor::content::buffer::{ShouldAutoscroll, VimInsertPoint};
+use wish_editor::{
     content::{
         buffer::{
             AutoScrollBehavior, Buffer, BufferEditAction, BufferEvent, BufferSelectAction,
@@ -558,7 +558,7 @@ impl CodeEditorModel {
     // Set the following line ranges to be hidden in the editor.
     pub fn set_hidden_lines(
         &mut self,
-        ranges: RangeSet<warp_editor::content::text::LineCount>,
+        ranges: RangeSet<wish_editor::content::text::LineCount>,
         ctx: &mut ModelContext<Self>,
     ) {
         self.hidden_lines.update(ctx, |model, ctx| {
@@ -573,7 +573,7 @@ impl CodeEditorModel {
     // Set the following hidden line ranges to be visible. This is no-op if the lines are already visible.
     pub fn set_visible_line_range(
         &mut self,
-        range: Range<warp_editor::content::text::LineCount>,
+        range: Range<wish_editor::content::text::LineCount>,
         ctx: &mut ModelContext<Self>,
     ) {
         let version = self.content().as_ref(ctx).buffer_version();
@@ -1293,7 +1293,7 @@ impl CodeEditorModel {
             let line_count = self.line_count(ctx);
 
             // Calculate the visible line ranges (with context)
-            let mut visible_ranges: RangeSet<warp_editor::content::text::LineCount> =
+            let mut visible_ranges: RangeSet<wish_editor::content::text::LineCount> =
                 RangeSet::new();
 
             // Add ranges for diffs
@@ -1311,14 +1311,14 @@ impl CodeEditorModel {
             }
 
             // Calculate hidden ranges as the complement of visible ranges
-            let all_lines: Range<warp_editor::content::text::LineCount> =
-                warp_editor::content::text::LineCount::from(0)
-                    ..warp_editor::content::text::LineCount::from(line_count);
+            let all_lines: Range<wish_editor::content::text::LineCount> =
+                wish_editor::content::text::LineCount::from(0)
+                    ..wish_editor::content::text::LineCount::from(line_count);
 
             // Find gaps in the visible ranges
             let hidden_ranges = visible_ranges
                 .gaps(&all_lines)
-                .collect::<RangeSet<warp_editor::content::text::LineCount>>();
+                .collect::<RangeSet<wish_editor::content::text::LineCount>>();
 
             self.set_hidden_lines(hidden_ranges, ctx);
         }
@@ -2085,10 +2085,10 @@ impl CodeEditorModel {
                 self.update_content(
                     |mut content, ctx| {
                         content.apply_edit(
-                        warp_editor::content::buffer::BufferEditAction::InsertForEachSelection {
+                        wish_editor::content::buffer::BufferEditAction::InsertForEachSelection {
                             texts: &texts,
                         },
-                        warp_editor::content::buffer::EditOrigin::UserTyped,
+                        wish_editor::content::buffer::EditOrigin::UserTyped,
                         selection_model,
                         ctx,
                     );
@@ -2119,10 +2119,10 @@ impl CodeEditorModel {
             self.update_content(
                 |mut content, ctx| {
                     content.apply_edit(
-                        warp_editor::content::buffer::BufferEditAction::InsertAtCharOffsetRanges {
+                        wish_editor::content::buffer::BufferEditAction::InsertAtCharOffsetRanges {
                             edits: &edits,
                         },
-                        warp_editor::content::buffer::EditOrigin::UserTyped,
+                        wish_editor::content::buffer::EditOrigin::UserTyped,
                         selection_model,
                         ctx,
                     );
@@ -3724,7 +3724,7 @@ impl CoreEditorModel for CodeEditorModel {
     fn validate(&self, _ctx: &impl wishui::ModelAsRef) {}
 
     // Since this is a plain text editor, there is no text styles.
-    fn active_text_style(&self) -> warp_editor::content::text::TextStyles {
+    fn active_text_style(&self) -> wish_editor::content::text::TextStyles {
         Default::default()
     }
 

@@ -5,7 +5,7 @@ use std::{cmp::Ordering, sync::Arc};
 use itertools::Itertools;
 use pathfinder_geometry::vector::vec2f;
 use string_offset::CharOffset;
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wish_core::ui::theme::Fill;
 use wishui::elements::Clipped;
 use wishui::FocusContext;

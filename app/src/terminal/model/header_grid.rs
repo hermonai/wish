@@ -25,7 +25,7 @@ use super::{
     ObfuscateSecrets, RespectObfuscatedSecrets,
 };
 use crate::terminal::{event_listener::ChannelEventListener, SizeInfo};
-use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 
 macro_rules! delegate {
     ($self:ident.$method:ident( $( $arg:expr ),* )) => {

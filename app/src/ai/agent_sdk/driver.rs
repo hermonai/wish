@@ -81,11 +81,11 @@ use futures::{
 };
 use oneshot::{Canceled, Receiver, Sender};
 use uuid::Uuid;
-use warp_cli::agent::{Harness, OutputFormat};
-use warp_cli::mcp::MCPSpec;
-use warp_cli::share::ShareRequest;
-use warp_graphql::ai::AgentTaskState;
-use warp_managed_secrets::ManagedSecretValue;
+use wish_cli::agent::{Harness, OutputFormat};
+use wish_cli::mcp::MCPSpec;
+use wish_cli::share::ShareRequest;
+use wish_graphql::ai::AgentTaskState;
+use wish_managed_secrets::ManagedSecretValue;
 use wish_core::{features::FeatureFlag, report_error, report_if_error, safe_debug, safe_info};
 use wishui::{
     r#async::{FutureExt, TimeoutError},
@@ -270,7 +270,7 @@ pub struct AgentDriver {
     /// Harness adapter for the running agent. This is only set if:
     /// - The harness has started successfully.
     /// - We're using a third-party harness.
-    /// In the future, we _may_ use the harness abstraction for the Oz agent as well.
+    /// In the future, we _may_ use the harness abstraction for the Hermon agent as well.
     harness: Option<Arc<dyn HarnessRunner>>,
 
     // Optional idle timeout after completion. If set, the process will stay alive for follow-ups
@@ -556,7 +556,7 @@ impl AgentDriver {
 
         // Signal to third-party harnesses (e.g. Claude Code) that we're in a sandbox
         // so they allow root execution with permissive flags.
-        if warp_isolation_platform::detect().is_some() {
+        if wish_isolation_platform::detect().is_some() {
             env_vars.insert(OsString::from("IS_SANDBOX"), OsString::from("1"));
         }
 

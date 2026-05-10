@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 use wish_core::channel::ChannelState;
 use wish_core::safe_error;
 use wish_core::SessionId;
@@ -13,9 +13,9 @@ use wishui::platform::TerminationMode;
 use wishui::r#async::{Spawnable, SpawnableOutput, SpawnedFutureHandle};
 use wishui::{Entity, ModelContext, SingletonEntity};
 
-use warp_files::{FileModel, FileModelEvent};
-use warp_util::content_version::ContentVersion;
-use warp_util::file::FileId;
+use wish_files::{FileModel, FileModelEvent};
+use wish_util::content_version::ContentVersion;
+use wish_util::file::FileId;
 
 use super::proto::{
     client_message, delete_file_response, run_command_response, server_message,

@@ -13,7 +13,7 @@ use super::block::Block;
 use super::blocks::BlockList;
 use super::selection::ScrollDelta;
 use super::session::SessionInfo;
-use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 
 #[cfg(test)]
 #[path = "early_output_tests.rs"]

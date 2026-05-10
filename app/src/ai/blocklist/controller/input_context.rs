@@ -31,7 +31,7 @@ use crate::{
         TerminalView,
     },
 };
-use warp_graphql::generic_string_object::GenericStringObjectFormat as GraphQLFormat;
+use wish_graphql::generic_string_object::GenericStringObjectFormat as GraphQLFormat;
 
 lazy_static! {
     // Regex to match <block:[block_id]> patterns

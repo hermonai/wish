@@ -35,7 +35,7 @@ use wish_core::send_telemetry_from_ctx;
 use wish_core::ui::Icon;
 
 use super::view_model::{ConversationEntry, ConversationListViewModel};
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::elements::{
     Border, ChildAnchor, ChildView, Clipped, ConstrainedBox, Container, CornerRadius,
     CrossAxisAlignment, Element, Fill, Flex, FormattedTextElement, Hoverable, MainAxisAlignment,

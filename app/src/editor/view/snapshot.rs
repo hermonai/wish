@@ -26,7 +26,7 @@ use std::{
     ops::Range,
     sync::Arc,
 };
-use warp_completer::completer::Description;
+use wish_completer::completer::Description;
 use wishui::text::point::Point;
 
 use string_offset::ByteOffset;

@@ -8,10 +8,11 @@ use ui_components::{button, Component as _, Options as _};
 use wish_core::send_telemetry_from_ctx;
 use wish_core::ui::{appearance::Appearance, theme::color::internal_colors};
 use wishui::{
+    assets::asset_cache::AssetSource,
     elements::{
         shimmering_text::{ShimmerConfig, ShimmeringTextElement, ShimmeringTextStateHandle},
-        Align, ChildAnchor, ConstrainedBox, Container, CrossAxisAlignment, Flex,
-        FormattedTextElement, Icon, MainAxisAlignment, MainAxisSize, MouseStateHandle,
+        Align, CacheOption, ChildAnchor, ConstrainedBox, Container, CrossAxisAlignment, Flex,
+        FormattedTextElement, Image, MainAxisAlignment, MainAxisSize, MouseStateHandle,
         OffsetPositioning, ParentAnchor, ParentElement, ParentOffsetBounds, Stack,
     },
     keymap::Keystroke,
@@ -138,12 +139,18 @@ impl IntroSlide {
     fn render_centered_content(&self, appearance: &Appearance) -> Box<dyn Element> {
         let theme = appearance.theme();
 
-        let logo_fill = internal_colors::fg_overlay_4(theme);
-        let logo =
-            ConstrainedBox::new(Icon::new("bundled/svg/hermon-logo.svg", logo_fill).finish())
-                .with_width(64.)
-                .with_height(64.)
-                .finish();
+        let logo = ConstrainedBox::new(
+            Image::new(
+                AssetSource::Bundled {
+                    path: "bundled/svg/hermon-logo-round.svg",
+                },
+                CacheOption::BySize,
+            )
+            .finish(),
+        )
+        .with_width(64.)
+        .with_height(64.)
+        .finish();
 
         let base_color: ColorU = internal_colors::fg_overlay_4(theme).into();
         let shimmer_color: ColorU = theme.foreground().into();

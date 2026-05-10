@@ -187,7 +187,7 @@ impl RequestParams {
                 );
             }
 
-            // Include any ephemeral MCP servers started via the Oz CLI.
+            // Include any ephemeral MCP servers started via the Wish CLI.
             active_servers.extend(
                 templatable_manager
                     .get_active_cli_spawned_servers()

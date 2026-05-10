@@ -88,7 +88,7 @@ pub(super) fn get_shell_environment_variables(options: &PtyOptions) -> Vec<u16> 
         map_key(TERM_PROGRAM_NAME.into()),
         EnvEntry {
             preferred_key: TERM_PROGRAM_NAME.into(),
-            value: "WarpTerminal".into(),
+            value: "WishTerminal".into(),
         },
     );
 
@@ -102,9 +102,9 @@ pub(super) fn get_shell_environment_variables(options: &PtyOptions) -> Vec<u16> 
 
     let client_version = ChannelState::app_version().unwrap_or("local");
     env.insert(
-        map_key("WARP_CLIENT_VERSION".into()),
+        map_key("WISH_CLIENT_VERSION".into()),
         EnvEntry {
-            preferred_key: "WARP_CLIENT_VERSION".into(),
+            preferred_key: "WISH_CLIENT_VERSION".into(),
             value: client_version.into(),
         },
     );

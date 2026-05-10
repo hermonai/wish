@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
-use warp_editor::model::CoreEditorModel;
-use warp_editor::render::model::{
+use wish_editor::model::CoreEditorModel;
+use wish_editor::render::model::{
     BlockItem, HitTestOptions, LineCount, Location, RenderLineLocation,
 };
 use wishui::{units::Pixels, AppContext, ViewContext};

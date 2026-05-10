@@ -16,7 +16,7 @@ use crate::themes::theme::WarpTheme;
 use crate::view_components::DismissibleToast;
 use crate::ToastStack;
 use lazy_static::lazy_static;
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wish_core::send_telemetry_from_app_ctx;
 
 use crate::search::action::search_item::MatchedBinding;

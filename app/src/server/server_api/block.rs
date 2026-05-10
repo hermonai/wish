@@ -12,7 +12,7 @@ use cynic::{MutationBuilder, QueryBuilder};
 #[cfg(test)]
 use mockall::automock;
 use std::convert::TryFrom;
-use warp_graphql::{
+use wish_graphql::{
     mutations::{
         share_block::{BlockInput, ShareBlock, ShareBlockResult, ShareBlockVariables},
         unshare_block::{
@@ -127,7 +127,7 @@ impl BlockClient for ServerApi {
         let response = self.send_graphql_request(operation, None).await?;
 
         match response.user {
-            warp_graphql::queries::get_blocks_for_user::UserResult::UserOutput(user_output) => {
+            wish_graphql::queries::get_blocks_for_user::UserResult::UserOutput(user_output) => {
                 Ok(user_output
                     .user
                     .blocks
@@ -135,7 +135,7 @@ impl BlockClient for ServerApi {
                     .filter_map(|block| block.try_into().ok())
                     .collect())
             }
-            warp_graphql::queries::get_blocks_for_user::UserResult::Unknown => {
+            wish_graphql::queries::get_blocks_for_user::UserResult::Unknown => {
                 Err(anyhow!("Unable to fetch blocks"))
             }
         }

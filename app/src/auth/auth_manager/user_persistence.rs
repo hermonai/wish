@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-use warp_graphql::scalars::time::ServerTimestamp;
-use warpui_extras::secure_storage::{self, AppContextExt};
+use wish_graphql::scalars::time::ServerTimestamp;
+use wishui_extras::secure_storage::{self, AppContextExt};
 use wishui::AppContext;
 
 use crate::auth::{

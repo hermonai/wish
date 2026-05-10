@@ -1,7 +1,7 @@
 use std::{collections::VecDeque, time::Duration};
 
 use instant::Instant;
-use warp_util::content_version::ContentVersion;
+use wish_util::content_version::ContentVersion;
 
 use crate::render::model::RenderedSelectionSet;
 

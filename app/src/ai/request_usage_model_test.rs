@@ -40,7 +40,7 @@ fn add_user_workspaces_with_workspace(app: &mut App, workspace: Workspace) {
 fn add_request_usage_model(app: &mut App) -> ModelHandle<AIRequestUsageModel> {
     app.add_singleton_model(|_| ServerApiProvider::new_for_test());
     app.update(|ctx| {
-        warpui_extras::secure_storage::register_noop("test", ctx);
+        wishui_extras::secure_storage::register_noop("test", ctx);
         ctx.add_singleton_model(ApiKeyManager::new);
     });
     app.add_singleton_model(|ctx| {

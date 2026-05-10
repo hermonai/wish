@@ -15,7 +15,7 @@ Relevant existing code:
 - `app/src/ai/blocklist/agent_view/orchestration_conversation_links.rs` — already exposes `parent_conversation_id` and the existing `parent_conversation_navigation_card` used by the legacy orchestration UI.
 - `app/src/ai/blocklist/history_model.rs` — `BlocklistAIHistoryModel` exposes `child_conversations_of`, `conversation`, and the events the pill bar subscribes to.
 - `app/src/terminal/view.rs:25419` — existing handler stub for `TerminalAction::SwitchAgentViewToConversation`, calling `enter_agent_view_for_conversation` to navigate the same pane.
-- `crates/warp_features/src/lib.rs` — `FeatureFlag` enum and `DOGFOOD_FLAGS`.
+- `crates/wish_features/src/lib.rs` — `FeatureFlag` enum and `DOGFOOD_FLAGS`.
 
 The feature is gated by a new `FeatureFlag::OrchestrationPillBar`. Existing `Orchestration` and `AgentView` flag behavior is preserved when the new flag is off.
 
@@ -23,7 +23,7 @@ The feature is gated by a new `FeatureFlag::OrchestrationPillBar`. Existing `Orc
 
 ### 1. Feature flag
 
-Add `OrchestrationPillBar` to `FeatureFlag` in `crates/warp_features/src/lib.rs:725`. All new code paths gate on `FeatureFlag::OrchestrationPillBar.is_enabled()`.
+Add `OrchestrationPillBar` to `FeatureFlag` in `crates/wish_features/src/lib.rs:725`. All new code paths gate on `FeatureFlag::OrchestrationPillBar.is_enabled()`.
 
 ### 2. New view: `OrchestrationPillBar`
 

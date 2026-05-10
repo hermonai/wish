@@ -2,7 +2,7 @@
 ## Problem
 The `CloudModeSetupV2` setup UI only transitions out of the "setup commands" phase when an Oz `AppendedExchange` event fires. Non-oz harness runs (claude, gemini) never produce an Oz exchange — the sandboxed `oz agent run --harness=<name>` invokes the harness CLI (e.g. `claude --session-id … < /tmp/oz_prompt`) as a shell command in the shared session, and that command is permanently flagged as an environment startup command. See `specs/REMOTE-1454/PRODUCT.md` for the desired UX.
 ## Relevant code
-- `crates/warp_features/src/lib.rs:757,826` — `FeatureFlag::AgentHarness`, `FeatureFlag::CloudModeSetupV2`.
+- `crates/wish_features/src/lib.rs:757,826` — `FeatureFlag::AgentHarness`, `FeatureFlag::CloudModeSetupV2`.
 - `app/src/terminal/view/ambient_agent/model.rs:79-151,240-250,384-418,442-488,726-727,886-899` — `AmbientAgentViewModel` (status, `harness` field, `spawn_agent`, `enter_viewing_existing_session`, `AmbientAgentViewModelEvent`, `DispatchedAgent` emission).
 - `app/src/terminal/view/ambient_agent/view_impl.rs:91-228,230-300` — `handle_ambient_agent_event` (inserts `CloudModeInitialUserQuery` on `DispatchedAgent`), `maybe_insert_setup_command_blocks` (gated on `is_cloud_agent_pre_first_exchange`).
 - `app/src/terminal/view/ambient_agent/mod.rs:81-114` — `is_cloud_agent_pre_first_exchange` helper (checks `exchange_count() == 0`).
@@ -29,7 +29,7 @@ The `CloudModeSetupV2` setup UI only transitions out of the "setup commands" pha
 - `app/src/ai/blocklist/block/view_impl.rs:1264-1312` — `CONTENT_HORIZONTAL_PADDING`, `CONTENT_ITEM_VERTICAL_MARGIN`, and the `WithContentItemSpacing::with_agent_output_item_spacing` helper used by the oz setup UI.
 - `app/src/terminal/view.rs:746-752` — `PADDING_LEFT` (20px, or 16px behind `LessHorizontalTerminalPadding`) — the horizontal padding used by regular terminal command blocks.
 - `app/src/pane_group/mod.rs:3763-3792,5682-5692` — CLI-agent conversation restoration (`FeatureFlag::AgentHarness` gate for replay).
-- `warp_cli::agent::Harness` (`crates/warp_cli/src/agent.rs:120-131`) — `Oz`, `Claude`, `Gemini`.
+- `wish_cli::agent::Harness` (`crates/wish_cli/src/agent.rs:120-131`) — `Oz`, `Claude`, `Gemini`.
 ## Current state
 `AmbientAgentViewModel::harness` is populated on spawn for the local spawner via the harness selector. For viewers that join a shared cloud session, the field is left at its default `Oz` even for claude / gemini runs — `enter_viewing_existing_session` fetches the task but only reads `agent_config_snapshot.environment_id`. The viewer therefore reports the wrong harness until this is fixed.
 When the cloud-mode terminal model is created, `is_executing_oz_environment_startup_commands` is set to `true` unconditionally under `CloudModeSetupV2`. The block-list flag:

@@ -13,7 +13,7 @@ Ignore these (not call sites):
 - `crates/wishui/src/platform/mac/mod.rs:34` — definition of `make_nsstring` itself. Excluded because the body is a one-liner that always returns an autoreleased NSString; the leak potential is at its callers, not the definition.
 - `use ... make_nsstring` import lines.
 Audited even though it's a definition, not a call:
-- `crates/warpui_extras/src/user_preferences/user_defaults.rs:88-89` — local `util::make_nsstring` helper definition. Unlike the wishui helper, this one returns a retained `StrongPtr`-wrapped NSString; the definition itself is the correctness point, so it's listed in batch 1.D.
+- `crates/wishui_extras/src/user_preferences/user_defaults.rs:88-89` — local `util::make_nsstring` helper definition. Unlike the wishui helper, this one returns a retained `StrongPtr`-wrapped NSString; the definition itself is the correctness point, so it's listed in batch 1.D.
 
 ## Row format
 
@@ -94,14 +94,14 @@ Files: `crates/wishui/src/platform/mac/{app.rs, clipboard.rs, delegate.rs, menus
 
 ## Batch 1.D — `wishui-extras-nsstring`
 
-Files: `crates/warpui_extras/src/user_preferences/user_defaults.rs`.
+Files: `crates/wishui_extras/src/user_preferences/user_defaults.rs`.
 
 This batch also owns the adjacent `msg_send![class!(NSUserDefaults), alloc]` site on line 39 (even though it's Phase-2 by category), because editing lines 39 and 40 from separate PRs would conflict on merge.
 
-- [x] crates/warpui_extras/src/user_preferences/user_defaults.rs:39 — `UserDefaultsPreferencesStorage::user_defaults` — retained (chained into `initWithSuiteName:` on line 42 and wrapped in `StrongPtr::new`) — rust-thread (startup) — cold — explicit-release — no-op: `alloc` → `initWithSuiteName:` → `StrongPtr::new` takes ownership of the +1 retain; drop releases (Phase 2 row, owned here to avoid adjacency conflicts)
-- [x] crates/warpui_extras/src/user_preferences/user_defaults.rs:40 — `UserDefaultsPreferencesStorage::user_defaults` — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (startup) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases the retained NSString
-- [x] crates/warpui_extras/src/user_preferences/user_defaults.rs:53 — `UserPreferences::write_value` (key) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings writes) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
-- [x] crates/warpui_extras/src/user_preferences/user_defaults.rs:54 — `UserPreferences::write_value` (value) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings writes) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
-- [x] crates/warpui_extras/src/user_preferences/user_defaults.rs:63 — `UserPreferences::read_value` (key) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings reads) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
-- [x] crates/warpui_extras/src/user_preferences/user_defaults.rs:77 — `UserPreferences::remove_value` (key) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings removes) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
-- [x] crates/warpui_extras/src/user_preferences/user_defaults.rs:89 — `util::make_nsstring` body (`NSString::alloc(nil).init_str(...)`) — retained (wrapped in `StrongPtr::new`) — n/a (helper) — n/a — explicit-release — no-op: `NSString::alloc(nil).init_str(...)` returns a +1 retained object; `StrongPtr::new` takes ownership without additional retain, and its `Drop` impl sends `release`, balancing the alloc/init
+- [x] crates/wishui_extras/src/user_preferences/user_defaults.rs:39 — `UserDefaultsPreferencesStorage::user_defaults` — retained (chained into `initWithSuiteName:` on line 42 and wrapped in `StrongPtr::new`) — rust-thread (startup) — cold — explicit-release — no-op: `alloc` → `initWithSuiteName:` → `StrongPtr::new` takes ownership of the +1 retain; drop releases (Phase 2 row, owned here to avoid adjacency conflicts)
+- [x] crates/wishui_extras/src/user_preferences/user_defaults.rs:40 — `UserDefaultsPreferencesStorage::user_defaults` — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (startup) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases the retained NSString
+- [x] crates/wishui_extras/src/user_preferences/user_defaults.rs:53 — `UserPreferences::write_value` (key) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings writes) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
+- [x] crates/wishui_extras/src/user_preferences/user_defaults.rs:54 — `UserPreferences::write_value` (value) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings writes) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
+- [x] crates/wishui_extras/src/user_preferences/user_defaults.rs:63 — `UserPreferences::read_value` (key) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings reads) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
+- [x] crates/wishui_extras/src/user_preferences/user_defaults.rs:77 — `UserPreferences::remove_value` (key) — retained (local `util::make_nsstring` returns `StrongPtr`) — rust-thread (settings removes) — cold — explicit-release — no-op: `StrongPtr` drop at end of scope releases
+- [x] crates/wishui_extras/src/user_preferences/user_defaults.rs:89 — `util::make_nsstring` body (`NSString::alloc(nil).init_str(...)`) — retained (wrapped in `StrongPtr::new`) — n/a (helper) — n/a — explicit-release — no-op: `NSString::alloc(nil).init_str(...)` returns a +1 retained object; `StrongPtr::new` takes ownership without additional retain, and its `Drop` impl sends `release`, balancing the alloc/init

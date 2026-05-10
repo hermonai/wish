@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use lazy_static::lazy_static;
 use natural_language_detection::check_if_token_has_shell_syntax;
-use warp_completer::ParsedTokensSnapshot;
+use wish_completer::ParsedTokensSnapshot;
 
 /// The percentage of input tokens that can be described by our completion engine before
 /// we consider the input as a shell command. This could be tuned.

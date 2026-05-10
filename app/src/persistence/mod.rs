@@ -29,7 +29,7 @@ use ai::project_context::model::ProjectRulePath;
 use chrono::{DateTime, Local, Utc};
 use lsp::supported_servers::LSPServerType;
 use uuid::Uuid;
-use warp_graphql::scalars::time::ServerTimestamp;
+use wish_graphql::scalars::time::ServerTimestamp;
 use warp_multi_agent_api as api;
 use wish_core::command::ExitCode;
 use wishui::{AppContext, Entity, SingletonEntity};

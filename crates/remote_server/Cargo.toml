@@ -20,7 +20,7 @@ serde.workspace = true
 thiserror.workspace = true
 uuid.workspace = true
 wish_core.workspace = true
-warp_util.workspace = true
+wish_util.workspace = true
 wishui.workspace = true
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]

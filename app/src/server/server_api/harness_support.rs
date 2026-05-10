@@ -135,7 +135,7 @@ pub trait HarnessSupportClient: 'static + Send + Sync {
     /// Resolve the prompt for a third-party harness run for a task stored on the server.
     async fn resolve_prompt(&self, request: ResolvePromptRequest) -> Result<ResolvedHarnessPrompt>;
 
-    /// Report an artifact created by a third-party harness back to the Oz platform.
+    /// Report an artifact created by a third-party harness back to the Hermon Cloud.
     async fn report_artifact(&self, artifact: &Artifact) -> Result<ReportArtifactResponse>;
 
     /// Send a progress notification to the task's originating platform.

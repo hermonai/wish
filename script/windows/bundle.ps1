@@ -91,7 +91,7 @@ $BUNDLE_ID = "ai.hermon.$app_name"
 if ("$CHANNEL" -eq 'local') {
     $WARP_BIN = 'wish'
     $BINARY_NAME = 'wish.exe'
-    $APP_NAME = 'WishLocal'
+    $APP_NAME = 'Wish'
     $FEATURES = "$FEATURES,nld_improvements"
 } elseif ("$CHANNEL" -eq 'dev') {
     $WARP_BIN = 'dev'

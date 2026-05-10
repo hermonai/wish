@@ -5,8 +5,8 @@ use std::{
 
 use std::ops::Range;
 
-use warp_editor::{content::buffer::InitialBufferState, render::model::LineCount};
-use warp_util::file::{FileLoadError, FileSaveError};
+use wish_editor::{content::buffer::InitialBufferState, render::model::LineCount};
+use wish_util::file::{FileLoadError, FileSaveError};
 use wishui::{
     elements::MouseStateHandle, AppContext, Element, Entity, TypedActionView, View, ViewContext,
     ViewHandle, WindowId,

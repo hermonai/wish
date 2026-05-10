@@ -51,6 +51,6 @@ serde.workspace = true
 smol_str.workspace = true
 tempfile = { workspace = true, optional = true }
 tokenizers = { version = "0.21.4", optional = true }
-warp_completer.workspace = true
+wish_completer.workspace = true
 
 [dev-dependencies]

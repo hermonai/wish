@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use warp_graphql::mutations::generate_metadata_for_command::{
+use wish_graphql::mutations::generate_metadata_for_command::{
     GenerateMetadataForCommandFailureType, GenerateMetadataForCommandSuccess,
 };
 use wishui::{SingletonEntity, ViewContext};

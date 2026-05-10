@@ -246,7 +246,7 @@ root.
 ## Validation
 
 1. **Rust unit tests** for the shared `group_roots_by_common_ancestor`
-   helper (`crates/warp_util`): verify each invariant 1–2 and every edge
+   helper (`crates/wish_util`): verify each invariant 1–2 and every edge
    case above, using concrete path inputs and asserting the resulting
    surviving-root list and absorbed-descendant map.
 2. **`FileTreeView` view tests** (`app/src/code/file_tree/view/view_tests.rs`,

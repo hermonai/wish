@@ -1,8 +1,8 @@
 // The code in this file is adapted from the alacritty_terminal crate under the
-// Apache license; see: crates/warp_terminal/src/model/LICENSE-ALACRITTY.
+// Apache license; see: crates/wish_terminal/src/model/LICENSE-ALACRITTY.
 
 use string_offset::ByteOffset;
-use warp_terminal::model::{
+use wish_terminal::model::{
     grid::{
         cell::{self, LineLength as _},
         Dimensions as _,

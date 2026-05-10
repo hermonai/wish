@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use markdown_parser::markdown_parser::CODE_BLOCK_DEFAULT_MARKDOWN_LANG;
 use pathfinder_color::ColorU;
-use warp_editor::{
+use wish_editor::{
     content::text::{
         BlockHeaderSize, BlockType as ContentBlockType, BufferBlockStyle, CodeBlockType,
     },
@@ -13,7 +13,7 @@ use warp_editor::{
         ParagraphStyles, RichTextStyles, TableStyle, PARAGRAPH_MIN_HEIGHT,
     },
 };
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wish_core::ui::{builder::CHECK_SVG_PATH, theme::color::internal_colors};
 use wishui::{elements::Border, fonts::FamilyId, ui_components::checkbox::HOVER_BACKGROUND_COLOR};
 

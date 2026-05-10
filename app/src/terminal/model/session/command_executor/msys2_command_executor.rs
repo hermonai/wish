@@ -9,8 +9,8 @@ use command::r#async::Command;
 use itertools::Itertools;
 use std::{any::Any, collections::HashMap, ffi::OsString, path::PathBuf};
 use typed_path::{TypedPath, WindowsPath};
-use warp_completer::completer::CommandOutput;
-use warp_util::path::{convert_msys2_to_windows_native_path, msys2_exe_to_root};
+use wish_completer::completer::CommandOutput;
+use wish_util::path::{convert_msys2_to_windows_native_path, msys2_exe_to_root};
 
 const BASH_CONFIG_FLAG: &str = "--norc";
 const POWERSHELL_CONFIG_FLAG: &str = "-NoProfile";

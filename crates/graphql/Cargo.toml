@@ -1,7 +1,7 @@
 [package]
 authors = ["Hermon AI <support@hermon.ai>"]
 edition = "2021"
-name = "warp_graphql"
+name = "wish_graphql"
 version = "0.1.0"
 publish.workspace = true
 license.workspace = true
@@ -22,7 +22,7 @@ reqwest.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 wish_core.workspace = true
-warp_graphql_schema.workspace = true
+wish_graphql_schema.workspace = true
 websocket = {path = "../websocket"}
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]

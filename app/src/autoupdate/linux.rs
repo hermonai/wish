@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use anyhow::{bail, Context as _, Result};
 use channel_versions::VersionInfo;
 use instant::Duration;
-use warp_terminal::shell::ShellType;
+use wish_terminal::shell::ShellType;
 use wish_core::channel::{Channel, ChannelState};
 use wishui::ViewContext;
 
@@ -146,7 +146,7 @@ mod appimage {
         let mut command = command::blocking::Command::new(appimage_path);
         // Pass a flag to the app to let it know it was restarted as part of the
         // autoupdate process.
-        command.arg(warp_cli::finish_update_flag());
+        command.arg(wish_cli::finish_update_flag());
         // If we're testing with a local copy of channel_versions.json, have the
         // newly-started binary also reference that same file (so we can test
         // displaying an updated changelog after an autoupdate).
@@ -289,7 +289,7 @@ mod package_manager {
         // Add any arguments that were passed to warp, skipping the first
         // argument (the name of the executable) and dropping the flag for
         // finishing an update.
-        let finish_update_flag = warp_cli::finish_update_flag();
+        let finish_update_flag = wish_cli::finish_update_flag();
         command.args(
             std::env::args()
                 .skip(1)

@@ -14,7 +14,7 @@ use crate::util::time_format::format_approx_duration_from_now_utc;
 use crate::util::truncation::truncate_from_end;
 use crate::workspace::view::conversation_list::view::ConversationListViewAction;
 use pathfinder_geometry::vector::vec2f;
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
 use wish_core::ui::color::coloru_with_opacity;
 use wish_core::ui::theme::color::internal_colors;
 use wishui::elements::{

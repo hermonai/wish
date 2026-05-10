@@ -4,8 +4,8 @@ use super::{
 use comfy_table::Cell;
 use serde::Serialize;
 use serde_json::json;
-use warp_cli::agent::OutputFormat;
-use warp_cli::json_filter::parse_jq_filter;
+use wish_cli::agent::OutputFormat;
+use wish_cli::json_filter::parse_jq_filter;
 
 #[derive(Serialize)]
 struct TestItem {

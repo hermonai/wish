@@ -1,7 +1,7 @@
 use std::{collections::HashSet, sync::Arc};
 
 use smol_str::SmolStr;
-use warp_completer::{
+use wish_completer::{
     completer::{GeneratorContext, PathCompletionContext},
     signatures::CommandRegistry,
 };
@@ -20,7 +20,7 @@ impl CompletionContext {
     }
 }
 
-impl warp_completer::completer::CompletionContext for CompletionContext {
+impl wish_completer::completer::CompletionContext for CompletionContext {
     fn top_level_commands(&self) -> Box<dyn Iterator<Item = &str> + '_> {
         Box::new(self.command_registry.registered_commands())
     }

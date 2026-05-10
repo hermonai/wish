@@ -11,7 +11,7 @@ use crate::terminal::cli_agent_sessions::{
 };
 use std::collections::HashMap;
 use std::sync::Arc;
-use warp_graphql::ai::{AgentTaskState, PlatformErrorCode};
+use wish_graphql::ai::{AgentTaskState, PlatformErrorCode};
 use wishui::{Entity, EntityId, ModelContext, SingletonEntity};
 
 /// Listens for conversation status changes and CLI agent session status

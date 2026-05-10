@@ -26,7 +26,8 @@ use enclose::enclose;
 use itertools::Itertools;
 use settings::manager::SettingsManager;
 use settings::Setting as _;
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
+use wish_core::channel::ChannelState;
 use wish_core::context_flag::ContextFlag;
 use wishui::actions::StandardAction;
 use wishui::keymap::{Keystroke, Trigger};
@@ -48,6 +49,8 @@ const DISABLE_IN_BAND_GENERATORS_MENU_ITEM_NAME: &str =
 const ENABLE_PTY_RECORDING: &str = "Enable PTY Recording Mode (warp.pty.recording)";
 const DISABLE_PTY_RECORDING: &str = "Disable PTY Recording Mode (warp.pty.recording)";
 const SHOW_BOOTSTRAP_BLOCK_MENU_ITEM_NAME: &str = "Show Initialization Block";
+const USE_LOCAL_SERVER_MENU_ITEM_NAME: &str = "Use Local Server (localhost:8080)";
+const USE_PRODUCTION_SERVER_MENU_ITEM_NAME: &str = "Use Production Server (api.hermon.ai)";
 const HIDE_BOOTSTRAP_BLOCK_MENU_ITEM_NAME: &str = "Hide Initialization Block";
 const SHOW_IN_BAND_COMMAND_BLOCKS_MENU_ITEM_NAME: &str = "Show In-band Command Blocks";
 const HIDE_IN_BAND_COMMAND_BLOCKS_MENU_ITEM_NAME: &str = "Hide In-band Command Blocks";
@@ -141,6 +144,12 @@ fn make_new_app_menu(ctx: &AppContext) -> Menu {
         CustomAction::ShowAboutWarp,
         ctx,
     )];
+    menu_items.push(MenuItem::Custom(CustomMenuItem::new(
+        "Show Onboarding...",
+        move |ctx| ctx.dispatch_global_action("workspace:show_hoa_onboarding_flow", &()),
+        no_updates,
+        None,
+    )));
 
     if !FeatureFlag::AvatarInTabBar.is_enabled() {
         menu_items.push(updateable_custom_item_without_checkmark(
@@ -750,6 +759,50 @@ fn make_new_window_menu() -> Menu {
 
 fn debug_menu_items() -> Vec<MenuItem> {
     let mut debug_menu_items = vec![];
+
+    // Server URL toggle — switches between local dev and production server URLs.
+    // Always visible in debug builds so developers can quickly point the app at localhost
+    // or at the production API without restarting.
+    if ChannelState::enable_debug_features() {
+        debug_menu_items.push(MenuItem::Custom(CustomMenuItem::new(
+            USE_PRODUCTION_SERVER_MENU_ITEM_NAME,
+            move |_ctx| {
+                let is_local = ChannelState::server_root_url().contains("localhost")
+                    || ChannelState::server_root_url().contains("127.0.0.1");
+
+                if is_local {
+                    // Switch to production URLs
+                    let _ = ChannelState::override_server_root_url("https://api.hermon.ai");
+                    let _ = ChannelState::override_ws_server_url("wss://api.hermon.ai/graphql/v2");
+                    let _ = ChannelState::override_session_sharing_server_url("wss://api.hermon.ai/sessions");
+                    let _ = ChannelState::override_hermon_root_url("https://wish.hermon.ai");
+                    log::info!("Switched to production server URLs (api.hermon.ai)");
+                } else {
+                    // Switch to local dev URLs
+                    let _ = ChannelState::override_server_root_url("http://localhost:8080");
+                    let _ = ChannelState::override_ws_server_url("ws://localhost:8080/graphql/v2");
+                    let _ = ChannelState::override_session_sharing_server_url("ws://localhost:8080/sessions");
+                    let _ = ChannelState::override_hermon_root_url("http://localhost:3000");
+                    log::info!("Switched to local dev server URLs (localhost:8080)");
+                }
+            },
+            move |_props, _ctx| {
+                let is_local = ChannelState::server_root_url().contains("localhost")
+                    || ChannelState::server_root_url().contains("127.0.0.1");
+                let name = if is_local {
+                    USE_PRODUCTION_SERVER_MENU_ITEM_NAME.to_owned()
+                } else {
+                    USE_LOCAL_SERVER_MENU_ITEM_NAME.to_owned()
+                };
+                MenuItemPropertyChanges {
+                    name: Some(name),
+                    ..Default::default()
+                }
+            },
+            None,
+        )));
+        debug_menu_items.push(MenuItem::Separator);
+    }
 
     if FeatureFlag::DebugMode.is_enabled() {
         debug_menu_items.push(MenuItem::Custom(CustomMenuItem::new(

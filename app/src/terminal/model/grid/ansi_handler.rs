@@ -1,5 +1,5 @@
 // The code in this file is adapted from the alacritty_terminal crate under the
-// Apache license; see: crates/warp_terminal/src/model/LICENSE-ALACRITTY.
+// Apache license; see: crates/wish_terminal/src/model/LICENSE-ALACRITTY.
 
 // path attribute needed due to current non-fs-based nesting of ansi_handler
 // under grid_handler.
@@ -17,9 +17,9 @@ use bounded_vec_deque::BoundedVecDeque;
 use pathfinder_geometry::vector::Vector2F;
 use rand::Rng;
 use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
-use warp_terminal::model::ansi::CharsetIndex;
-use warp_terminal::model::grid::cell;
-use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
+use wish_terminal::model::ansi::CharsetIndex;
+use wish_terminal::model::grid::cell;
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 use wish_core::channel::ChannelState;
 use wish_core::features::FeatureFlag;
 use wishui::image_cache::{resize_dimensions, FitType};

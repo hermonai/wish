@@ -12,7 +12,7 @@ use crate::{CanonicalizedPath, RepoMetadataError, Repository, RepositoryUpdate};
 use futures::channel::mpsc;
 use futures::StreamExt as _;
 use virtual_fs::{Stub, VirtualFS};
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 use wishui::r#async::Timer;
 use wishui::{App, ModelContext, ModelHandle};
 

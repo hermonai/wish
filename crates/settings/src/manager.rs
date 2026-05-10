@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use std::ops::Deref;
 
 use anyhow::{Result, anyhow};
-use warp_features::FeatureFlag;
-use warpui_extras::user_preferences::UserPreferences;
+use wish_features::FeatureFlag;
+use wishui_extras::user_preferences::UserPreferences;
 use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 use super::PrivatePreferences;

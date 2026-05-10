@@ -36,7 +36,7 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wish_core::features::FeatureFlag;
 use wish_core::ui::Icon;
 use wishui::elements::{ChildAnchor, Empty, PositionedElementAnchor};

@@ -35,7 +35,7 @@ default = [
 ```
 
 ### 2. Remove from FeatureFlag enum
-Remove the variant from the `FeatureFlag` enum in `crates/warp_features/src/lib.rs`:
+Remove the variant from the `FeatureFlag` enum in `crates/wish_features/src/lib.rs`:
 
 ```rust
 #[derive(Sequence)]
@@ -81,7 +81,7 @@ if FeatureFlag::YourFeatureName.is_enabled() {
 
 Use ripgrep to find all occurrences:
 ```bash
-rg "YourFeatureName" app/ crates/warp_features/
+rg "YourFeatureName" app/ crates/wish_features/
 ```
 
 ### 6. Remove keybinding predicates
@@ -138,7 +138,7 @@ cargo run
 
 ```bash
 # Find all occurrences of the flag name
-rg "YourFeatureName" app/ crates/warp_features/
+rg "YourFeatureName" app/ crates/wish_features/
 
 # Find feature flag checks
 rg "FeatureFlag::YourFeatureName" app/

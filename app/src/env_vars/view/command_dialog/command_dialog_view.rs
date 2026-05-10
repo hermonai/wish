@@ -1,4 +1,4 @@
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wish_core::ui::appearance::Appearance;
 use wishui::{
     elements::{

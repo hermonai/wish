@@ -2,7 +2,7 @@ use std::{fmt::Write, time::Duration};
 
 use async_channel::Sender;
 use pathfinder_geometry::vector::vec2f;
-use warp_editor::{
+use wish_editor::{
     render::model::{AutoScrollMode, Decoration},
     search::{SearchEvent, Searcher},
 };

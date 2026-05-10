@@ -32,7 +32,7 @@ use parking_lot::Mutex;
 use pathfinder_color::ColorU;
 use std::sync::Arc;
 use vec1::Vec1;
-use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 use wish_core::semantic_selection::SemanticSelection;
 use wishui::text::SelectionType;
 use wishui::units::Lines;

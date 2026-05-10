@@ -19,7 +19,7 @@ pub enum RepoContent<'a> {
     Directory(&'a FileTreeDirectoryEntryState),
 }
 
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 
 use crate::{
     entry::{Entry, FileId, IgnoredPathStrategy},

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::io;
 
-use warp_terminal::model::ansi::control_sequence_parameters::*;
-use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
+use wish_terminal::model::ansi::control_sequence_parameters::*;
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 use wishui::color::ColorU;
 
 use super::dcs_hooks::*;

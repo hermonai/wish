@@ -7,7 +7,7 @@ use crate::{
     ui_components::{blended_colors, icons::Icon},
 };
 use chrono::Local;
-use warp_graphql::queries::get_conversation_usage::ConversationUsage;
+use wish_graphql::queries::get_conversation_usage::ConversationUsage;
 use wish_core::ui::appearance::Appearance;
 use wishui::{
     elements::{

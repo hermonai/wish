@@ -20,7 +20,7 @@ This spec covers three pieces:
 - `crates/remote_server/proto/remote_server.proto` — `ClientMessage`/`ServerMessage` envelopes with `Initialize`/`InitializeResponse` (to be extended with `host_id`)
 
 ### CLI subcommand dispatch
-- `crates/warp_cli/src/lib.rs (384-426)` — `WorkerCommand` enum with `RemoteServer` variant
+- `crates/wish_cli/src/lib.rs (384-426)` — `WorkerCommand` enum with `RemoteServer` variant
 - `app/src/lib.rs (542-544)` — `WorkerCommand::RemoteServer` dispatch calling `remote_server::run()`
 
 ### Session bootstrap flow

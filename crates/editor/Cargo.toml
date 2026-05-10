@@ -1,5 +1,5 @@
 [package]
-name = "warp_editor"
+name = "wish_editor"
 authors = ["Hermon AI <support@hermon.ai>"]
 version = "0.1.0"
 edition = "2024"
@@ -48,7 +48,7 @@ pathfinder_color = "0.5.0"
 vec1.workspace = true
 wishui.workspace = true
 wish_core.workspace = true
-warp_util.workspace = true
+wish_util.workspace = true
 rayon.workspace = true
 line-ending.workspace = true
 vim.workspace = true

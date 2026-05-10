@@ -21,8 +21,8 @@ use crate::{
 use anyhow::Result;
 use async_trait::async_trait;
 
-// Re-exported from warp_server_client.
-pub use warp_server_client::ids::FolderId;
+// Re-exported from wish_server_client.
+pub use wish_server_client::ids::FolderId;
 
 /// The model for a `CloudFolder`.
 #[derive(Clone, Debug, PartialEq)]

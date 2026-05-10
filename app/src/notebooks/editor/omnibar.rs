@@ -3,7 +3,7 @@
 
 use itertools::Itertools;
 use pathfinder_geometry::{rect::RectF, vector::Vector2F};
-use warp_editor::{
+use wish_editor::{
     content::text::{
         BlockType as ContentBlockType, BufferBlockStyle, BufferTextStyle, TextStyles,
         TextStylesWithMetadata,

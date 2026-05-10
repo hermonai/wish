@@ -30,7 +30,7 @@ use num_traits::FromPrimitive;
 use pathfinder_geometry::{rect::RectF, vector::Vector2F};
 use persistence::model::AMBIENT_AGENT_PANE_KIND;
 use uuid::Uuid;
-use warp_graphql::scalars::time::ServerTimestamp;
+use wish_graphql::scalars::time::ServerTimestamp;
 use wishui::platform::FullscreenState;
 use wishui::{AppContext, SingletonEntity};
 
@@ -139,7 +139,7 @@ diesel::define_sql_function! {
 const CHANNEL_SIZE: usize = 1024;
 const COMMANDS_COUNT_LIMIT: i64 = 10000;
 
-use warp_server_client::persistence::{upsert_cloud_object, CloudObjectId};
+use wish_server_client::persistence::{upsert_cloud_object, CloudObjectId};
 
 const WISH_SQLITE_FILE_NAME: &str = "wish.sqlite";
 /// Legacy filename — used for migration from older installs.

@@ -11,7 +11,7 @@ use itertools::Itertools;
 use lazy_static::lazy_static;
 use pathfinder_color::ColorU;
 use serde::{Deserialize, Serialize};
-use warp_graphql::{
+use wish_graphql::{
     ai::{
         RequestLimitInfo as RequestLimitInfoGraphql,
         RequestLimitRefreshDuration as RequestLimitRefreshDurationGraphql,

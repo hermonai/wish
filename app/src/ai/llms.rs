@@ -496,7 +496,7 @@ fn normalized_ollama_base_url(raw: &str) -> String {
     }
 }
 
-fn ollama_base_url() -> String {
+pub(crate) fn ollama_base_url() -> String {
     std::env::var(WISH_OLLAMA_URL_ENV)
         .or_else(|_| std::env::var(OLLAMA_HOST_ENV))
         .map(|url| normalized_ollama_base_url(&url))
@@ -710,7 +710,9 @@ impl LLMPreferences {
                 new_status: NetworkStatusKind::Online,
             } = event
             {
-                me.refresh_authed_models(ctx);
+                // Use refresh_available_models so guest-mode users also
+                // get their local Ollama models refreshed when coming online.
+                me.refresh_available_models(ctx);
             }
         });
 
@@ -752,6 +754,14 @@ impl LLMPreferences {
         // In production, this is handled reactively (on auth complete, network online, etc.)
         // to avoid duplicate requests at startup.
         #[cfg(feature = "agent_mode_evals")]
+        me.refresh_available_models(ctx);
+
+        // Always eagerly discover models on init. For logged-in users
+        // this fetches both server-side and local Ollama models in parallel.
+        // For guest/unauthenticated users this discovers local Ollama only.
+        // The reactive handlers (auth-complete, team-changed, network-online)
+        // provide subsequent refreshes when state changes.
+        #[cfg(not(feature = "agent_mode_evals"))]
         me.refresh_available_models(ctx);
 
         me
@@ -1097,9 +1107,45 @@ impl LLMPreferences {
     }
 
     pub fn refresh_available_models(&self, ctx: &mut ModelContext<Self>) {
-        if AuthStateProvider::as_ref(ctx).get().is_logged_in() {
-            self.refresh_authed_models(ctx);
+        let auth_state = AuthStateProvider::as_ref(ctx).get();
+        let is_guest = auth_state
+            .credentials()
+            .map(|c| c.is_guest())
+            .unwrap_or(false);
+
+        if !is_guest && auth_state.is_logged_in() {
+            // Logged-in: try server models AND local Ollama in parallel.
+            // If the server fails we still get Ollama models as fallback.
+            let ai_api_client = ServerApiProvider::as_ref(ctx).get_ai_client();
+            ctx.spawn(
+                async move {
+                    let (server_result, ollama_result) = futures::join!(
+                        ai_api_client.get_feature_model_choices(),
+                        fetch_local_ollama_models(),
+                    );
+                    (server_result, ollama_result)
+                },
+                |me, (server_result, ollama_result), ctx| {
+                    // Prefer server models, then merge local Ollama on top.
+                    if let Ok(server_models) = server_result {
+                        me.on_server_update(server_models, ctx);
+                    }
+                    // Merge Ollama models into whatever we have.
+                    match ollama_result {
+                        Ok(Some(ollama_models)) => {
+                            me.merge_local_models(ollama_models, ctx);
+                        }
+                        Ok(None) => {
+                            log::info!("No local Ollama models discovered");
+                        }
+                        Err(e) => {
+                            log::warn!("Failed to discover local Ollama models: {e:#}");
+                        }
+                    }
+                },
+            );
         } else {
+            // Guest or unauthenticated — only use local providers.
             self.refresh_public_models(ctx);
         }
     }
@@ -1152,6 +1198,53 @@ impl LLMPreferences {
         }
 
         ctx.emit(LLMPreferencesEvent::UpdatedAvailableLLMs);
+    }
+
+    /// Merges locally discovered models (e.g. Ollama) into the current model
+    /// list without removing any existing (server-provided) models. Deduplicates
+    /// by `LLMInfo::id`.
+    fn merge_local_models(&mut self, local: ModelsByFeature, ctx: &mut ModelContext<Self>) {
+        fn merge_choices(existing: &mut AvailableLLMs, incoming: &AvailableLLMs) {
+            let existing_ids: std::collections::HashSet<LLMId> =
+                existing.choices.iter().map(|c| c.id.clone()).collect();
+            let new_items: Vec<LLMInfo> = incoming
+                .choices
+                .iter()
+                .filter(|info| !existing_ids.contains(&info.id))
+                .cloned()
+                .collect();
+            existing.choices.extend(new_items);
+        }
+
+        let had_changes;
+        let old_count = self.models_by_feature.agent_mode.choices.len();
+
+        merge_choices(&mut self.models_by_feature.agent_mode, &local.agent_mode);
+        merge_choices(&mut self.models_by_feature.coding, &local.coding);
+        if let (Some(existing), Some(incoming)) = (
+            self.models_by_feature.cli_agent.as_mut(),
+            local.cli_agent.as_ref(),
+        ) {
+            merge_choices(existing, incoming);
+        }
+        if let (Some(existing), Some(incoming)) = (
+            self.models_by_feature.computer_use.as_mut(),
+            local.computer_use.as_ref(),
+        ) {
+            merge_choices(existing, incoming);
+        }
+
+        had_changes = self.models_by_feature.agent_mode.choices.len() != old_count;
+
+        if had_changes {
+            // Persist and notify.
+            if let Ok(serialized) = serde_json::to_string(&self.models_by_feature) {
+                let _ = ctx
+                    .private_user_preferences()
+                    .write_value(MODELS_BY_FEATURE_CACHE_KEY, serialized);
+            }
+            ctx.emit(LLMPreferencesEvent::UpdatedAvailableLLMs);
+        }
     }
 
     /// Clear any model selections where the model is no longer supported

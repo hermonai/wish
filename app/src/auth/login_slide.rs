@@ -13,7 +13,7 @@ use crate::util::bindings::CustomAction;
 use crate::{send_telemetry_from_ctx, send_telemetry_sync_from_ctx};
 
 use onboarding::slides::{layout, slide_content};
-use onboarding::{OnboardingIntention, AI_FEATURES, WARP_DRIVE_FEATURES};
+use onboarding::{OnboardingIntention, AI_FEATURES, WISH_DRIVE_FEATURES};
 use pathfinder_color::ColorU;
 use ui_components::{button, Component as _, Options as _};
 use wish_core::features::FeatureFlag;
@@ -950,7 +950,7 @@ impl LoginSlideView {
         let mut feature_list =
             Flex::column().with_cross_axis_alignment(CrossAxisAlignment::Stretch);
         let feature_items: &[&str] = if is_terminal {
-            WARP_DRIVE_FEATURES
+            WISH_DRIVE_FEATURES
         } else {
             AI_FEATURES
         };

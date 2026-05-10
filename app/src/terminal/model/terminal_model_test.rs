@@ -7,7 +7,7 @@ use crate::terminal::model::index::Side;
 use crate::terminal::model::selection::ExpandedSelectionRange;
 use chrono::{DateTime, Local};
 use vec1::vec1;
-use warp_terminal::model::ansi::ClearMode;
+use wish_terminal::model::ansi::ClearMode;
 use wish_core::command::ExitCode;
 use wishui::text::str_to_byte_vec;
 use wishui::text::SelectionType;

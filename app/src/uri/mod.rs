@@ -398,7 +398,7 @@ impl UriHost {
                                 primary_window_id,
                                 "root_view:open_settings_page_in_existing_window",
                                 "root_view:open_settings_page_in_new_window",
-                                &SettingsSection::OzCloudAPIKeys,
+                                &SettingsSection::HermonCloudAPIKeys,
                                 ctx,
                             );
                         }

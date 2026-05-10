@@ -6,7 +6,7 @@ use std::{
 use async_channel::Receiver;
 use futures::channel::oneshot;
 use parking_lot::Mutex;
-use warp_js::JsFunctionId;
+use wish_js::JsFunctionId;
 use wishui::r#async::executor::Background;
 
 use super::{

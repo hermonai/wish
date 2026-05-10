@@ -5,14 +5,16 @@ use crate::visuals::{intention_terminal_visual, intention_visual};
 use crate::{OnboardingIntention, AI_FEATURES};
 use ui_components::{button, Component as _, Options as _};
 use wish_core::features::FeatureFlag;
+use wish_core::ui::theme::color::internal_colors;
 use wish_core::ui::theme::Fill;
-use wish_core::ui::{appearance::Appearance, theme::color::internal_colors, Icon};
+use wish_core::ui::{appearance::Appearance, Icon};
+use wishui::assets::asset_cache::AssetSource;
 use wishui::prelude::Align;
 use wishui::{
     elements::{
-        Border, ClippedScrollStateHandle, ConstrainedBox, Container, CornerRadius,
-        CrossAxisAlignment, Flex, FormattedTextElement, Hoverable, Icon as AssetIcon,
-        MainAxisAlignment, MainAxisSize, MouseStateHandle, ParentElement, Radius,
+        Border, CacheOption, ClippedScrollStateHandle, ConstrainedBox, Container, CornerRadius,
+        CrossAxisAlignment, Flex, FormattedTextElement, Hoverable, Image, MainAxisAlignment,
+        MainAxisSize, MouseStateHandle, ParentElement, Radius,
     },
     fonts::Weight,
     keymap::Keystroke,
@@ -71,13 +73,18 @@ impl IntentionSlide {
 
     fn render_header(&self, appearance: &Appearance) -> Box<dyn Element> {
         let theme = appearance.theme();
-
-        let logo_fill = internal_colors::fg_overlay_4(theme);
-        let logo =
-            ConstrainedBox::new(AssetIcon::new("bundled/svg/hermon-logo.svg", logo_fill).finish())
-                .with_width(64.)
-                .with_height(64.)
-                .finish();
+        let logo = ConstrainedBox::new(
+            Image::new(
+                AssetSource::Bundled {
+                    path: "bundled/svg/hermon-logo-round.svg",
+                },
+                CacheOption::BySize,
+            )
+            .finish(),
+        )
+        .with_width(64.)
+        .with_height(64.)
+        .finish();
 
         let title = appearance
             .ui_builder()

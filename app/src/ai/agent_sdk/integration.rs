@@ -1,13 +1,13 @@
 use crate::server::server_api::ServerApiProvider;
 use futures::future;
-use warp_cli::{
+use wish_cli::{
     integration::{CreateIntegrationArgs, IntegrationCommand, UpdateIntegrationArgs},
     provider::ProviderType,
     GlobalOptions,
 };
-use warp_graphql::mutations::create_simple_integration::CreateSimpleIntegrationOutput;
-use warp_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
-use warp_graphql::queries::get_simple_integrations::SimpleIntegrationsOutput;
+use wish_graphql::mutations::create_simple_integration::CreateSimpleIntegrationOutput;
+use wish_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
+use wish_graphql::queries::get_simple_integrations::SimpleIntegrationsOutput;
 use wishui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
 
 use super::common::{EnvironmentChoice, ResolveConfigurationError};

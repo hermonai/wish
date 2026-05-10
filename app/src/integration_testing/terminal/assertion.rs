@@ -1,7 +1,7 @@
 use pathfinder_geometry::rect::RectF;
 use regex::Regex;
 use settings::Setting as _;
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
 use wishui::{
     async_assert, async_assert_eq,
     integration::{AssertionCallback, AssertionOutcome},

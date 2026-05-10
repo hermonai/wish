@@ -14,7 +14,7 @@ pub use file_picker::{
     SaveFilePickerConfiguration,
 };
 use serde::{Deserialize, Serialize};
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 
 use crate::fonts::SubpixelAlignment;
 use crate::keymap::Keystroke;

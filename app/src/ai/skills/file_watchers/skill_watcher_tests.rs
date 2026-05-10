@@ -10,7 +10,7 @@ use repo_metadata::{
     TargetFile,
 };
 use tempfile::TempDir;
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 use wishui::App;
 
 use super::SkillWatcher;

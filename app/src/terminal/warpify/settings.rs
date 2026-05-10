@@ -6,7 +6,7 @@ use settings::{
     ChangeEventReason, RespectUserSyncSetting, Setting, SupportedPlatforms, SyncToCloud,
 };
 use strum_macros::EnumIter;
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 use wishui::{AppContext, ModelContext};
 use wishui::{Entity, SingletonEntity};
 

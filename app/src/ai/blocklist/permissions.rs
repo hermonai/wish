@@ -23,8 +23,8 @@ use crate::ai::mcp::TemplatableMCPServerManager;
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use warp_completer::parsers::simple::decompose_command;
-use warp_util::path::EscapeChar;
+use wish_completer::parsers::simple::decompose_command;
+use wish_util::path::EscapeChar;
 use wish_core::user_preferences::GetUserPreferences;
 use wish_core::{features::FeatureFlag, settings::Setting};
 use wishui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};

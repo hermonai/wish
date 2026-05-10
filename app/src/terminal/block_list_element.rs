@@ -27,7 +27,7 @@ use enum_iterator::Sequence;
 use itertools::Itertools;
 use parking_lot::FairMutex;
 use vec1::Vec1;
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wish_core::semantic_selection::SemanticSelection;
 use wish_core::ui::builder::UiBuilder;
 use wish_core::ui::theme::AnsiColorIdentifier;

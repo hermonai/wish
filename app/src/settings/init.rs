@@ -1,5 +1,5 @@
 use settings::{Setting as _, SettingsManager};
-use warpui_extras::user_preferences;
+use wishui_extras::user_preferences;
 use wish_core::features::FeatureFlag;
 use wishui::{rendering::GPUPowerPreference, AppContext, SingletonEntity};
 

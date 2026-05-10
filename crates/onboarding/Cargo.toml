@@ -31,4 +31,4 @@ strum_macros.workspace = true
 uuid.workspace = true
 wish_core = { workspace = true }
 wishui.workspace = true
-warp_logging.workspace = true
+wish_logging.workspace = true

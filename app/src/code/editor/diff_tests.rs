@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use rangemap::RangeMap;
 use unindent::Unindent as _;
-use warp_editor::multiline::{MultilineStr, MultilineString};
+use wish_editor::multiline::{MultilineStr, MultilineString};
 
 use crate::code::editor::diff::ChangeType;
 

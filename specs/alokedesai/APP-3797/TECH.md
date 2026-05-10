@@ -2,7 +2,7 @@
 
 ## Problem
 
-The current SSH wrapper flow creates a `RemoteCommandExecutor` that runs every generator/completion command by opening a new SSH channel through a ControlMaster socket. This is unreliable and stateless. We want to replace it with a persistent remote server binary (`~/.warp/remote-server/oz`) on the remote machine that communicates over stdin/stdout using length-prefixed protobuf messages. The binary is the Oz CLI, installed from the `/download/cli` endpoint if not already present.
+The current SSH wrapper flow creates a `RemoteCommandExecutor` that runs every generator/completion command by opening a new SSH channel through a ControlMaster socket. This is unreliable and stateless. We want to replace it with a persistent remote server binary (`~/.warp/remote-server/oz`) on the remote machine that communicates over stdin/stdout using length-prefixed protobuf messages. The binary is the Wish CLI, installed from the `/download/cli` endpoint if not already present.
 
 The challenge is that this introduces two independent async conditions that must both complete before the session is ready: (1) the shell `Bootstrapped` DCS hook, and (2) the remote server `InitializeResponse`. Today the bootstrap path is fully synchronous — `Bootstrapped` DCS immediately triggers `initialize_bootstrapped_session()`. We need to gate that call on both conditions without breaking non-SSH or flag-off flows.
 

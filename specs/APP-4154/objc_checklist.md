@@ -88,7 +88,7 @@ Confirmed via `rg -n 'alloc\]|\bnew\]|\bcopy\]|\bmutableCopy\]'` on each file in
 
 Rust-side `msg_send![class!(X), alloc]` sites that retain without autoreleasing. These require explicit balance or switching to an autoreleased helper.
 
-`crates/warpui_extras/src/user_preferences/user_defaults.rs:39` is adjacent to NSString lines audited by batch 1.D; to avoid merge conflicts it's owned by batch 1.D in `nsstring_checklist.md`, not this file.
+`crates/wishui_extras/src/user_preferences/user_defaults.rs:39` is adjacent to NSString lines audited by batch 1.D; to avoid merge conflicts it's owned by batch 1.D in `nsstring_checklist.md`, not this file.
 
 - [x] crates/wishui/src/platform/mac/app.rs:46 — `NSAlert::alloc` trait impl — autoreleased (by caller) — appkit-main — cold — autorelease-helper — no-op: caller at :80 `create_native_platform_modal` wraps the chain in `NSAlert::autorelease(NSAlert::init(NSAlert::alloc(nil)))`, and the caller's callers (`show_native_platform_modal` in `delegate.rs:375`) run on the AppKit main thread where an ambient pool exists
 - [x] crates/wishui/src/platform/mac/app.rs:187 — `App::run` — retained (chained into `initWithBytes_length_`) — appkit-main — cold — ambient — no-op: `App::run` is a one-shot called from `main`; `NSAutoreleasePool::new(nil)` at :178 spans the entire NSApp run loop and drains at :210 on app shutdown. The icon data is consumed synchronously by the `NSImage` init at :192, and the resulting image is retained by `NSApp` via `setApplicationIconImage:` at :206. Any residual retain is reclaimed at process exit.

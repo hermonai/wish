@@ -1,6 +1,6 @@
 use super::{command_requires_auth, command_to_telemetry_event, reconcile_task_harness};
 use serde_json::json;
-use warp_cli::{
+use wish_cli::{
     agent::Harness,
     artifact::{ArtifactCommand, DownloadArtifactArgs, GetArtifactArgs, UploadArtifactArgs},
     task::{MessageCommand, MessageSendArgs, MessageWatchArgs, TaskCommand},

@@ -16,12 +16,12 @@ use crate::{
 use std::sync::Arc;
 use unindent::Unindent;
 use vim::vim::{MotionType, VimMode};
-use warp_editor::model::CoreEditorModel;
-use warp_editor::{
+use wish_editor::model::CoreEditorModel;
+use wish_editor::{
     content::buffer::{InitialBufferState, ToBufferCharOffset, ToBufferPoint},
     render::element::VerticalExpansionBehavior,
 };
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wish_core::{features::FeatureFlag, settings::Setting, ui::appearance::Appearance};
 use wishui::text::point::Point;
 use wishui::{

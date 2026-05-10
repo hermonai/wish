@@ -1,4 +1,4 @@
-//! Client-side pieces of the local-to-cloud Oz conversation handoff:
+//! Client-side pieces of the local-to-cloud Hermon Agent conversation handoff:
 //!
 //! - `touched_repos`: walks the conversation's action history to collect every
 //!   filesystem path the local agent has touched, groups those paths into git

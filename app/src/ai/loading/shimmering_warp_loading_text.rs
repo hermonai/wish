@@ -1,4 +1,4 @@
-//! Shimmering Warp loading text - renders Warp logo with shimmering text for loading states.
+//! Shimmering Wish loading text - renders the Wish/Hermon glyph with shimmering text.
 
 use wish_core::ui::appearance::Appearance;
 use wishui::elements::shimmering_text::{
@@ -7,10 +7,10 @@ use wishui::elements::shimmering_text::{
 use wishui::elements::Element;
 use wishui::{AppContext, SingletonEntity};
 
-/// Warp icon glyph character
+/// Wish/Hermon icon glyph character.
 const WARP_GLYPH: &str = "\u{E500}";
 
-/// Creates a shimmering text element with the Warp glyph.
+/// Creates a shimmering text element with the Wish/Hermon glyph.
 pub fn shimmering_warp_loading_text(
     text: impl Into<String>,
     font_size: f32,

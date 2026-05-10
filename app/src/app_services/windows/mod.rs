@@ -30,7 +30,7 @@ pub enum StartupArgsForwardingError {
 
 #[cfg(feature = "release_bundle")]
 pub fn pass_startup_args_to_existing_instance(
-    args: &warp_cli::AppArgs,
+    args: &wish_cli::AppArgs,
 ) -> Result<(), StartupArgsForwardingError> {
     if args.finish_update {
         return Err(StartupArgsForwardingError::IgnoredAfterAutoUpdate);

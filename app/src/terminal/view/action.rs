@@ -8,7 +8,7 @@ use command_corrections::Correction;
 use pathfinder_geometry::vector::Vector2F;
 use session_sharing_protocol::common::Role;
 use session_sharing_protocol::sharer::RoleUpdateReason;
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wishui::elements::HyperlinkUrl;
 use wishui::event::ModifiersState;
 use wishui::units::Lines;
@@ -281,7 +281,7 @@ pub enum TerminalAction {
     OpenCodeInWish {
         path: PathBuf,
         layout: crate::util::file::external_editor::settings::EditorLayout,
-        line_col: Option<warp_util::path::LineAndColumnArg>,
+        line_col: Option<wish_util::path::LineAndColumnArg>,
     },
     OpenWorkflowModal,
     OpenWorkflowModalForAIWorkflow(Workflow),

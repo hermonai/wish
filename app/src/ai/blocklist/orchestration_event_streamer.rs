@@ -21,7 +21,7 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::time::Duration;
 use uuid::Uuid;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use warp_multi_agent_api as api;
 use wish_core::features::FeatureFlag;
 use wishui::r#async::{SpawnedFutureHandle, Timer};

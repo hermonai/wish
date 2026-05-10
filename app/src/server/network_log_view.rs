@@ -8,9 +8,9 @@
 //! so the user can pick up items captured since the pane was opened. The
 //! pane header also exposes a refresh icon that reloads the snapshot in
 //! place.
-use warp_editor::content::buffer::InitialBufferState;
-use warp_editor::render::element::VerticalExpansionBehavior;
-use warp_util::path::LineAndColumnArg;
+use wish_editor::content::buffer::InitialBufferState;
+use wish_editor::render::element::VerticalExpansionBehavior;
+use wish_util::path::LineAndColumnArg;
 use wishui::{
     elements::{ChildView, MouseStateHandle},
     text_layout::ClipConfig,

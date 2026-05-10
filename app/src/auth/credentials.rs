@@ -1,18 +1,18 @@
 //! Representation of Wish user credentials.
 //!
 //! The primary representation is [`Credentials`], which is the source of truth for how a user is
-//! authenticated to Warp.
+//! authenticated to Wish.
 //!
 //! Credentials can be split into two halves:
 //! * [`LoginToken`], which is a long-lived token that we use to fetch user information.
 //!   When using Firebase, this is an OAuth2 refresh token.
 //! * [`AuthToken`], which is a short-lived token that's included in all other server requests.
 //!   When using Firebase, this is an OAuth2 access token.
-use warp_graphql::object_permissions::OwnerType;
+use wish_graphql::object_permissions::OwnerType;
 
 use super::user::FirebaseAuthTokens;
 
-/// Represents the different ways a user can authenticate with Warp.
+/// Represents the different ways a user can authenticate with Wish.
 #[derive(Clone, Debug)]
 pub enum Credentials {
     /// Firebase authentication with ID token and refresh token.
@@ -25,6 +25,10 @@ pub enum Credentials {
     },
     /// Authentication derived from an ambient browser session cookie.
     SessionCookie,
+    /// Guest mode — no Hermon server login. All AI features use local
+    /// providers (Ollama, hermon serve, etc.) or env-var-configured
+    /// API keys. The terminal, tools, and skills work fully offline.
+    Guest,
     /// Test credentials used in unit tests, integration tests, and skip_login builds.
     #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
     Test,
@@ -37,6 +41,7 @@ impl Credentials {
             Credentials::Firebase(tokens) => Some(tokens),
             Credentials::ApiKey { .. } => None,
             Credentials::SessionCookie => None,
+            Credentials::Guest => None,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => None,
         }
@@ -48,6 +53,7 @@ impl Credentials {
             Credentials::ApiKey { key, .. } => Some(key),
             Credentials::Firebase(_) => None,
             Credentials::SessionCookie => None,
+            Credentials::Guest => None,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => None,
         }
@@ -59,6 +65,7 @@ impl Credentials {
             Credentials::ApiKey { owner_type, .. } => *owner_type,
             Credentials::Firebase(_) => None,
             Credentials::SessionCookie => None,
+            Credentials::Guest => None,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => None,
         }
@@ -70,9 +77,15 @@ impl Credentials {
             Credentials::Firebase(tokens) => Some(&tokens.refresh_token),
             Credentials::ApiKey { .. } => None,
             Credentials::SessionCookie => None,
+            Credentials::Guest => None,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => None,
         }
+    }
+
+    /// Returns `true` when running in local/guest mode — no server auth.
+    pub fn is_guest(&self) -> bool {
+        matches!(self, Credentials::Guest)
     }
 
     /// Returns the short-lived token to use in HTTP requests to the server.
@@ -81,6 +94,7 @@ impl Credentials {
             Credentials::Firebase(tokens) => AuthToken::Firebase(tokens.id_token.clone()),
             Credentials::ApiKey { key, .. } => AuthToken::ApiKey(key.clone()),
             Credentials::SessionCookie => AuthToken::NoAuth,
+            Credentials::Guest => AuthToken::NoAuth,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => AuthToken::NoAuth,
         }
@@ -94,6 +108,7 @@ impl Credentials {
             ))),
             Credentials::ApiKey { key, .. } => Some(LoginToken::ApiKey(key.clone())),
             Credentials::SessionCookie => Some(LoginToken::SessionCookie),
+            Credentials::Guest => None,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => None,
         }
@@ -161,6 +176,15 @@ pub enum FirebaseToken {
 }
 
 impl FirebaseToken {
+    /// Returns `true` when this token was issued by a Hermon server rather than
+    /// Firebase. Hermon refresh tokens use a `hrmrt_` prefix.
+    pub fn is_hermon_token(&self) -> bool {
+        match self {
+            FirebaseToken::Refresh(rt) => rt.get().starts_with("hrmrt_"),
+            FirebaseToken::Custom(_) => false,
+        }
+    }
+
     /// Returns the url for trading this long lived token into an access token.
     pub fn access_token_url(&self, api_key: &str) -> String {
         // See https://firebase.google.com/docs/reference/rest/auth for info on these

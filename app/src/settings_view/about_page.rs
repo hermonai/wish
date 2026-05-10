@@ -7,8 +7,9 @@ use super::{
 };
 use crate::{appearance::Appearance, channel::ChannelState, workspace::WorkspaceAction};
 use wishui::{
+    assets::asset_cache::AssetSource,
     elements::{
-        Align, ConstrainedBox, Container, CrossAxisAlignment, Element, Flex, Icon,
+        Align, CacheOption, ConstrainedBox, Container, CrossAxisAlignment, Element, Flex, Image,
         MainAxisAlignment, MouseStateHandle, ParentElement, Wrap,
     },
     ui_components::{
@@ -48,6 +49,7 @@ impl View for AboutPageView {
 struct AboutPageWidget {
     copy_version_button_mouse_state: MouseStateHandle,
     welcome_button_mouse_state: MouseStateHandle,
+    onboarding_button_mouse_state: MouseStateHandle,
 }
 
 impl SettingsWidget for AboutPageWidget {
@@ -63,10 +65,7 @@ impl SettingsWidget for AboutPageWidget {
         appearance: &Appearance,
         _app: &AppContext,
     ) -> Box<dyn Element> {
-        let theme = appearance.theme();
         let ui_builder = appearance.ui_builder();
-
-        let logo_fill = theme.foreground();
 
         let version = ChannelState::app_version().unwrap_or(env!("CARGO_PKG_VERSION"));
 
@@ -102,15 +101,16 @@ impl SettingsWidget for AboutPageWidget {
                 .with_child(
                     Container::new(
                         ConstrainedBox::new(
-                            // Hermon-branded "H" mark. The asset path follows
-                            // the design team's "a1" naming convention
-                            // (`hermon-logo.svg`); replacing this single
-                            // file globally rebrands every surface that
-                            // uses it.
-                            Icon::new("bundled/svg/hermon-logo.svg", logo_fill).finish(),
+                            Image::new(
+                                AssetSource::Bundled {
+                                    path: "bundled/svg/hermon-logo-round.svg",
+                                },
+                                CacheOption::BySize,
+                            )
+                            .finish(),
                         )
-                        .with_height(72.)
-                        .with_width(92.)
+                        .with_height(80.)
+                        .with_width(80.)
                         .finish(),
                     )
                     .with_margin_bottom(18.)
@@ -125,6 +125,20 @@ impl SettingsWidget for AboutPageWidget {
                         })
                         .build()
                         .finish(),
+                )
+                .with_child(
+                    Container::new(
+                        ui_builder
+                            .span("by Hermon AI")
+                            .with_style(UiComponentStyles {
+                                font_size: Some(14.),
+                                ..Default::default()
+                            })
+                            .build()
+                            .with_margin_top(4.)
+                            .finish(),
+                    )
+                    .finish(),
                 )
                 .with_child(version_row.finish())
                 .with_child(
@@ -149,6 +163,23 @@ impl SettingsWidget for AboutPageWidget {
                             .finish(),
                     )
                     .with_margin_top(24.)
+                    .finish(),
+                )
+                .with_child(
+                    Container::new(
+                        ui_builder
+                            .button(
+                                ButtonVariant::Secondary,
+                                self.onboarding_button_mouse_state.clone(),
+                            )
+                            .with_text_label("Show Onboarding".to_string())
+                            .build()
+                            .on_click(|ctx, _, _| {
+                                ctx.dispatch_typed_action(WorkspaceAction::ShowHoaOnboardingFlow);
+                            })
+                            .finish(),
+                    )
+                    .with_margin_top(12.)
                     .finish(),
                 )
                 .finish(),

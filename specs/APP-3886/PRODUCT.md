@@ -30,7 +30,7 @@ The tab configs menu items become:
 1. **Agent** (if AI enabled)
 2. **Terminal** (on all platforms; on Windows this will be multiple items for each terminal type, including the default terminal item)
 3. **Additional shell variants** (Windows only — e.g., PowerShell, CMD — listed as individual top-level items instead of nested in a Terminal submenu)
-4. **Cloud Oz** (if AI enabled + AgentView + CloudMode flags)
+4. **Hermon Cloud** (if AI enabled + AgentView + CloudMode flags)
 5. **User tab configs** (from `~/.warp/tab_configs/` and `~/.warp/default_tab_configs/`)
 6. Separator
 7. **New worktree config** (submenu with repo-list sidecar — unchanged)
@@ -51,7 +51,7 @@ The sidecar panel contains:
 
 ### Sidecar buttons by item type
 
-**Built-in items (Terminal, shell variants, Oz, Cloud Oz):**
+**Built-in items (Terminal, shell variants, Oz, Hermon Cloud):**
 - "Make default" only.
 
 **User tab configs:**
@@ -67,7 +67,7 @@ This directly writes the **"Default mode for new sessions"** setting (see below)
 - **Terminal**: Sets default to `Terminal`.
 - **A shell variant** (Windows): Sets default to `Terminal`. (Shell-specific defaults are out of scope; this just ensures Cmd+T opens a terminal.)
 - **Oz**: Sets default to `Agent`.
-- **Cloud Oz**: Sets default to `Cloud Agent` (i.e. the tab you open to when you click this option now)
+- **Hermon Cloud**: Sets default to `Cloud Agent` (i.e. the tab you open to when you click this option now)
 - **A user tab config**: Sets default to that config (identified by source file path).
 
 When Cmd+T fires:

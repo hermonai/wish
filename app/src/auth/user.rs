@@ -2,11 +2,11 @@ use crate::server::datetime_ext::DateTimeExt;
 use anyhow::{anyhow, Result};
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
-use warp_graphql::{queries::get_user::FirebaseProfile, scalars::time::ServerTimestamp};
+use wish_graphql::{queries::get_user::FirebaseProfile, scalars::time::ServerTimestamp};
 
 use super::UserUid;
 
-pub use warp_server_client::auth::{TEST_USER_EMAIL, TEST_USER_UID};
+pub use wish_server_client::auth::{TEST_USER_EMAIL, TEST_USER_UID};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum AnonymousUserType {
@@ -26,9 +26,9 @@ pub enum PrincipalType {
     ServiceAccount,
 }
 
-impl From<warp_graphql::queries::get_user::PrincipalType> for PrincipalType {
-    fn from(value: warp_graphql::queries::get_user::PrincipalType) -> Self {
-        use warp_graphql::queries::get_user::PrincipalType as GqlPrincipalType;
+impl From<wish_graphql::queries::get_user::PrincipalType> for PrincipalType {
+    fn from(value: wish_graphql::queries::get_user::PrincipalType) -> Self {
+        use wish_graphql::queries::get_user::PrincipalType as GqlPrincipalType;
         match value {
             GqlPrincipalType::User => PrincipalType::User,
             GqlPrincipalType::ServiceAccount => PrincipalType::ServiceAccount,
@@ -36,18 +36,18 @@ impl From<warp_graphql::queries::get_user::PrincipalType> for PrincipalType {
     }
 }
 
-impl TryFrom<warp_graphql::mutations::create_anonymous_user::AnonymousUserType>
+impl TryFrom<wish_graphql::mutations::create_anonymous_user::AnonymousUserType>
     for AnonymousUserType
 {
     type Error = anyhow::Error;
     fn try_from(
-        value: warp_graphql::mutations::create_anonymous_user::AnonymousUserType,
+        value: wish_graphql::mutations::create_anonymous_user::AnonymousUserType,
     ) -> Result<Self, Self::Error> {
         match value {
-            warp_graphql::mutations::create_anonymous_user::AnonymousUserType::NativeClientAnonymousUser => Ok(AnonymousUserType::NativeClientAnonymousUser),
-            warp_graphql::mutations::create_anonymous_user::AnonymousUserType::NativeClientAnonymousUserFeatureGated => Ok(AnonymousUserType::NativeClientAnonymousUserFeatureGated),
-            warp_graphql::mutations::create_anonymous_user::AnonymousUserType::WebClientAnonymousUser => Ok(AnonymousUserType::WebClientAnonymousUser),
-            warp_graphql::mutations::create_anonymous_user::AnonymousUserType::Other(_) => {
+            wish_graphql::mutations::create_anonymous_user::AnonymousUserType::NativeClientAnonymousUser => Ok(AnonymousUserType::NativeClientAnonymousUser),
+            wish_graphql::mutations::create_anonymous_user::AnonymousUserType::NativeClientAnonymousUserFeatureGated => Ok(AnonymousUserType::NativeClientAnonymousUserFeatureGated),
+            wish_graphql::mutations::create_anonymous_user::AnonymousUserType::WebClientAnonymousUser => Ok(AnonymousUserType::WebClientAnonymousUser),
+            wish_graphql::mutations::create_anonymous_user::AnonymousUserType::Other(_) => {
                 Err(anyhow!("could not convert unknown anonymous user type"))
             },
         }
@@ -61,12 +61,12 @@ pub struct PersonalObjectLimits {
     pub workflow_limit: usize,
 }
 
-impl TryFrom<warp_graphql::queries::get_user::AnonymousUserPersonalObjectLimits>
+impl TryFrom<wish_graphql::queries::get_user::AnonymousUserPersonalObjectLimits>
     for PersonalObjectLimits
 {
     type Error = anyhow::Error;
     fn try_from(
-        value: warp_graphql::queries::get_user::AnonymousUserPersonalObjectLimits,
+        value: wish_graphql::queries::get_user::AnonymousUserPersonalObjectLimits,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             env_var_limit: value.env_var_limit as usize,
@@ -172,6 +172,26 @@ impl User {
             metadata: UserMetadata {
                 email: TEST_USER_EMAIL.to_string(),
                 display_name: None,
+                photo_url: None,
+            },
+            is_onboarded: true,
+            needs_sso_link: false,
+            anonymous_user_type: None,
+            is_on_work_domain: false,
+            linked_at: None,
+            personal_object_limits: None,
+            principal_type: PrincipalType::User,
+        }
+    }
+
+    /// Create a guest user for local/offline mode.
+    /// All terminal features work normally; AI uses local providers.
+    pub fn guest() -> Self {
+        Self {
+            local_id: UserUid::new("guest-local"),
+            metadata: UserMetadata {
+                email: String::new(),
+                display_name: Some("Guest".to_string()),
                 photo_url: None,
             },
             is_onboarded: true,

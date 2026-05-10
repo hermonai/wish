@@ -8,7 +8,7 @@ use chrono::{DateTime, Utc};
 use comfy_table::Cell;
 use inquire::{Confirm, InquireError, Password};
 use serde::Serialize;
-use warp_cli::{
+use wish_cli::{
     agent::OutputFormat,
     scope::ObjectScope,
     secret::{
@@ -17,11 +17,11 @@ use warp_cli::{
     },
     GlobalOptions,
 };
-use warp_graphql::{
+use wish_graphql::{
     managed_secrets::{ManagedSecret, ManagedSecretType},
     object::SpaceType,
 };
-use warp_managed_secrets::{client::SecretOwner, ManagedSecretManager, ManagedSecretValue};
+use wish_managed_secrets::{client::SecretOwner, ManagedSecretManager, ManagedSecretValue};
 use wish_core::features::FeatureFlag;
 use wishui::{platform::TerminationMode, AppContext, SingletonEntity as _};
 

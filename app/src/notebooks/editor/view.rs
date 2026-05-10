@@ -8,7 +8,7 @@ use std::{
 use markdown_parser::{parse_html, parse_markdown, FormattedText};
 use pathfinder_geometry::vector::vec2f;
 use string_offset::CharOffset;
-use warp_editor::{
+use wish_editor::{
     content::{
         anchor::Anchor,
         text::{BufferTextStyle, CodeBlockType, TextStyles},
@@ -26,7 +26,7 @@ use warp_editor::{
     selection::{TextDirection, TextUnit},
 };
 
-use warp_util::{path::LineAndColumnArg, user_input::UserInput};
+use wish_util::{path::LineAndColumnArg, user_input::UserInput};
 use wishui::{
     accessibility::{AccessibilityContent, ActionAccessibilityContent, WarpA11yRole},
     assets::asset_cache::{AssetCache, AssetHandle, AssetState},
@@ -847,7 +847,7 @@ pub enum EditorViewAction {
     Redo,
     OpenBlockInsertionMenu,
     /// Insert a block of the given type after the hovered location.
-    InsertBlock(warp_editor::content::text::BlockType),
+    InsertBlock(wish_editor::content::text::BlockType),
     Indent,
     Unindent,
     Tab,
@@ -1977,7 +1977,7 @@ impl RichTextEditorView {
     /// Inserts a new `block_type` block after the hovered block.
     pub(super) fn insert_block(
         &mut self,
-        block_type: warp_editor::content::text::BlockType,
+        block_type: wish_editor::content::text::BlockType,
         ctx: &mut ViewContext<Self>,
     ) {
         enum InsertionMode {
@@ -2030,7 +2030,7 @@ impl RichTextEditorView {
                         model.insert_block_after(insertion_offset + 1, block_type, ctx);
                     }
                     InsertionMode::DeleteSlashAndRestyleLine(cursor_position) => match block_type {
-                        warp_editor::content::text::BlockType::Item(item) => {
+                        wish_editor::content::text::BlockType::Item(item) => {
                             // Set one more offset position to the left to avoid additional linebreaks.
                             // Note: We can use `set_last_selection_head` because the menu cannot
                             // be opened when there are multiple selections.
@@ -2038,7 +2038,7 @@ impl RichTextEditorView {
                             model.insert_block_item(item, ctx);
                             model.cursor_at(cursor_position + 1, ctx);
                         }
-                        warp_editor::content::text::BlockType::Text(style) => {
+                        wish_editor::content::text::BlockType::Text(style) => {
                             // Note: We can use `set_last_selection_head` because the menu cannot
                             // be opened when there are multiple selections.
                             model.set_last_selection_head(cursor_position, ctx);
@@ -3222,7 +3222,7 @@ impl TypedActionView for RichTextEditorView {
     }
 }
 
-impl warp_editor::editor::EditorView for RichTextEditorView {
+impl wish_editor::editor::EditorView for RichTextEditorView {
     type RichTextAction = EditorViewAction;
 
     fn runnable_command_at<'a>(

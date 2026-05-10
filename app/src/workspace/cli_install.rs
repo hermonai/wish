@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{anyhow, Context, Result};
 use command::blocking::Command;
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 use wish_core::channel::ChannelState;
 
 /// Compute the target path where the symlink should be installed, based on channel
@@ -143,7 +143,7 @@ pub fn uninstall_cli() -> Result<()> {
     let cli_path = cli_install_target_path();
 
     if !cli_path.exists() {
-        return Err(anyhow!("Oz command is not currently installed."));
+        return Err(anyhow!("Wish command is not currently installed."));
     }
 
     // Safety check: verify it's actually a symlink before removing

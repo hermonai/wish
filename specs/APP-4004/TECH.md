@@ -14,7 +14,7 @@ Since `output_grid_displayed_height()` already delegates to `len_displayed()`, a
 
 ### 3.1 Feature flag
 
-`FeatureFlag::TrimTrailingBlankLines` added to `crates/warp_features/src/lib.rs`, included in `DOGFOOD_FLAGS`.
+`FeatureFlag::TrimTrailingBlankLines` added to `crates/wish_features/src/lib.rs`, included in `DOGFOOD_FLAGS`.
 
 ### 3.2 Backward scan in `GridHandler`
 
@@ -87,7 +87,7 @@ pub fn set_is_cli_agent_active(&mut self, active: bool) {
 
 ## 4. Modified Files
 
-- `crates/warp_features/src/lib.rs` — flag enum + DOGFOOD_FLAGS
+- `crates/wish_features/src/lib.rs` — flag enum + DOGFOOD_FLAGS
 - `app/src/terminal/model/grid/grid_handler.rs` — `bottommost_nonempty_row` field, backward scan, `content_len()`
 - `app/src/terminal/model/grid/ansi_handler.rs` — cache update in `on_finish_byte_processing()`
 - `app/src/terminal/model/blockgrid.rs` — `trim_trailing_blank_rows` flag, updated `len_displayed()`

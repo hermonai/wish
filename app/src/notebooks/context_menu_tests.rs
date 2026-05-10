@@ -1,6 +1,6 @@
 use pathfinder_geometry::vector::vec2f;
 use string_offset::ByteOffset;
-use warp_editor::model::CoreEditorModel;
+use wish_editor::model::CoreEditorModel;
 use wish_core::ui::appearance::Appearance;
 use wishui::{platform::WindowStyle, App};
 

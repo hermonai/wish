@@ -6,11 +6,11 @@ use std::{
 
 use anyhow::anyhow;
 use rquickjs::Context;
-use warp_js::{JsFunctionId, JsFunctionRegistry, SerializedJsValue};
+use wish_js::{JsFunctionId, JsFunctionRegistry, SerializedJsValue};
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "completions_v2")] {
-        use warp_completer::signatures::CommandSignature;
+        use wish_completer::signatures::CommandSignature;
 
         use crate::plugin::service::{
             RegisterCommandSignatureRequest, RegisterCommandSignatureService,

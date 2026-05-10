@@ -222,7 +222,7 @@ impl PassiveSuggestionsModel {
 
         self.abort_pending_requests(ctx);
 
-        // Startup commands run while bootstrapping an Oz cloud environment, so we skip
+        // Startup commands run while bootstrapping an Hermon Cloud environment, so we skip
         // passive prompt suggestion generation for them to avoid unnecessary requests.
         let is_oz_environment_startup_command = FeatureFlag::CloudModeSetupV2.is_enabled()
             && self

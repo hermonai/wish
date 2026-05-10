@@ -72,7 +72,7 @@ continue_locally if command.name == commands::CONTINUE_LOCALLY.name => {
 
     if !active_conversation_is_cloud_oz(conversation_id, ctx) {
         show_error_toast(
-            "/continue-locally requires an active cloud Oz conversation".to_owned(),
+            "/continue-locally requires an active cloud Hermon Agent conversation".to_owned(),
             ctx,
         );
         return true;
@@ -133,11 +133,11 @@ Unit tests, colocated with the modules being changed:
 
 Manual:
 
-- Cloud Oz run, in-progress, agent input visible: `/continue-locally` appears in the slash menu; Enter forks into a split pane and shows `Forked "<title>"`; Cmd-Enter forks into a new tab. (Inv. 2, 3, 5, 6, 7)
+- Hermon Cloud run, in-progress, agent input visible: `/continue-locally` appears in the slash menu; Enter forks into a split pane and shows `Forked "<title>"`; Cmd-Enter forks into a new tab. (Inv. 2, 3, 5, 6, 7)
 - Same run, type `/continue-locally do X next`, press Enter: forked conversation receives `do X next` as its first user query. (Inv. 4, 5, 6)
 - Source-load failure (simulate by clearing the conversation from history before pressing Enter): error toast surfaces with the existing copy. (Inv. 8)
-- Cloud Oz run viewed via shared session, completed but input still visible: command works as above. (Inv. 3)
-- Cloud Oz run viewed via completed transcript viewer: input is hidden; command is unreachable, existing tombstone button still works. (Inv. 2, Non-goals)
+- Hermon Cloud run viewed via shared session, completed but input still visible: command works as above. (Inv. 3)
+- Hermon Cloud run viewed via completed transcript viewer: input is hidden; command is unreachable, existing tombstone button still works. (Inv. 2, Non-goals)
 - Cloud Claude run: command absent from menu. (Inv. 2)
 - Local conversation (no `task_id`): command absent from menu. (Inv. 2)
 

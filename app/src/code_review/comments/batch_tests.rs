@@ -1,5 +1,5 @@
 use chrono::Local;
-use warp_editor::render::model::LineCount;
+use wish_editor::render::model::LineCount;
 use wishui::App;
 
 use crate::code::editor::line::EditorLineLocation;

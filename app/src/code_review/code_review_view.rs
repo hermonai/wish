@@ -192,14 +192,14 @@ use crate::code::ShowFindReferencesCard;
 use crate::code_review::comments::CommentId;
 use crate::ui_components::render_file_search_row::{render_file_search_row, FileSearchRowOptions};
 use crate::workspace::view::right_panel::{ReviewDestination, ReviewSubmissionResult};
-use warp_editor::model::CoreEditorModel;
+use wish_editor::model::CoreEditorModel;
 #[cfg(not(target_family = "wasm"))]
-use warp_editor::render::model::AutoScrollMode;
-use warp_editor::{
+use wish_editor::render::model::AutoScrollMode;
+use wish_editor::{
     content::buffer::{AutoScrollBehavior, InitialBufferState, SelectionOffsets},
     render::{element::VerticalExpansionBehavior, model::LineCount},
 };
-use warp_util::{
+use wish_util::{
     content_version::ContentVersion,
     file::{FileLoadError, FileSaveError},
     path::LineAndColumnArg,
@@ -6306,7 +6306,7 @@ impl CodeReviewView {
     fn insert_diff_hunk_as_context(
         &mut self,
         file_path: PathBuf,
-        line_range: Range<warp_editor::render::model::LineCount>,
+        line_range: Range<wish_editor::render::model::LineCount>,
         ctx: &mut ViewContext<Self>,
     ) {
         let Some(repo_path) = self.repo_path() else {
@@ -6479,7 +6479,7 @@ impl CodeReviewView {
     fn extract_diff_hunk_data(
         &self,
         file_path: &PathBuf,
-        line_range: &Range<warp_editor::render::model::LineCount>,
+        line_range: &Range<wish_editor::render::model::LineCount>,
     ) -> Option<(DiffHunk, u32, u32)> {
         if let CodeReviewViewState::Loaded(state) = self.state() {
             // Find the file state that matches the given file path

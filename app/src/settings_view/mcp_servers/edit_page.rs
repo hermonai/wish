@@ -8,7 +8,7 @@ use diesel::SqliteConnection;
 use parking_lot::Mutex;
 use pathfinder_geometry::vector::vec2f;
 use uuid::Uuid;
-use warp_editor::{
+use wish_editor::{
     content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
 };
 use wish_core::{

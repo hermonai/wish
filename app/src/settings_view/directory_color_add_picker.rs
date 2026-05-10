@@ -5,7 +5,7 @@ use ai::index::full_source_code_embedding::manager::{
     CodebaseIndexManager, CodebaseIndexManagerEvent,
 };
 use settings::Setting;
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
 use wishui::{
     elements::{
         Border, ChildView, ConstrainedBox, Container, CrossAxisAlignment, Flex, Hoverable,

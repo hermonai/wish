@@ -43,7 +43,7 @@ pub(super) struct WorkspaceMouseStates {
     pub(super) tools_panel_icon: MouseStateHandle,
     pub(super) title_bar_search_bar: MouseStateHandle,
     #[cfg(target_family = "wasm")]
-    pub(super) warp_logo: MouseStateHandle,
+    pub(super) hermon_logo: MouseStateHandle,
 }
 
 #[derive(Debug)]

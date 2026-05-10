@@ -130,7 +130,7 @@ impl MCPGalleryManager {
     /// Update gallery items from the server response
     pub fn update_gallery_items(
         &mut self,
-        templates: Vec<warp_graphql::mcp_gallery_template::MCPGalleryTemplate>,
+        templates: Vec<wish_graphql::mcp_gallery_template::MCPGalleryTemplate>,
         ctx: &mut ModelContext<Self>,
     ) {
         let mut gallery_items = HashMap::new();

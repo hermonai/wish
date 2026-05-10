@@ -1,6 +1,6 @@
 use crate::{send_telemetry_from_ctx, server::telemetry::TelemetryEvent};
 use itertools::Itertools as _;
-use warpui_extras::user_preferences::registry_backed::KEY_NOT_FOUND_ERR;
+use wishui_extras::user_preferences::registry_backed::KEY_NOT_FOUND_ERR;
 use windows_registry::CURRENT_USER;
 use windows_result::Error as WindowsError;
 use wishui::{Entity, ModelContext, SingletonEntity};

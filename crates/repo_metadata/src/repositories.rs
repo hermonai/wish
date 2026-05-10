@@ -3,7 +3,7 @@ use std::{collections::HashSet, future::Future, path::PathBuf};
 
 #[cfg(test)]
 use virtual_fs::{Stub, VirtualFS};
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 #[cfg(test)]
 use wishui::r#async::FutureId;
 use wishui::{AppContext, Entity, ModelContext, ModelHandle};

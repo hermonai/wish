@@ -43,9 +43,9 @@ pub struct WishServerConfig {
 impl WishServerConfig {
     pub fn production() -> Self {
         Self {
-            server_root_url: "https://wish.hermon.ai".into(),
-            rtc_server_url: "wss://wish.hermon.ai/graphql/v2".into(),
-            session_sharing_server_url: Some("wss://wish.hermon.ai/sessions".into()),
+            server_root_url: "https://api.hermon.ai".into(),
+            rtc_server_url: "wss://api.hermon.ai/graphql/v2".into(),
+            session_sharing_server_url: Some("wss://api.hermon.ai/sessions".into()),
             firebase_auth_api_key: "AIzaSyBdy3O3S9hrdayLJxJ7mriBR4qgUaUygAs".into(),
         }
     }

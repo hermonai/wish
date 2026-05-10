@@ -6,7 +6,7 @@
 //! also be cleared if the user clicks off of the selection.
 use std::fmt::Debug;
 use vec1::Vec1;
-use warp_terminal::model::grid::cell;
+use wish_terminal::model::grid::cell;
 
 use crate::terminal::model::ansi::CursorShape;
 use crate::terminal::model::cell::Flags;

@@ -1,6 +1,6 @@
 //! Renders the AI block "header", which includes a version of the AI "prompt" as it was rendered
 //! when the query was submitted.
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
 use wish_core::features::FeatureFlag;
 use wishui::elements::MouseStateHandle;
 use wishui::elements::{ChildView, Hoverable, SavePosition};

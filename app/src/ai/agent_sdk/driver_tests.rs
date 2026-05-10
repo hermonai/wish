@@ -1,8 +1,8 @@
 use std::{collections::HashMap, ffi::OsString, sync::Arc, time::Duration};
 
 use futures::channel::oneshot;
-use warp_cli::agent::Harness;
-use warp_cli::{
+use wish_cli::agent::Harness;
+use wish_cli::{
     OZ_CLI_ENV, OZ_HARNESS_ENV, OZ_PARENT_RUN_ID_ENV, OZ_RUN_ID_ENV, SERVER_ROOT_URL_OVERRIDE_ENV,
     SESSION_SHARING_SERVER_URL_OVERRIDE_ENV, WS_SERVER_URL_OVERRIDE_ENV,
 };
@@ -19,7 +19,7 @@ use crate::ai::agent::{
 };
 use crate::ai::mcp::parsing::normalize_mcp_json;
 use crate::ai::{agent_sdk::task_env_vars, ambient_agents::AmbientAgentTaskId};
-use warp_managed_secrets::ManagedSecretValue;
+use wish_managed_secrets::ManagedSecretValue;
 
 #[test]
 fn test_normalize_single_cli_server() {

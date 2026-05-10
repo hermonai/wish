@@ -8,7 +8,7 @@ use crate::util::bindings::CommandBinding;
 use crate::workspace::PaneViewLocator;
 use std::sync::Arc;
 use strum_macros::IntoStaticStr;
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wishui::keymap::BindingId;
 use wishui::{EntityId, WindowId};
 

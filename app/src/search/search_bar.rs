@@ -1,5 +1,5 @@
 use itertools::{Either, Itertools};
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::elements::ConstrainedBox;
 use wishui::FocusContext;
 

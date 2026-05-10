@@ -1,7 +1,7 @@
 use std::ops::Range;
 
 use ai::diff_validation::DiffType;
-use warp_editor::render::element::VerticalExpansionBehavior;
+use wish_editor::render::element::VerticalExpansionBehavior;
 use wishui::elements::new_scrollable::ScrollableAppearance;
 use wishui::elements::ScrollbarWidth;
 use wishui::{AppContext, View, ViewContext, ViewHandle};

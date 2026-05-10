@@ -14,7 +14,7 @@ use wishui::{
     ViewHandle,
 };
 
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::theme::color::internal_colors;
 use wish_core::ui::theme::Fill;

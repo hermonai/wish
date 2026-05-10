@@ -54,7 +54,7 @@ use crate::uri::browser_url_handler::update_browser_url;
 use crate::util::openable_file_type::FileTarget;
 use crate::view_components::ToastFlavor;
 use crate::workflows::workflow::Workflow;
-use warp_terminal::shell::{ShellName, ShellType};
+use wish_terminal::shell::{ShellName, ShellType};
 
 use std::any::Any;
 use std::cell::RefCell;
@@ -79,10 +79,10 @@ use tree::DEFAULT_FLEX_VALUE;
 use typed_path::TypedPath;
 use url::Url;
 use uuid::Uuid;
-use warp_cli::agent::Harness;
-use warp_util::path::convert_wsl_to_windows_host_path;
+use wish_cli::agent::Harness;
+use wish_util::path::convert_wsl_to_windows_host_path;
 #[cfg(feature = "local_fs")]
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wish_core::command::ExitCode;
 use wish_core::context_flag::ContextFlag;
 use wish_core::HostId;

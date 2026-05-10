@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc, time::Duration};
 use chrono::{DateTime, Utc};
 use futures_lite::future;
 use settings::{RespectUserSyncSetting, SyncToCloud};
-use warp_graphql::{object_permissions::AccessLevel, scalars::time::ServerTimestamp};
+use wish_graphql::{object_permissions::AccessLevel, scalars::time::ServerTimestamp};
 use wish_core::features::FeatureFlag;
 use wishui::{App, ModelHandle, SingletonEntity};
 

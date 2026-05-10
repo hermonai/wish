@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use comfy_table::Cell;
 use inquire::{error::InquireError, Confirm, Select};
 use serde::Serialize;
-use warp_cli::{
+use wish_cli::{
     agent::OutputFormat,
     environment::{EnvironmentCommand, ImageCommand},
     scope::ObjectScope,
@@ -32,11 +32,11 @@ use crate::util::time_format::format_approx_duration_from_now_utc;
 use crate::workspaces::user_profiles::UserProfiles;
 use crate::CloudObjectTypeAndId;
 use cynic::QueryBuilder;
-use warp_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
-use warp_graphql::queries::list_warp_dev_images::{
+use wish_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
+use wish_graphql::queries::list_warp_dev_images::{
     ListWarpDevImages, ListWarpDevImagesResult, ListWarpDevImagesVariables,
 };
-use warp_graphql::queries::user_repo_auth_status::UserRepoAuthStatusEnum;
+use wish_graphql::queries::user_repo_auth_status::UserRepoAuthStatusEnum;
 
 const WARP_DEV_ENVIRONMENTS_REPO: &str = "https://github.com/hermonai/wish-dev-environments";
 
@@ -426,7 +426,7 @@ impl EnvironmentCommandRunner {
         docker_image: Option<String>,
         github_repos: Vec<GithubRepo>,
         setup_commands: Vec<String>,
-        scope: warp_cli::scope::ObjectScope,
+        scope: wish_cli::scope::ObjectScope,
         ctx: &mut ModelContext<Self>,
     ) {
         if let Some(image) = docker_image {
@@ -464,7 +464,7 @@ impl EnvironmentCommandRunner {
         docker_image: String,
         github_repos: Vec<GithubRepo>,
         setup_commands: Vec<String>,
-        scope: warp_cli::scope::ObjectScope,
+        scope: wish_cli::scope::ObjectScope,
         ctx: &mut ModelContext<Self>,
     ) {
         let initial_sync = UpdateManager::as_ref(ctx)

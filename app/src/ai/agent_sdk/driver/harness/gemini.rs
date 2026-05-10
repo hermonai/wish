@@ -9,7 +9,7 @@ use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use tempfile::NamedTempFile;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wishui::{ModelHandle, ModelSpawner};
 
 use crate::ai::agent::conversation::AIConversationId;

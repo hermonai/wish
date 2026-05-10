@@ -4,7 +4,7 @@ use std::{
     sync::Arc,
 };
 
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 use warp_workflows::workflows as global_workflows;
 #[cfg(not(target_family = "wasm"))]
 use wishui::platform::OperatingSystem;

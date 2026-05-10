@@ -131,7 +131,7 @@ pub enum AgentViewEntryOrigin {
     InlineCodeReview,
     /// Entered agent view through a cloud agent prompt.
     CloudAgent,
-    /// Entered agent view by opening an existing non-Oz cloud agent run (live shared-session
+    /// Entered agent view by opening an existing non-Hermon Cloud agent run (live shared-session
     /// viewer or transcript viewer).
     ThirdPartyCloudAgent,
     /// Entered agent view via the CLI (e.g. `warp agent run`).

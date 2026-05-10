@@ -74,7 +74,7 @@ pub(super) async fn download_update_and_cleanup(
 const UPDATE_LOG_FILENAME: &str = "warp_update.log";
 
 fn autoupdate_log_file() -> Result<PathBuf> {
-    warp_logging::log_directory().map(|dir| dir.join(UPDATE_LOG_FILENAME))
+    wish_logging::log_directory().map(|dir| dir.join(UPDATE_LOG_FILENAME))
 }
 
 /// Checks the autoupdate log file from a previous update attempt.

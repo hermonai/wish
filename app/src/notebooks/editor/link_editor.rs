@@ -1,4 +1,4 @@
-use warp_editor::{editor::NavigationKey, model::RichTextEditorModel, render::model::RenderState};
+use wish_editor::{editor::NavigationKey, model::RichTextEditorModel, render::model::RenderState};
 use wishui::{
     elements::{
         AnchorPair, Container, Flex, MouseStateHandle, OffsetPositioning, OffsetType,

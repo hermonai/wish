@@ -15,7 +15,7 @@ use pathfinder_geometry::{
     rect::RectF,
     vector::{vec2f, Vector2F},
 };
-use warp_editor::{
+use wish_editor::{
     editor::EditorView,
     render::{
         element::{

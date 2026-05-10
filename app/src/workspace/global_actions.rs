@@ -16,7 +16,7 @@ use crate::undo_close::UndoCloseStack;
 use crate::workspace::{Workspace, WorkspaceAction};
 use crate::GlobalResourceHandlesProvider;
 use std::path::PathBuf;
-use warp_graphql::mutations::create_anonymous_user::AnonymousUserType;
+use wish_graphql::mutations::create_anonymous_user::AnonymousUserType;
 use wishui::windowing::WindowManager;
 use wishui::{AppContext, SingletonEntity, TypedActionView};
 

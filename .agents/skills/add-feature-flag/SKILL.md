@@ -22,7 +22,7 @@ your_feature_name = []
 ```
 
 ### 2. Add to FeatureFlag enum
-Add a new variant to the `FeatureFlag` enum in `crates/warp_features/src/lib.rs`:
+Add a new variant to the `FeatureFlag` enum in `crates/wish_features/src/lib.rs`:
 
 ```rust
 #[derive(Sequence)]

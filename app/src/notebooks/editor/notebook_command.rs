@@ -11,8 +11,8 @@ use syntect::{
     parsing::SyntaxSet,
     util::LinesWithEndings,
 };
-use warp_completer::signatures::CommandRegistry;
-use warp_editor::{
+use wish_completer::signatures::CommandRegistry;
+use wish_editor::{
     content::{
         anchor::Anchor,
         buffer::{Buffer, BufferEvent, EditOrigin},
@@ -26,7 +26,7 @@ use warp_editor::{
 };
 
 use markdown_parser::markdown_parser::CODE_BLOCK_DEFAULT_MARKDOWN_LANG;
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wishui::{elements::Align, r#async::SpawnedFutureHandle, AppContext};
 use wishui::{
     elements::{

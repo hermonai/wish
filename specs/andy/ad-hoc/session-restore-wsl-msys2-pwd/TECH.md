@@ -13,7 +13,7 @@ So by the time the path is written into `TerminalSnapshot::cwd`, it is already a
 
 **Relevant files:**
 
-- `crates/warp_terminal/src/shell/mod.rs (768–790)` — `ShellLaunchData::maybe_convert_absolute_path`, which performs the Unix → Windows conversion at snapshot time.
+- `crates/wish_terminal/src/shell/mod.rs (768–790)` — `ShellLaunchData::maybe_convert_absolute_path`, which performs the Unix → Windows conversion at snapshot time.
 - `app/src/terminal/view.rs (6506–6528)` — `active_session_path_if_local`, which calls `maybe_convert_absolute_path` and is the write path into the snapshot.
 - `app/src/pane_group/mod.rs (1533–1570)` — session restore logic that reads `TerminalSnapshot::cwd` and computes `startup_directory`.
 

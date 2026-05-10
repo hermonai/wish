@@ -13,7 +13,7 @@ use std::time::Duration;
 
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::ui::color::coloru_with_opacity;
 use wish_core::ui::theme::Fill;
 use wish_core::ui::{appearance::Appearance, theme::WarpTheme};
@@ -1062,7 +1062,7 @@ fn render_hover_card(
     //
     // Use `dirs::home_dir()` (cross-platform: `$HOME` on unix,
     // `%USERPROFILE%` on Windows) to find the home prefix, then defer to
-    // the shared `warp_util::path::user_friendly_path` helper so the cwd
+    // the shared `wish_util::path::user_friendly_path` helper so the cwd
     // displays as `~/foo` regardless of OS — and matches the same
     // tilde-substitution behaviour used by the tab title, prompt header,
     // and pwd chip.
@@ -1074,7 +1074,7 @@ fn render_hover_card(
         .filter(|s| !s.is_empty())
         .map(|cwd| {
             Text::new(
-                warp_util::path::user_friendly_path(&cwd, home_dir_str).into_owned(),
+                wish_util::path::user_friendly_path(&cwd, home_dir_str).into_owned(),
                 appearance.ui_font_family(),
                 appearance.monospace_font_size() - 1.,
             )

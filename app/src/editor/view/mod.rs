@@ -38,7 +38,7 @@ use pathfinder_color::ColorU;
 use settings::Setting as _;
 use snapshot::{EditorHeightShrinkDelay, ViewSnapshot};
 use vec1::{vec1, Vec1};
-use warp_util::{path::ShellFamily, user_input::UserInput};
+use wish_util::{path::ShellFamily, user_input::UserInput};
 use wish_core::{safe_error, send_telemetry_from_ctx};
 use wishui::platform::keyboard::KeyCode;
 use wishui::ui_components::button::ButtonTooltipPosition;
@@ -114,8 +114,8 @@ use std::{
     time::Duration,
 };
 use string_offset::{ByteOffset, CharOffset};
-use warp_completer::completer::Description;
-use warp_editor::editor::NavigationKey;
+use wish_completer::completer::Description;
+use wish_editor::editor::NavigationKey;
 use wishui::actions::StandardAction;
 use wishui::clipboard::ClipboardContent;
 use wishui::elements::{

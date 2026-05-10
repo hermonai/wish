@@ -59,7 +59,7 @@ There is no separate code-pane mock. In this iteration, code panes reuse the sam
 In this first iteration, the sidecar is supported for:
 
 - plain terminal panes
-- Oz agent terminal panes
+- Hermon agent terminal panes
 - CLI agent terminal panes
 - code panes
 - notebooks and plans

@@ -5,7 +5,7 @@ use wishui::{
 use crate::code::editor::goto_line::view::GoToLineView;
 use crate::code::editor::view::CodeEditorView;
 
-use warp_editor::content::buffer::ToBufferPoint;
+use wish_editor::content::buffer::ToBufferPoint;
 
 fn file_code_editor_view(app: &App, window_id: WindowId) -> ViewHandle<CodeEditorView> {
     let views = app

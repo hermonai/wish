@@ -55,9 +55,9 @@ use crate::{
 
 const CLOUD_AGENT_DOCS_URL: &str =
     "https://wish.hermon.ai/docs/agent-platform/cloud-agents/overview";
-const OZ_UPDATES_SECTION_HEADER: &str = "What's new in Oz";
+const OZ_UPDATES_SECTION_HEADER: &str = "What's new in Hermon Agent";
 
-// The maximum number of Oz updates from the changelog rendered in-line in the 'What's new in Oz section'.
+// The maximum number of Hermon Agent updates from the changelog rendered in-line in the 'What's new in Hermon Agent section'.
 const MAX_OZ_UPDATE_COUNT: usize = 4;
 
 const MAX_RECENT_CONVERSATION_COUNT: usize = 3;
@@ -409,7 +409,7 @@ impl View for AgentViewZeroStateBlock {
             HeaderProps {
                 title: "New Hermon cloud agent conversation".into(),
                 description: AgentViewDescription::CloudModeWithDocsLink,
-                icon: Icon::OzCloud,
+                icon: Icon::HermonCloud,
             }
         } else {
             let mut local_description =

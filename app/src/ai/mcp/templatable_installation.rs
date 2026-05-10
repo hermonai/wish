@@ -5,7 +5,7 @@ use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
 use uuid::Uuid;
-use warp_managed_secrets::ManagedSecretValue;
+use wish_managed_secrets::ManagedSecretValue;
 
 use crate::ai::mcp::{TemplatableMCPServer, TemplateVariable};
 use siphasher::sip::SipHasher;

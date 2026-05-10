@@ -10,7 +10,7 @@ crash_reporting = ["dep:sentry", "dep:sentry-log"]
 integration_tests = []
 local_fs = []
 release_bundle = []
-test-util = ["dep:mockito", "warp_features/test-util"]
+test-util = ["dep:mockito", "wish_features/test-util"]
 
 [dependencies]
 anyhow.workspace = true
@@ -21,7 +21,7 @@ dirs.workspace = true
 directories.workspace = true
 shellexpand.workspace = true
 enum-iterator.workspace = true
-warp_features.workspace = true
+wish_features.workspace = true
 itertools.workspace = true
 getset.workspace = true
 http.workspace = true
@@ -50,7 +50,7 @@ async-broadcast.workspace = true
 futures.workspace = true
 line-ending.workspace = true
 wishui.workspace = true
-warpui_extras = { workspace = true, features = ["default"] }
+wishui_extras = { workspace = true, features = ["default"] }
 mockito = { workspace = true, optional = true }
 asset_macro.workspace = true
 string-offset.workspace = true

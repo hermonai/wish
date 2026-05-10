@@ -23,7 +23,7 @@ use crate::{
 use futures::{pin_mut, FutureExt as _};
 use itertools::Itertools;
 use settings::Setting as _;
-use warp_completer::completer::{CommandExitStatus, CommandOutput};
+use wish_completer::completer::{CommandExitStatus, CommandOutput};
 use wish_core::user_preferences::GetUserPreferences;
 
 use super::ChipResult;
@@ -592,7 +592,7 @@ impl CurrentPrompt {
         current_dir_path: Option<String>,
         environment_variables: Option<HashMap<String, String>>,
         timeout: Option<Duration>,
-    ) -> (Option<warp_completer::completer::CommandOutput>, bool) {
+    ) -> (Option<wish_completer::completer::CommandOutput>, bool) {
         let command_future = session
             .execute_command(
                 &command,

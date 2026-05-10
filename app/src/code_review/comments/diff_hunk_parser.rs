@@ -2,7 +2,7 @@
 
 use ai::agent::action::CommentSide;
 use num_traits::SaturatingSub;
-use warp_editor::render::model::LineCount;
+use wish_editor::render::model::LineCount;
 
 use crate::{
     code::editor::line::EditorLineLocation,

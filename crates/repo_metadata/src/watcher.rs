@@ -10,7 +10,7 @@ use std::{
 use futures::{future::OptionFuture, FutureExt as _};
 use wishui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle};
 
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 
 use crate::{repository::SubscriberId, RepoMetadataError, Repository};
 

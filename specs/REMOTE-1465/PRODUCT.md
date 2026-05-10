@@ -3,7 +3,7 @@ Linear: [REMOTE-1465](https://linear.app/warpdotdev/issue/REMOTE-1465)
 Figma: none provided
 
 ## Summary
-When the Oz agent creates or edits a file during a cloud run, the file's absolute path is automatically added to the end-of-run snapshot declarations so the file is uploaded alongside the existing repo-diff snapshot. This closes the handoff gap for files the agent writes outside any git repo (or inside one but not visible to `git diff HEAD`), so the next execution of the same run can see them.
+When the Hermon agent creates or edits a file during a cloud run, the file's absolute path is automatically added to the end-of-run snapshot declarations so the file is uploaded alongside the existing repo-diff snapshot. This closes the handoff gap for files the agent writes outside any git repo (or inside one but not visible to `git diff HEAD`), so the next execution of the same run can see them.
 
 ## Problem
 The REMOTE-1332 snapshot pipeline captures workspace state via `git diff --binary HEAD` plus `git ls-files --others --exclude-standard` for every declared `.git` directory under the workspace. That captures tracked changes and untracked non-gitignored files inside a declared repo, but it silently loses:
@@ -36,7 +36,7 @@ After a cloud → cloud handoff, the next execution never sees those files, so a
    - The run was started with `--no-snapshot`.
    In these cases, no declarations are written and no file-edit observations have any user-visible effect.
 
-10. The hook only runs for the Warp Oz SDK driver. Third-party harnesses (e.g. Claude Code) do not participate in this mechanism; their file writes go through their own tools and are not observed (this can and will be fixed in follow-up PRs, using each agent's hook system to track file edits).
+10. The hook only runs for the Warp Hermon SDK driver. Third-party harnesses (e.g. Claude Code) do not participate in this mechanism; their file writes go through their own tools and are not observed (this can and will be fixed in follow-up PRs, using each agent's hook system to track file edits).
 
 11. Writer failures (declarations file not writable, path normalization error, file system I/O error) are logged at WARN level and absorbed. The agent run, the current tool call, and the end-of-run snapshot upload all continue as if no file entry were recorded for that call.
 

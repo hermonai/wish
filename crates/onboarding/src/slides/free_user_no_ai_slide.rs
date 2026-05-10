@@ -122,7 +122,7 @@ impl FreeUserNoAiSlide {
             0,
             Icon::Code2,
             "Agent driven development with Wish's built-in agent",
-            "Iterate, plan, and build with Oz: Wish's built-in agent. Available locally or in the cloud.",
+            "Iterate, plan, and build with Hermon Agent: Wish's built-in agent. Available locally or in Hermon Cloud.",
             agent_price_badge.to_string(),
             true, // badge is green
             self.agent_mouse_state.clone(),

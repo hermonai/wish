@@ -10,7 +10,7 @@ This required two coordinated changes:
 
 ## Relevant code
 
-- `crates/warpui_extras/src/user_preferences/toml_backed.rs` — TOML preferences backend (`new()`, `reload_from_disk()`)
+- `crates/wishui_extras/src/user_preferences/toml_backed.rs` — TOML preferences backend (`new()`, `reload_from_disk()`)
 - `app/src/settings/init.rs` — `init_public_user_preferences()`, `init()`, `handle_warp_config_change()`
 - `app/src/settings/mod.rs` — `SettingsFileError` enum
 - `crates/settings/src/manager.rs` — `SettingsManager::reload_all_public_settings()`, `validate_all_public_settings()`
@@ -138,7 +138,7 @@ sequenceDiagram
 - `test_validate_detects_invalid_values` — startup validation catches bad values
 - `test_validate_returns_empty_when_all_valid` — startup validation passes for good values
 
-### Unit tests (`crates/warpui_extras/src/user_preferences/toml_backed_tests.rs`)
+### Unit tests (`crates/wishui_extras/src/user_preferences/toml_backed_tests.rs`)
 - `test_new_with_invalid_toml_returns_error_and_recovers_on_reload` — parse failure → recovery
 
 ### Integration tests (`crates/integration/src/test/settings_file_errors.rs`)

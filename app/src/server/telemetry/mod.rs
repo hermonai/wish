@@ -198,7 +198,7 @@ impl TelemetryApi {
 
     #[cfg(not(target_family = "wasm"))]
     fn persist_events_to_telemetry_log_file(&self, events: Vec<Event>) -> Result<()> {
-        let log_directory = warp_logging::log_directory()?;
+        let log_directory = wish_logging::log_directory()?;
         let telemetry_file_path = log_directory.join(&*ChannelState::telemetry_file_name());
 
         let file = OpenOptions::new()

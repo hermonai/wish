@@ -51,12 +51,12 @@ define_settings_group!(TestSettings, settings: [
 pub fn init_and_register_user_preferences(ctx: &mut AppContext) {
     ctx.add_singleton_model(move |_| {
         crate::PublicPreferences::new(Box::<
-            warpui_extras::user_preferences::in_memory::InMemoryPreferences,
+            wishui_extras::user_preferences::in_memory::InMemoryPreferences,
         >::default())
     });
     ctx.add_singleton_model(move |_| {
         crate::PrivatePreferences::new(Box::<
-            warpui_extras::user_preferences::in_memory::InMemoryPreferences,
+            wishui_extras::user_preferences::in_memory::InMemoryPreferences,
         >::default())
     });
 }
@@ -183,12 +183,12 @@ mod reload_all_public_settings_tests {
     fn init_prefs(ctx: &mut AppContext) {
         ctx.add_singleton_model(move |_| -> crate::PublicPreferences {
             crate::PublicPreferences::new(Box::<
-                warpui_extras::user_preferences::in_memory::InMemoryPreferences,
+                wishui_extras::user_preferences::in_memory::InMemoryPreferences,
             >::default())
         });
         ctx.add_singleton_model(move |_| -> crate::PrivatePreferences {
             crate::PrivatePreferences(Box::<
-                warpui_extras::user_preferences::in_memory::InMemoryPreferences,
+                wishui_extras::user_preferences::in_memory::InMemoryPreferences,
             >::default())
         });
     }
@@ -385,7 +385,7 @@ mod reload_all_public_settings_tests {
     #[test]
     fn test_validate_detects_invalid_values() {
         wishui::App::test((), |mut app| async move {
-            let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+            let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
             app.update(init_prefs);
             app.add_singleton_model(|_| SettingsManager::default());
             ReloadTestSettings::register(&mut app);
@@ -424,7 +424,7 @@ mod reload_all_public_settings_tests {
     #[test]
     fn test_validate_returns_empty_when_all_valid() {
         wishui::App::test((), |mut app| async move {
-            let _guard = warp_features::FeatureFlag::SettingsFile.override_enabled(true);
+            let _guard = wish_features::FeatureFlag::SettingsFile.override_enabled(true);
             app.update(init_prefs);
             app.add_singleton_model(|_| SettingsManager::default());
             ReloadTestSettings::register(&mut app);
@@ -507,7 +507,7 @@ mod write_to_preferences_tests {
     #[test]
     fn test_no_spurious_write_with_format_differences() {
         let prefs =
-            Box::<warpui_extras::user_preferences::in_memory::InMemoryPreferences>::default();
+            Box::<wishui_extras::user_preferences::in_memory::InMemoryPreferences>::default();
 
         // Simulate what a TOML backend produces after a round-trip:
         // - null fields (optional_field) are stripped
@@ -541,7 +541,7 @@ mod write_to_preferences_tests {
     #[test]
     fn test_no_spurious_write_with_hashmap_and_missing_options() {
         use std::collections::HashMap;
-        use warpui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
+        use wishui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
 
         #[derive(
             Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, schemars::JsonSchema,
@@ -604,7 +604,7 @@ mod write_to_preferences_tests {
     /// null-stripping and key-reordering happens.
     #[test]
     fn test_no_spurious_write_with_toml_backend() {
-        use warpui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
+        use wishui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
 
         let dir = tempfile::tempdir().unwrap();
         let file_path = dir.path().join("settings.toml");

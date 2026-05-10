@@ -17,23 +17,23 @@ Relevant code (prior state):
   Default-subpage fallback and `is_ai_subpage` / `ai_subpages()` all referenced
   `SettingsSection::Oz`.
 - `app/src/settings_view/ai_page.rs` — `AISubpage::Oz` variant, heading literal
-  `"Oz"`, and multiple description strings referencing "Oz" or "Oz agent".
+  `"Oz"`, and multiple description strings referencing "Oz" or "Hermon agent".
 - `crates/onboarding/src/slides/agent_slide.rs` — header title
-  `"Customize your Agent, Oz"` and checkbox label `"Disable Oz"`.
+  `"Customize your Agent"` and checkbox label `"Disable built-in agent"`.
 - Approximately 15 additional files contained `SettingsSection::Oz` usages
   for navigation actions and settings page dispatch.
 
 Out-of-scope references that must be preserved as "Oz" (verified by grep):
 
-- `app/src/settings_view/mod.rs` — `SettingsSection::OzCloudAPIKeys` display
-  `"Oz Cloud API Keys"` and its `FromStr` round-trip.
+- `app/src/settings_view/mod.rs` — `SettingsSection::HermonCloudAPIKeys` display
+  `"Hermon Cloud API Keys"` and its `FromStr` round-trip.
 - `app/src/terminal/view/ambient_agent/harness_selector.rs:62` — `Harness::Oz`
   display name "Oz" in the cloud agent harness menu.
 - `app/src/ai/blocklist/agent_view/zero_state_block.rs:388, 404` — "New Hermon cloud
   agent conversation" / "New Hermon agent conversation". Zero-state copy is not
   covered by issue #1063 and must not be touched in this PR.
-- "Oz changelog" toggle labels in `ai_page.rs` (`OtherAIWidget`) are kept as
-  "Oz changelog" because they refer to Oz platform release notes, not the
+- "Hermon Agent changelog" toggle labels in `ai_page.rs` (`OtherAIWidget`) are kept as
+  "Hermon Agent changelog" because they refer to Hermon Cloud release notes, not the
   in-app agent.
 
 ## Proposed changes
@@ -47,7 +47,7 @@ Out-of-scope references that must be preserved as "Oz" (verified by grep):
    - Update `is_ai_subpage`, `ai_subpages()`, and the two default-subpage
      fallbacks (`SettingsSection::AI => SettingsSection::WarpAgent`) to use the
      new variant name.
-   - Leave `SettingsSection::OzCloudAPIKeys` and its `"Oz Cloud API Keys"`
+   - Leave `SettingsSection::HermonCloudAPIKeys` and its `"Hermon Cloud API Keys"`
      display untouched. Do not alter the `"Agents"` umbrella name or subpage
      order.
    - Update the doc-comment on `SettingsSection::AI` to reference `WarpAgent`.
@@ -62,20 +62,20 @@ Out-of-scope references that must be preserved as "Oz" (verified by grep):
      for legacy muscle memory, allowed by Behavior #7) and keep `"warp agent"`
      so the new label is directly searchable.
    - Replace all remaining user-visible description strings that referenced
-     "Oz" or "Oz agent" with "the Warp Agent" / "Warp Agent" as appropriate.
+     "Oz" or "Hermon agent" with "the Warp Agent" / "Warp Agent" as appropriate.
      Specifically: command denylist/allowlist descriptions, base model
      description, codebase context description, MCP zero-state and
      allowlist/denylist descriptions, Rules description, Warp Drive context
      description, API keys description, and MCP servers description.
-   - Preserve the two "Oz changelog" toggle labels in `OtherAIWidget` and
-     `SettingActionPairDescriptions` unchanged — these refer to Oz platform
+   - Preserve the two "Hermon Agent changelog" toggle labels in `OtherAIWidget` and
+     `SettingActionPairDescriptions` unchanged — these refer to Hermon Cloud
      release notes, not the in-app agent.
 
 3. `crates/onboarding/src/slides/agent_slide.rs`
    - `render_header`: change paragraph text from `"Customize your Agent, Oz"`
      to `"Customize your Warp Agent"`. Keep font size, weight, layout, and
      surrounding subtitle unchanged.
-   - `render_disable_oz_section`: change checkbox label from `"Disable Oz"` to
+   - `render_disable_oz_section`: change checkbox label from `"Disable built-in agent"` to
      `"Disable Warp Agent"`. Keep styling, spacing, `disable_oz_mouse` state
      handle, and the dispatched `AgentSlideAction::ToggleDisableOz` action
      unchanged.
@@ -118,7 +118,7 @@ Runtime checks:
   `SettingsSection::WarpAgent`, exercising Behavior #8. All helper tests
   (`is_ai_subpage`, `ai_subpages_list_contains_all_ai_subpage_variants`,
   filter/visibility tests) are updated to reference `SettingsSection::WarpAgent`.
-  Existing tests for `OzCloudAPIKeys` are left untouched to guard against
+  Existing tests for `HermonCloudAPIKeys` are left untouched to guard against
   accidentally renaming the cloud subpage.
 - `cargo nextest run -p onboarding` (if a test crate exists for the onboarding
   slide strings; otherwise, this rename is a pure string change and manual
@@ -128,8 +128,8 @@ Behavior-to-verification mapping (from `product.md`):
 
 - Behavior #1, #2, #3, #9: manually open the settings UI and confirm the
   sidebar entry reads "Warp Agent", the subpage renders unchanged content, the
-  heading above the global toggle reads "Warp Agent", and the "Oz Cloud API
-  Keys" entry under "Cloud platform" still reads "Oz Cloud API Keys".
+  heading above the global toggle reads "Warp Agent", and the "Hermon Cloud API
+  Keys" entry under "Cloud platform" still reads "Hermon Cloud API Keys".
 - Behavior #4: toggle the global AI switch and verify it still enables and
   disables AI features as before.
 - Behavior #5, #6, #10: launch onboarding (or jump to the agent slide via the
@@ -137,7 +137,7 @@ Behavior-to-verification mapping (from `product.md`):
   checkbox label, autonomy options, and step progress are all correct.
 - Behavior #7: search within the settings modal using each of
   `"warp agent"`, `"ai"`, `"agent"`, `"oz"` (should still reach the subpage) and
-  `"oz cloud"` (should reach the cloud subpage only).
+  `"hermon cloud"` (should reach the cloud subpage only).
 - Behavior #8: confirm both `"Oz"` and `"Warp Agent"` resolve to
   `SettingsSection::WarpAgent` via the `FromStr` round-trip test.
 - Behavior #11: no automated accessibility test exists for these labels; manual
@@ -163,9 +163,9 @@ Manual verification artifacts:
   `oz`-based search still lands on the subpage.
 - Risk: accidentally renaming cloud Oz surfaces. Mitigation: grep for `"Oz"`
   literals confirms `harness_selector.rs`, `zero_state_block.rs`, and
-  `OzCloudAPIKeys` are untouched. The "Oz changelog" toggle labels are
+  `HermonCloudAPIKeys` are untouched. The "Hermon Agent changelog" toggle labels are
   explicitly preserved.
-- Risk: stale comments inside `agent_slide.rs` that still reference "Disable Oz"
+- Risk: stale comments inside `agent_slide.rs` that still reference the old built-in agent disable label
   mislead future readers. Mitigation: internal identifiers (`disable_oz_mouse`,
   `AgentSlideAction::ToggleDisableOz`, etc.) intentionally retain the `oz` name;
   comments describing them are acceptable to leave as-is per `WARP.md`.
@@ -179,7 +179,7 @@ Manual verification artifacts:
   `disable_oz_mouse`, and related settings/telemetry keys) are intentionally
   kept as-is. They require more care around persisted settings, telemetry event
   names, and potentially GraphQL/analytics schemas.
-- The broader zero-state and blocklist strings that still say "Oz agent" (e.g.,
+- The broader zero-state and blocklist strings that still say "Hermon agent" (e.g.,
   in `zero_state_block.rs`) should be revisited in a follow-up issue once
   product confirms which of those belong to the in-app agent vs. the cloud agent
   orchestration platform.

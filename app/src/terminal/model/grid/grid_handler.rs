@@ -1,5 +1,5 @@
 // The code in this file is adapted from the alacritty_terminal crate under the
-// Apache license; see: crates/warp_terminal/src/model/LICENSE-ALACRITTY.
+// Apache license; see: crates/wish_terminal/src/model/LICENSE-ALACRITTY.
 
 #[path = "ansi_handler.rs"]
 mod ansi_handler;
@@ -27,11 +27,11 @@ use itertools::Itertools;
 use lazy_static::lazy_static;
 use unicode_width::UnicodeWidthChar;
 use urlocator::{UrlLocation, UrlLocator};
-use warp_terminal::model::grid::CellType;
-use warp_terminal::model::grid::FlatStorage;
-pub use warp_terminal::model::TermMode;
-use warp_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
-use warp_util::path::CleanPathResult;
+use wish_terminal::model::grid::CellType;
+use wish_terminal::model::grid::FlatStorage;
+pub use wish_terminal::model::TermMode;
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
+use wish_util::path::CleanPathResult;
 use wish_core::features::FeatureFlag;
 use wish_core::semantic_selection::{SemanticSelection, SMART_SELECT_MATCH_WINDOW_LIMIT};
 use wish_core::{safe_assert, safe_assert_eq};
@@ -2498,7 +2498,7 @@ impl GridHandler {
     /// appropriately.
     #[cfg(test)]
     pub(super) fn input_at_cursor(&mut self, text: &str) {
-        use warp_terminal::model::VisiblePoint;
+        use wish_terminal::model::VisiblePoint;
 
         let columns = self.columns();
         let mut last_row = self.grid.cursor.point.row;

@@ -6,7 +6,7 @@ use std::{
 use crate::ai::skills::SkillOpenOrigin;
 use ai::skills::SkillReference;
 use serde::{Deserialize, Serialize};
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wishui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity, ViewHandle, WindowId};
 
 use crate::{

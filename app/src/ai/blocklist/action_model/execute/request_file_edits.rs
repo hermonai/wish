@@ -2,7 +2,7 @@ mod apply_diff_model;
 mod diff_application;
 mod telemetry;
 
-use warp_util::file::FileSaveError;
+use wish_util::file::FileSaveError;
 
 use std::collections::HashMap;
 use std::path::PathBuf;

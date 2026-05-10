@@ -85,13 +85,13 @@ Blank lines are ignored. Malformed lines (invalid JSON, missing fields, missing 
 - The uploaded manifest remains the authoritative on-GCS record regardless of what appears in the logs.
 
 ### Block snapshot upload during harness run
-While a third-party harness is running, the Oz agent driver periodically captures a `SerializedBlock` snapshot of the terminal TUI state and uploads it to the server. This happens at save points (periodic, post-turn, final) and is transparent to the user.
+While a third-party harness is running, the Hermon agent driver periodically captures a `SerializedBlock` snapshot of the terminal TUI state and uploads it to the server. This happens at save points (periodic, post-turn, final) and is transparent to the user.
 
 ### Client-side conversation viewer restoration and snapshot hydration
 When a user opens a cloud agent conversation in the Warp client, the client uses shared restoration plumbing and dispatches by harness type. This path restores saved conversation output for viewing; it does not resume the third-party harness process or make `--conversation` continue a Claude Code session.
 
 1. The client fetches conversation metadata and identifies the harness type (e.g. `ClaudeCode`).
-2. Oz conversations restore the native AI conversation data.
+2. Hermon Agent conversations restore the native AI conversation data.
 3. Supported third-party harness conversations download the block snapshot via `GET /agent/conversations/{id}/block-snapshot`.
 4. The block snapshot is deserialized and inserted into the terminal model as restored block content, displaying the agent's terminal output inline.
 5. The conversation appears in the conversation history and can be navigated to from the agent mode homepage.

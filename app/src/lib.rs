@@ -160,8 +160,8 @@ use server::voice_transcriber::ServerVoiceTranscriber;
 #[cfg(feature = "local_fs")]
 use settings::import::model::ImportedConfigModel;
 use voice::transcriber::VoiceTranscriber;
-use warp_cli::GlobalOptions;
-use warp_cli::{agent::AgentCommand, CliCommand};
+use wish_cli::GlobalOptions;
+use wish_cli::{agent::AgentCommand, CliCommand};
 
 #[cfg(feature = "local_fs")]
 use repo_metadata::{
@@ -266,7 +266,7 @@ use std::sync::Arc;
 use terminal::input;
 use terminal::session_settings::SessionSettings;
 use url::Url;
-use warp_managed_secrets::ManagedSecretManager;
+use wish_managed_secrets::ManagedSecretManager;
 use wish_core::execution_mode::{AppExecutionMode, ExecutionMode};
 use workspace::sync_inputs::SyncedInputState;
 
@@ -292,7 +292,7 @@ use crate::util::bindings::is_binding_cross_platform;
 use crate::workspace::{PaneViewLocator, Workspace, WorkspaceAction};
 use crate::workspaces::update_manager::TeamUpdateManager;
 use crate::workspaces::user_workspaces::UserWorkspaces;
-use warp_logging::LogDestination;
+use wish_logging::LogDestination;
 
 // Re-export the send_telemetry_from_ctx macro at the crate root level
 pub use wish_core::send_telemetry_from_app_ctx;
@@ -303,7 +303,7 @@ pub use wish_core::{safe_debug, safe_error, safe_info, safe_warn};
 
 use crate::antivirus::AntivirusInfo;
 #[cfg(feature = "local_fs")]
-use warp_files::FileModel;
+use wish_files::FileModel;
 use wishui::platform::TerminationMode;
 use wishui::windowing::state::ApplicationStage;
 use wishui::{AppContext, SingletonEntity, WindowId};
@@ -348,7 +348,7 @@ fn determine_agent_source(
 pub enum LaunchMode {
     /// Run the regular GUI application.
     App {
-        args: warp_cli::AppArgs,
+        args: wish_cli::AppArgs,
         /// API key for server authentication, if provided via `--api-key` or `WISH_API_KEY`.
         /// Only used on dogfood channels.
         api_key: Option<String>,
@@ -356,7 +356,7 @@ pub enum LaunchMode {
 
     /// Run the Wish command-line SDK.
     CommandLine {
-        command: warp_cli::CliCommand,
+        command: wish_cli::CliCommand,
         global_options: GlobalOptions,
         debug: bool,
         /// Whether this CLI invocation is running in a sandboxed environment.
@@ -384,13 +384,13 @@ pub enum LaunchMode {
 }
 
 impl LaunchMode {
-    fn args(&self) -> Cow<'_, warp_cli::AppArgs> {
+    fn args(&self) -> Cow<'_, wish_cli::AppArgs> {
         match self {
             LaunchMode::App { args, .. } => Cow::Borrowed(args),
             LaunchMode::CommandLine { .. }
             | LaunchMode::Test { .. }
             | LaunchMode::RemoteServerProxy
-            | LaunchMode::RemoteServerDaemon { .. } => Cow::Owned(warp_cli::AppArgs::default()),
+            | LaunchMode::RemoteServerDaemon { .. } => Cow::Owned(wish_cli::AppArgs::default()),
         }
     }
 
@@ -600,7 +600,7 @@ pub fn run() -> Result<()> {
     init_feature_flags();
 
     // Parse command-line arguments.
-    let args = warp_cli::Args::from_env();
+    let args = wish_cli::Args::from_env();
 
     // Server URL overrides are only honored on internal dev channels. Release channels silently
     // ignore `--server-root-url` / `--ws-server-url` / `--session-sharing-server-url` (and their
@@ -670,11 +670,11 @@ pub fn run() -> Result<()> {
         #[cfg(windows)]
         if command.prints_to_stdout() {
             // We attach a console to ensure that all standard output gets printed correctly.
-            warp_util::windows::attach_to_parent_console();
+            wish_util::windows::attach_to_parent_console();
         }
         match command {
             #[cfg(all(feature = "local_tty", unix))]
-            warp_cli::Command::Worker(warp_cli::WorkerCommand::TerminalServer(args)) => {
+            wish_cli::Command::Worker(wish_cli::WorkerCommand::TerminalServer(args)) => {
                 // If we were asked to run as a terminal server (as opposed to the main
                 // GUI application), do so immediately.  Ideally, the terminal server would
                 // be a separate binary, but it's much easier to distribute a single binary,
@@ -684,11 +684,11 @@ pub fn run() -> Result<()> {
                 return Ok(());
             }
             #[cfg(feature = "plugin_host")]
-            warp_cli::Command::Worker(warp_cli::WorkerCommand::PluginHost { .. }) => {
+            wish_cli::Command::Worker(wish_cli::WorkerCommand::PluginHost { .. }) => {
                 return crate::run_plugin_host();
             }
             #[cfg(feature = "local_tty")]
-            warp_cli::Command::Worker(warp_cli::WorkerCommand::MinidumpServer { socket_name }) => {
+            wish_cli::Command::Worker(wish_cli::WorkerCommand::MinidumpServer { socket_name }) => {
                 cfg_if::cfg_if! {
                     if #[cfg(all(linux_or_windows, feature = "crash_reporting"))] {
                         return crate::crash_reporting::run_minidump_server(socket_name);
@@ -699,32 +699,32 @@ pub fn run() -> Result<()> {
                 }
             }
             #[cfg(not(target_family = "wasm"))]
-            warp_cli::Command::Worker(warp_cli::WorkerCommand::RemoteServerProxy(args)) => {
+            wish_cli::Command::Worker(wish_cli::WorkerCommand::RemoteServerProxy(args)) => {
                 // Proxy is a thin byte bridge (stdin/stdout ↔ Unix socket).
                 // It only needs logging to stderr since stdout is the protocol
                 // channel. No crash reporting, no initialize_app.
                 let launch_mode = LaunchMode::RemoteServerProxy;
-                warp_logging::init(warp_logging::LogConfig {
+                wish_logging::init(wish_logging::LogConfig {
                     is_cli: true,
                     log_destination: launch_mode.log_destination(),
                 })?;
                 return crate::remote_server::run_proxy(args.identity_key.clone());
             }
             #[cfg(not(target_family = "wasm"))]
-            warp_cli::Command::Worker(warp_cli::WorkerCommand::RemoteServerDaemon(args)) => {
+            wish_cli::Command::Worker(wish_cli::WorkerCommand::RemoteServerDaemon(args)) => {
                 // Daemon handles its own full initialization (including
                 // initialize_app and crash reporting) inside run_daemon_app.
                 return crate::remote_server::run_daemon(args.identity_key.clone());
             }
             #[cfg(not(target_family = "wasm"))]
-            warp_cli::Command::Worker(warp_cli::WorkerCommand::RipgrepSearch {
+            wish_cli::Command::Worker(wish_cli::WorkerCommand::RipgrepSearch {
                 parent,
                 ignore_case,
                 multiline,
                 pattern,
                 paths,
             }) => {
-                warp_ripgrep::search::run_search_subprocess(
+                wish_ripgrep::search::run_search_subprocess(
                     std::slice::from_ref(pattern),
                     paths.clone(),
                     *ignore_case,
@@ -739,20 +739,20 @@ pub fn run() -> Result<()> {
                 feature = "plugin_host",
                 not(target_family = "wasm")
             )))]
-            warp_cli::Command::Worker(worker) => {
+            wish_cli::Command::Worker(worker) => {
                 // Need this case to handle platforms where there are no enum variants in
-                // warp_cli::WorkerCommand, as we still need to check Command::Worker.
+                // wish_cli::WorkerCommand, as we still need to check Command::Worker.
 
                 // On wasm, specifically, we should fail spectacularly if we get here.
                 #[cfg(target_family = "wasm")]
                 panic!("Worker process not supported on WASM: {worker:?}")
             }
-            warp_cli::Command::Completions { shell } => {
-                return warp_cli::completions::generate_to_stdout(*shell);
+            wish_cli::Command::Completions { shell } => {
+                return wish_cli::completions::generate_to_stdout(*shell);
             }
-            warp_cli::Command::CommandLine(cmd) => {
+            wish_cli::Command::CommandLine(cmd) => {
                 let (is_sandboxed, computer_use_override) = match cmd.as_ref() {
-                    warp_cli::CliCommand::Agent(warp_cli::agent::AgentCommand::Run(run_args)) => (
+                    wish_cli::CliCommand::Agent(wish_cli::agent::AgentCommand::Run(run_args)) => (
                         run_args.sandboxed,
                         run_args.computer_use.computer_use_override(),
                     ),
@@ -770,11 +770,11 @@ pub fn run() -> Result<()> {
                     computer_use_override,
                 });
             }
-            warp_cli::Command::DumpDebugInfo => {
+            wish_cli::Command::DumpDebugInfo => {
                 return debug_dump::run();
             }
             #[cfg(not(target_family = "wasm"))]
-            warp_cli::Command::PrintTelemetryEvents => {
+            wish_cli::Command::PrintTelemetryEvents => {
                 return TelemetryEvent::print_telemetry_events_json();
             }
         }
@@ -783,10 +783,10 @@ pub fn run() -> Result<()> {
     // If running as a standalone CLI binary or invoked as "oz", print help
     // instead of launching the GUI app.
     let is_cli_binary = cfg!(feature = "standalone")
-        || warp_cli::binary_name().is_some_and(|name| name.starts_with("oz"))
+        || wish_cli::binary_name().is_some_and(|name| name.starts_with("oz"))
         || std::env::var_os("WARP_CLI_MODE").is_some();
     if is_cli_binary {
-        warp_cli::Args::clap_command().print_help()?;
+        wish_cli::Args::clap_command().print_help()?;
         return Ok(());
     }
 
@@ -845,12 +845,12 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
     cfg_if::cfg_if! {
         if #[cfg(enable_crash_recovery)] {
             if crash_recovery::is_crash_recovery_process(launch_mode.args().as_ref()) {
-                warp_logging::init_for_crash_recovery_process()?;
+                wish_logging::init_for_crash_recovery_process()?;
             } else {
-                warp_logging::init(warp_logging::LogConfig { is_cli, log_destination })?;
+                wish_logging::init(wish_logging::LogConfig { is_cli, log_destination })?;
             }
         } else {
-            warp_logging::init(warp_logging::LogConfig { is_cli, log_destination })?;
+            wish_logging::init(wish_logging::LogConfig { is_cli, log_destination })?;
         }
     }
 
@@ -959,7 +959,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
         not(any(enable_crash_recovery, any(target_os = "linux", target_os = "freebsd"))),
         expect(unused)
     )]
-    let prefs_for_public_settings: &dyn warpui_extras::user_preferences::UserPreferences =
+    let prefs_for_public_settings: &dyn wishui_extras::user_preferences::UserPreferences =
         if FeatureFlag::SettingsFile.is_enabled() {
             public_preferences.as_ref()
         } else {
@@ -1060,7 +1060,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
         #[cfg(not(target_family = "wasm"))]
         // Rotate the log files in the background.
         ctx.background_executor()
-            .spawn(warp_logging::rotate_log_files())
+            .spawn(wish_logging::rotate_log_files())
             .detach();
 
         ctx.add_singleton_model(|ctx| {
@@ -1114,7 +1114,7 @@ pub struct UpdateQuakeModeEventArg {
 pub(crate) fn initialize_app(
     launch_mode: &LaunchMode,
     mut timer: IntervalTimer,
-    startup_toml_parse_error: Option<warpui_extras::user_preferences::Error>,
+    startup_toml_parse_error: Option<wishui_extras::user_preferences::Error>,
     ctx: &mut wishui::AppContext,
     _pre_sentry_errors: impl IntoIterator<Item = anyhow::Error>,
 ) -> Option<AppState> {
@@ -1126,13 +1126,13 @@ pub(crate) fn initialize_app(
     // Register an implementation of the secure storage service.
     cfg_if::cfg_if! {
         if #[cfg(feature = "integration_tests")] {
-            warpui_extras::secure_storage::register_noop(&data_domain, ctx);
+            wishui_extras::secure_storage::register_noop(&data_domain, ctx);
         } else if #[cfg(any(target_os = "linux", target_os = "freebsd"))] {
-            warpui_extras::secure_storage::register_with_fallback(&data_domain, wish_core::paths::state_dir(), ctx)
+            wishui_extras::secure_storage::register_with_fallback(&data_domain, wish_core::paths::state_dir(), ctx)
         } else if #[cfg(target_os = "windows")] {
-            warpui_extras::secure_storage::register_with_dir(&data_domain, wish_core::paths::state_dir(), ctx)
+            wishui_extras::secure_storage::register_with_dir(&data_domain, wish_core::paths::state_dir(), ctx)
         } else {
-            warpui_extras::secure_storage::register(&data_domain, ctx);
+            wishui_extras::secure_storage::register(&data_domain, ctx);
         }
     }
 
@@ -1414,7 +1414,32 @@ pub(crate) fn initialize_app(
     // Wish chat conversations — the killer-feature surface that
     // ties together AgentRegistry + AgentTaskRegistry +
     // local/Hermon adapters. See `crate::ai::wish_conversation`.
-    ctx.add_singleton_model(crate::ai::wish_conversation::ConversationManagerModel::new);
+    let _conversation_mgr =
+        ctx.add_singleton_model(crate::ai::wish_conversation::ConversationManagerModel::new);
+
+    // Wire the conversation adapter.
+    // Always configure LocalLlmAdapter (Ollama / OpenAI-compatible) so
+    // users can chat even without a Hermon server connection. When
+    // HermonAdapter ships, we'll prefer it for logged-in users and
+    // keep LocalLlmAdapter as the fallback.
+    {
+        let ollama_config = crate::ai::local_llm::LocalLlmProviderConfig::OpenAiCompatible {
+            base_url: std::env::var("WISH_OLLAMA_URL")
+                .or_else(|_| std::env::var("OLLAMA_HOST"))
+                .unwrap_or_else(|_| "http://127.0.0.1:11434/v1".to_string()),
+            api_key: std::env::var("WISH_OLLAMA_API_KEY").unwrap_or_else(|_| "ollama".to_string()),
+            default_model: std::env::var("WISH_DEFAULT_MODEL")
+                .unwrap_or_else(|_| "llama3.2:3b".to_string()),
+            timeout_secs: None,
+        };
+        let adapter = std::sync::Arc::new(
+            crate::ai::wish_conversation::LocalLlmAdapter::new(ollama_config),
+        );
+        _conversation_mgr.update(ctx, |mgr, _ctx| {
+            mgr.set_adapter(adapter);
+        });
+        log::info!("Wired LocalLlmAdapter for Wish conversations (Ollama / OpenAI-compatible)");
+    }
     ctx.add_singleton_model(|ctx| {
         // Not using the *Provider types isn't ideal, but it's worth it for the ability to move managed secrets to a separate crate.
         ManagedSecretManager::new(
@@ -2517,7 +2542,7 @@ fn launch(ctx: &mut wishui::AppContext, app_state: Option<AppState>, launch_mode
 #[cfg(test)]
 fn init_logging_for_unit_tests_glue() {
     // Initialize terminal-friendly logging for tests from the shared logger crate.
-    warp_logging::init_logging_for_unit_tests();
+    wish_logging::init_logging_for_unit_tests();
 }
 
 /// Mark all features which should be enabled on the current channel as enabled.
@@ -2860,7 +2885,7 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::AgentView,
         #[cfg(feature = "agent_view_block_context")]
         FeatureFlag::AgentViewBlockContext,
-        #[cfg(feature = "warp_managed_secrets")]
+        #[cfg(feature = "wish_managed_secrets")]
         FeatureFlag::WarpManagedSecrets,
         #[cfg(feature = "v4a_file_diffs")]
         FeatureFlag::V4AFileDiffs,

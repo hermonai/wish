@@ -23,8 +23,8 @@
 //!     ConversationAdapter trait:
 //!       fn send(conv, msg, sink: ChunkSink) emits StreamChunk
 //!     Implementations:
-//!       StubAdapter        ✅ this turn (tests + demo button)
-//!       LocalLlmAdapter    ⏳ next turn (Ollama)
+//!       StubAdapter        ✅ shipped (tests + demo button)
+//!       LocalLlmAdapter    ✅ shipped (Ollama / OpenAI-compat)
 //!       HermonAdapter      ⏳ next turn (full features when logged in)
 //! ```
 //!
@@ -62,6 +62,7 @@ pub mod adapter;
 pub mod local_llm_adapter;
 pub mod model;
 pub mod types;
+pub mod view;
 
 #[cfg(test)]
 mod tests;
@@ -70,3 +71,4 @@ pub use adapter::{ChunkSink, ConversationAdapter, StubAdapter};
 pub use local_llm_adapter::LocalLlmAdapter;
 pub use model::{ConversationManagerEvent, ConversationManagerModel, InFlight};
 pub use types::{derive_title_from, Conversation, ConversationId, MessageBlock, StreamChunk, Turn};
+pub use view::WishChatView;

@@ -8,7 +8,7 @@ use lazy_static::lazy_static;
 use parking_lot::Mutex;
 use tempfile::tempdir;
 use url::Url;
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wishui::{App, ModelHandle, WindowId};
 
 use crate::{

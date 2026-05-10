@@ -3,7 +3,7 @@ use super::{
 };
 use crate::{code::editor::EditorReviewComment, code_review::diff_state::DiffMode};
 use std::{collections::HashMap, path::Path};
-use warp_editor::render::model::LineCount;
+use wish_editor::render::model::LineCount;
 use wish_core::features::FeatureFlag;
 use wishui::{Entity, ModelContext};
 

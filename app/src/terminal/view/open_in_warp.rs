@@ -6,7 +6,7 @@ use std::{
 
 use itertools::Itertools;
 use lazy_static::lazy_static;
-use warp_util::path::EscapeChar;
+use wish_util::path::EscapeChar;
 use wishui::{
     accessibility::{AccessibilityContent, ActionAccessibilityContent, WarpA11yRole},
     SingletonEntity, ViewContext,
@@ -25,7 +25,7 @@ use crate::{
     util::openable_file_type::{is_file_openable_in_warp, OpenableFileType},
 };
 use settings::Setting as _;
-use warp_completer::{
+use wish_completer::{
     completer::TopLevelCommandCaseSensitivity,
     parsers::{
         classify_command,

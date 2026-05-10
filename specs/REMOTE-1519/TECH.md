@@ -107,7 +107,7 @@ No new feature flags. All changes are gated on the existing `FeatureFlag::OzHand
 - `router/handlers/public_api/agent_handoff_test.go`: add a `TestPrepareLocalHandoffForkHandler_*` suite covering: feature-flag-off; missing `source_conversation_id`; happy path; auth failure on the source.
 - Update existing `agent_webhooks_test.go::TestHandoff_*` cases that exercise `ForkFromConversationID` to instead drive the new `prepare-fork` endpoint and then send `ConversationID` on the run request.
 ### Integration / manual
-- Click the chip on a long Oz conversation; verify the new pane is visibly populated with the AI exchanges before the cloud session connects, with no flicker or duplicate blocks during the connect/replay window.
+- Click the chip on a long Hermon Agent conversation; verify the new pane is visibly populated with the AI exchanges before the cloud session connects, with no flicker or duplicate blocks during the connect/replay window.
 - Submit a follow-up; verify the queued-prompt indicator + "Setting up environment" loading screen + "Running setup commands…" collapsible block all render the same way they do for a fresh cloud-mode run.
 - After the cloud agent's first turn arrives, verify the pre-populated blocks remain in place, the queued-prompt indicator clears, and the new exchange appends below them.
 - Click the chip on a non-eligible conversation (no synced server token); verify **no pane opens** and an error toast surfaces in the local window.

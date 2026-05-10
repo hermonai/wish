@@ -1,4 +1,5 @@
 pub mod clangd;
+pub mod generic;
 pub mod go;
 pub mod pyright;
 pub mod rust;

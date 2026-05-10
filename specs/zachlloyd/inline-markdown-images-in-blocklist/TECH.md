@@ -52,7 +52,7 @@ This should be a surgical extension of the existing section-based block-list ren
 - `crates/editor/src/content/edit.rs (56-91)` — native/WASM asset-source resolution rules
 - `crates/editor/src/content/mermaid_diagram.rs (20-67)` — in-memory Mermaid SVG asset generation and sizing
 - `crates/wishui-core/src/image_cache.rs` — supported shared image types (JPEG, PNG, GIF, WebP, SVG)
-- `crates/warp_features/src/lib.rs (525-540, 817-858)` — markdown-related feature flags
+- `crates/wish_features/src/lib.rs (525-540, 817-858)` — markdown-related feature flags
 - `app/src/lib.rs (2462-2471)` — app-side feature-flag wiring for markdown tables and Mermaid
 - `app/Cargo.toml (667-746)` — compile-time feature declarations
 - `app/src/ai/agent/util_tests.rs` — block-list markdown parser/unit test pattern
@@ -90,7 +90,7 @@ Warp already has the low-level capabilities this feature needs:
 - Mermaid SVG generation and sizing in `crates/editor/src/content/mermaid_diagram.rs (20-67)`
 - Mermaid code-block identification in `crates/editor/src/content/text.rs (526-579)`
 
-The app crate already depends on `warp_editor`, and the block list already embeds editor-backed code blocks. Reusing editor Mermaid/image helpers therefore does not introduce a new crate dependency edge.
+The app crate already depends on `wish_editor`, and the block list already embeds editor-backed code blocks. Reusing editor Mermaid/image helpers therefore does not introduce a new crate dependency edge.
 
 Warp also already has a reusable fullscreen lightbox path at the workspace layer. `WorkspaceAction::OpenLightbox` / `UpdateLightboxImage` drive `LightboxView`, which already supports Escape dismissal, left/right keyboard navigation, and previous/next buttons. The block-list visual renderer should reuse that path rather than inventing a new fullscreen viewer.
 
@@ -122,7 +122,7 @@ That architecture does not support a continuous mixed-content selection model ac
 Add a new feature flag dedicated to AI block-list markdown visuals, e.g. `BlocklistMarkdownImages`.
 
 Implementation points:
-- add `BlocklistMarkdownImages` to `crates/warp_features/src/lib.rs`
+- add `BlocklistMarkdownImages` to `crates/wish_features/src/lib.rs`
 - add `blocklist_markdown_images = []` to `app/Cargo.toml`
 - wire it in `app/src/lib.rs` alongside the existing markdown table/Mermaid flags
 - enable it in `DOGFOOD_FLAGS`, but leave it out of `PREVIEW_FLAGS` until the surface is stable

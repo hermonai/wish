@@ -3,7 +3,7 @@ use std::sync::Arc;
 use enclose::enclose;
 use itertools::Itertools as _;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
-use warp_graphql::billing::AddonCreditsOption;
+use wish_graphql::billing::AddonCreditsOption;
 use wish_core::ui::appearance::Appearance;
 use wishui::elements::{
     Border, ChildView, Container, CrossAxisAlignment, Empty, Flex, HighlightedHyperlink,

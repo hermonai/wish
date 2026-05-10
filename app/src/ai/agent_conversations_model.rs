@@ -37,7 +37,7 @@ use itertools::Itertools;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::{HashMap, HashSet};
 use std::time::Duration;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::execution_mode::AppExecutionMode;
 use wish_core::features::FeatureFlag;
 use wish_core::report_error;

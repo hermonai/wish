@@ -3,16 +3,21 @@ use wish_core::ui::theme::{phenomenon::PhenomenonStyle, Fill};
 use wishui::assets::asset_cache::AssetSource;
 use wishui::elements::{
     CacheOption, ChildAnchor, ChildView, ConstrainedBox, Container, CornerRadius,
-    CrossAxisAlignment, Expanded, Flex, Image, MainAxisSize, OffsetPositioning, ParentAnchor,
-    ParentElement, ParentOffsetBounds, Radius, Stack, Text,
+    CrossAxisAlignment, Expanded, Flex, Image, MainAxisAlignment, MainAxisSize, MouseStateHandle,
+    OffsetPositioning, ParentAnchor, ParentElement, ParentOffsetBounds, Radius, Stack, Text,
 };
 use wishui::fonts::{Properties, Weight};
+use wishui::platform::Cursor;
 use wishui::Element;
+
+use wishui::ui_components::components::UiComponent;
 
 use crate::appearance::Appearance;
 use crate::ui_components::icons::Icon;
 use crate::view_components::action_button::ActionButton;
+use crate::view_components::callout_bubble::{callout_checkbox, callout_label_color};
 
+use super::hoa_onboarding_flow::HoaOnboardingAction;
 use wishui::ViewHandle;
 
 const BANNER_WIDTH: f32 = 420.;
@@ -51,6 +56,8 @@ const FEATURE_ITEMS: &[FeatureItem] = &[
 pub fn render_welcome_banner(
     close_button: &ViewHandle<ActionButton>,
     cta_button: &ViewHandle<ActionButton>,
+    dont_show_again: bool,
+    dont_show_again_mouse_state: MouseStateHandle,
     appearance: &Appearance,
 ) -> Box<dyn Element> {
     // Hero image with close button overlay
@@ -149,6 +156,40 @@ pub fn render_welcome_banner(
     // CTA button
     let cta = ChildView::new(cta_button).finish();
 
+    // "Don't show again" checkbox
+    let checkbox_el = callout_checkbox(dont_show_again_mouse_state, Some(10.5), appearance)
+        .check(dont_show_again)
+        .build()
+        .with_cursor(Cursor::PointingHand)
+        .on_click(|ctx: &mut wishui::EventContext, _, _| {
+            ctx.dispatch_typed_action(HoaOnboardingAction::ToggleDontShowAgain);
+        })
+        .finish();
+
+    let checkbox_label = Text::new_inline(
+        "Don't show again".to_string(),
+        appearance.ui_font_family(),
+        12.,
+    )
+    .with_color(callout_label_color(appearance))
+    .finish();
+
+    let checkbox_row = Flex::row()
+        .with_cross_axis_alignment(CrossAxisAlignment::Center)
+        .with_spacing(8.)
+        .with_child(checkbox_el)
+        .with_child(checkbox_label)
+        .finish();
+
+    // Bottom row: checkbox on the left, CTA button on the right
+    let bottom_row = Flex::row()
+        .with_cross_axis_alignment(CrossAxisAlignment::Center)
+        .with_main_axis_alignment(MainAxisAlignment::SpaceBetween)
+        .with_main_axis_size(MainAxisSize::Max)
+        .with_child(checkbox_row)
+        .with_child(cta)
+        .finish();
+
     // Body content
     let body = Container::new(
         Flex::column()
@@ -166,7 +207,7 @@ pub fn render_welcome_banner(
                     .with_margin_top(12.)
                     .finish(),
             )
-            .with_child(Container::new(cta).with_margin_top(32.).finish())
+            .with_child(Container::new(bottom_row).with_margin_top(32.).finish())
             .finish(),
     )
     .with_horizontal_padding(32.)

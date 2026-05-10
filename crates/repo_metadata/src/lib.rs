@@ -8,7 +8,7 @@ use std::{
 };
 
 use thiserror::Error;
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 
 #[cfg(not(target_family = "wasm"))]
 use wishui::SingletonEntity;

@@ -85,7 +85,7 @@ With horizontal padding (12px left and right) and vertical padding (8px top and 
 - Title: The conversation display title (e.g. "Refactor the button component to use..."). Truncated with ellipsis if it overflows.
 
 **Terminal pane (ambient agent)**:
-- Icon: `OzCloud` icon.
+- Icon: `HermonCloud` icon.
 - Title: The conversation display title if available, otherwise the terminal title.
 
 **Code pane**:

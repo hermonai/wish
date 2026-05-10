@@ -388,7 +388,7 @@ const INSTALL_SCRIPT_TEMPLATE: &str = include_str!("install_remote_server.sh");
 /// at the current client version.
 ///
 /// The script detects the remote architecture via `uname -m`, downloads
-/// the correct Oz CLI tarball from the download URL, and installs it at
+/// the correct Wish CLI tarball from the download URL, and installs it at
 /// the path returned by [`remote_server_binary`] so repeat invocations
 /// are idempotent. The `version_query` / `version_suffix` substitutions
 /// follow the same rule as [`remote_server_binary`]: empty on

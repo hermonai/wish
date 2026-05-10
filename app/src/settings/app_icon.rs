@@ -40,7 +40,7 @@ pub enum AppIcon {
     Classic3,
     #[schemars(description = "Comets")]
     Comets,
-    /// Cow icon, for Code on Warp launch.
+    /// Cow icon, for Code on Wish launch.
     #[schemars(description = "Cow")]
     Cow,
     #[schemars(description = "Glass Sky")]
@@ -101,7 +101,7 @@ impl AppIconSettings {
                 Channel::Dev => "dev",
                 Channel::Preview => "preview",
                 Channel::Local => "local",
-                _ => "warp_2",
+                _ => "hermon_default",
             },
             AppIcon::Classic1 => "classic_1",
             AppIcon::Classic2 => "classic_2",

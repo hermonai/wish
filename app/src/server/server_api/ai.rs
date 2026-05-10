@@ -62,12 +62,12 @@ use ai::index::full_source_code_embedding::{
     store_client::{IntermediateNode, StoreClient},
     CodebaseContextConfig, ContentHash, EmbeddingConfig, NodeHash, RepoMetadata,
 };
-use warp_graphql::client::Operation;
+use wish_graphql::client::Operation;
 #[cfg(not(feature = "agent_mode_evals"))]
-use warp_graphql::queries::get_request_limit_info::{
+use wish_graphql::queries::get_request_limit_info::{
     GetRequestLimitInfo, GetRequestLimitInfoVariables,
 };
-use warp_graphql::{
+use wish_graphql::{
     ai::{AgentTaskState, PlatformErrorCode},
     mutations::{
         confirm_file_artifact_upload::{
@@ -1100,7 +1100,7 @@ pub trait AIClient: 'static + Send + Sync {
 }
 
 fn into_file_artifact_record(
-    artifact: warp_graphql::mutations::create_file_artifact_upload_target::FileArtifact,
+    artifact: wish_graphql::mutations::create_file_artifact_upload_target::FileArtifact,
 ) -> FileArtifactRecord {
     FileArtifactRecord {
         artifact_uid: artifact.artifact_uid.into_inner(),
@@ -1328,7 +1328,7 @@ impl AIClient for ServerApi {
         let response = self.send_graphql_request(operation, None).await?;
 
         match response.user {
-            warp_graphql::queries::get_request_limit_info::UserResult::UserOutput(user_output) => {
+            wish_graphql::queries::get_request_limit_info::UserResult::UserOutput(user_output) => {
                 let request_limit_info = user_output.user.request_limit_info.into();
 
                 let workspace_bonus_grants = user_output
@@ -1364,10 +1364,10 @@ impl AIClient for ServerApi {
                     bonus_grants,
                 })
             }
-            warp_graphql::queries::get_request_limit_info::UserResult::UserFacingError(e) => {
+            wish_graphql::queries::get_request_limit_info::UserResult::UserFacingError(e) => {
                 Err(anyhow!(get_user_facing_error_message(e)))
             }
-            warp_graphql::queries::get_request_limit_info::UserResult::Unknown => {
+            wish_graphql::queries::get_request_limit_info::UserResult::Unknown => {
                 Err(anyhow!("failed to get request limit info"))
             }
         }
@@ -1381,9 +1381,9 @@ impl AIClient for ServerApi {
         let response = self.send_graphql_request(operation, None).await?;
 
         match response.user {
-            warp_graphql::queries::get_feature_model_choices::UserResult::UserOutput(
-                warp_graphql::queries::get_feature_model_choices::UserOutput {
-                    user: warp_graphql::queries::get_feature_model_choices::User { mut workspaces },
+            wish_graphql::queries::get_feature_model_choices::UserResult::UserOutput(
+                wish_graphql::queries::get_feature_model_choices::UserOutput {
+                    user: wish_graphql::queries::get_feature_model_choices::User { mut workspaces },
                 },
             ) if !workspaces.is_empty() => {
                 // This is safe (`remove()` can panic) because we ensure workspaces is non-empty
@@ -1402,7 +1402,7 @@ impl AIClient for ServerApi {
         let response = self.send_graphql_request(operation, None).await?;
 
         match response.user {
-            warp_graphql::queries::get_available_harnesses::UserResult::UserOutput(output) => {
+            wish_graphql::queries::get_available_harnesses::UserResult::UserOutput(output) => {
                 Ok(output
                     .user
                     .available_harnesses
@@ -1415,7 +1415,7 @@ impl AIClient for ServerApi {
                     })
                     .collect())
             }
-            warp_graphql::queries::get_available_harnesses::UserResult::Unknown => {
+            wish_graphql::queries::get_available_harnesses::UserResult::Unknown => {
                 Err(anyhow!("Failed to get available harnesses"))
             }
         }
@@ -1444,7 +1444,7 @@ impl AIClient for ServerApi {
         let response = operation
             .send_request(
                 self.client.clone(),
-                warp_graphql::client::RequestOptions {
+                wish_graphql::client::RequestOptions {
                     auth_token,
                     ..default_request_options()
                 },
@@ -1745,7 +1745,7 @@ impl AIClient for ServerApi {
         &self,
         server_conversation_token: ServerConversationToken,
     ) -> anyhow::Result<(ConversationData, ServerAIConversationMetadata), anyhow::Error> {
-        use warp_graphql::queries::list_ai_conversations::{
+        use wish_graphql::queries::list_ai_conversations::{
             ListAIConversations, ListAIConversationsInput, ListAIConversationsResult,
             ListAIConversationsVariables,
         };
@@ -1793,7 +1793,7 @@ impl AIClient for ServerApi {
         if !FeatureFlag::CloudConversations.is_enabled() {
             return Ok(vec![]);
         }
-        use warp_graphql::queries::list_ai_conversations::{
+        use wish_graphql::queries::list_ai_conversations::{
             ListAIConversationMetadata, ListAIConversationMetadataResult,
             ListAIConversationMetadataVariables, ListAIConversationsInput,
         };
@@ -1833,11 +1833,11 @@ impl AIClient for ServerApi {
         &self,
         server_conversation_token: ServerConversationToken,
     ) -> anyhow::Result<AIAgentConversationFormat, anyhow::Error> {
-        use warp_graphql::queries::get_ai_conversation_format::{
+        use wish_graphql::queries::get_ai_conversation_format::{
             GetAIConversationFormat, GetAIConversationFormatResult,
             GetAIConversationFormatVariables,
         };
-        use warp_graphql::queries::list_ai_conversations::ListAIConversationsInput;
+        use wish_graphql::queries::list_ai_conversations::ListAIConversationsInput;
 
         let conversation_id = server_conversation_token.as_str().to_string();
         let operation = GetAIConversationFormat::build(GetAIConversationFormatVariables {
@@ -2259,13 +2259,13 @@ impl AIClient for ServerApi {
     }
 }
 
-impl TryFrom<warp_graphql::queries::get_feature_model_choices::FeatureModelChoice>
+impl TryFrom<wish_graphql::queries::get_feature_model_choices::FeatureModelChoice>
     for ModelsByFeature
 {
     type Error = anyhow::Error;
 
     fn try_from(
-        value: warp_graphql::queries::get_feature_model_choices::FeatureModelChoice,
+        value: wish_graphql::queries::get_feature_model_choices::FeatureModelChoice,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             agent_mode: value.agent_mode.try_into()?,
@@ -2276,10 +2276,10 @@ impl TryFrom<warp_graphql::queries::get_feature_model_choices::FeatureModelChoic
     }
 }
 
-impl TryFrom<warp_graphql::workspace::FeatureModelChoice> for ModelsByFeature {
+impl TryFrom<wish_graphql::workspace::FeatureModelChoice> for ModelsByFeature {
     type Error = anyhow::Error;
 
-    fn try_from(value: warp_graphql::workspace::FeatureModelChoice) -> Result<Self, Self::Error> {
+    fn try_from(value: wish_graphql::workspace::FeatureModelChoice) -> Result<Self, Self::Error> {
         Ok(Self {
             agent_mode: value.agent_mode.try_into()?,
             coding: value.coding.try_into()?,
@@ -2289,11 +2289,11 @@ impl TryFrom<warp_graphql::workspace::FeatureModelChoice> for ModelsByFeature {
     }
 }
 
-impl TryFrom<warp_graphql::queries::get_feature_model_choices::AvailableLlms> for AvailableLLMs {
+impl TryFrom<wish_graphql::queries::get_feature_model_choices::AvailableLlms> for AvailableLLMs {
     type Error = anyhow::Error;
 
     fn try_from(
-        value: warp_graphql::queries::get_feature_model_choices::AvailableLlms,
+        value: wish_graphql::queries::get_feature_model_choices::AvailableLlms,
     ) -> Result<Self, Self::Error> {
         Self::new(
             value.default_id.into(),
@@ -2303,10 +2303,10 @@ impl TryFrom<warp_graphql::queries::get_feature_model_choices::AvailableLlms> fo
     }
 }
 
-impl TryFrom<warp_graphql::workspace::AvailableLlms> for AvailableLLMs {
+impl TryFrom<wish_graphql::workspace::AvailableLlms> for AvailableLLMs {
     type Error = anyhow::Error;
 
-    fn try_from(value: warp_graphql::workspace::AvailableLlms) -> Result<Self, Self::Error> {
+    fn try_from(value: wish_graphql::workspace::AvailableLlms) -> Result<Self, Self::Error> {
         Self::new(
             value.default_id.into(),
             value.choices.into_iter().map(LLMInfo::from),
@@ -2315,8 +2315,8 @@ impl TryFrom<warp_graphql::workspace::AvailableLlms> for AvailableLLMs {
     }
 }
 
-impl From<warp_graphql::queries::get_feature_model_choices::LlmInfo> for LLMInfo {
-    fn from(value: warp_graphql::queries::get_feature_model_choices::LlmInfo) -> Self {
+impl From<wish_graphql::queries::get_feature_model_choices::LlmInfo> for LLMInfo {
+    fn from(value: wish_graphql::queries::get_feature_model_choices::LlmInfo) -> Self {
         let host_configs = {
             let mut map = std::collections::HashMap::new();
             for config in value.host_configs {
@@ -2354,8 +2354,8 @@ impl From<warp_graphql::queries::get_feature_model_choices::LlmInfo> for LLMInfo
     }
 }
 
-impl From<warp_graphql::workspace::LlmInfo> for LLMInfo {
-    fn from(value: warp_graphql::workspace::LlmInfo) -> Self {
+impl From<wish_graphql::workspace::LlmInfo> for LLMInfo {
+    fn from(value: wish_graphql::workspace::LlmInfo) -> Self {
         let host_configs = {
             let mut map = std::collections::HashMap::new();
             for config in value.host_configs {
@@ -2393,10 +2393,10 @@ impl From<warp_graphql::workspace::LlmInfo> for LLMInfo {
     }
 }
 
-impl From<warp_graphql::queries::get_feature_model_choices::RoutingHostConfig>
+impl From<wish_graphql::queries::get_feature_model_choices::RoutingHostConfig>
     for RoutingHostConfig
 {
-    fn from(value: warp_graphql::queries::get_feature_model_choices::RoutingHostConfig) -> Self {
+    fn from(value: wish_graphql::queries::get_feature_model_choices::RoutingHostConfig) -> Self {
         Self {
             enabled: value.enabled,
             model_routing_host: value.model_routing_host.into(),
@@ -2404,8 +2404,8 @@ impl From<warp_graphql::queries::get_feature_model_choices::RoutingHostConfig>
     }
 }
 
-impl From<warp_graphql::workspace::RoutingHostConfig> for RoutingHostConfig {
-    fn from(value: warp_graphql::workspace::RoutingHostConfig) -> Self {
+impl From<wish_graphql::workspace::RoutingHostConfig> for RoutingHostConfig {
+    fn from(value: wish_graphql::workspace::RoutingHostConfig) -> Self {
         Self {
             enabled: value.enabled,
             model_routing_host: value.model_routing_host.into(),
@@ -2413,16 +2413,16 @@ impl From<warp_graphql::workspace::RoutingHostConfig> for RoutingHostConfig {
     }
 }
 
-impl From<warp_graphql::queries::get_feature_model_choices::LlmModelHost> for LLMModelHost {
-    fn from(value: warp_graphql::queries::get_feature_model_choices::LlmModelHost) -> Self {
+impl From<wish_graphql::queries::get_feature_model_choices::LlmModelHost> for LLMModelHost {
+    fn from(value: wish_graphql::queries::get_feature_model_choices::LlmModelHost) -> Self {
         match value {
-            warp_graphql::queries::get_feature_model_choices::LlmModelHost::DirectApi => {
+            wish_graphql::queries::get_feature_model_choices::LlmModelHost::DirectApi => {
                 LLMModelHost::DirectApi
             }
-            warp_graphql::queries::get_feature_model_choices::LlmModelHost::AwsBedrock => {
+            wish_graphql::queries::get_feature_model_choices::LlmModelHost::AwsBedrock => {
                 LLMModelHost::AwsBedrock
             }
-            warp_graphql::queries::get_feature_model_choices::LlmModelHost::Other(value) => {
+            wish_graphql::queries::get_feature_model_choices::LlmModelHost::Other(value) => {
                 report_error!(anyhow!(
                     "Unknown LlmModelHost '{value}'. Make sure to update client GraphQL types!"
                 ));
@@ -2432,23 +2432,23 @@ impl From<warp_graphql::queries::get_feature_model_choices::LlmModelHost> for LL
     }
 }
 
-impl From<warp_graphql::queries::get_feature_model_choices::LlmProvider> for LLMProvider {
-    fn from(value: warp_graphql::queries::get_feature_model_choices::LlmProvider) -> Self {
+impl From<wish_graphql::queries::get_feature_model_choices::LlmProvider> for LLMProvider {
+    fn from(value: wish_graphql::queries::get_feature_model_choices::LlmProvider) -> Self {
         match value {
-            warp_graphql::queries::get_feature_model_choices::LlmProvider::Openai => {
+            wish_graphql::queries::get_feature_model_choices::LlmProvider::Openai => {
                 LLMProvider::OpenAI
             }
-            warp_graphql::queries::get_feature_model_choices::LlmProvider::Anthropic => {
+            wish_graphql::queries::get_feature_model_choices::LlmProvider::Anthropic => {
                 LLMProvider::Anthropic
             }
-            warp_graphql::queries::get_feature_model_choices::LlmProvider::Google => {
+            wish_graphql::queries::get_feature_model_choices::LlmProvider::Google => {
                 LLMProvider::Google
             }
-            warp_graphql::queries::get_feature_model_choices::LlmProvider::Xai => LLMProvider::Xai,
-            warp_graphql::queries::get_feature_model_choices::LlmProvider::Unknown => {
+            wish_graphql::queries::get_feature_model_choices::LlmProvider::Xai => LLMProvider::Xai,
+            wish_graphql::queries::get_feature_model_choices::LlmProvider::Unknown => {
                 LLMProvider::Unknown
             }
-            warp_graphql::queries::get_feature_model_choices::LlmProvider::Other(value) => {
+            wish_graphql::queries::get_feature_model_choices::LlmProvider::Other(value) => {
                 report_error!(anyhow!(
                     "Invalid LlmProvider '{value}'. Make sure to update client GraphQL types!"
                 ));
@@ -2458,15 +2458,15 @@ impl From<warp_graphql::queries::get_feature_model_choices::LlmProvider> for LLM
     }
 }
 
-impl From<warp_graphql::workspace::LlmProvider> for LLMProvider {
-    fn from(value: warp_graphql::workspace::LlmProvider) -> Self {
+impl From<wish_graphql::workspace::LlmProvider> for LLMProvider {
+    fn from(value: wish_graphql::workspace::LlmProvider) -> Self {
         match value {
-            warp_graphql::workspace::LlmProvider::Openai => LLMProvider::OpenAI,
-            warp_graphql::workspace::LlmProvider::Anthropic => LLMProvider::Anthropic,
-            warp_graphql::workspace::LlmProvider::Google => LLMProvider::Google,
-            warp_graphql::workspace::LlmProvider::Xai => LLMProvider::Xai,
-            warp_graphql::workspace::LlmProvider::Unknown => LLMProvider::Unknown,
-            warp_graphql::workspace::LlmProvider::Other(value) => {
+            wish_graphql::workspace::LlmProvider::Openai => LLMProvider::OpenAI,
+            wish_graphql::workspace::LlmProvider::Anthropic => LLMProvider::Anthropic,
+            wish_graphql::workspace::LlmProvider::Google => LLMProvider::Google,
+            wish_graphql::workspace::LlmProvider::Xai => LLMProvider::Xai,
+            wish_graphql::workspace::LlmProvider::Unknown => LLMProvider::Unknown,
+            wish_graphql::workspace::LlmProvider::Other(value) => {
                 report_error!(anyhow!(
                     "Invalid LlmProvider '{value}'. Make sure to update client GraphQL types!"
                 ));
@@ -2476,8 +2476,8 @@ impl From<warp_graphql::workspace::LlmProvider> for LLMProvider {
     }
 }
 
-impl From<warp_graphql::queries::get_feature_model_choices::LlmSpec> for LLMSpec {
-    fn from(value: warp_graphql::queries::get_feature_model_choices::LlmSpec) -> Self {
+impl From<wish_graphql::queries::get_feature_model_choices::LlmSpec> for LLMSpec {
+    fn from(value: wish_graphql::queries::get_feature_model_choices::LlmSpec) -> Self {
         Self {
             cost: value.cost as f32,
             quality: value.quality as f32,
@@ -2486,8 +2486,8 @@ impl From<warp_graphql::queries::get_feature_model_choices::LlmSpec> for LLMSpec
     }
 }
 
-impl From<warp_graphql::workspace::LlmSpec> for LLMSpec {
-    fn from(value: warp_graphql::workspace::LlmSpec) -> Self {
+impl From<wish_graphql::workspace::LlmSpec> for LLMSpec {
+    fn from(value: wish_graphql::workspace::LlmSpec) -> Self {
         Self {
             cost: value.cost as f32,
             quality: value.quality as f32,
@@ -2496,8 +2496,8 @@ impl From<warp_graphql::workspace::LlmSpec> for LLMSpec {
     }
 }
 
-impl From<warp_graphql::queries::get_feature_model_choices::LlmUsageMetadata> for LLMUsageMetadata {
-    fn from(value: warp_graphql::queries::get_feature_model_choices::LlmUsageMetadata) -> Self {
+impl From<wish_graphql::queries::get_feature_model_choices::LlmUsageMetadata> for LLMUsageMetadata {
+    fn from(value: wish_graphql::queries::get_feature_model_choices::LlmUsageMetadata) -> Self {
         Self {
             request_multiplier: value.request_multiplier.max(1) as usize,
             credit_multiplier: value.credit_multiplier.map(|v| v as f32),
@@ -2505,8 +2505,8 @@ impl From<warp_graphql::queries::get_feature_model_choices::LlmUsageMetadata> fo
     }
 }
 
-impl From<warp_graphql::workspace::LlmUsageMetadata> for LLMUsageMetadata {
-    fn from(value: warp_graphql::workspace::LlmUsageMetadata) -> Self {
+impl From<wish_graphql::workspace::LlmUsageMetadata> for LLMUsageMetadata {
+    fn from(value: wish_graphql::workspace::LlmUsageMetadata) -> Self {
         Self {
             request_multiplier: value.request_multiplier.max(1) as usize,
             credit_multiplier: value.credit_multiplier.map(|v| v as f32),
@@ -2514,51 +2514,51 @@ impl From<warp_graphql::workspace::LlmUsageMetadata> for LLMUsageMetadata {
     }
 }
 
-impl From<warp_graphql::queries::get_feature_model_choices::DisableReason> for DisableReason {
-    fn from(value: warp_graphql::queries::get_feature_model_choices::DisableReason) -> Self {
+impl From<wish_graphql::queries::get_feature_model_choices::DisableReason> for DisableReason {
+    fn from(value: wish_graphql::queries::get_feature_model_choices::DisableReason) -> Self {
         match value {
-            warp_graphql::queries::get_feature_model_choices::DisableReason::AdminDisabled => {
+            wish_graphql::queries::get_feature_model_choices::DisableReason::AdminDisabled => {
                 DisableReason::AdminDisabled
             }
-            warp_graphql::queries::get_feature_model_choices::DisableReason::OutOfRequests => {
+            wish_graphql::queries::get_feature_model_choices::DisableReason::OutOfRequests => {
                 DisableReason::OutOfRequests
             }
-            warp_graphql::queries::get_feature_model_choices::DisableReason::ProviderOutage => {
+            wish_graphql::queries::get_feature_model_choices::DisableReason::ProviderOutage => {
                 DisableReason::ProviderOutage
             }
-            warp_graphql::queries::get_feature_model_choices::DisableReason::RequiresUpgrade => {
+            wish_graphql::queries::get_feature_model_choices::DisableReason::RequiresUpgrade => {
                 DisableReason::RequiresUpgrade
             }
-            warp_graphql::queries::get_feature_model_choices::DisableReason::Other(_) => {
+            wish_graphql::queries::get_feature_model_choices::DisableReason::Other(_) => {
                 DisableReason::Unavailable
             }
         }
     }
 }
 
-impl From<warp_graphql::workspace::DisableReason> for DisableReason {
-    fn from(value: warp_graphql::workspace::DisableReason) -> Self {
+impl From<wish_graphql::workspace::DisableReason> for DisableReason {
+    fn from(value: wish_graphql::workspace::DisableReason) -> Self {
         match value {
-            warp_graphql::workspace::DisableReason::AdminDisabled => DisableReason::AdminDisabled,
-            warp_graphql::workspace::DisableReason::OutOfRequests => DisableReason::OutOfRequests,
-            warp_graphql::workspace::DisableReason::ProviderOutage => DisableReason::ProviderOutage,
-            warp_graphql::workspace::DisableReason::RequiresUpgrade => {
+            wish_graphql::workspace::DisableReason::AdminDisabled => DisableReason::AdminDisabled,
+            wish_graphql::workspace::DisableReason::OutOfRequests => DisableReason::OutOfRequests,
+            wish_graphql::workspace::DisableReason::ProviderOutage => DisableReason::ProviderOutage,
+            wish_graphql::workspace::DisableReason::RequiresUpgrade => {
                 DisableReason::RequiresUpgrade
             }
-            warp_graphql::workspace::DisableReason::Other(_) => DisableReason::Unavailable,
+            wish_graphql::workspace::DisableReason::Other(_) => DisableReason::Unavailable,
         }
     }
 }
 
 // Conversions for AIConversationMetadata from GraphQL types
 
-fn convert_harness(harness: warp_graphql::ai::AgentHarness) -> AIAgentHarness {
+fn convert_harness(harness: wish_graphql::ai::AgentHarness) -> AIAgentHarness {
     match harness {
-        warp_graphql::ai::AgentHarness::Oz => AIAgentHarness::Oz,
-        warp_graphql::ai::AgentHarness::ClaudeCode => AIAgentHarness::ClaudeCode,
-        warp_graphql::ai::AgentHarness::Gemini => AIAgentHarness::Gemini,
-        warp_graphql::ai::AgentHarness::Codex => AIAgentHarness::Codex,
-        warp_graphql::ai::AgentHarness::Other(value) => {
+        wish_graphql::ai::AgentHarness::Oz => AIAgentHarness::Oz,
+        wish_graphql::ai::AgentHarness::ClaudeCode => AIAgentHarness::ClaudeCode,
+        wish_graphql::ai::AgentHarness::Gemini => AIAgentHarness::Gemini,
+        wish_graphql::ai::AgentHarness::Codex => AIAgentHarness::Codex,
+        wish_graphql::ai::AgentHarness::Other(value) => {
             report_error!(anyhow!(
                 "Invalid AgentHarness '{value}'. Make sure to update client GraphQL types!"
             ));
@@ -2568,15 +2568,15 @@ fn convert_harness(harness: warp_graphql::ai::AgentHarness) -> AIAgentHarness {
 }
 
 fn convert_block_snapshot_format(
-    format: warp_graphql::ai::SerializedBlockFormat,
+    format: wish_graphql::ai::SerializedBlockFormat,
 ) -> AIAgentSerializedBlockFormat {
     match format {
-        warp_graphql::ai::SerializedBlockFormat::JsonV1 => AIAgentSerializedBlockFormat::JsonV1,
+        wish_graphql::ai::SerializedBlockFormat::JsonV1 => AIAgentSerializedBlockFormat::JsonV1,
     }
 }
 
 fn convert_conversation_format(
-    format: warp_graphql::ai::AIConversationFormat,
+    format: wish_graphql::ai::AIConversationFormat,
 ) -> AIAgentConversationFormat {
     AIAgentConversationFormat {
         has_task_list: format.has_task_list,
@@ -2600,10 +2600,10 @@ fn convert_usage_metadata(
     }
 }
 
-impl TryFrom<warp_graphql::ai::AIConversation> for ServerAIConversationMetadata {
+impl TryFrom<wish_graphql::ai::AIConversation> for ServerAIConversationMetadata {
     type Error = anyhow::Error;
 
-    fn try_from(value: warp_graphql::ai::AIConversation) -> Result<Self, Self::Error> {
+    fn try_from(value: wish_graphql::ai::AIConversation) -> Result<Self, Self::Error> {
         let usage = convert_usage_metadata(
             value.usage.usage_metadata.summarized,
             value.usage.usage_metadata.context_window_usage,
@@ -2640,13 +2640,13 @@ impl TryFrom<warp_graphql::ai::AIConversation> for ServerAIConversationMetadata 
     }
 }
 
-impl TryFrom<warp_graphql::queries::list_ai_conversations::AIConversationMetadata>
+impl TryFrom<wish_graphql::queries::list_ai_conversations::AIConversationMetadata>
     for ServerAIConversationMetadata
 {
     type Error = anyhow::Error;
 
     fn try_from(
-        value: warp_graphql::queries::list_ai_conversations::AIConversationMetadata,
+        value: wish_graphql::queries::list_ai_conversations::AIConversationMetadata,
     ) -> Result<Self, Self::Error> {
         let usage = convert_usage_metadata(
             value.usage.usage_metadata.summarized,

@@ -1,9 +1,9 @@
 use futures::channel::oneshot;
 use std::path::Path;
 use vec1::vec1;
-use warp_editor::content::buffer::{InitialBufferState, SelectionOffsets};
-use warp_editor::multiline::MultilineString;
-use warp_util::content_version::ContentVersion;
+use wish_editor::content::buffer::{InitialBufferState, SelectionOffsets};
+use wish_editor::multiline::MultilineString;
+use wish_util::content_version::ContentVersion;
 use wishui::App;
 
 use crate::{

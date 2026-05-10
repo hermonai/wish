@@ -15,7 +15,7 @@ use crate::terminal::cli_agent_sessions::plugin_manager::plugin_manager_for;
 use crate::terminal::shell::ShellType;
 use shell_words::quote as shell_quote;
 use uuid::Uuid;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 
 #[derive(Clone)]
 pub(super) struct PreparedLocalHarnessLaunch {

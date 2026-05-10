@@ -6,7 +6,7 @@ use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use serde_yaml::Mapping;
 use string_offset::ByteOffset;
-use warp_editor::{
+use wish_editor::{
     content::{markdown::MarkdownStyle, text::TextStylesWithMetadata},
     editor::EmbeddedItemModel,
     extract_block,
@@ -637,7 +637,7 @@ impl RenderableBlock for RenderableEmbeddedWorkflow {
 
     fn dispatch_event(
         &mut self,
-        _model: &warp_editor::render::model::RenderState,
+        _model: &wish_editor::render::model::RenderState,
         event: &wishui::event::DispatchedEvent,
         ctx: &mut wishui::EventContext,
         app: &AppContext,

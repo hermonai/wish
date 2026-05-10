@@ -15,9 +15,11 @@
 //! conversation logic.
 
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use wishui::{Entity, ModelContext, SingletonEntity};
 
+use super::adapter::ConversationAdapter;
 use super::types::{Conversation, ConversationId, MessageBlock, StreamChunk, Turn};
 
 // ── Events ───────────────────────────────────────────────────────────
@@ -166,6 +168,10 @@ pub struct ConversationManagerModel {
     /// Insertion order for the conversation list — newest first.
     /// Maintained alongside the HashMap for stable rendering.
     order: Vec<ConversationId>,
+    /// The active conversation adapter. Set once during init or when
+    /// the user switches between guest / logged-in mode. Wrapped in
+    /// `Arc` so it can be cheaply cloned to background threads.
+    adapter: Option<Arc<dyn ConversationAdapter>>,
 }
 
 impl Entity for ConversationManagerModel {
@@ -182,7 +188,77 @@ impl ConversationManagerModel {
             in_flight: HashMap::new(),
             active: None,
             order: Vec::new(),
+            adapter: None,
         }
+    }
+
+    /// Set the active conversation adapter. Call this during app
+    /// initialization or when the user switches auth modes.
+    pub fn set_adapter(&mut self, adapter: Arc<dyn ConversationAdapter>) {
+        self.adapter = Some(adapter);
+    }
+
+    /// The human-readable label of the current adapter (e.g.,
+    /// "OpenAI-compatible / llama3.2:3b"). `None` when no adapter
+    /// is configured.
+    pub fn adapter_label(&self) -> Option<String> {
+        self.adapter.as_ref().map(|a| a.label())
+    }
+
+    /// Send a user message in the given conversation, routing
+    /// through the currently configured adapter. Returns `false`
+    /// if the conversation doesn't exist or no adapter is set.
+    ///
+    /// The adapter runs on its own background thread and emits
+    /// `StreamChunk`s through the sink. Each chunk is dispatched
+    /// back to this model via a `ModelSpawner`, which safely
+    /// marshals from the adapter's thread to the main thread.
+    pub fn send_user_message(
+        &mut self,
+        id: &ConversationId,
+        message: String,
+        ctx: &mut ModelContext<Self>,
+    ) -> bool {
+        let Some(adapter) = self.adapter.clone() else {
+            log::warn!("No conversation adapter configured — cannot send message");
+            return false;
+        };
+
+        // Append the user turn first.
+        if !self.append_user(id, message.clone(), ctx) {
+            return false;
+        }
+
+        // Snapshot the conversation for the adapter.
+        let Some(conversation) = self.conversations.get(id).cloned() else {
+            return false;
+        };
+
+        // Pre-create in-flight state so the view can show a spinner.
+        self.in_flight
+            .entry(id.clone())
+            .or_insert_with(InFlight::default);
+
+        // Build a sink that dispatches chunks back to this model
+        // through the spawner. The adapter calls the sink from its
+        // own background thread; the spawner marshals each chunk to
+        // the main UI thread via an async channel. We use
+        // `block_on` because the sink callback is synchronous.
+        let spawner = ctx.spawner();
+        let convo_id = id.clone();
+        let sink: super::adapter::ChunkSink = Box::new(move |chunk: StreamChunk| {
+            let convo_id = convo_id.clone();
+            let spawner_clone = spawner.clone();
+            // The adapter already runs on a background thread, so
+            // blocking here is fine — we just need to queue the
+            // chunk onto the main thread.
+            let _ = futures::executor::block_on(spawner_clone.spawn(move |mgr, ctx| {
+                mgr.apply_chunk(&convo_id, chunk, ctx);
+            }));
+        });
+
+        adapter.send(&conversation, &message, sink);
+        true
     }
 
     // ── Read API ─────────────────────────────────────────────────
@@ -369,6 +445,7 @@ impl ConversationManagerModel {
             in_flight: HashMap::new(),
             active,
             order,
+            adapter: None,
         }
     }
 }

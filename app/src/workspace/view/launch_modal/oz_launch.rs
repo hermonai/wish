@@ -102,7 +102,7 @@ impl Slide for OzLaunchSlide {
                 "View all of your agents across local and cloud sessions in the Wish app or at [wish.hermon.ai](https://wish.hermon.ai). Join live agent sessions, continue tasks locally, and steer agents with one click."
             }
             OzLaunchSlide::LaunchCredits => {
-                "Upgrade to Build this month and receive 1,000 extra credits to try using Oz. Credits are only eligible for Oz runs in Wish-hosted cloud environments."
+                "Upgrade to Build this month and receive 1,000 extra credits to try using Hermon Agent. Credits are only eligible for Hermon Cloud runs in Wish-hosted cloud environments."
             }
         }
     }

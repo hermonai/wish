@@ -19,7 +19,7 @@ use std::{any::Any, fmt::Debug, sync::Arc};
 use anyhow::Result;
 use async_channel::{Receiver, Sender};
 use async_trait::async_trait;
-use warp_completer::completer::CommandOutput;
+use wish_completer::completer::CommandOutput;
 use wishui::ModelContext;
 
 use crate::terminal::{
@@ -373,7 +373,7 @@ pub mod testing {
 
     use anyhow::anyhow;
     use command::r#async::Command;
-    use warp_completer::completer::CommandOutput;
+    use wish_completer::completer::CommandOutput;
 
     use super::*;
 

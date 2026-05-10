@@ -424,7 +424,7 @@ pub fn get_image_filepaths_from_paths(paths: &[String]) -> Vec<String> {
 /// Create escaped file paths text string for insertion into terminal.
 pub fn escaped_paths_str(
     paths: &[String],
-    shell_family: Option<warp_util::path::ShellFamily>,
+    shell_family: Option<wish_util::path::ShellFamily>,
 ) -> String {
     // Handle regular file paths as text
     #[allow(unused_mut)]

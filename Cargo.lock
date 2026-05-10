@@ -351,14 +351,14 @@ dependencies = [
  "unicode-width 0.1.14",
  "uuid",
  "virtual-fs",
- "warp_graphql",
  "warp_multi_agent_api",
- "warp_terminal",
- "warp_util",
- "warpui_extras",
  "watcher",
  "wish_core",
+ "wish_graphql",
+ "wish_terminal",
+ "wish_util",
  "wishui",
+ "wishui_extras",
 ]
 
 [[package]]
@@ -546,8 +546,8 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
- "warp_cli",
  "win32job",
+ "wish_cli",
 ]
 
 [[package]]
@@ -1154,7 +1154,7 @@ dependencies = [
  "quote",
  "sha2",
  "syn 2.0.117",
- "warp_util",
+ "wish_util",
 ]
 
 [[package]]
@@ -6671,7 +6671,7 @@ dependencies = [
  "smol_str",
  "tempfile",
  "tokenizers",
- "warp_completer",
+ "wish_completer",
 ]
 
 [[package]]
@@ -6736,13 +6736,13 @@ dependencies = [
  "version-compare",
  "warp-command-signatures",
  "warp-workflows",
- "warp_cli",
  "warp_multi_agent_api",
- "warpui_extras",
  "whoami",
  "wish",
+ "wish_cli",
  "wish_core",
  "wishui",
+ "wishui_extras",
 ]
 
 [[package]]
@@ -7252,7 +7252,7 @@ dependencies = [
  "rust-embed 8.7.2",
  "serde",
  "serde_yaml",
- "warp_editor",
+ "wish_editor",
 ]
 
 [[package]]
@@ -7583,8 +7583,8 @@ dependencies = [
  "strum_macros",
  "tokio",
  "url",
- "warp_util",
  "wish_core",
+ "wish_util",
  "wishui",
 ]
 
@@ -7702,8 +7702,8 @@ dependencies = [
 name = "managed_secrets_wasm"
 version = "0.1.0"
 dependencies = [
- "warp_managed_secrets",
  "wasm-bindgen",
+ "wish_managed_secrets",
 ]
 
 [[package]]
@@ -9012,8 +9012,8 @@ dependencies = [
  "strum_macros",
  "ui_components",
  "uuid",
- "warp_logging",
  "wish_core",
+ "wish_logging",
  "wishui",
 ]
 
@@ -10709,8 +10709,8 @@ dependencies = [
  "tokio",
  "tokio-util",
  "uuid",
- "warp_util",
  "wish_core",
+ "wish_util",
  "wishui",
 ]
 
@@ -10754,9 +10754,9 @@ dependencies = [
  "thiserror 2.0.17",
  "virtual-fs",
  "walkdir",
- "warp_util",
  "watcher",
  "wish_core",
+ "wish_util",
  "wishui",
 ]
 
@@ -11945,9 +11945,9 @@ dependencies = [
  "serde_json",
  "settings_value",
  "tempfile",
- "warp_features",
- "warpui_extras",
+ "wish_features",
  "wishui",
+ "wishui_extras",
 ]
 
 [[package]]
@@ -12586,8 +12586,8 @@ dependencies = [
  "rangemap",
  "streaming-iterator",
  "string-offset",
- "warp_editor",
- "warp_util",
+ "wish_editor",
+ "wish_util",
  "wishui",
 ]
 
@@ -14336,253 +14336,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "warp_cli"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "cfg-if",
- "cfg_aliases 0.2.1",
- "chrono",
- "clap",
- "clap_complete",
- "color-print",
- "humantime",
- "jaq-all",
- "serde",
- "serial_test",
- "url",
- "uuid",
- "warp_util",
- "windows 0.62.2",
- "wish_core",
-]
-
-[[package]]
-name = "warp_completer"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-recursion",
- "async-trait",
- "bincode",
- "cfg-if",
- "clap",
- "command",
- "derive-new",
- "dirs 6.0.0",
- "futures",
- "fuzzy_match",
- "getset",
- "instant",
- "itertools 0.14.0",
- "lazy_static",
- "log",
- "memo-map",
- "regex",
- "rquickjs",
- "serde",
- "shellexpand",
- "smol_str",
- "string-offset",
- "thiserror 2.0.17",
- "typed-path 0.10.0",
- "warp-command-signatures",
- "warp_cli",
- "warp_completer",
- "warp_js",
- "warp_util",
- "wish_core",
- "wishui",
-]
-
-[[package]]
-name = "warp_editor"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "arrayvec",
- "asset_cache",
- "async-channel",
- "bytes",
- "criterion",
- "enclose",
- "enum-iterator",
- "env_logger",
- "float-cmp",
- "futures-lite 1.13.0",
- "html5ever",
- "imara-diff",
- "instant",
- "itertools 0.14.0",
- "lazy_static",
- "line-ending",
- "log",
- "markdown_parser",
- "markup5ever",
- "mermaid_to_svg",
- "mime_guess",
- "num-traits",
- "ordered-float 3.9.2",
- "parking_lot",
- "pathfinder_color",
- "rand 0.8.6",
- "rangemap",
- "rayon",
- "regex-automata",
- "regex-syntax",
- "rust-embed 8.7.2",
- "serde",
- "serde_yaml",
- "string-offset",
- "sum_tree",
- "thiserror 2.0.17",
- "urlocator",
- "vec1",
- "vim",
- "warp_util",
- "wish_core",
- "wishui",
-]
-
-[[package]]
-name = "warp_features"
-version = "0.0.0"
-dependencies = [
- "enum-iterator",
-]
-
-[[package]]
-name = "warp_files"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-channel",
- "async-fs",
- "futures",
- "log",
- "notify-debouncer-full",
- "remote_server",
- "repo_metadata",
- "tempfile",
- "thiserror 2.0.17",
- "warp_util",
- "watcher",
- "wish_core",
- "wishui",
-]
-
-[[package]]
-name = "warp_graphql"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-channel",
- "chrono",
- "cynic",
- "cynic-codegen",
- "futures",
- "futures-util",
- "graphql-ws-client",
- "http 1.1.0",
- "http_client",
- "instant",
- "log",
- "persistence",
- "reqwest",
- "serde",
- "thiserror 2.0.17",
- "warp_graphql_schema",
- "websocket",
- "wish_core",
- "ws_stream_wasm",
-]
-
-[[package]]
-name = "warp_graphql_schema"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "cynic",
- "cynic-codegen",
-]
-
-[[package]]
-name = "warp_isolation_platform"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "base64 0.22.1",
- "chrono",
- "command",
- "log",
- "serde",
- "serde_json",
- "thiserror 2.0.17",
- "wish_core",
-]
-
-[[package]]
-name = "warp_js"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "cfg-if",
- "rquickjs",
- "serde",
- "thiserror 2.0.17",
- "uuid",
-]
-
-[[package]]
-name = "warp_logging"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "cfg-if",
- "chrono",
- "console_error_panic_hook",
- "dirs 6.0.0",
- "env_logger",
- "js-sys",
- "log",
- "log-panics",
- "sentry",
- "sentry-log",
- "warp_web_event_bus",
- "wasm-bindgen",
- "web-sys",
- "wish_core",
- "zip 2.4.2",
-]
-
-[[package]]
-name = "warp_managed_secrets"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "chrono",
- "getrandom 0.3.4",
- "hpke",
- "log",
- "rand 0.9.4",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.17",
- "tink-core",
- "tink-hybrid",
- "tink-proto",
- "vec1",
- "warp_graphql",
- "warp_isolation_platform",
- "wish_core",
- "wishui",
- "zeroize",
-]
-
-[[package]]
 name = "warp_multi_agent_api"
 version = "0.0.0"
 source = "git+https://github.com/warpdotdev/warp-proto-apis.git?rev=02997b8fc6a468783642d93bf1bfa89fb7f42502#02997b8fc6a468783642d93bf1bfa89fb7f42502"
@@ -14592,150 +14345,6 @@ dependencies = [
  "prost-reflect-build",
  "prost-types",
  "regex",
-]
-
-[[package]]
-name = "warp_ripgrep"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-process",
- "command",
- "futures",
- "getrandom 0.2.16",
- "grep",
- "ignore",
- "instant",
- "log",
- "nix 0.26.4",
- "serde",
- "serde_json",
- "string-offset",
- "warp_cli",
-]
-
-[[package]]
-name = "warp_server_client"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "bincode",
- "chrono",
- "cynic",
- "derivative",
- "diesel",
- "itertools 0.14.0",
- "lasso",
- "log",
- "pathfinder_geometry",
- "persistence",
- "schemars",
- "serde",
- "session-sharing-protocol",
- "settings_value",
- "thiserror 2.0.17",
- "uuid",
- "warp_graphql",
- "wish_core",
- "wishui-core",
-]
-
-[[package]]
-name = "warp_terminal"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "bitflags 2.9.4",
- "bitflags-serde-legacy",
- "cfg-if",
- "channel_versions",
- "command-corrections",
- "enum-iterator",
- "get-size",
- "itertools 0.14.0",
- "lazy_static",
- "log",
- "pathfinder_color",
- "regex",
- "serde",
- "session-sharing-protocol",
- "smol_str",
- "static_assertions",
- "string-offset",
- "thiserror 2.0.17",
- "typed-path 0.10.0",
- "unicode-segmentation",
- "unicode-width 0.1.14",
- "uuid",
- "version-compare",
- "vte",
- "warp_completer",
- "warp_util",
- "wish_core",
- "wishui",
-]
-
-[[package]]
-name = "warp_util"
-version = "0.1.0"
-dependencies = [
- "content_inspector",
- "dirs 6.0.0",
- "dunce",
- "futures-util",
- "gloo",
- "hex",
- "lazy_static",
- "mime_guess",
- "pathdiff",
- "pin-project",
- "rand 0.8.6",
- "regex",
- "serde",
- "serde_json",
- "thiserror 2.0.17",
- "typed-path 0.10.0",
- "windows 0.62.2",
- "wishui",
-]
-
-[[package]]
-name = "warp_web_event_bus"
-version = "0.0.0"
-dependencies = [
- "js-sys",
- "log",
- "serde",
- "serde-wasm-bindgen",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "warpui_extras"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "async-channel",
- "cocoa 0.26.0",
- "gloo-storage",
- "log",
- "objc",
- "ouroboros",
- "rand 0.8.6",
- "ring",
- "secret-service",
- "security-framework 2.9.2",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "thiserror 2.0.17",
- "toml_edit 0.25.6+spec-1.1.0",
- "warpui_extras",
- "windows 0.62.2",
- "windows-registry 0.2.0",
- "windows-result 0.2.0",
- "wishui",
 ]
 
 [[package]]
@@ -16128,22 +15737,7 @@ dependencies = [
  "walkdir",
  "warp-command-signatures",
  "warp-workflows",
- "warp_cli",
- "warp_completer",
- "warp_editor",
- "warp_files",
- "warp_graphql",
- "warp_isolation_platform",
- "warp_js",
- "warp_logging",
- "warp_managed_secrets",
  "warp_multi_agent_api",
- "warp_ripgrep",
- "warp_server_client",
- "warp_terminal",
- "warp_util",
- "warp_web_event_bus",
- "warpui_extras",
  "wasm-bindgen",
  "watcher",
  "web-sys",
@@ -16154,10 +15748,85 @@ dependencies = [
  "windows-result 0.2.0",
  "winit",
  "winreg",
+ "wish_cli",
+ "wish_completer",
  "wish_core",
+ "wish_editor",
+ "wish_files",
+ "wish_graphql",
+ "wish_isolation_platform",
+ "wish_js",
+ "wish_logging",
+ "wish_managed_secrets",
+ "wish_ripgrep",
+ "wish_server_client",
+ "wish_terminal",
+ "wish_util",
+ "wish_web_event_bus",
  "wishui",
+ "wishui_extras",
  "x11rb",
  "zbus",
+]
+
+[[package]]
+name = "wish_cli"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "cfg-if",
+ "cfg_aliases 0.2.1",
+ "chrono",
+ "clap",
+ "clap_complete",
+ "color-print",
+ "humantime",
+ "jaq-all",
+ "serde",
+ "serial_test",
+ "url",
+ "uuid",
+ "windows 0.62.2",
+ "wish_core",
+ "wish_util",
+]
+
+[[package]]
+name = "wish_completer"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-recursion",
+ "async-trait",
+ "bincode",
+ "cfg-if",
+ "clap",
+ "command",
+ "derive-new",
+ "dirs 6.0.0",
+ "futures",
+ "fuzzy_match",
+ "getset",
+ "instant",
+ "itertools 0.14.0",
+ "lazy_static",
+ "log",
+ "memo-map",
+ "regex",
+ "rquickjs",
+ "serde",
+ "shellexpand",
+ "smol_str",
+ "string-offset",
+ "thiserror 2.0.17",
+ "typed-path 0.10.0",
+ "warp-command-signatures",
+ "wish_cli",
+ "wish_completer",
+ "wish_core",
+ "wish_js",
+ "wish_util",
+ "wishui",
 ]
 
 [[package]]
@@ -16210,10 +15879,313 @@ dependencies = [
  "thiserror 2.0.17",
  "tokio",
  "url",
- "warp_features",
- "warpui_extras",
  "websocket",
+ "wish_features",
  "wishui",
+ "wishui_extras",
+]
+
+[[package]]
+name = "wish_editor"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arrayvec",
+ "asset_cache",
+ "async-channel",
+ "bytes",
+ "criterion",
+ "enclose",
+ "enum-iterator",
+ "env_logger",
+ "float-cmp",
+ "futures-lite 1.13.0",
+ "html5ever",
+ "imara-diff",
+ "instant",
+ "itertools 0.14.0",
+ "lazy_static",
+ "line-ending",
+ "log",
+ "markdown_parser",
+ "markup5ever",
+ "mermaid_to_svg",
+ "mime_guess",
+ "num-traits",
+ "ordered-float 3.9.2",
+ "parking_lot",
+ "pathfinder_color",
+ "rand 0.8.6",
+ "rangemap",
+ "rayon",
+ "regex-automata",
+ "regex-syntax",
+ "rust-embed 8.7.2",
+ "serde",
+ "serde_yaml",
+ "string-offset",
+ "sum_tree",
+ "thiserror 2.0.17",
+ "urlocator",
+ "vec1",
+ "vim",
+ "wish_core",
+ "wish_util",
+ "wishui",
+]
+
+[[package]]
+name = "wish_features"
+version = "0.0.0"
+dependencies = [
+ "enum-iterator",
+]
+
+[[package]]
+name = "wish_files"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-channel",
+ "async-fs",
+ "futures",
+ "log",
+ "notify-debouncer-full",
+ "remote_server",
+ "repo_metadata",
+ "tempfile",
+ "thiserror 2.0.17",
+ "watcher",
+ "wish_core",
+ "wish_util",
+ "wishui",
+]
+
+[[package]]
+name = "wish_graphql"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-channel",
+ "chrono",
+ "cynic",
+ "cynic-codegen",
+ "futures",
+ "futures-util",
+ "graphql-ws-client",
+ "http 1.1.0",
+ "http_client",
+ "instant",
+ "log",
+ "persistence",
+ "reqwest",
+ "serde",
+ "thiserror 2.0.17",
+ "websocket",
+ "wish_core",
+ "wish_graphql_schema",
+ "ws_stream_wasm",
+]
+
+[[package]]
+name = "wish_graphql_schema"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "cynic",
+ "cynic-codegen",
+]
+
+[[package]]
+name = "wish_isolation_platform"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "base64 0.22.1",
+ "chrono",
+ "command",
+ "log",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+ "wish_core",
+]
+
+[[package]]
+name = "wish_js"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "cfg-if",
+ "rquickjs",
+ "serde",
+ "thiserror 2.0.17",
+ "uuid",
+]
+
+[[package]]
+name = "wish_logging"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "cfg-if",
+ "chrono",
+ "console_error_panic_hook",
+ "dirs 6.0.0",
+ "env_logger",
+ "js-sys",
+ "log",
+ "log-panics",
+ "sentry",
+ "sentry-log",
+ "wasm-bindgen",
+ "web-sys",
+ "wish_core",
+ "wish_web_event_bus",
+ "zip 2.4.2",
+]
+
+[[package]]
+name = "wish_managed_secrets"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "chrono",
+ "getrandom 0.3.4",
+ "hpke",
+ "log",
+ "rand 0.9.4",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.17",
+ "tink-core",
+ "tink-hybrid",
+ "tink-proto",
+ "vec1",
+ "wish_core",
+ "wish_graphql",
+ "wish_isolation_platform",
+ "wishui",
+ "zeroize",
+]
+
+[[package]]
+name = "wish_ripgrep"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-process",
+ "command",
+ "futures",
+ "getrandom 0.2.16",
+ "grep",
+ "ignore",
+ "instant",
+ "log",
+ "nix 0.26.4",
+ "serde",
+ "serde_json",
+ "string-offset",
+ "wish_cli",
+]
+
+[[package]]
+name = "wish_server_client"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bincode",
+ "chrono",
+ "cynic",
+ "derivative",
+ "diesel",
+ "itertools 0.14.0",
+ "lasso",
+ "log",
+ "pathfinder_geometry",
+ "persistence",
+ "schemars",
+ "serde",
+ "session-sharing-protocol",
+ "settings_value",
+ "thiserror 2.0.17",
+ "uuid",
+ "wish_core",
+ "wish_graphql",
+ "wishui-core",
+]
+
+[[package]]
+name = "wish_terminal"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "bitflags 2.9.4",
+ "bitflags-serde-legacy",
+ "cfg-if",
+ "channel_versions",
+ "command-corrections",
+ "enum-iterator",
+ "get-size",
+ "itertools 0.14.0",
+ "lazy_static",
+ "log",
+ "pathfinder_color",
+ "regex",
+ "serde",
+ "session-sharing-protocol",
+ "smol_str",
+ "static_assertions",
+ "string-offset",
+ "thiserror 2.0.17",
+ "typed-path 0.10.0",
+ "unicode-segmentation",
+ "unicode-width 0.1.14",
+ "uuid",
+ "version-compare",
+ "vte",
+ "wish_completer",
+ "wish_core",
+ "wish_util",
+ "wishui",
+]
+
+[[package]]
+name = "wish_util"
+version = "0.1.0"
+dependencies = [
+ "content_inspector",
+ "dirs 6.0.0",
+ "dunce",
+ "futures-util",
+ "gloo",
+ "hex",
+ "lazy_static",
+ "mime_guess",
+ "pathdiff",
+ "pin-project",
+ "rand 0.8.6",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+ "typed-path 0.10.0",
+ "windows 0.62.2",
+ "wishui",
+]
+
+[[package]]
+name = "wish_web_event_bus"
+version = "0.0.0"
+dependencies = [
+ "js-sys",
+ "log",
+ "serde",
+ "serde-wasm-bindgen",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -16380,10 +16352,38 @@ dependencies = [
  "tokio",
  "trait-set",
  "vec1",
- "warp_util",
  "wasm-bindgen-futures",
+ "wish_util",
  "wishui-core",
  "woothee",
+]
+
+[[package]]
+name = "wishui_extras"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "async-channel",
+ "cocoa 0.26.0",
+ "gloo-storage",
+ "log",
+ "objc",
+ "ouroboros",
+ "rand 0.8.6",
+ "ring",
+ "secret-service",
+ "security-framework 2.9.2",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror 2.0.17",
+ "toml_edit 0.25.6+spec-1.1.0",
+ "windows 0.62.2",
+ "windows-registry 0.2.0",
+ "windows-result 0.2.0",
+ "wishui",
+ "wishui_extras",
 ]
 
 [[package]]

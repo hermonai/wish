@@ -22,7 +22,7 @@ cd "${REPO_ROOT}"
 : "${FEATURES:?FEATURES must be set (invoke via ./script/run)}"
 
 if [ "$WARP_CHANNEL" = "local" ]; then
-    WARP_APP_PATH="target/debug/bundle/osx/WishLocal.app"
+    WARP_APP_PATH="target/debug/bundle/osx/Wish.app"
     WARP_SCHEME_NAME="${WISH_URL_SCHEME:-wish}"
 else
     WARP_APP_PATH="target/debug/bundle/osx/WishOss.app"
@@ -60,7 +60,7 @@ while (( "$#" )); do
     --release)
       echo "Detected release build, pointing at release bundle under target/release/bundle"
       if [ "$WARP_CHANNEL" = "local" ]; then
-          WARP_APP_PATH="target/release/bundle/osx/WishLocal.app"
+          WARP_APP_PATH="target/release/bundle/osx/Wish.app"
       else
           WARP_APP_PATH="target/release/bundle/osx/WishOss.app"
       fi
@@ -71,7 +71,7 @@ while (( "$#" )); do
       PROFILE="$2"
       shift 2
       if [ "$WARP_CHANNEL" = "local" ]; then
-          WARP_APP_PATH="target/${PROFILE}/bundle/osx/WishLocal.app"
+          WARP_APP_PATH="target/${PROFILE}/bundle/osx/Wish.app"
       else
           WARP_APP_PATH="target/${PROFILE}/bundle/osx/WishOss.app"
       fi

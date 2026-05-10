@@ -29,7 +29,7 @@ pub enum HarnessFilter {
     Specific(Harness),
 }
 ```
-`Harness` is `Copy` and already `Serialize + Deserialize` via `warp_cli::agent::Harness` (used elsewhere). `HarnessFilter` stays `Copy` so it threads through actions cheaply.
+`Harness` is `Copy` and already `Serialize + Deserialize` via `wish_cli::agent::Harness` (used elsewhere). `HarnessFilter` stays `Copy` so it threads through actions cheaply.
 Extend `AgentManagementFilters`:
 ```rust path=null start=null
 pub struct AgentManagementFilters {
@@ -67,7 +67,7 @@ Resolution mirrors `ConversationDetailsData::from_task` from REMOTE-1455 exactly
 - snapshot present + no `harness` field → `Some(Harness::Oz)` (runtime default for an Oz-managed task),
 - snapshot not loaded yet (stub) → `None` ("don't know yet"),
 - local/interactive conversation → `Some(Harness::Oz)`.
-`HarnessConfig.harness_type` is already a parsed `warp_cli::agent::Harness`, so the resolver no longer needs to re-parse a raw string — unknown values are already collapsed to `Harness::Oz` by the snapshot deserializer (`harness_from_name` in `ambient_agents/task.rs`). PRODUCT invariant 6 bullet 3 follows directly from `harness() == None` not matching any `HarnessFilter::Specific(_)`.
+`HarnessConfig.harness_type` is already a parsed `wish_cli::agent::Harness`, so the resolver no longer needs to re-parse a raw string — unknown values are already collapsed to `Harness::Oz` by the snapshot deserializer (`harness_from_name` in `ambient_agents/task.rs`). PRODUCT invariant 6 bullet 3 follows directly from `harness() == None` not matching any `HarnessFilter::Specific(_)`.
 `HarnessFilter`'s `Deserialize` impl uses clap's `Harness::from_str` to coerce persisted `"oz" | "claude" | "gemini" | "all" | <unknown>` strings, falling back to `HarnessFilter::All` for unknown values; `harness()` itself doesn't parse strings.
 Wire `matches_harness` into `get_tasks_and_conversations` as another closure in the `.filter(...)` chain, alongside the existing `source_filter` / `status_filter` / `environment_filter` (invariant 8).
 ### 3. View: dropdown construction and wiring
@@ -100,11 +100,11 @@ Behavior invariants from `PRODUCT.md` map as follows:
 - Invariants 1, 7, 13, 14, 18 — covered by manual verification, not dedicated tests: structurally, `get_tasks_from_model` is the only consumer that reads `self.filters.harness`, and the dropdown is placed inside the same `filters_wrap` as its siblings so it inherits their wrapping/focus/keybinding behavior.
 - Invariants 19, 20, 21, 22 — review-only: `render_metadata_row` pushes the `Harness: <display_name>` segment from `ConversationOrTask::harness()`, whose resolution is unit-tested. Invariant 23 (per-card harness string aligns with filter selection) follows from both the card and the filter using the same `harness()` resolver, already exercised by the `matches_harness` tests.
 - Manual verification — `cargo run`, open the management view, and in order: (a) open Harness dropdown → exactly four options in the documented order with brand-tinted icons on the three non-`All` rows; (b) pick `Claude Code` → list narrows; (c) toggle Owner `Personal` ↔ `All` → harness constraint still applies; (d) pick `Warp Agent` → see local conversations and cloud tasks with no `harness_type` set; (e) click `Clear all` → harness returns to `All`; (f) set to `Gemini CLI`, restart Warp → selection is restored; (g) follow a deep-link that invokes `apply_environment_filter_from_link` → harness resets to `All`.
-- Pre-PR — `./script/presubmit` per repo rules. No WASM-specific paths; `warp_cli::agent::Harness` already compiles for WASM.
+- Pre-PR — `./script/presubmit` per repo rules. No WASM-specific paths; `wish_cli::agent::Harness` already compiles for WASM.
 ## Risks and mitigations
 - **Server returns tasks whose harness does not match the selected filter.** Expected under invariant 12 when the server does not yet filter by harness; the client drops them in `get_tasks_and_conversations`. Result is a potentially smaller rendered page than the server intended, which is cosmetic. Mitigation: add server-side `harness` to `TaskListFilter` when available (see Follow-ups).
 - **Persisted filters from older clients carry unknown fields.** Guarded by `#[serde(default)]` on `harness` and serde's default laxness on unknown fields already assumed elsewhere on this struct.
-- **New `Harness` variants added in `warp_cli` would render only in three-item order.** `create_harness_dropdown` iterates the variants explicitly to control order and icon/color mapping, so adding a variant requires touching the dropdown builder. This matches PRODUCT invariant 3's "adding it is out of scope" stance — mitigation is a future PR that extends the explicit list.
+- **New `Harness` variants added in `wish_cli` would render only in three-item order.** `create_harness_dropdown` iterates the variants explicitly to control order and icon/color mapping, so adding a variant requires touching the dropdown builder. This matches PRODUCT invariant 3's "adding it is out of scope" stance — mitigation is a future PR that extends the explicit list.
 ## Follow-ups
 - Add `harness: Option<Harness>` to `TaskListFilter` + `&harness=` query param in `build_list_agent_runs_url` once the public API supports it, and wire through `build_task_list_filter`. Reduces client-side filtering overhead but is not required for any invariant.
 - If a new `Harness` variant ships, extend `create_harness_dropdown`'s ordered variant list in one place.

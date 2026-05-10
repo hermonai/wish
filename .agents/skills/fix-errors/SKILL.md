@@ -39,8 +39,8 @@ cargo fmt -- --check
 
 **Clippy (full workspace):**
 ```bash
-cargo clippy --workspace --exclude warp_completer --all-targets --all-features --tests -- -D warnings
-cargo clippy -p warp_completer --all-targets --tests -- -D warnings
+cargo clippy --workspace --exclude wish_completer --all-targets --all-features --tests -- -D warnings
+cargo clippy -p wish_completer --all-targets --tests -- -D warnings
 ```
 
 **WASM Clippy:**
@@ -56,7 +56,7 @@ cargo clippy --target wasm32-unknown-unknown --profile release-wasm-debug_assert
 **All tests:**
 ```bash
 cargo nextest run --no-fail-fast --workspace --exclude command-signatures-v2
-cargo nextest run -p warp_completer --features v2
+cargo nextest run -p wish_completer --features v2
 ```
 
 **Doc tests:**

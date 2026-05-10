@@ -54,7 +54,7 @@ pub enum SearchCodebaseViewEvent {
     #[cfg(feature = "local_fs")]
     OpenDetectedFilePath {
         absolute_path: std::path::PathBuf,
-        line_and_column_num: Option<warp_util::path::LineAndColumnArg>,
+        line_and_column_num: Option<wish_util::path::LineAndColumnArg>,
     },
     TextSelected,
 }

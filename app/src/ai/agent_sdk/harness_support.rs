@@ -2,14 +2,14 @@
 //!
 //! Subcommands:
 //! - [`ping`] — fetches the current run by task ID and prints its info.
-//! - [`report_artifact`] — reports an artifact (e.g. a PR) back to the Oz platform.
+//! - [`report_artifact`] — reports an artifact (e.g. a PR) back to the Hermon Cloud.
 use anyhow::Result;
-use warp_cli::agent::OutputFormat;
-use warp_cli::harness_support::{
+use wish_cli::agent::OutputFormat;
+use wish_cli::harness_support::{
     FinishTaskArgs, HarnessSupportArgs, HarnessSupportCommand, NotifyUserArgs, ReportArtifactArgs,
     ReportArtifactCommand, TaskStatus,
 };
-use warp_cli::GlobalOptions;
+use wish_cli::GlobalOptions;
 use wish_core::features::FeatureFlag;
 use wishui::{platform::TerminationMode, AppContext, ModelHandle, SingletonEntity};
 
@@ -86,7 +86,7 @@ fn ping(
     Ok(())
 }
 
-/// Report an artifact back to the Oz platform.
+/// Report an artifact back to the Hermon Cloud.
 fn report_artifact(
     ctx: &mut AppContext,
     runner: ModelHandle<HarnessSupportRunner>,

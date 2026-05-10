@@ -23,35 +23,167 @@ pub struct ResolvedLspCommand {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LanguageId {
+    // ── Systems / compiled ──────────────────────────────────────
     Rust,
+    C,
+    Cpp,
     Go,
+    Zig,
+    Nim,
+    Swift,
+    Dart,
+
+    // ── JVM family ──────────────────────────────────────────────
+    Java,
+    Kotlin,
+    Scala,
+
+    // ── .NET family ─────────────────────────────────────────────
+    CSharp,
+    FSharp,
+
+    // ── Scripting / dynamic ─────────────────────────────────────
     Python,
+    Ruby,
+    PHP,
+    Perl,
+    Lua,
+    Bash,
+
+    // ── JS / TS ecosystem ───────────────────────────────────────
     TypeScript,
     TypeScriptReact,
     JavaScript,
     JavaScriptReact,
-    C,
-    Cpp,
+    Svelte,
+    Vue,
+
+    // ── Functional / BEAM ───────────────────────────────────────
+    Elixir,
+    Erlang,
+    Haskell,
+    OCaml,
+
+    // ── Web markup / style ──────────────────────────────────────
+    Html,
+    Css,
+    Scss,
+    Less,
+
+    // ── Data / config ───────────────────────────────────────────
+    Json,
+    Jsonc,
+    Yaml,
+    Toml,
+    Sql,
+    GraphQL,
+    Xml,
+
+    // ── Documentation / academic ────────────────────────────────
+    Markdown,
+    LaTeX,
+
+    // ── Blockchain ──────────────────────────────────────────────
+    Solidity,
+
+    // ── DevOps / infra ──────────────────────────────────────────
+    Terraform,
+    Dockerfile,
+    CMake,
 }
 
 impl LanguageId {
     pub fn from_path(path: &Path) -> Option<Self> {
-        let extn = path.extension()?;
-        match extn.to_str()? {
-            "rs" => Some(Self::Rust),
-            "go" => Some(Self::Go),
-            "py" => Some(Self::Python),
-            "ts" => Some(Self::TypeScript),
-            "tsx" => Some(Self::TypeScriptReact),
-            "js" | "mjs" | "cjs" => Some(Self::JavaScript),
-            "jsx" => Some(Self::JavaScriptReact),
-            "c" | "C" => Some(Self::C),
-            "cc" | "cpp" | "cxx" => Some(Self::Cpp),
-            // NOTE: `.h` files are ambiguous (could be C or C++). We map them to Cpp
-            // because clangd defaults to C++ for `.h` files anyway. When a
-            // compile_commands.json is present, clangd will use the correct language
-            // regardless of the languageId we send.
-            "h" | "H" | "hh" | "hpp" | "hxx" => Some(Self::Cpp),
+        // Try extension-based matching first
+        if let Some(extn) = path.extension().and_then(|e| e.to_str()) {
+            let result = match extn {
+                // ── Systems / compiled ──────────────────────────────
+                "rs" => Some(Self::Rust),
+                "c" | "C" => Some(Self::C),
+                "cc" | "cpp" | "cxx" => Some(Self::Cpp),
+                // NOTE: `.h` files are ambiguous (could be C or C++). We
+                // map them to Cpp because clangd defaults to C++ for `.h`
+                // files anyway. When a compile_commands.json is present,
+                // clangd will use the correct language regardless of the
+                // languageId we send.
+                "h" | "H" | "hh" | "hpp" | "hxx" => Some(Self::Cpp),
+                "go" => Some(Self::Go),
+                "zig" => Some(Self::Zig),
+                "nim" | "nims" | "nimble" => Some(Self::Nim),
+                "swift" => Some(Self::Swift),
+                "dart" => Some(Self::Dart),
+
+                // ── JVM family ────────────────────────────────────────
+                "java" => Some(Self::Java),
+                "kt" | "kts" => Some(Self::Kotlin),
+                "scala" | "sc" => Some(Self::Scala),
+
+                // ── .NET family ───────────────────────────────────────
+                "cs" => Some(Self::CSharp),
+                "fs" | "fsx" | "fsi" => Some(Self::FSharp),
+
+                // ── Scripting / dynamic ───────────────────────────────
+                "py" | "pyi" => Some(Self::Python),
+                "rb" | "erb" | "rake" => Some(Self::Ruby),
+                "php" => Some(Self::PHP),
+                "pl" | "pm" => Some(Self::Perl),
+                "lua" => Some(Self::Lua),
+                "sh" | "bash" | "zsh" | "fish" => Some(Self::Bash),
+
+                // ── JS / TS ecosystem ─────────────────────────────────
+                "ts" => Some(Self::TypeScript),
+                "tsx" => Some(Self::TypeScriptReact),
+                "js" | "mjs" | "cjs" => Some(Self::JavaScript),
+                "jsx" => Some(Self::JavaScriptReact),
+                "svelte" => Some(Self::Svelte),
+                "vue" => Some(Self::Vue),
+
+                // ── Functional / BEAM ─────────────────────────────────
+                "ex" | "exs" => Some(Self::Elixir),
+                "erl" | "hrl" => Some(Self::Erlang),
+                "hs" | "lhs" => Some(Self::Haskell),
+                "ml" | "mli" => Some(Self::OCaml),
+
+                // ── Web markup / style ────────────────────────────────
+                "html" | "htm" => Some(Self::Html),
+                "css" => Some(Self::Css),
+                "scss" => Some(Self::Scss),
+                "less" => Some(Self::Less),
+
+                // ── Data / config ─────────────────────────────────────
+                "json" => Some(Self::Json),
+                "jsonc" => Some(Self::Jsonc),
+                "yaml" | "yml" => Some(Self::Yaml),
+                "toml" => Some(Self::Toml),
+                "sql" => Some(Self::Sql),
+                "graphql" | "gql" => Some(Self::GraphQL),
+                "xml" | "xsl" | "xsd" | "xslt" | "svg" => Some(Self::Xml),
+
+                // ── Documentation / academic ──────────────────────────
+                "md" | "markdown" => Some(Self::Markdown),
+                "tex" | "bib" | "sty" | "cls" => Some(Self::LaTeX),
+
+                // ── Blockchain ────────────────────────────────────────
+                "sol" => Some(Self::Solidity),
+
+                // ── DevOps / infra ────────────────────────────────────
+                "tf" | "tfvars" => Some(Self::Terraform),
+                "cmake" => Some(Self::CMake),
+
+                _ => None,
+            };
+            if result.is_some() {
+                return result;
+            }
+        }
+
+        // Filename-based matching (for files without standard extensions)
+        let filename = path.file_name()?.to_str()?;
+        match filename {
+            "Dockerfile" | "dockerfile" | "Containerfile" | "containerfile" => {
+                Some(Self::Dockerfile)
+            }
+            "CMakeLists.txt" => Some(Self::CMake),
             _ => None,
         }
     }
@@ -60,21 +192,71 @@ impl LanguageId {
     /// See: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem
     pub(crate) fn lsp_language_identifier(&self) -> &'static str {
         match self {
+            // Systems / compiled
             LanguageId::Rust => "rust",
+            LanguageId::C => "c",
+            LanguageId::Cpp => "cpp",
             LanguageId::Go => "go",
+            LanguageId::Zig => "zig",
+            LanguageId::Nim => "nim",
+            LanguageId::Swift => "swift",
+            LanguageId::Dart => "dart",
+            // JVM
+            LanguageId::Java => "java",
+            LanguageId::Kotlin => "kotlin",
+            LanguageId::Scala => "scala",
+            // .NET
+            LanguageId::CSharp => "csharp",
+            LanguageId::FSharp => "fsharp",
+            // Scripting
             LanguageId::Python => "python",
+            LanguageId::Ruby => "ruby",
+            LanguageId::PHP => "php",
+            LanguageId::Perl => "perl",
+            LanguageId::Lua => "lua",
+            LanguageId::Bash => "shellscript",
+            // JS / TS
             LanguageId::TypeScript => "typescript",
             LanguageId::TypeScriptReact => "typescriptreact",
             LanguageId::JavaScript => "javascript",
             LanguageId::JavaScriptReact => "javascriptreact",
-            LanguageId::C => "c",
-            LanguageId::Cpp => "cpp",
+            LanguageId::Svelte => "svelte",
+            LanguageId::Vue => "vue",
+            // Functional / BEAM
+            LanguageId::Elixir => "elixir",
+            LanguageId::Erlang => "erlang",
+            LanguageId::Haskell => "haskell",
+            LanguageId::OCaml => "ocaml",
+            // Web
+            LanguageId::Html => "html",
+            LanguageId::Css => "css",
+            LanguageId::Scss => "scss",
+            LanguageId::Less => "less",
+            // Data / config
+            LanguageId::Json => "json",
+            LanguageId::Jsonc => "jsonc",
+            LanguageId::Yaml => "yaml",
+            LanguageId::Toml => "toml",
+            LanguageId::Sql => "sql",
+            LanguageId::GraphQL => "graphql",
+            LanguageId::Xml => "xml",
+            // Documentation
+            LanguageId::Markdown => "markdown",
+            LanguageId::LaTeX => "latex",
+            // Blockchain
+            LanguageId::Solidity => "solidity",
+            // DevOps / infra
+            LanguageId::Terraform => "terraform",
+            LanguageId::Dockerfile => "dockerfile",
+            LanguageId::CMake => "cmake",
         }
     }
 
-    /// For now we assume a 1:1 language -> LSP server type. This might change in the future as we support more configurabilities.
+    /// For now we assume a 1:1 language -> LSP server type. This might change
+    /// in the future as we support more configurabilities.
     pub fn server_type(&self) -> LSPServerType {
         match self {
+            // ── Original five ───────────────────────────────────────
             LanguageId::Rust => LSPServerType::RustAnalyzer,
             LanguageId::Go => LSPServerType::GoPls,
             LanguageId::Python => LSPServerType::Pyright,
@@ -83,6 +265,64 @@ impl LanguageId {
             | LanguageId::JavaScript
             | LanguageId::JavaScriptReact => LSPServerType::TypeScriptLanguageServer,
             LanguageId::C | LanguageId::Cpp => LSPServerType::Clangd,
+
+            // ── Systems / compiled ──────────────────────────────────
+            LanguageId::Zig => LSPServerType::Zls,
+            LanguageId::Nim => LSPServerType::NimLangServer,
+            LanguageId::Swift => LSPServerType::SourceKitLsp,
+            LanguageId::Dart => LSPServerType::DartAnalysisServer,
+
+            // ── JVM family ──────────────────────────────────────────
+            LanguageId::Java => LSPServerType::Jdtls,
+            LanguageId::Kotlin => LSPServerType::KotlinLanguageServer,
+            LanguageId::Scala => LSPServerType::Metals,
+
+            // ── .NET family ─────────────────────────────────────────
+            LanguageId::CSharp => LSPServerType::OmniSharp,
+            LanguageId::FSharp => LSPServerType::FsAutoComplete,
+
+            // ── Scripting / dynamic ─────────────────────────────────
+            LanguageId::Ruby => LSPServerType::Solargraph,
+            LanguageId::PHP => LSPServerType::Intelephense,
+            LanguageId::Perl => LSPServerType::PerlNavigator,
+            LanguageId::Lua => LSPServerType::LuaLanguageServer,
+            LanguageId::Bash => LSPServerType::BashLanguageServer,
+
+            // ── JS framework components ─────────────────────────────
+            LanguageId::Svelte => LSPServerType::SvelteLanguageServer,
+            LanguageId::Vue => LSPServerType::VueLanguageServer,
+
+            // ── Functional / BEAM ───────────────────────────────────
+            LanguageId::Elixir => LSPServerType::ElixirLs,
+            LanguageId::Erlang => LSPServerType::ErlangLs,
+            LanguageId::Haskell => LSPServerType::Hls,
+            LanguageId::OCaml => LSPServerType::OcamlLsp,
+
+            // ── Web markup / style ──────────────────────────────────
+            LanguageId::Html => LSPServerType::HtmlLanguageServer,
+            LanguageId::Css | LanguageId::Scss | LanguageId::Less => {
+                LSPServerType::CssLanguageServer
+            }
+
+            // ── Data / config ───────────────────────────────────────
+            LanguageId::Json | LanguageId::Jsonc => LSPServerType::JsonLanguageServer,
+            LanguageId::Yaml => LSPServerType::YamlLanguageServer,
+            LanguageId::Toml => LSPServerType::Taplo,
+            LanguageId::Sql => LSPServerType::Sqls,
+            LanguageId::GraphQL => LSPServerType::GraphQLLs,
+            LanguageId::Xml => LSPServerType::Lemminx,
+
+            // ── Documentation / academic ────────────────────────────
+            LanguageId::Markdown => LSPServerType::Marksman,
+            LanguageId::LaTeX => LSPServerType::Texlab,
+
+            // ── Blockchain ──────────────────────────────────────────
+            LanguageId::Solidity => LSPServerType::SolidityLanguageServer,
+
+            // ── DevOps / infra ──────────────────────────────────────
+            LanguageId::Terraform => LSPServerType::TerraformLs,
+            LanguageId::Dockerfile => LSPServerType::DockerfileLs,
+            LanguageId::CMake => LSPServerType::CmakeLanguageServer,
         }
     }
 }

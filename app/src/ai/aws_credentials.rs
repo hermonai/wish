@@ -13,7 +13,7 @@ use futures::channel::oneshot::channel;
 use futures::future::BoxFuture;
 use tokio::sync::OnceCell;
 use vec1::vec1;
-use warp_managed_secrets::{client::IdentityTokenOptions, ManagedSecretManager};
+use wish_managed_secrets::{client::IdentityTokenOptions, ManagedSecretManager};
 use wishui::{ModelContext, ModelHandle, SingletonEntity};
 
 /// Errors that can occur when loading AWS credentials.
@@ -86,7 +86,7 @@ const AWS_BEDROCK_STS_AUDIENCE: &str = "sts.amazonaws.com";
 const BEDROCK_IDENTITY_TOKEN_DURATION: Duration = Duration::from_secs(60 * 60);
 
 pub(crate) fn aws_role_session_name(run_id: &str) -> String {
-    format!("Oz_Run_{run_id}")
+    format!("Hermon_Agent_Run_{run_id}")
 }
 
 /// Cached STS client for OIDC credential refreshes.

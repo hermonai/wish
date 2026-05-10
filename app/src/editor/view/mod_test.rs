@@ -4503,7 +4503,7 @@ fn test_drag_and_drop_files_applies_path_transformer() {
         view.update(&mut app, |view, ctx| {
             view.clear_buffer(ctx);
             view.set_drag_drop_path_transformer(Some(Box::new(
-                warp_util::path::convert_windows_path_to_wsl,
+                wish_util::path::convert_windows_path_to_wsl,
             )));
             view.drag_and_drop_files(&paths(), ctx);
             assert_eq!(view.buffer_text(ctx), "/mnt/c/foo/bar /mnt/d/baz ");
@@ -4512,7 +4512,7 @@ fn test_drag_and_drop_files_applies_path_transformer() {
         view.update(&mut app, |view, ctx| {
             view.clear_buffer(ctx);
             view.set_drag_drop_path_transformer(Some(Box::new(
-                warp_util::path::convert_windows_path_to_msys2,
+                wish_util::path::convert_windows_path_to_msys2,
             )));
             view.drag_and_drop_files(&paths(), ctx);
             assert_eq!(view.buffer_text(ctx), "/c/foo/bar /d/baz ");

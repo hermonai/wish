@@ -6,9 +6,9 @@ use itertools::Itertools;
 use typed_path::TypedPathBuf;
 #[cfg(windows)]
 use typed_path::{UnixComponent, WindowsComponent, WindowsPrefix};
-use warp_completer::completer::PathCompletionContext;
-use warp_completer::completer::{CompletionContext, EngineDirEntry};
-use warp_completer::signatures::CommandRegistry;
+use wish_completer::completer::PathCompletionContext;
+use wish_completer::completer::{CompletionContext, EngineDirEntry};
+use wish_completer::signatures::CommandRegistry;
 use wishui::App;
 
 use crate::completer::SessionContext;

@@ -11,7 +11,7 @@ use crate::{
     menu::{Event as MenuEvent, Menu, MenuItem, MenuVariant},
     ui_components::icons,
 };
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::{
     elements::{
         Align, Border, ChildAnchor, ChildView, Clipped, ConstrainedBox, Container, CornerRadius,

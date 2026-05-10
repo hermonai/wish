@@ -7,7 +7,7 @@
 use std::ops::Deref;
 
 use settings::PrivatePreferences;
-use warpui_extras::user_preferences::UserPreferences;
+use wishui_extras::user_preferences::UserPreferences;
 use wishui::SingletonEntity;
 
 /// An extension trait on [`wishui::AppContext`] for accessing private user

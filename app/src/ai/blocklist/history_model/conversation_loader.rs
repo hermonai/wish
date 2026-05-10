@@ -116,7 +116,7 @@ pub async fn load_conversation_from_server(
         Ok((conversation_data, server_metadata)) => {
             match server_metadata.harness {
                 AIAgentHarness::Oz => {
-                    // Convert Oz conversations to an AIConversation.
+                    // Convert Hermon Agent conversations to an AIConversation.
                     match convert_conversation_data_to_ai_conversation(
                         conversation_id,
                         &conversation_data,
@@ -124,7 +124,9 @@ pub async fn load_conversation_from_server(
                         RestorationMode::Continue,
                     ) {
                         Some(conversation) => {
-                            log::info!("Loaded Oz conversation {conversation_id} from server");
+                            log::info!(
+                                "Loaded Hermon Agent conversation {conversation_id} from server"
+                            );
                             Some(CloudConversationData::Oz(Box::new(conversation)))
                         }
                         None => {
@@ -137,7 +139,7 @@ pub async fn load_conversation_from_server(
                 }
                 AIAgentHarness::ClaudeCode | AIAgentHarness::Gemini | AIAgentHarness::Codex => {
                     if !FeatureFlag::AgentHarness.is_enabled() {
-                        log::warn!("Ignoring non-Oz conversation {conversation_id}: AgentHarness flag is disabled");
+                        log::warn!("Ignoring non-Hermon Agent conversation {conversation_id}: AgentHarness flag is disabled");
                         return None;
                     }
                     // Fetch snapshot data for third-party harness conversations.

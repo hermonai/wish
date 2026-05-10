@@ -11,7 +11,7 @@ Linear: QUALITY-474
 - `app/src/settings/cloud_preferences_syncer.rs` — `CloudPreferencesSyncer`, `handle_initial_load`, `maybe_sync_local_prefs_to_cloud`, `ForceCloudToMatchLocal`
 - `app/src/settings/init.rs` — `init()`, `init_public_user_preferences()`, `UserDefaultsOnStartup`
 - `app/src/lib.rs (930-960)` — `initialize_app`, where `settings::init` is called and `UserDefaultsOnStartup` is consumed
-- `crates/warpui_extras/src/user_preferences/toml_backed.rs` — `TomlBackedUserPreferences`, `flush()`, `reload_from_disk()`
+- `crates/wishui_extras/src/user_preferences/toml_backed.rs` — `TomlBackedUserPreferences`, `flush()`, `reload_from_disk()`
 - `crates/settings/src/manager.rs` — `SettingsManager`
 
 ## Current State
@@ -30,7 +30,7 @@ Already implemented on the `daniel/inhibit-writes-mode` branch:
 
 ### 1. Hash computation on TomlBackedUserPreferences
 
-`crates/warpui_extras/src/user_preferences/toml_backed.rs`:
+`crates/wishui_extras/src/user_preferences/toml_backed.rs`:
 
 ```rust
 /// Hashes the settings file content on disk.

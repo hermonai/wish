@@ -9,7 +9,7 @@ use async_trait::async_trait;
 use itertools::Itertools;
 use parking_lot::Mutex;
 use settings::Setting as _;
-use warpui_extras::user_preferences;
+use wishui_extras::user_preferences;
 use wish_core::command::ExitCode;
 use wishui::{App, SingletonEntity};
 
@@ -45,7 +45,7 @@ use crate::{
 };
 #[cfg(feature = "local_fs")]
 use repo_metadata::DirectoryWatcher;
-use warp_completer::completer::{CommandExitStatus, CommandOutput};
+use wish_completer::completer::{CommandExitStatus, CommandOutput};
 
 use super::{ChipUpdateStatus, CurrentPrompt, PromptContext};
 
@@ -1170,7 +1170,7 @@ fn test_externally_driven_chip_skips_periodic_timer() {
         let repo_handle = watcher_handle.update(&mut app, |watcher, ctx| {
             watcher
                 .add_directory(
-                    warp_util::standardized_path::StandardizedPath::from_local_canonicalized(
+                    wish_util::standardized_path::StandardizedPath::from_local_canonicalized(
                         temp_dir.path(),
                     )
                     .unwrap(),
@@ -1231,7 +1231,7 @@ fn test_git_status_change_updates_chip_value() {
         let repo_handle = watcher_handle.update(&mut app, |watcher, ctx| {
             watcher
                 .add_directory(
-                    warp_util::standardized_path::StandardizedPath::from_local_canonicalized(
+                    wish_util::standardized_path::StandardizedPath::from_local_canonicalized(
                         temp_dir.path(),
                     )
                     .unwrap(),

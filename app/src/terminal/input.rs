@@ -251,9 +251,9 @@ use std::{
 use string_offset::CharOffset;
 use vec1::Vec1;
 use vim::vim::{VimHandler, VimMode};
-use warp_completer::util::parse_current_commands_and_tokens;
+use wish_completer::util::parse_current_commands_and_tokens;
 
-use warp_completer::{
+use wish_completer::{
     completer::{
         self, CompleterOptions, CompletionContext, CompletionsFallbackStrategy, Description, Match,
         MatchStrategy, MatchType, PathSeparators, SuggestionResults,
@@ -262,8 +262,8 @@ use warp_completer::{
     parsers::{simple::command_at_cursor_position, LiteCommand},
     signatures::CommandRegistry,
 };
-use warp_editor::editor::NavigationKey;
-use warp_util::path::ShellFamily;
+use wish_editor::editor::NavigationKey;
+use wish_util::path::ShellFamily;
 use wish_core::user_preferences::GetUserPreferences as _;
 use wish_core::{
     context_flag::ContextFlag,
@@ -9893,7 +9893,7 @@ impl Input {
                                             .map(|session| session.is_wsl())
                                             .unwrap_or(false);
 
-                                        let relative_path = warp_util::path::to_relative_path(
+                                        let relative_path = wish_util::path::to_relative_path(
                                             is_wsl,
                                             &absolute_path,
                                             Path::new(pwd),
@@ -12740,6 +12740,35 @@ impl Input {
                         ctx,
                     );
                 });
+                return;
+            }
+        }
+
+        // Guest mode: route through the local wish_conversation system
+        // instead of the server-backed orchestration pipeline. Check this
+        // early so guest users bypass rate-limit checks, agent view
+        // toggles, and other server-dependent guards.
+        {
+            let auth_state = crate::auth::auth_state::AuthStateProvider::as_ref(ctx).get();
+            if auth_state.is_guest() {
+                use crate::ai::wish_conversation::ConversationManagerModel;
+                let ai_query = self.editor.as_ref(ctx).buffer_text(ctx);
+                if ai_query.is_empty() {
+                    return;
+                }
+                self.ai_input_model.update(ctx, |model, ctx| {
+                    model.handle_input_buffer_submitted(ctx);
+                });
+                let query = ai_query;
+                ConversationManagerModel::handle(ctx).update(ctx, |mgr, ctx| {
+                    // Re-use the active conversation or create a new one.
+                    let convo_id = match mgr.active_id().cloned() {
+                        Some(id) => id,
+                        None => mgr.create("wish-local".into(), ctx),
+                    };
+                    mgr.send_user_message(&convo_id, query, ctx);
+                });
+                ctx.emit(Event::ExecuteAIQuery);
                 return;
             }
         }

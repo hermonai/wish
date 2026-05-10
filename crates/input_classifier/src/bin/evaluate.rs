@@ -66,7 +66,7 @@ fn get_binary_confidence_color(is_correct: bool, is_low_confidence: bool) -> Str
         "\x1b[31m".to_string() // Red for incorrect
     }
 }
-use warp_completer::{ParsedTokensSnapshot, util::parse_current_commands_and_tokens};
+use wish_completer::{ParsedTokensSnapshot, util::parse_current_commands_and_tokens};
 
 #[cfg(feature = "fasttext")]
 use input_classifier::FasttextClassifier;

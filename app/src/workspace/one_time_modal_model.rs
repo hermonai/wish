@@ -19,7 +19,7 @@ use wishui::{Entity, ModelContext, SingletonEntity, WindowId};
 /// conditions are met (e.g., user becomes onboarded).
 pub struct OneTimeModalModel {
     is_build_plan_migration_modal_open: bool,
-    /// Whether the Oz launch modal is currently being shown.
+    /// Whether the Hermon Cloud launch modal is currently being shown.
     is_oz_launch_modal_open: bool,
     /// Whether the OpenWarp launch modal is currently being shown.
     is_openwarp_launch_modal_open: bool,
@@ -70,7 +70,7 @@ impl OneTimeModalModel {
                         .did_check_to_trigger_oz_launch_modal
                         .set_value(true, ctx)
                     {
-                        log::warn!("Failed to mark Oz launch modal as dismissed: {e}");
+                        log::warn!("Failed to mark Hermon Cloud launch modal as dismissed: {e}");
                     }
                 });
                 GeneralSettings::handle(ctx).update(ctx, |settings, ctx| {
@@ -93,7 +93,7 @@ impl OneTimeModalModel {
         }
     }
 
-    /// Returns whether the Oz launch modal is currently open.
+    /// Returns whether the Hermon Cloud launch modal is currently open.
     pub fn is_oz_launch_modal_open(&self) -> bool {
         self.is_oz_launch_modal_open && self.target_window_id.is_some()
     }
@@ -192,17 +192,20 @@ impl OneTimeModalModel {
             }
         });
 
-        // The OpenWarp launch modal takes priority over the Oz launch modal
+        // Onboarding must be the first first-run experience. Launch and
+        // upsell modals wait until the user has had a chance to orient in
+        // Wish.
+        if self.check_and_trigger_hoa_onboarding(ctx) {
+            return;
+        }
+
+        // The OpenWarp launch modal takes priority over the Hermon Cloud launch modal
         // when both are enabled.
         if self.check_and_trigger_openwarp_launch_modal(ctx) {
             return;
         }
 
         if self.check_and_trigger_oz_launch_modal(ctx) {
-            return;
-        }
-
-        if self.check_and_trigger_hoa_onboarding(ctx) {
             return;
         }
 
@@ -257,7 +260,7 @@ impl OneTimeModalModel {
                 .did_check_to_trigger_oz_launch_modal
                 .set_value(true, ctx)
             {
-                log::warn!("Failed to mark Oz launch modal as dismissed: {e}");
+                log::warn!("Failed to mark Hermon Cloud launch modal as dismissed: {e}");
             }
         });
 

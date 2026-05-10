@@ -10,7 +10,7 @@ mod tests {
     };
     use serde_json;
     use std::collections::HashMap;
-    use warp_managed_secrets::ManagedSecretValue;
+    use wish_managed_secrets::ManagedSecretValue;
 
     #[test]
     fn test_mcp_server_config_serialization_excludes_secret_env_values() {

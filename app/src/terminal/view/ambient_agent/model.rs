@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use instant::Instant;
 use session_sharing_protocol::common::SessionId;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::features::FeatureFlag;
 use wish_core::send_telemetry_from_ctx;
 use wishui::r#async::{SpawnedFutureHandle, Timer};

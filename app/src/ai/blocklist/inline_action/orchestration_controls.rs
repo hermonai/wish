@@ -19,7 +19,7 @@ use wishui::ui_components::button::ButtonVariant;
 use wishui::ui_components::components::{Coords, UiComponentStyles};
 use wishui::{AppContext, Element, SingletonEntity, View, ViewContext, ViewHandle};
 
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::channel::{Channel, ChannelState};
 use wish_core::ui::color::blend::Blend;
 use wish_core::ui::theme::Fill;

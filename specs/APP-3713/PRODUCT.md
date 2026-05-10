@@ -106,11 +106,11 @@ No change. The compact row shows the terminal icon + terminal title (or agent st
 The compact row shows:
 - **Non-agent terminal**: Terminal icon + working directory (instead of terminal title). The working directory clips from the start.
 - **Agent terminal (Oz or CLI agent)**: Conversation status icon + working directory (instead of conversation title). The working directory clips from the start.
-- **Ambient agent**: `OzCloud` icon + working directory.
+- **Ambient agent**: `HermonCloud` icon + working directory.
 
 #### Icon behavior (both modes)
 
-The kind icon at the start of the compact row is always determined by the pane type and agent state, not by the primary info setting. A non-agent terminal always shows the terminal icon; an agent terminal always shows the conversation status icon; an ambient agent always shows the `OzCloud` icon. Only the *text* portion of the row changes when the setting is toggled.
+The kind icon at the start of the compact row is always determined by the pane type and agent state, not by the primary info setting. A non-agent terminal always shows the terminal icon; an agent terminal always shows the conversation status icon; an ambient agent always shows the `HermonCloud` icon. Only the *text* portion of the row changes when the setting is toggled.
 
 ### Non-terminal panes
 

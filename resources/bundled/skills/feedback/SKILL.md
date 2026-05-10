@@ -42,7 +42,7 @@ Load the bundled reference files only when relevant:
   - Requests to contact human support, sales, or legal.
   - General venting, praise, or commentary with no actionable product signal.
   - Questions about third-party tools or the user's own shell, machine, or network configuration that are not about Wish's behavior.
-  - Anything the user explicitly says is not about Warp, or that they just want to talk through.
+  - Anything the user explicitly says is not about Wish, or that they just want to talk through.
 - When you decline, respond in one or two sentences that (a) say you won't file an issue, (b) name the reason in plain language, and (c) point the user at the right channel: account/billing/support concerns go to the in-app Help menu or `support@hermon.ai`, community discussion goes to the Warp Slack community, and security reports go to `security@hermon.ai`. Do not apologize performatively and do not offer to retry the same flow.
 - Only if the request is in scope, classify it as `bug`, `regression`, `ux issue`, or `feature request` before drafting.
 

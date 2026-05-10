@@ -20,7 +20,7 @@ cfg_if::cfg_if! {
         use std::collections::HashSet;
         use std::path::Path;
         use std::path::PathBuf;
-        use warp_util::path::CleanPathResult;
+        use wish_util::path::CleanPathResult;
     }
 }
 
@@ -113,7 +113,7 @@ pub(crate) enum DetectedLinkType {
     #[cfg(feature = "local_fs")]
     FilePath {
         absolute_path: PathBuf,
-        line_and_column_num: Option<warp_util::path::LineAndColumnArg>,
+        line_and_column_num: Option<wish_util::path::LineAndColumnArg>,
     },
 }
 
@@ -382,7 +382,7 @@ pub(crate) fn detect_file_paths(
                             // Create a new DetectedLinkType with the same file path but with the line number
                             let line_range_link = DetectedLinkType::FilePath {
                                 absolute_path: absolute_path.clone(),
-                                line_and_column_num: Some(warp_util::path::LineAndColumnArg {
+                                line_and_column_num: Some(wish_util::path::LineAndColumnArg {
                                     line_num: line_number as usize,
                                     column_num: None,
                                 }),
@@ -400,7 +400,7 @@ pub(crate) fn detect_file_paths(
 }
 
 use string_offset::CharOffset;
-use warp_editor::content::buffer::Buffer;
+use wish_editor::content::buffer::Buffer;
 use wishui::text::word_boundaries::WordBoundariesPolicy;
 
 /// Returns the range of the word surrounding the given offset.
@@ -409,7 +409,7 @@ pub(crate) fn get_word_range_at_offset(
     offset: CharOffset,
     word_boundary_policy: Option<WordBoundariesPolicy>,
 ) -> Option<Range<CharOffset>> {
-    use warp_editor::content::buffer::{ToBufferCharOffset, ToBufferPoint};
+    use wish_editor::content::buffer::{ToBufferCharOffset, ToBufferPoint};
     use wishui::text::words::is_default_word_boundary;
     use wishui::text::TextBuffer;
 

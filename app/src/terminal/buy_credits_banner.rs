@@ -5,7 +5,7 @@ use itertools::Itertools as _;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use warp_graphql::billing::AddonCreditsOption;
+use wish_graphql::billing::AddonCreditsOption;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::Icon;
 use wishui::elements::{
@@ -33,7 +33,7 @@ use crate::server::telemetry::{OutOfCreditsBannerAction, TelemetryEvent};
 use crate::settings_view::create_discount_badge;
 use crate::view_components::Dropdown;
 use crate::workspaces::user_workspaces::{UserWorkspaces, UserWorkspacesEvent};
-use warp_graphql::error::BudgetExceededError;
+use wish_graphql::error::BudgetExceededError;
 
 #[derive(Default)]
 struct MouseStates {
@@ -593,7 +593,7 @@ impl BuyCreditsBanner {
             } else {
                 // Default message when not at limit
                 let banner_description = if has_admin_permissions {
-                    "Add more credits to your account to continue using Oz agents."
+                    "Add more credits to your account to continue using Hermon agents."
                 } else {
                     "Contact a team admin to purchase more credits to continue."
                 };

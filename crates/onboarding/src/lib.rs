@@ -29,7 +29,7 @@ pub use callout::{OnboardingCalloutView, OnboardingKeybindings};
 /// skip-login confirmation dialog so the two always stay in sync.
 pub const AI_FEATURES: &[&str] = &[
     "Wish agents",
-    "Oz cloud agents platform",
+    "Hermon Cloud agents platform",
     "Next command predictions",
     "Prompt suggestions",
     "Codebase context",
@@ -41,7 +41,7 @@ pub const AI_FEATURES: &[&str] = &[
 /// intention is selected with Wish Drive turned on. Shared by the login slide's
 /// skip-login confirmation dialog so the list stays in sync with any future
 /// surfaces that need it.
-pub const WARP_DRIVE_FEATURES: &[&str] = &["Wish Drive", "Session Sharing"];
+pub const WISH_DRIVE_FEATURES: &[&str] = &["Wish Drive", "Session Sharing"];
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "bin")] {

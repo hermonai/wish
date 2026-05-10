@@ -1,5 +1,5 @@
 use anyhow::anyhow;
-use warp_terminal::model::{grid::Dimensions, Point};
+use wish_terminal::model::{grid::Dimensions, Point};
 
 use crate::{
     ai::{

@@ -13,8 +13,8 @@ use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use warp_util::path::LineAndColumnArg;
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::path::LineAndColumnArg;
+use wish_util::standardized_path::StandardizedPath;
 
 use repo_metadata::repositories::DetectedRepositories;
 use wish_core::send_telemetry_from_ctx;
@@ -994,8 +994,8 @@ impl FileTreeView {
             .collect();
 
         // Ancestor-dedup only local inputs. Shared with `GlobalSearchView`
-        // via `warp_util::path::group_roots_by_common_ancestor`.
-        let grouping = warp_util::path::group_roots_by_common_ancestor(&local_inputs);
+        // via `wish_util::path::group_roots_by_common_ancestor`.
+        let grouping = wish_util::path::group_roots_by_common_ancestor(&local_inputs);
 
         // Final displayed order: local surviving roots (in input order),
         // followed by preserved remote roots (in their existing order).

@@ -14,7 +14,7 @@ The core constraint is that CLI agent input writes plain text to a PTY — so sk
 - Hide Warp-specific slash commands that don't apply to CLI agents.
 
 ## Non-goals
-- Surfacing non-natively-supported skills (e.g., bundled Warp skills like `oz-platform`). Only skills the active CLI agent can interpret should appear.
+- Surfacing non-natively-supported skills (e.g., bundled Warp skills like `hermon-cloud`). Only skills the active CLI agent can interpret should appear.
 - Implementing client-side argument parsing for skills. The CLI agent handles argument parsing natively.
 - Showing native CLI agent slash commands (e.g., Claude Code's `/compact`, `/model`) in the menu. This is a follow-up (see APP-3641).
 
@@ -50,7 +50,7 @@ A skill is shown in the CLI agent input menu if:
 1. The active CLI agent is one that supports skills folders, AND
 2. The skill's provider (determined from its filesystem path) matches one of the agent's supported providers.
 
-Skills that don't match the active CLI agent's supported providers are hidden from the menu entirely. Non-natively supported skills (including bundled Warp skills like `oz-platform`) are not shown — supporting them is a potential follow-up.
+Skills that don't match the active CLI agent's supported providers are hidden from the menu entirely. Non-natively supported skills (including bundled Warp skills like `hermon-cloud`) are not shown — supporting them is a potential follow-up.
 
 ## Success Criteria
 - Users can type `/` in the CLI agent rich input, see natively supported skills, select one, and have `/{skill-name} ` inserted for passthrough to the CLI agent.

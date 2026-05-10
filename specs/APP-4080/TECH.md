@@ -16,7 +16,7 @@ The technical work is to add the setting, expose it in AI settings, and route al
 - `app/src/settings_view/ai_page.rs:1870` — `AISettingsPageAction`, where the toggle action should be added.
 - `app/src/settings_view/ai_page.rs:2461` — settings action handling for persisted toggle settings.
 - `app/src/settings_view/ai_page.rs:4910` — `OtherAIWidget`, currently home for conversation/display-adjacent AI settings such as conversation history and thinking display.
-- `app/src/terminal/view/pane_impl.rs:945` — Oz conversation selection/title helpers for user-facing chrome.
+- `app/src/terminal/view/pane_impl.rs:945` — Hermon Agent conversation selection/title helpers for user-facing chrome.
 - `app/src/ai/agent/conversation.rs:1053` — `AIConversation::title()`, the generated-title-first path.
 - `app/src/ai/agent/conversation.rs:1121` — `AIConversation::initial_query()` and `initial_user_query()` helpers.
 - `app/src/ai/agent/mod.rs:2478` — `AIAgentInput::user_query()`, the canonical display text for user prompt-like inputs.
@@ -45,7 +45,7 @@ Each call site:
 4. calls `session.session_context.display_title()` for plugin-backed CLI agents
 5. passes both values into `terminal_primary_line_data()`
 
-`terminal_primary_line_data()` then prefers CLI agent text over Oz conversation text, and only falls through to terminal title, last completed command, and `New session` when no agent text is available.
+`terminal_primary_line_data()` then prefers CLI agent text over Hermon Agent conversation text, and only falls through to terminal title, last completed command, and `New session` when no agent text is available.
 
 This works for the current UI but makes APP-4080 easy to implement inconsistently because the new setting would otherwise need to be read at every duplicated extraction site.
 
@@ -97,12 +97,12 @@ Suggested helpers:
 - `terminal_agent_text(terminal_view: &TerminalView, app: &AppContext) -> TerminalAgentText`
 
 `terminal_agent_text()` should own the plugin-backed suppression rule:
-- if a CLI agent session exists and `listener.is_none()`, do not use CLI or Oz conversation metadata for the row; preserve current terminal fallback behavior
+- if a CLI agent session exists and `listener.is_none()`, do not use CLI or Hermon Agent conversation metadata for the row; preserve current terminal fallback behavior
 - otherwise resolve Oz and CLI text according to the setting
 
 `terminal_primary_line_data()` can remain as the pure fallback combiner once the agent text has been chosen. This avoids coupling it directly to settings or `AppContext`, and keeps existing unit tests easy to extend.
 
-### Oz conversation prompt support
+### Hermon Agent conversation prompt support
 Add a helper on `AIConversation`:
 - `latest_user_prompt_for_tab_name(&self) -> Option<String>`
 
@@ -198,7 +198,7 @@ Add or update unit tests:
   - setting persists through the normal settings machinery
 
 Manual validation:
-- Default-off Oz conversation shows generated title in vertical tabs.
+- Default-off Hermon Agent conversation shows generated title in vertical tabs.
 - Toggle on and send an Oz follow-up prompt; row, compact command subtitle, detail sidecar, and search reflect the latest prompt.
 - Plugin-backed CLI agent with both summary and query shows summary/title-like text by default and query when toggled on.
 - Non-plugin CLI detection and plain terminal rows keep existing fallback behavior.

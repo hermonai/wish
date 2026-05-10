@@ -18,7 +18,7 @@ pub use merkle_tree::{ContentHash, NodeHash};
 use fragment_metadata::FragmentMetadata;
 use string_offset::ByteOffset;
 use thiserror::Error;
-use warp_graphql::queries::rerank_fragments::FragmentLocationInput;
+use wish_graphql::queries::rerank_fragments::FragmentLocationInput;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -94,48 +94,48 @@ pub struct RepoMetadata {
     pub path: Option<String>,
 }
 
-impl From<RepoMetadata> for warp_graphql::full_source_code_embedding::RepoMetadata {
+impl From<RepoMetadata> for wish_graphql::full_source_code_embedding::RepoMetadata {
     fn from(val: RepoMetadata) -> Self {
         Self { path: val.path }
     }
 }
 
-impl From<EmbeddingConfig> for warp_graphql::full_source_code_embedding::EmbeddingConfig {
+impl From<EmbeddingConfig> for wish_graphql::full_source_code_embedding::EmbeddingConfig {
     fn from(val: EmbeddingConfig) -> Self {
         match val {
             EmbeddingConfig::OpenAiTextSmall3_256 => {
-                warp_graphql::full_source_code_embedding::EmbeddingConfig::OpenaiTextSmall3256
+                wish_graphql::full_source_code_embedding::EmbeddingConfig::OpenaiTextSmall3256
             }
             EmbeddingConfig::VoyageCode3_512 => {
-                warp_graphql::full_source_code_embedding::EmbeddingConfig::VoyageCode3512
+                wish_graphql::full_source_code_embedding::EmbeddingConfig::VoyageCode3512
             }
             EmbeddingConfig::Voyage3_5_512 => {
-                warp_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35512
+                wish_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35512
             }
             EmbeddingConfig::Voyage3_5_Lite_512 => {
-                warp_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35Lite512
+                wish_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35Lite512
             }
         }
     }
 }
 
-impl TryFrom<warp_graphql::full_source_code_embedding::EmbeddingConfig> for EmbeddingConfig {
+impl TryFrom<wish_graphql::full_source_code_embedding::EmbeddingConfig> for EmbeddingConfig {
     type Error = Error;
 
     fn try_from(
-        value: warp_graphql::full_source_code_embedding::EmbeddingConfig,
+        value: wish_graphql::full_source_code_embedding::EmbeddingConfig,
     ) -> Result<Self, Self::Error> {
         match value {
-            warp_graphql::full_source_code_embedding::EmbeddingConfig::OpenaiTextSmall3256 => {
+            wish_graphql::full_source_code_embedding::EmbeddingConfig::OpenaiTextSmall3256 => {
                 Ok(Self::OpenAiTextSmall3_256)
             }
-            warp_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35Lite512 => {
+            wish_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35Lite512 => {
                 Ok(Self::Voyage3_5_Lite_512)
             }
-            warp_graphql::full_source_code_embedding::EmbeddingConfig::VoyageCode3512 => {
+            wish_graphql::full_source_code_embedding::EmbeddingConfig::VoyageCode3512 => {
                 Ok(Self::VoyageCode3_512)
             }
-            warp_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35512 => {
+            wish_graphql::full_source_code_embedding::EmbeddingConfig::Voyage35512 => {
                 Ok(Self::Voyage3_5_512)
             }
         }
@@ -161,7 +161,7 @@ pub struct Fragment {
     location: FragmentLocation,
 }
 
-impl From<Fragment> for warp_graphql::full_source_code_embedding::Fragment {
+impl From<Fragment> for wish_graphql::full_source_code_embedding::Fragment {
     fn from(val: Fragment) -> Self {
         Self {
             content: val.content,
@@ -170,7 +170,7 @@ impl From<Fragment> for warp_graphql::full_source_code_embedding::Fragment {
     }
 }
 
-impl From<Fragment> for warp_graphql::queries::rerank_fragments::RerankFragmentInput {
+impl From<Fragment> for wish_graphql::queries::rerank_fragments::RerankFragmentInput {
     fn from(val: Fragment) -> Self {
         Self {
             content: val.content,
@@ -184,11 +184,11 @@ impl From<Fragment> for warp_graphql::queries::rerank_fragments::RerankFragmentI
     }
 }
 
-impl TryFrom<warp_graphql::queries::rerank_fragments::RerankFragment> for Fragment {
+impl TryFrom<wish_graphql::queries::rerank_fragments::RerankFragment> for Fragment {
     type Error = Error;
 
     fn try_from(
-        val: warp_graphql::queries::rerank_fragments::RerankFragment,
+        val: wish_graphql::queries::rerank_fragments::RerankFragment,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             content: val.content,

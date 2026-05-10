@@ -6,12 +6,12 @@ use std::sync::Arc;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use serde_yaml::Mapping;
 use uuid::Uuid;
-use warp_editor::content::markdown::MarkdownStyle;
-use warp_editor::editor::EmbeddedItemModel;
-use warp_editor::render::element::{RenderContext, RenderableBlock};
-use warp_editor::render::layout::TextLayout;
+use wish_editor::content::markdown::MarkdownStyle;
+use wish_editor::editor::EmbeddedItemModel;
+use wish_editor::render::element::{RenderContext, RenderableBlock};
+use wish_editor::render::layout::TextLayout;
 
-use warp_editor::render::model::{
+use wish_editor::render::model::{
     viewport::ViewportItem, BlockSpacing, EmbeddedItem, EmbeddedItemHTMLRepresentation,
     EmbeddedItemRichFormat, LaidOutEmbeddedItem, RenderState,
 };

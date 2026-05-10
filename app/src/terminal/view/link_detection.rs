@@ -27,8 +27,8 @@ cfg_if::cfg_if! {
             util::openable_file_type::FileTarget,
         };
         use std::path::PathBuf;
-        use warp_util::path::CleanPathResult;
-        use warp_util::path::LineAndColumnArg;
+        use wish_util::path::CleanPathResult;
+        use wish_util::path::LineAndColumnArg;
     }
 }
 

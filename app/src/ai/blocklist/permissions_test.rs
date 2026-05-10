@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use uuid::Uuid;
 
-use warp_util::path::EscapeChar;
+use wish_util::path::EscapeChar;
 use wishui::{App, EntityId, ModelHandle};
 
 use wish_core::execution_mode::ExecutionMode;

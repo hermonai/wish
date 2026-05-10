@@ -19,7 +19,7 @@ SSH-ing to the same host each spin up a separate server process.
 
 ## Relevant Code
 
-- `crates/warp_cli/src/lib.rs` — `WorkerCommand::RemoteServerProxy` / `RemoteServerDaemon`
+- `crates/wish_cli/src/lib.rs` — `WorkerCommand::RemoteServerProxy` / `RemoteServerDaemon`
 - `app/src/remote_server/mod.rs` — platform dispatch (`run_proxy`, `run_daemon`)
 - `app/src/remote_server/unix/` — Unix-specific daemon and proxy implementation
 - `app/src/remote_server/server_model.rs` — platform-agnostic `ServerModel`
@@ -101,7 +101,7 @@ task on WarpUI's background executor with a dedicated `async_channel` sender.
 
 ### Proxy mode (`remote-server-proxy`)
 
-`WorkerCommand::RemoteServerProxy` in `warp_cli/src/lib.rs` dispatches to
+`WorkerCommand::RemoteServerProxy` in `wish_cli/src/lib.rs` dispatches to
 `unix::run_proxy()`.
 
 1. Acquires an exclusive advisory `flock` on `server.pid` to serialise concurrent

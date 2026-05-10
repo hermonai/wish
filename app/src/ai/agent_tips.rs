@@ -262,7 +262,7 @@ static DEFAULT_TIPS: LazyLock<Vec<AgentTip>> = LazyLock::new(|| {
             kind: AgentTipKind::General,
         },
         AgentTip {
-            description: "Use the `oz` command to run an Oz agent in headless mode, useful for remote machines.".to_string(),
+            description: "Use the `oz` command to run an Hermon agent in headless mode, useful for remote machines.".to_string(),
             link: Some("https://wish.hermon.ai/docs/reference/cli".to_string()),
             binding_name: None,
             action: None,

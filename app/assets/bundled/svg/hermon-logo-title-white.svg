@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 215.39 62.74">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        font-family: Impact, Impact;
+        font-size: 36.8px;
+      }
+
+      .cls-1, .cls-4 {
+        stroke: #231f20;
+      }
+
+      .cls-2, .cls-4 {
+        fill: #d1d3d4;
+      }
+
+      .cls-4 {
+        fill-rule: evenodd;
+        stroke-width: .5px;
+      }
+
+      .cls-3 {
+        fill: #231f20;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <polygon class="cls-4" points="20.49 33.29 .44 53.33 8.06 20.86 20.49 33.29"/>
+    <polygon class="cls-4" points="20.49 33.27 40.54 53.31 52.96 .8 20.49 33.27"/>
+    <g>
+      <text class="cls-3" transform="translate(56.38 50.35) scale(.98) skewX(-12)"><tspan x="0" y="0">Hermon.AI</tspan></text>
+      <text class="cls-1" transform="translate(56.38 50.35) scale(.98) skewX(-12)"><tspan x="0" y="0">Hermon.AI</tspan></text>
+      <text class="cls-2" transform="translate(56.38 50.35) scale(.98) skewX(-12)"><tspan x="0" y="0">Hermon.AI</tspan></text>
+    </g>
+  </g>
+</svg>

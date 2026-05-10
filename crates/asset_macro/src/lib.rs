@@ -31,7 +31,7 @@ use std::{
 };
 use syn::{parse::Parse, Token};
 use syn::{parse_macro_input, LitStr};
-use warp_util::assets::{ASSETS_DIR, ASYNC_ASSETS_DIR, BUNDLED_ASSETS_DIR, REMOTE_ASSETS_DIR};
+use wish_util::assets::{ASSETS_DIR, ASYNC_ASSETS_DIR, BUNDLED_ASSETS_DIR, REMOTE_ASSETS_DIR};
 
 struct MacroArgs {
     /// The name of the asset. E.g. `jpg/jellyfish_bg.jpg`
@@ -102,13 +102,13 @@ fn construct_remote_asset(asset_name: &str, asset_dir: &str) -> Result<TokenStre
     let mut hasher = sha2::Sha256::new();
     hasher.update(&contents);
     let hash: [u8; 32] = hasher.finalize().into();
-    let url = warp_util::assets::hashed_asset_url(&warp_util::assets::hashed_asset_path(
+    let url = wish_util::assets::hashed_asset_url(&wish_util::assets::hashed_asset_path(
         Path::new(asset_name),
         &hash,
     ));
 
     Ok(quote! {
-        ::asset_cache::url_source(::warp_util::assets::make_absolute_url( #url ))
+        ::asset_cache::url_source(::wish_util::assets::make_absolute_url( #url ))
     })
 }
 

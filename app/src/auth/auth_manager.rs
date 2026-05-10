@@ -7,7 +7,7 @@ use std::time::Duration;
 use anyhow::{anyhow, Result};
 use settings::Setting as _;
 use uuid::Uuid;
-use warp_graphql::mutations::create_anonymous_user::{
+use wish_graphql::mutations::create_anonymous_user::{
     AnonymousUserType, CreateAnonymousUserResult,
 };
 use wish_core::channel::ChannelState;
@@ -483,7 +483,7 @@ impl AuthManager {
 
                 // Once the user is authenticated, attempt to report the sandbox that Warp is running in, if any.
                 ctx.spawn(
-                    async { warp_isolation_platform::detect() },
+                    async { wish_isolation_platform::detect() },
                     |_, platform, ctx| {
                         if let Some(platform) = platform {
                             send_telemetry_from_ctx!(

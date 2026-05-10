@@ -1,7 +1,7 @@
 use std::{ffi::OsString, fs, sync::Arc};
 
 use tempfile::TempDir;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 
 use super::{
     build_local_claude_child_command, build_local_codex_child_command,

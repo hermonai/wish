@@ -1,4 +1,4 @@
-# REMOTE-1459: Tech Spec — Consistent agent view entry for non-oz cloud conversations
+# REMOTE-1459: Tech Spec — Consistent agent view entry for non-hermon cloud conversations
 
 ## Problem
 
@@ -47,7 +47,7 @@ Telemetry: `TelemetryAgentViewEntryOrigin::ThirdPartyCloudAgent` is added and `F
 
 `app/src/pane_group/mod.rs`
 
-The `CloudConversationData::CLIAgent` branch maps `AIAgentHarness` → `warp_cli::agent::Harness`, restores the block snapshot, calls `set_harness` to keep the viewer's `AmbientAgentViewModel::harness` in sync with the loaded run, calls `enter_agent_view_for_new_conversation(None, ThirdPartyCloudAgent, ctx)`, and then calls `attach_non_startup_blocks_to_conversation(vehicle_conversation_id)` to retag the snapshot block. All four steps run inside a single `terminal_view.update` closure so the flow reads linearly.
+The `CloudConversationData::CLIAgent` branch maps `AIAgentHarness` → `wish_cli::agent::Harness`, restores the block snapshot, calls `set_harness` to keep the viewer's `AmbientAgentViewModel::harness` in sync with the loaded run, calls `enter_agent_view_for_new_conversation(None, ThirdPartyCloudAgent, ctx)`, and then calls `attach_non_startup_blocks_to_conversation(vehicle_conversation_id)` to retag the snapshot block. All four steps run inside a single `terminal_view.update` closure so the flow reads linearly.
 
 ### 3. Live shared-session viewer entry — `HarnessSelected` handler
 
@@ -106,7 +106,7 @@ Unit:
 ## Risks and mitigations
 
 - **`HarnessSelected` is multi-purpose**: fires both on viewer-side task-fetch resolution and on local spawner selector changes. The `is_shared_ambient_agent_session()` guard in `maybe_enter_agent_view_for_shared_third_party_viewer` is load-bearing.
-- **Empty vehicle conversation in the conversation list**: the fresh Oz conversation appears in the user's conversation list until they exit agent view, at which point the standard empty-conversation cleanup in `ExitedAgentView` removes it. Since the vehicle has 0 exchanges, existing empty-conversation handling hides fork / copy-link affordances and title fallbacks are never consulted (pane title comes from the harness CLI's terminal-title escape).
+- **Empty vehicle conversation in the conversation list**: the fresh Hermon Agent conversation appears in the user's conversation list until they exit agent view, at which point the standard empty-conversation cleanup in `ExitedAgentView` removes it. Since the vehicle has 0 exchanges, existing empty-conversation handling hides fork / copy-link affordances and title fallbacks are never consulted (pane title comes from the harness CLI's terminal-title escape).
 - **Setup-command rendering on the live viewer**: REMOTE-1454's setup-command summary and pending-prompt block key off `is_cloud_agent_pre_first_exchange` and `is_third_party_harness`. Entering agent view does not change the exchange count or harness-command-started state, so no cross-interaction.
 
 ## Follow-ups

@@ -65,7 +65,7 @@ The vertical tabs panel currently renders each pane row with a small 12px inline
 
 `terminal_primary_line_data()` returns the title text with priority:
 1. CLI agent title
-2. Oz conversation title (with status)
+2. Hermon Agent conversation title (with status)
 3. Terminal title if it differs from working directory
 4. Last completed command
 5. "New session" fallback
@@ -94,7 +94,7 @@ Add a new function `render_pane_circle_icon()` in `vertical_tabs.rs` that return
 enum CircleIconVariant<'a> {
     /// Neutral circle: fg_overlay_2 background, 16px type icon
     Neutral { icon: WarpIcon },
-    /// Oz agent: dark background, 10px Oz icon, status badge
+    /// Hermon agent: dark background, 10px Oz icon, status badge
     OzAgent { status: Option<&'a ConversationStatus>, is_ambient: bool },
     /// CLI agent: brand-colored background, 10px agent icon, status badge
     CLIAgent { agent: CLIAgent, status: Option<&'a ConversationStatus> },

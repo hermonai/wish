@@ -10,7 +10,7 @@ use std::{
 
 use futures_util::future::Either;
 use url::Url;
-use warp_util::path::{CleanPathResult, LineAndColumnArg};
+use wish_util::path::{CleanPathResult, LineAndColumnArg};
 use wishui::{
     r#async::SpawnedFutureHandle, AppContext, Entity, ModelContext, ModelHandle, SingletonEntity,
     WindowId,

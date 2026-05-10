@@ -4,7 +4,7 @@ use std::time::Duration;
 use chrono::Local;
 
 use pathfinder_geometry::vector::{vec2f, Vector2F};
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::clipboard::ClipboardContent;
 use wishui::elements::{
     resizable_state_handle, Align, Border, ChildAnchor, ConstrainedBox, Container, CornerRadius,

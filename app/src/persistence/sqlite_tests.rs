@@ -1,6 +1,6 @@
 use std::{path::PathBuf, sync::Arc};
 
-use warp_graphql::scalars::time::ServerTimestamp;
+use wish_graphql::scalars::time::ServerTimestamp;
 use wish_core::features::FeatureFlag;
 
 use crate::{

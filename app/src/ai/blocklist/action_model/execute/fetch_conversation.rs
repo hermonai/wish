@@ -45,7 +45,7 @@ impl FetchConversationExecutor {
         let load_future = history.load_conversation_by_server_token(&server_token, ctx);
 
         ActionExecution::new_async(load_future, move |cloud_conversation, _ctx| {
-            // TODO(REMOTE-1203): FetchConversation can't materialize non-Oz conversation transcripts yet.
+            // TODO(REMOTE-1203): FetchConversation can't materialize non-Hermon Agent conversation transcripts yet.
             let conversation = cloud_conversation.and_then(|cc| match cc {
                 CloudConversationData::Oz(c) => Some(c),
                 CloudConversationData::CLIAgent(_) => {

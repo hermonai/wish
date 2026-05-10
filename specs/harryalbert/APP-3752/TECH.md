@@ -22,7 +22,7 @@ The notification toast and mailbox UI need visual updates to match new Figma des
 - `app/src/ai/conversation_status_ui.rs` — `render_status_element` (used by agent management views)
 
 ### Notification creation
-- `app/src/ai/agent_management/agent_management_model.rs:287-408` — `handle_history_event_for_mailbox`, `add_notification` (where Oz conversation notifications are created)
+- `app/src/ai/agent_management/agent_management_model.rs:287-408` — `handle_history_event_for_mailbox`, `add_notification` (where Hermon Agent conversation notifications are created)
 - `app/src/ai/agent_management/agent_management_model.rs:123-191` — `handle_cli_agent_session_event` (where CLI session notifications are created)
 
 ### CLI session context
@@ -69,7 +69,7 @@ The branch name should come from the same source as the branch chip in the promp
 2. Call `terminal_view.current_git_branch(ctx)` to get the branch name.
 3. Pass it as the `branch` parameter.
 
-This works for both Oz conversations and CLI sessions since both are associated with a terminal view that has prompt chip state.
+This works for both Hermon Agent conversations and CLI sessions since both are associated with a terminal view that has prompt chip state.
 
 **Fallback**: If the terminal view is not accessible (e.g. window closed), pass `None`. The UI gracefully falls back to the simple layout.
 

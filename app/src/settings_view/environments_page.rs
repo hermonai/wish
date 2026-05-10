@@ -48,8 +48,8 @@ use crate::{
 use instant::Instant;
 use pathfinder_geometry::vector::vec2f;
 use std::collections::HashMap;
-use warp_editor::editor::NavigationKey;
-use warp_graphql::scalars::time::ServerTimestamp;
+use wish_editor::editor::NavigationKey;
+use wish_graphql::scalars::time::ServerTimestamp;
 use wish_core::ui::color::blend::Blend;
 use wish_core::ui::theme::color::internal_colors;
 use wishui::{
@@ -78,7 +78,7 @@ use new_environment_button::NewEnvironmentButtonView;
 #[allow(unused_imports)] // IntegrationsClient trait is used in fetch_github_repos
 use {
     crate::server::server_api::{integrations::IntegrationsClient, ServerApiProvider},
-    warp_graphql::queries::user_github_info::UserGithubInfoResult,
+    wish_graphql::queries::user_github_info::UserGithubInfoResult,
 };
 
 const PAGE_TITLE_TEXT: &str = "Environments";

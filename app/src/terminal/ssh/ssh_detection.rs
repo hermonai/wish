@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 use wish_core::{features::FeatureFlag, settings::Setting};
 
 use crate::terminal::warpify::settings::WishifySettings;

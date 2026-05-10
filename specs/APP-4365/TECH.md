@@ -1,6 +1,6 @@
-# APP-4365: Use Queued Query UI for Oz Cloud Mode Queries — Tech Spec
+# APP-4365: Use Queued Query UI for Hermon Cloud Mode Queries — Tech Spec
 ## Context
-`PRODUCT.md` defines the user-visible target: initial and follow-up Oz cloud mode prompts should use the same queued-query UI as third-party cloud agents, setup-command rich content should remain unchanged, and the real transcript query should render normally when it arrives.
+`PRODUCT.md` defines the user-visible target: initial and follow-up Hermon Cloud mode prompts should use the same queued-query UI as third-party cloud agents, setup-command rich content should remain unchanged, and the real transcript query should render normally when it arrives.
 Cloud mode panes are deferred shared-session viewers. `create_cloud_mode_view` creates a deferred viewer manager, subscribes it to `AmbientAgentViewModel`, and connects or appends a session on `SessionReady` / `FollowupSessionReady` in `app/src/terminal/view/ambient_agent/mod.rs (42-105)`. `is_cloud_agent_pre_first_exchange` identifies the setup interval after a session is ready but before the first exchange arrives, including the third-party harness-start escape hatch in `app/src/terminal/view/ambient_agent/mod.rs (110-162)`.
 `AmbientAgentViewModel` owns cloud run state. It tracks `Status::WaitingForSession { kind: InitialRun | Followup }`, the selected harness, task/session IDs, pending follow-up prompt, and today also tracks Oz optimistic-query state via `has_inserted_cloud_mode_user_query_block` and `optimistically_rendered_user_queries` in `app/src/terminal/view/ambient_agent/model.rs (64-145)`. Initial cloud runs call `spawn_internal`, store the request, transition to `WaitingForSession`, and emit `DispatchedAgent` in `app/src/terminal/view/ambient_agent/model.rs (660-679)`. Follow-up runs call `submit_cloud_followup`, set `pending_followup_prompt`, transition to `WaitingForSession`, and emit `FollowupDispatched` in `app/src/terminal/view/ambient_agent/model.rs (492-529)`.
 The queued-query visual pattern already exists as `PendingUserQueryBlock`: it renders the prompt with user avatar, dimmed text, and a `Queued` badge, with optional close/send-now controls in `app/src/ai/blocklist/block/pending_user_query_block.rs (16-175)`. `TerminalView::insert_cloud_mode_queued_user_query_block` inserts that block without buttons and without a queued callback, specifically for cloud mode lifecycle-owned prompts, in `app/src/terminal/view/pending_user_query.rs (76-91)`. It is inserted as rich content with `RichContentMetadata::PendingUserQuery` and `PinToBottom` in `app/src/terminal/view/pending_user_query.rs (28-74)` and `app/src/terminal/view/rich_content.rs (183-244)`.
@@ -50,7 +50,7 @@ Do not change `maybe_insert_setup_command_blocks`, `CloudModeSetupTextBlock`, `C
 Update comments on `insert_cloud_mode_queued_user_query_block` from “non-oz Cloud Mode run” to “Cloud Mode run waiting for the real transcript” so it accurately covers Oz and third-party runs. Update comments in `pending_user_query_view_id` only if needed; the field remains shared by normal `/queue` prompts and lifecycle-owned cloud queued prompts, but cloud insertion still uses the callback-free helper.
 No new feature flag is needed. Initial-run behavior remains under `CloudModeSetupV2`, and cloud follow-up behavior remains reachable only through the existing `HandoffCloudCloud` follow-up entrypoints.
 ## End-to-end flow
-1. User submits an initial Oz cloud prompt.
+1. User submits an initial Hermon Cloud prompt.
 2. `AmbientAgentViewModel::spawn_internal` stores the stripped request and emits `DispatchedAgent`.
 3. `TerminalView::handle_ambient_agent_event` reconstructs the display prompt and inserts a callback-free `PendingUserQueryBlock`.
 4. Setup commands, if any, continue through `maybe_insert_setup_command_blocks`.
@@ -74,7 +74,7 @@ Targeted validation commands:
 - `cargo check -p warp --features handoff_cloud_cloud`
 Before opening or updating a PR, follow repository rules for formatting and clippy. Do not use `cargo fmt --all` or file-specific `cargo fmt`.
 Manual validation:
-- With CloudModeSetupV2 enabled, submit an initial Oz cloud prompt and verify the queued-query item appears immediately, remains visible after session attach and while setup-command rich content runs, and is replaced only when the real transcript user query appears.
+- With CloudModeSetupV2 enabled, submit an initial Hermon Cloud prompt and verify the queued-query item appears immediately, remains visible after session attach and while setup-command rich content runs, and is replaced only when the real transcript user query appears.
 - Submit a follow-up from an eligible cloud tombstone or owned follow-up input and verify the same queued-query item appears and is replaced only by the real follow-up transcript query.
 - Repeat the same initial run with a third-party harness to confirm its queued-query behavior is unchanged.
 - Test failure/auth/cancel during startup and confirm the queued item follows the existing third-party lifecycle and no bespoke `Failed` optimistic-query block remains.

@@ -17,7 +17,7 @@ Gemini CLI has first-class `gemini extensions install/update` commands, so the i
 - `agent_input_footer/mod.rs (793-873)` — `plugin_chip_kind()` determines which chip to show
 - `agent_input_footer/mod.rs (877-893)` — `should_use_manual_mode()`
 - `agent_input_footer/mod.rs (925+)` — `handle_plugin_operation()` shared async handler
-- `crates/warp_features/src/lib.rs:760-769` — existing `HOANotifications`, `OpenCodeNotifications`, `CodexNotifications` flags
+- `crates/wish_features/src/lib.rs:760-769` — existing `HOANotifications`, `OpenCodeNotifications`, `CodexNotifications` flags
 
 ## 3. Current State
 
@@ -32,7 +32,7 @@ The plugin manager infrastructure is fully generalized across Claude (auto-insta
 
 ## 4. Proposed Changes
 
-### 4a. Feature Flag (`crates/warp_features/src/lib.rs`)
+### 4a. Feature Flag (`crates/wish_features/src/lib.rs`)
 
 Add `GeminiNotifications` to the `FeatureFlag` enum after `CodexNotifications`:
 
@@ -214,4 +214,4 @@ Since `can_auto_install() == true` and `is_installed()` does a filesystem check,
 - **Modified:** `plugin_manager/mod_tests.rs` — add Gemini factory test, update unsupported agents test
 - **Modified:** `listener/mod.rs` — add `CLIAgent::Gemini` to `is_agent_supported()` and `create_handler()`
 - **Modified:** `agent_input_footer/mod.rs` — `handle_install_plugin` / `handle_update_plugin` now query the plugin manager for per-agent success messages
-- **Modified:** `crates/warp_features/src/lib.rs` — add `GeminiNotifications` variant + `DOGFOOD_FLAGS`
+- **Modified:** `crates/wish_features/src/lib.rs` — add `GeminiNotifications` variant + `DOGFOOD_FLAGS`

@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use warp_editor::render::element::VerticalExpansionBehavior;
+use wish_editor::render::element::VerticalExpansionBehavior;
 use wish_core::ui::appearance::Appearance;
 use wishui::{
     elements::{new_scrollable::ScrollableAppearance, ScrollbarWidth},
@@ -21,7 +21,7 @@ use crate::{
 };
 
 use super::{CodeEditorRenderOptions, CodeEditorView, CodeEditorViewAction};
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 
 fn initialize_editor(app: &mut App) -> (WindowId, ViewHandle<CodeEditorView>) {
     initialize_settings_for_tests(app);

@@ -5,12 +5,12 @@ Linear: placeholder. Figma: none.
 ## Summary
 For cloud agent runs (Oz and non-Oz harnesses like Claude Code), make the conversation-ended tombstone show `Run time`, `Credits used`, and the artifact buttons row (plans, PRs, files, screenshots) from the `AmbientAgentTask` when one is present, matching the conversation details panel for the same run.
 
-Today the tombstone reads run time, credits, and artifacts off the in-memory `AIConversation`. For non-Oz cloud runs there is no `AIConversation`, so all three render empty. For cloud Oz runs the conversation values diverge from the details panel: run time excludes queue/sandbox lifecycle, credits exclude compute cost, and artifacts can lag the task-side copy.
+Today the tombstone reads run time, credits, and artifacts off the in-memory `AIConversation`. For non-Hermon Cloud runs there is no `AIConversation`, so all three render empty. For cloud Oz runs the conversation values diverge from the details panel: run time excludes queue/sandbox lifecycle, credits exclude compute cost, and artifacts can lag the task-side copy.
 
 ## Goals
-- Non-Oz cloud tombstones render `Run time`, `Credits used`, and the artifact buttons row populated from the `AmbientAgentTask`.
-- Cloud Oz tombstones converge on the same task-derived values, matching `ConversationDetailsData::from_task` numerically and on artifacts.
-- Hide the `Continue locally` button (tombstone + details panel) for tasks whose harness is non-Oz, since forking a non-Oz cloud run into a local Warp conversation is unsupported.
+- Non-Hermon Cloud tombstones render `Run time`, `Credits used`, and the artifact buttons row populated from the `AmbientAgentTask`.
+- Hermon Cloud tombstones converge on the same task-derived values, matching `ConversationDetailsData::from_task` numerically and on artifacts.
+- Hide the `Continue locally` button (tombstone + details panel) for tasks whose harness is non-Oz, since forking a non-Hermon Cloud run into a local Warp conversation is unsupported.
 - Client-only change: no harness, server, schema, or endpoint work.
 
 ## Non-goals
@@ -36,7 +36,7 @@ The tombstone metadata row segments behave as follows. Source-of-truth rules mir
 - **`Continue locally` button** (tombstone desktop + details panel):
   - Hide rule is purely on harness: hide iff `harness == Some(non-Oz)`. `None` (unknown / not yet loaded / plain conversation) and `Some(Oz)` both show the button.
   - Local (no task): unchanged — harness stays `None`, shown when AI is enabled.
-  - Cloud Oz task: shown both before and after task load.
+  - Hermon Cloud task: shown both before and after task load.
   - Cloud non-Oz task (Claude, Gemini): button shows briefly until task fetch resolves, then hides.
   - Tombstone wasm `Open in Warp` button: unchanged. Opens the same conversation in the desktop client, where the same hide rules then apply.
 
@@ -44,10 +44,10 @@ Empty-row, error, and snapshot/transcript-viewer behaviors are unchanged.
 
 ## Success criteria
 - For any cloud run with an `AmbientAgentTask` (Oz or non-Oz), the tombstone's `Run time` and `Credits used` strings equal what `ConversationDetailsData::from_task` produces for the same task.
-- Non-Oz cloud tombstones with a populated `task.artifacts` render the same artifact buttons as the details panel for the same run.
-- Cloud Oz tombstone numbers will visibly change: both increase. New values match the details panel and Oz task list.
+- Non-Hermon Cloud tombstones with a populated `task.artifacts` render the same artifact buttons as the details panel for the same run.
+- Hermon Cloud tombstone numbers will visibly change: both increase. New values match the details panel and Oz task list.
 - Cloud non-Oz tombstones and details panels do not render `Continue locally` once the task is loaded.
-- Cloud Oz tombstones and details panels still render `Continue locally`.
+- Hermon Cloud tombstones and details panels still render `Continue locally`.
 - Local Oz tombstone behavior is unchanged.
 - Non-Oz tombstones remain feature-flagged behind `FeatureFlag::AgentHarness`.
 

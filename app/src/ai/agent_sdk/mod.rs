@@ -24,7 +24,7 @@ use crate::server::server_api::ai::AIClient;
 use crate::workflows::workflow::Workflow;
 use ai::api_keys::{ApiKeyManager, AwsCredentialsRefreshStrategy};
 use anyhow::Context;
-use warp_cli::{
+use wish_cli::{
     agent::{AgentCommand, AgentProfileCommand, OutputFormat},
     artifact::ArtifactCommand,
     environment::{EnvironmentCommand, ImageCommand},
@@ -40,10 +40,10 @@ use warp_cli::{
     task::{MessageCommand, TaskCommand},
     CliCommand, GlobalOptions,
 };
-use warp_isolation_platform::IsolationPlatformError;
+use wish_isolation_platform::IsolationPlatformError;
 #[cfg(not(target_family = "wasm"))]
-use warp_logging::log_file_path;
-use warp_managed_secrets::ManagedSecretManager;
+use wish_logging::log_file_path;
+use wish_managed_secrets::ManagedSecretManager;
 use wish_core::features::FeatureFlag;
 use wishui::ModelSpawner;
 use wishui::{platform::TerminationMode, AppContext, SingletonEntity};
@@ -60,7 +60,7 @@ use crate::{
     terminal::view::ConversationRestorationInNewPaneType,
 };
 use driver::AgentDriverError;
-use warp_graphql::object_permissions::OwnerType;
+use wish_graphql::object_permissions::OwnerType;
 
 use crate::ai::attachment_utils::attachments_download_dir;
 use crate::ai::skills::{
@@ -70,8 +70,8 @@ use crate::ai::skills::{
 pub(crate) use driver::harness::{task_env_vars, validate_cli_installed, ClaudeHarness};
 pub use driver::AgentDriver;
 use telemetry::CliTelemetryEvent;
-use warp_cli::agent::{Harness, Prompt, RunAgentArgs};
-use warp_cli::OZ_HARNESS_ENV;
+use wish_cli::agent::{Harness, Prompt, RunAgentArgs};
+use wish_cli::OZ_HARNESS_ENV;
 
 mod admin;
 mod agent_config;
@@ -527,7 +527,7 @@ fn run_task(
                 ));
             }
             match conv_cmd {
-                warp_cli::task::ConversationCommand::Get(args) => {
+                wish_cli::task::ConversationCommand::Get(args) => {
                     ambient::get_conversation(ctx, args.conversation_id)
                 }
             }
@@ -1306,6 +1306,7 @@ fn command_requires_auth(command: &CliCommand) -> bool {
 /// If auth is not required, dispatches the command immediately.
 /// If auth is required and the user is logged in, triggers a user refresh
 /// before launching the command.
+/// Guest-mode users skip the server refresh and dispatch directly.
 fn launch_command(
     ctx: &mut AppContext,
     command: CliCommand,
@@ -1317,13 +1318,21 @@ fn launch_command(
         return dispatch_command(ctx, command, global_options);
     }
 
-    let cli_name = warp_cli::binary_name().unwrap_or_else(|| "warp".to_string());
+    let cli_name = wish_cli::binary_name().unwrap_or_else(|| "wish".to_string());
 
     let auth_state = AuthStateProvider::handle(ctx).as_ref(ctx).get();
     if !auth_state.is_logged_in() {
         return Err(anyhow::anyhow!(
-            "You are not logged in - please log in with `{cli_name} login` to continue."
+            "You are not logged in - please log in with `{cli_name} login` or set WISH_GUEST_MODE=1 for local-only mode."
         ));
+    }
+
+    // Guest-mode users have no server credentials to refresh — dispatch
+    // the command immediately. The agent driver will route AI requests
+    // through local LLM providers (Ollama, etc.) instead of the Hermon API.
+    if auth_state.is_guest() {
+        log::info!("Guest mode: skipping server auth refresh, dispatching command directly");
+        return dispatch_command(ctx, command, global_options);
     }
 
     // User is logged in — subscribe to auth events, trigger a refresh, and wait
@@ -1370,7 +1379,7 @@ fn launch_command(
 /// within a Wish terminal session).
 pub fn is_running_in_warp() -> bool {
     std::env::var("TERM_PROGRAM")
-        .map(|v| v == "WarpTerminal")
+        .map(|v| v == "WishTerminal" || v == "WarpTerminal")
         .unwrap_or(false)
 }
 

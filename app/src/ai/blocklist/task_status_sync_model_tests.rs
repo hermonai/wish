@@ -1,7 +1,7 @@
 use crate::ai::agent::RenderableAIError;
 use crate::server::server_api::ai::TaskStatusUpdate;
 use crate::terminal::cli_agent_sessions::CLIAgentSessionStatus;
-use warp_graphql::ai::{AgentTaskState, PlatformErrorCode};
+use wish_graphql::ai::{AgentTaskState, PlatformErrorCode};
 
 use super::{classify_renderable_error, map_cli_session_status};
 

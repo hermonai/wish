@@ -29,7 +29,7 @@ use crate::{
 use anyhow::Result;
 use regex::Regex;
 use std::sync::Arc;
-use warp_graphql::workspace::FeatureModelChoice;
+use wish_graphql::workspace::FeatureModelChoice;
 use wish_core::{
     features::FeatureFlag,
     settings::{ChangeEventReason, Setting},
@@ -122,7 +122,7 @@ pub struct WorkspacesMetadataResponse {
 // independent queries.
 pub struct WorkspacesMetadataWithPricing {
     pub metadata: WorkspacesMetadataResponse,
-    pub pricing_info: Option<warp_graphql::billing::PricingInfo>,
+    pub pricing_info: Option<wish_graphql::billing::PricingInfo>,
 }
 
 pub struct CreateTeamResponse {

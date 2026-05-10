@@ -12,12 +12,12 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use warp_editor::{
+use wish_editor::{
     content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
 };
-use warp_util::file::FileSaveError;
-use warp_util::path::common_path;
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::file::FileSaveError;
+use wish_util::path::common_path;
+use wish_util::standardized_path::StandardizedPath;
 use wish_core::{
     features::FeatureFlag,
     platform::SessionPlatform,

@@ -53,7 +53,9 @@ impl HermonServiceModel {
     ///
     /// Attempts to create a client from environment/config. If no credentials
     /// are available, the model starts in `Unconfigured` state.
-    pub fn new(_ctx: &mut ModelContext<Self>) -> Self {
+    /// When a client is created, fires an async health check to validate the
+    /// connection and transitions to `Connected` or `Disconnected`.
+    pub fn new(ctx: &mut ModelContext<Self>) -> Self {
         let client = hermon_auth::create_client().map(Arc::new);
 
         let connection_status = if client.is_some() {
@@ -61,6 +63,29 @@ impl HermonServiceModel {
         } else {
             HermonConnectionStatus::Unconfigured
         };
+
+        // Fire an async health check so we discover connection issues early
+        // instead of waiting for the first user-initiated request to fail.
+        if let Some(ref client) = client {
+            let client = Arc::clone(client);
+            let _ = ctx.spawn({
+                let client = client;
+                async move {
+                    match client.health().await {
+                        Ok(_) => Some(true),
+                        Err(e) => {
+                            log::warn!("Hermon health check failed: {e}");
+                            Some(false)
+                        }
+                    }
+                }
+            }, |me, result, ctx| {
+                match result {
+                    Some(true) => me.set_connected(ctx),
+                    Some(false) | None => me.set_disconnected(ctx),
+                }
+            });
+        }
 
         Self {
             client,

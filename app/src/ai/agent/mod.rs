@@ -34,7 +34,7 @@ use comment::ReviewComment;
 use task::TaskId;
 pub use telemetry::AIIdentifiers;
 
-use warp_editor::render::model::LineCount;
+use wish_editor::render::model::LineCount;
 
 use parking_lot::RwLock;
 use std::collections::{HashMap, HashSet};

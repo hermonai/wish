@@ -135,7 +135,7 @@ line-ending.workspace = true
 log.workspace = true
 log-panics = { version = "2.1.0", features = ["with-backtrace"] }
 lsp.workspace = true
-warp_logging.workspace = true
+wish_logging.workspace = true
 sentry = { workspace = true, optional = true }
 lz4_flex = "0.11"
 markdown_parser.workspace = true
@@ -209,7 +209,7 @@ unindent = "0.1.7"
 url = { workspace = true, features = ["serde"] }
 urlocator.workspace = true
 uuid.workspace = true
-warp_cli.workspace = true
+wish_cli.workspace = true
 validator = "0.19.0"
 variant_count = "1.1.0"
 vec1.workspace = true
@@ -217,19 +217,19 @@ version-compare.workspace = true
 vte.workspace = true
 walkdir.workspace = true
 warp-workflows.workspace = true
-warp_completer.workspace = true
+wish_completer.workspace = true
 wish_core.workspace = true
-warp_editor.workspace = true
-warp_graphql.workspace = true
-warp_js = { workspace = true, optional = true }
-warp_server_client.workspace = true
-warp_util.workspace = true
+wish_editor.workspace = true
+wish_graphql.workspace = true
+wish_js = { workspace = true, optional = true }
+wish_server_client.workspace = true
+wish_util.workspace = true
 wishui = { workspace = true, features = ["schema_gen", "settings_value"] }
 voice_input = { workspace = true, optional = true }
-warpui_extras = { workspace = true, features = ["default", "user_preferences-toml"] }
+wishui_extras = { workspace = true, features = ["default", "user_preferences-toml"] }
 syntax_tree.workspace = true
 languages.workspace = true
-warp_terminal.workspace = true
+wish_terminal.workspace = true
 websocket.workspace = true
 wgpu = { workspace = true, optional = true }
 natural_language_detection.workspace = true
@@ -248,9 +248,9 @@ remote_server.workspace = true
 repo_metadata.workspace = true
 vim.workspace = true
 rmcp = { workspace = true, features = ["client"] }
-warp_isolation_platform.workspace = true
-warp_ripgrep.workspace = true
-warp_managed_secrets.workspace = true
+wish_isolation_platform.workspace = true
+wish_ripgrep.workspace = true
+wish_managed_secrets.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
 block.workspace = true
@@ -307,7 +307,7 @@ warp-command-signatures = { workspace = true, features = ["embed-signatures"] }
 is_executable = "1.0.1"
 gethostname = "1.1.0"
 watcher.workspace = true
-warp_files.workspace = true
+wish_files.workspace = true
 tantivy = "0.26.0"
 
 [target.'cfg(target_family = "wasm")'.dependencies]
@@ -332,7 +332,7 @@ serde-wasm-bindgen = "0.6.5"
 # For wasm, we don't use the feature "embed-signatures".
 warp-command-signatures = { workspace = true }
 web-sys.workspace = true
-warp_web_event_bus.workspace = true
+wish_web_event_bus.workspace = true
 
 [target.'cfg(unix)'.dependencies]
 cvt = "0.1.1"
@@ -395,14 +395,14 @@ mockito.workspace = true
 serial_test = "0.8.0"
 sum_tree = { workspace = true, features = ["test-util"] }
 virtual-fs.workspace = true
-warp_completer = { workspace = true, features = ["test-util"] }
+wish_completer = { workspace = true, features = ["test-util"] }
 wish_core = { workspace = true, features = ["test-util"] }
-warp_editor = { workspace = true, features = ["test-util"] }
-warp_server_client = { workspace = true, features = ["test-util"] }
-warp_terminal = { workspace = true, features = ["test-util"] }
+wish_editor = { workspace = true, features = ["test-util"] }
+wish_server_client = { workspace = true, features = ["test-util"] }
+wish_terminal = { workspace = true, features = ["test-util"] }
 wishui = { workspace = true, features = ["test-util"] }
-warpui_extras = { workspace = true, features = ["test-util"] }
-warp_files = { workspace = true, features = ["test-util"] }
+wishui_extras = { workspace = true, features = ["test-util"] }
+wish_files = { workspace = true, features = ["test-util"] }
 repo_metadata = { workspace = true, features = ["test-util"] }
 
 [target.'cfg(not(target_family = "wasm"))'.dev-dependencies]
@@ -416,7 +416,7 @@ prost-build.workspace = true
 sha2.workspace = true
 tempfile.workspace = true
 walkdir = "2.3.2"
-warp_util.workspace = true
+wish_util.workspace = true
 
 [target.'cfg(windows)'.build-dependencies]
 embed-resource = "3.0"
@@ -444,7 +444,7 @@ command_predictor = []
 context_line_review_comments = []
 completions_v2 = [
     "plugin_host",
-    "warp_completer/v2",
+    "wish_completer/v2",
     "dep:command-signatures-v2",
 ]
 crash_reporting = [
@@ -452,7 +452,7 @@ crash_reporting = [
     "dep:sentry-log",
     "dep:minidumper",
     "dep:crash-handler",
-    "warp_logging/crash_reporting",
+    "wish_logging/crash_reporting",
     "ai/crash_reporting",
 ]
 creating_shared_sessions = []
@@ -556,7 +556,7 @@ default = [
     "ambient_agents_command_line",
     "ambient_agents_image_upload",
     "scheduled_ambient_agents",
-    "warp_managed_secrets",
+    "wish_managed_secrets",
     "v4a_file_diffs",
     "classic_completions",
     "force_classic_completions",
@@ -669,7 +669,7 @@ agent_mode_evals = [
     "cross_repo_context",
     "rust-embed/debug-embed",
     "wishui/log_named_telemetry_events",
-    "warp_logging/agent_mode_evals",
+    "wish_logging/agent_mode_evals",
 ]
 ambient_agents_command_line = []
 ambient_agents_image_upload = []
@@ -731,7 +731,7 @@ read_image_files = []
 # This feature enables plugin support in Wish. Note that its typically checked
 # directly, rather than via the `FeatureFlag` enum, because its value is
 # required early in the app lifecycle prior to `FeatureFlag` initialization.
-plugin_host = ["dep:rquickjs", "dep:warp_js", "warp_cli/plugin_host"]
+plugin_host = ["dep:rquickjs", "dep:wish_js", "wish_cli/plugin_host"]
 # Enable this feature to automatically perform CPU profiling via pprof.  The
 # generated profile will be written to profile.pb in the current directory.
 # NOTE: This may slow down program execution.
@@ -767,7 +767,7 @@ team_workflows = ["team_features_override"]
 toggle_bootstrap_block = []
 # Feature enabled only when app is compiled for integration tests.
 integration_tests = [
-    "warp_cli/integration_tests",
+    "wish_cli/integration_tests",
     "wishui/integration_tests",
     "wishui/test-util",
     "wish_core/integration_tests",
@@ -874,7 +874,7 @@ revert_to_checkpoints = []
 rewind_slash_command = []
 agent_view = []
 agent_view_block_context = ["agent_view"]
-warp_managed_secrets = []
+wish_managed_secrets = []
 v4a_file_diffs = []
 agent_tips = []
 agent_toolbar_editor = ["agent_view"]

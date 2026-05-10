@@ -24,7 +24,7 @@ use crate::menu::{Event as MenuEvent, Menu, MenuItem, MenuItemFields, MenuVarian
 use crate::terminal::input::{MenuPositioning, MenuPositioningProvider};
 use crate::ui_components::icons::Icon;
 use crate::view_components::action_button::{ActionButton, ButtonSize};
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 
 const ITEM_FONT_SIZE: f32 = 14.;
 

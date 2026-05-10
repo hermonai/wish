@@ -9,7 +9,7 @@ use crate::auth::{AuthStateProvider, UserUid};
 use crate::workspaces::user_profiles::UserProfiles;
 use chrono::{DateTime, Utc};
 use session_sharing_protocol::common::SessionId;
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::features::FeatureFlag;
 use wishui::{AppContext, SingletonEntity};
 

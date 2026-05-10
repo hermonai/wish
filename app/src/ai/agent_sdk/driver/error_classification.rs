@@ -1,6 +1,6 @@
 use crate::ai::blocklist::task_status_sync_model::classify_renderable_error;
 use crate::server::server_api::ai::TaskStatusUpdate;
-use warp_graphql::ai::{AgentTaskState, PlatformErrorCode};
+use wish_graphql::ai::{AgentTaskState, PlatformErrorCode};
 
 use super::terminal::ShareSessionError;
 use super::AgentDriverError;
@@ -71,7 +71,7 @@ pub fn classify_driver_error(error: &AgentDriverError) -> (AgentTaskState, TaskS
             ),
         ),
         AgentDriverError::NotLoggedIn => {
-            let bin = warp_cli::binary_name().unwrap_or_else(|| "warp".to_string());
+            let bin = wish_cli::binary_name().unwrap_or_else(|| "warp".to_string());
             (
                 AgentTaskState::Error,
                 TaskStatusUpdate::with_error_code(

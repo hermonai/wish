@@ -6,7 +6,7 @@ Figma: none (CLI-only change)
 
 ## Summary
 
-Bring the `oz run list` and `oz run get` CLI commands to parity with the public REST API and the Oz web app by (1) wiring up JSON output and (2) adding filter and sort flags to `oz run list`. JSON output mirrors the server's REST schema so that scripting against `oz run list`/`oz run get` is equivalent to scripting against `GET /api/v1/agent/runs` and `GET /api/v1/agent/runs/:runId`.
+Bring the `oz run list` and `oz run get` CLI commands to parity with the public REST API and the Hermon Cloud dashboard by (1) wiring up JSON output and (2) adding filter and sort flags to `oz run list`. JSON output mirrors the server's REST schema so that scripting against `oz run list`/`oz run get` is equivalent to scripting against `GET /api/v1/agent/runs` and `GET /api/v1/agent/runs/:runId`.
 
 ## Problem
 

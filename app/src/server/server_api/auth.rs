@@ -10,23 +10,23 @@ use instant::Duration;
 use mockall::{automock, predicate::*};
 use oauth2::TokenResponse;
 use thiserror::Error;
-use warp_graphql::client::Operation;
-use warp_graphql::mutations::expire_api_key::{
+use wish_graphql::client::Operation;
+use wish_graphql::mutations::expire_api_key::{
     ExpireApiKey, ExpireApiKeyResult, ExpireApiKeyVariables,
 };
-use warp_graphql::queries::get_conversation_usage::{
+use wish_graphql::queries::get_conversation_usage::{
     ConversationUsage, GetConversationUsage, GetConversationUsageVariables, UserResult,
 };
 use wish_core::errors::{AnyhowErrorExt, ErrorExt};
 
-use warp_graphql::mutations::set_user_is_onboarded::{
+use wish_graphql::mutations::set_user_is_onboarded::{
     SetUserIsOnboarded, SetUserIsOnboardedResult, SetUserIsOnboardedVariables,
 };
-use warp_graphql::mutations::update_user_settings::{
+use wish_graphql::mutations::update_user_settings::{
     UpdateUserSettings, UpdateUserSettingsInput, UpdateUserSettingsResult,
     UpdateUserSettingsVariables,
 };
-use warp_graphql::mutations::{
+use wish_graphql::mutations::{
     create_anonymous_user::{
         AnonymousUserType, CreateAnonymousUser, CreateAnonymousUserResult,
         CreateAnonymousUserVariables,
@@ -36,12 +36,12 @@ use warp_graphql::mutations::{
     },
     mint_custom_token::{MintCustomTokenResult, MintCustomTokenVariables},
 };
-use warp_graphql::object_permissions::OwnerType;
-use warp_graphql::queries::api_keys::{
+use wish_graphql::object_permissions::OwnerType;
+use wish_graphql::queries::api_keys::{
     ApiKeyProperties, ApiKeyPropertiesResult, ApiKeys, ApiKeysVariables,
 };
-use warp_graphql::queries::get_user::{GetUser, GetUserVariables, UserOutput as GqlUserOutput};
-use warp_graphql::queries::get_user_settings::{GetUserSettings, GetUserSettingsVariables};
+use wish_graphql::queries::get_user::{GetUser, GetUserVariables, UserOutput as GqlUserOutput};
+use wish_graphql::queries::get_user_settings::{GetUserSettings, GetUserSettingsVariables};
 use wishui::r#async::BoxFuture;
 
 use crate::auth::UserUid;
@@ -168,7 +168,7 @@ pub trait AuthClient: 'static + Send + Sync {
         &self,
         days: Option<i32>,
         limit: Option<i32>,
-        last_updated_end_timestamp: Option<warp_graphql::scalars::Time>,
+        last_updated_end_timestamp: Option<wish_graphql::scalars::Time>,
     ) -> Result<Vec<ConversationUsage>>;
 
     async fn set_is_telemetry_enabled(&self, value: bool) -> Result<()>;
@@ -201,7 +201,7 @@ pub trait AuthClient: 'static + Send + Sync {
         &self,
         name: String,
         team_id: Option<cynic::Id>,
-        expires_at: Option<warp_graphql::scalars::Time>,
+        expires_at: Option<wish_graphql::scalars::Time>,
     ) -> Result<GenerateApiKeyResult>;
 
     async fn expire_api_key(&self, key_uid: &ApiKeyUid) -> Result<ExpireApiKeyResult>;
@@ -221,9 +221,9 @@ impl AuthClient for ServerApi {
         anonymous_user_type: AnonymousUserType,
     ) -> Result<CreateAnonymousUserResult> {
         let variables = CreateAnonymousUserVariables {
-            input: warp_graphql::mutations::create_anonymous_user::CreateAnonymousUserInput {
+            input: wish_graphql::mutations::create_anonymous_user::CreateAnonymousUserInput {
                 anonymous_user_type,
-                expiration_type: warp_graphql::mutations::create_anonymous_user::AnonymousUserExpirationType::NoExpiration,
+                expiration_type: wish_graphql::mutations::create_anonymous_user::AnonymousUserExpirationType::NoExpiration,
                 referral_code,
             },
             request_context: get_request_context(),
@@ -280,6 +280,7 @@ impl AuthClient for ServerApi {
                 Ok(AuthToken::Firebase(auth_tokens.id_token))
             }
             Credentials::SessionCookie => Ok(AuthToken::NoAuth),
+            Credentials::Guest => Ok(AuthToken::NoAuth),
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => Ok(AuthToken::NoAuth),
         }
@@ -329,7 +330,7 @@ impl AuthClient for ServerApi {
         };
 
         let operation =
-            warp_graphql::mutations::mint_custom_token::MintCustomToken::build(variables);
+            wish_graphql::mutations::mint_custom_token::MintCustomToken::build(variables);
         let response = self.send_graphql_request(operation, None).await?;
         Ok(response.mint_custom_token)
     }
@@ -363,7 +364,7 @@ impl AuthClient for ServerApi {
         let response = operation
             .send_request(
                 self.client.clone(),
-                warp_graphql::client::RequestOptions {
+                wish_graphql::client::RequestOptions {
                     auth_token: auth_token.map(ToOwned::to_owned),
                     headers: std::collections::HashMap::from([(
                         EXPERIMENT_ID_HEADER.to_string(),
@@ -377,8 +378,8 @@ impl AuthClient for ServerApi {
             .ok_or_else(|| anyhow!("Expected valid response.data"))?;
 
         match response.user {
-            warp_graphql::queries::get_user::UserResult::UserOutput(user_output) => Ok(user_output),
-            warp_graphql::queries::get_user::UserResult::Unknown => {
+            wish_graphql::queries::get_user::UserResult::UserOutput(user_output) => Ok(user_output),
+            wish_graphql::queries::get_user::UserResult::Unknown => {
                 Err(anyhow!("Unable to fetch user"))
             }
         }
@@ -392,7 +393,7 @@ impl AuthClient for ServerApi {
         let response = self.send_graphql_request(operation, None).await?;
 
         match response.user {
-            warp_graphql::queries::get_user_settings::UserResult::UserOutput(user_output) => {
+            wish_graphql::queries::get_user_settings::UserResult::UserOutput(user_output) => {
                 match user_output.user.settings {
                     Some(user_settings) => Ok(Some(SyncedUserSettings {
                         is_cloud_conversation_storage_enabled: user_settings
@@ -403,7 +404,7 @@ impl AuthClient for ServerApi {
                     None => Ok(None),
                 }
             }
-            warp_graphql::queries::get_user_settings::UserResult::Unknown => {
+            wish_graphql::queries::get_user_settings::UserResult::Unknown => {
                 Err(anyhow!("Unable to fetch user settings"))
             }
         }
@@ -414,7 +415,7 @@ impl AuthClient for ServerApi {
         &self,
         days: Option<i32>,
         limit: Option<i32>,
-        last_updated_end_timestamp: Option<warp_graphql::scalars::Time>,
+        last_updated_end_timestamp: Option<wish_graphql::scalars::Time>,
     ) -> Result<Vec<ConversationUsage>> {
         let operation = GetConversationUsage::build(GetConversationUsageVariables {
             request_context: get_request_context(),
@@ -606,7 +607,7 @@ impl AuthClient for ServerApi {
         &self,
         name: String,
         team_id: Option<cynic::Id>,
-        expires_at: Option<warp_graphql::scalars::Time>,
+        expires_at: Option<wish_graphql::scalars::Time>,
     ) -> Result<GenerateApiKeyResult> {
         let variables = GenerateApiKeyVariables {
             input: GenerateApiKeyInput {
@@ -650,13 +651,13 @@ impl AuthClient for ServerApi {
         }
 
         // Issue a new token.
-        let workload_token = match warp_isolation_platform::issue_workload_token(Some(
+        let workload_token = match wish_isolation_platform::issue_workload_token(Some(
             AMBIENT_WORKLOAD_TOKEN_DURATION,
         ))
         .await
         {
             Ok(token) => token,
-            Err(warp_isolation_platform::IsolationPlatformError::NoIsolationPlatformDetected) => {
+            Err(wish_isolation_platform::IsolationPlatformError::NoIsolationPlatformDetected) => {
                 return Ok(None);
             }
             Err(e) => return Err(e.into()),
@@ -697,30 +698,38 @@ fn fetch_auth_tokens(
 ) -> BoxFuture<'static, StdResult<FirebaseAuthTokens, UserAuthenticationError>> {
     Box::pin(async move {
         let firebase_api_key = ChannelState::firebase_api_key();
-        let url = token.access_token_url(&firebase_api_key);
         let request_body = token.access_token_request_body();
         let proxy_url = token.proxy_url(&ChannelState::server_root_url(), &firebase_api_key);
-        let response = match client
-            .post(&url)
-            .form(&request_body)
-            .timeout(FETCH_ACCESS_TOKEN_TIMEOUT)
-            .send()
-            .await
-        {
-            Ok(response) => match response.error_for_status_ref() {
-                Ok(_) => Ok(response),
+
+        // Hermon-issued tokens (hrmrt_*) bypass Firebase entirely and go
+        // directly through the proxy/token endpoint on hermon-server.
+        let response = if token.is_hermon_token() {
+            log::info!("Hermon refresh token detected — exchanging via proxy (skipping Firebase)");
+            fetch_access_token_via_proxy(client, &request_body, proxy_url).await
+        } else {
+            let url = token.access_token_url(&firebase_api_key);
+            match client
+                .post(&url)
+                .form(&request_body)
+                .timeout(FETCH_ACCESS_TOKEN_TIMEOUT)
+                .send()
+                .await
+            {
+                Ok(response) => match response.error_for_status_ref() {
+                    Ok(_) => Ok(response),
+                    Err(error) => {
+                        log::warn!(
+                            "Request to firebase to fetch access token completed, but was unsuccessful: {error:?}"
+                        );
+
+                        fetch_access_token_via_proxy(client, &request_body, proxy_url).await
+                    }
+                },
                 Err(error) => {
-                    log::warn!(
-                        "Request to firebase to fetch access token completed, but was unsuccessful: {error:?}"
-                    );
+                    log::warn!("Failed to make response to firebase to fetch access token: {error:?}");
 
                     fetch_access_token_via_proxy(client, &request_body, proxy_url).await
                 }
-            },
-            Err(error) => {
-                log::warn!("Failed to make response to firebase to fetch access token: {error:?}");
-
-                fetch_access_token_via_proxy(client, &request_body, proxy_url).await
             }
         }?;
 

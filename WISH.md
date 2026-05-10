@@ -43,7 +43,7 @@ Environment variables:
 
 ### Testing
 - `cargo nextest run --no-fail-fast --workspace --exclude command-signatures-v2` - Run tests with nextest
-- `cargo nextest run -p warp_completer --features v2` - Run completer tests with v2 features
+- `cargo nextest run -p wish_completer --features v2` - Run completer tests with v2 features
 - `cargo test --doc` - Run doc tests
 - `cargo test` - Run standard tests for individual packages
 
@@ -156,7 +156,7 @@ This is a Rust-based terminal emulator and agentic development environment with 
 - Schema defined in `crates/persistence/src/schema.rs`
 
 **GraphQL**:
-- Schema and client code generation from `crates/warp_graphql_schema/api/schema.graphql`
+- Schema and client code generation from `crates/wish_graphql_schema/api/schema.graphql`
 - TypeScript types generated for frontend integration
 
 ### Feature Flags

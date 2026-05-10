@@ -241,7 +241,7 @@ where
     let home_dir = dirs::home_dir();
     let raw_path = selected_directory.to_string_lossy();
     let dir_display =
-        warp_util::path::user_friendly_path(&raw_path, home_dir.as_ref().and_then(|h| h.to_str()))
+        wish_util::path::user_friendly_path(&raw_path, home_dir.as_ref().and_then(|h| h.to_str()))
             .into_owned();
 
     let dir_text = Text::new_inline(dir_display, appearance.ui_font_family(), 14.)

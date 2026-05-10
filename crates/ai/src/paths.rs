@@ -1,6 +1,6 @@
 use typed_path::{TypedPath, TypedPathBuf, WindowsPath};
-use warp_terminal::shell::ShellLaunchData;
-use warp_util::path::{
+use wish_terminal::shell::ShellLaunchData;
+use wish_util::path::{
     convert_msys2_to_windows_native_path, convert_wsl_to_windows_host_path, msys2_exe_to_root,
 };
 use wishui::platform::OperatingSystem;

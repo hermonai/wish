@@ -1,4 +1,4 @@
-pkgname=oz@@CHANNEL_SUFFIX@@
+pkgname=wish-cli@@CHANNEL_SUFFIX@@
 pkgver=@@VERSION@@
 pkgrel=@@RELEASE@@
 pkgdesc="The orchestration platform for cloud agents"
@@ -41,5 +41,5 @@ package() {
 
 	# Create a symlink to the binary in /usr/bin.
 	install -d "$pkgdir"/usr/bin
-	ln -s "/opt/hermonai/oz@@CHANNEL_SUFFIX@@/@@BINARY_NAME@@" "$pkgdir/usr/bin/@@BINARY_NAME@@"
+	ln -s "/opt/hermonai/wish-cli@@CHANNEL_SUFFIX@@/@@BINARY_NAME@@" "$pkgdir/usr/bin/@@BINARY_NAME@@"
 }

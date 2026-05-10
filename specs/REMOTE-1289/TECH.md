@@ -10,7 +10,7 @@ The server is adding `POST /harness-support/notify-user` and `POST /harness-supp
 
 ## Relevant Code
 
-- `crates/warp_cli/src/harness_support.rs` — CLI arg definitions (`HarnessSupportCommand` enum)
+- `crates/wish_cli/src/harness_support.rs` — CLI arg definitions (`HarnessSupportCommand` enum)
 - `app/src/ai/agent_sdk/harness_support.rs` — command dispatch + async runners
 - `app/src/server/server_api/harness_support.rs` — `HarnessSupportClient` trait + `ServerApi` impl
 - `app/src/ai/agent_sdk/telemetry.rs` — `CliTelemetryEvent` enum
@@ -20,7 +20,7 @@ The server is adding `POST /harness-support/notify-user` and `POST /harness-supp
 ## Current State
 
 `oz harness-support` has two subcommands: `ping` and `report-artifact`. Each follows the same pattern:
-1. **CLI layer** (`warp_cli`): clap `Args`/`Subcommand` structs define the command shape.
+1. **CLI layer** (`wish_cli`): clap `Args`/`Subcommand` structs define the command shape.
 2. **Handler layer** (`agent_sdk/harness_support.rs`): match on the command, get the `HarnessSupportClient`, spawn an async task, print result / terminate.
 3. **API client layer** (`server_api/harness_support.rs`): `HarnessSupportClient` trait method + `ServerApi` impl calling `self.post_public_api(path, body)`.
 4. **Telemetry**: each command has a `CliTelemetryEvent` variant.
@@ -29,7 +29,7 @@ The Claude Code plugin currently has three skills (`oz-report-pr`, `oz-report-ar
 
 ## Proposed Changes
 
-### 1. CLI layer (`crates/warp_cli/src/harness_support.rs`)
+### 1. CLI layer (`crates/wish_cli/src/harness_support.rs`)
 
 Add two variants to `HarnessSupportCommand`:
 

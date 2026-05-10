@@ -7,7 +7,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
 use thousands::Separable;
-use warp_graphql::billing::AddonCreditsOption;
+use wish_graphql::billing::AddonCreditsOption;
 use wish_core::ui::theme::Fill;
 use wish_core::{features::FeatureFlag, ui::appearance::Appearance};
 use wishui::prelude::ChildView;

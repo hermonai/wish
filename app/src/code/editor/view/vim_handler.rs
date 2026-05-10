@@ -12,7 +12,7 @@ use vim::vim::{
     InsertPosition, LineMotion, ModeTransition, MotionType, TextObjectType, VimHandler, VimMode,
     VimMotion, VimOperand, VimOperator, VimTextObject, WordMotion,
 };
-use warp_editor::{
+use wish_editor::{
     content::buffer::{
         AutoScrollBehavior, BufferEditAction, EditOrigin, SelectionOffsets,
         ToBufferCharOffset as _, VimInsertPoint,

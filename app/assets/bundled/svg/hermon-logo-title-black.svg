@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 214.34 61.45">
+  <defs>
+    <style>
+      .cls-1 {
+        fill-rule: evenodd;
+      }
+
+      .cls-2 {
+        fill: #231f20;
+        font-family: Impact, Impact;
+        font-size: 36.8px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <polygon class="cls-1" points="20.04 32.49 0 52.53 7.62 20.06 20.04 32.49"/>
+    <polygon class="cls-1" points="20.05 32.47 40.09 52.52 52.52 0 20.05 32.47"/>
+    <text class="cls-2" transform="translate(55.93 49.55) scale(.98) skewX(-12)"><tspan x="0" y="0">Hermon.AI</tspan></text>
+  </g>
+</svg>

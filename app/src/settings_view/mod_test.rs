@@ -28,7 +28,7 @@ fn code_subpages_are_identified() {
 #[test]
 fn cloud_platform_subpages_are_identified() {
     assert!(SettingsSection::CloudEnvironments.is_cloud_platform_subpage());
-    assert!(SettingsSection::OzCloudAPIKeys.is_cloud_platform_subpage());
+    assert!(SettingsSection::HermonCloudAPIKeys.is_cloud_platform_subpage());
 
     assert!(!SettingsSection::Account.is_cloud_platform_subpage());
     assert!(!SettingsSection::WarpAgent.is_cloud_platform_subpage());
@@ -43,7 +43,7 @@ fn is_subpage_covers_all_umbrella_types() {
     assert!(SettingsSection::CodeIndexing.is_subpage());
     assert!(SettingsSection::EditorAndCodeReview.is_subpage());
     assert!(SettingsSection::CloudEnvironments.is_subpage());
-    assert!(SettingsSection::OzCloudAPIKeys.is_subpage());
+    assert!(SettingsSection::HermonCloudAPIKeys.is_subpage());
 
     // Top-level pages should not be subpages.
     assert!(!SettingsSection::Account.is_subpage());
@@ -102,8 +102,8 @@ fn cloud_platform_subpages_map_to_their_backing_pages() {
         SettingsSection::CloudEnvironments
     );
     assert_eq!(
-        SettingsSection::OzCloudAPIKeys.parent_page_section(),
-        SettingsSection::OzCloudAPIKeys
+        SettingsSection::HermonCloudAPIKeys.parent_page_section(),
+        SettingsSection::HermonCloudAPIKeys
     );
 }
 
@@ -191,8 +191,8 @@ fn subpage_display_names_are_correct() {
         "Environments"
     );
     assert_eq!(
-        SettingsSection::OzCloudAPIKeys.to_string(),
-        "Oz Cloud API Keys"
+        SettingsSection::HermonCloudAPIKeys.to_string(),
+        "Hermon Cloud API Keys"
     );
 }
 
@@ -227,8 +227,8 @@ fn subpage_from_str_parses_display_names() {
         Ok(SettingsSection::EditorAndCodeReview)
     );
     assert_eq!(
-        SettingsSection::from_str("Oz Cloud API Keys"),
-        Ok(SettingsSection::OzCloudAPIKeys)
+        SettingsSection::from_str("Hermon Cloud API Keys"),
+        Ok(SettingsSection::HermonCloudAPIKeys)
     );
 }
 
@@ -700,7 +700,7 @@ fn collapsed_umbrella_is_a_single_nav_stop() {
         NavStop::CollapsedUmbrella {
             nav_index: 4,
             first_subpage: SettingsSection::CloudEnvironments,
-            last_subpage: SettingsSection::OzCloudAPIKeys,
+            last_subpage: SettingsSection::HermonCloudAPIKeys,
         }
     ));
     assert!(matches!(stops[5], NavStop::Section(SettingsSection::Teams)));

@@ -160,7 +160,7 @@ pub enum LaunchConfigModalEvent {
     OpenFileWithTarget {
         path: std::path::PathBuf,
         target: FileTarget,
-        line_col: Option<warp_util::path::LineAndColumnArg>,
+        line_col: Option<wish_util::path::LineAndColumnArg>,
     },
     Close,
 }

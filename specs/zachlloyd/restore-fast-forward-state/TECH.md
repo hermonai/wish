@@ -29,8 +29,8 @@ This feature should use the existing SQLite-backed session restoration flow rath
 - `app/src/ai/restored_conversations.rs:22` — restored conversations are staged globally on startup.
 - `app/src/ai/blocklist/history_model/conversation_loader.rs:59` — persisted conversations are converted back into `AIConversation`.
 - `app/src/terminal/view/load_ai_conversation.rs:91` — startup restoration path loads restored conversations into terminal views.
-- `crates/warp_features/src/lib.rs:337` — existing `FastForwardAutoexecuteButton` flag.
-- `crates/warp_features/src/lib.rs (806-855)` — `DOGFOOD_FLAGS` and other rollout lists.
+- `crates/wish_features/src/lib.rs:337` — existing `FastForwardAutoexecuteButton` flag.
+- `crates/wish_features/src/lib.rs (806-855)` — `DOGFOOD_FLAGS` and other rollout lists.
 
 ## Current state
 
@@ -56,7 +56,7 @@ There is a second gap: the toggle path only mutates in-memory state and emits `U
 
 ### 1. Add a dedicated feature flag
 
-Add a new runtime feature flag in `crates/warp_features/src/lib.rs` for remembering fast-forward state across restored sessions, separate from `FeatureFlag::FastForwardAutoexecuteButton`.
+Add a new runtime feature flag in `crates/wish_features/src/lib.rs` for remembering fast-forward state across restored sessions, separate from `FeatureFlag::FastForwardAutoexecuteButton`.
 
 Proposed name: `FeatureFlag::RememberFastForwardState`
 

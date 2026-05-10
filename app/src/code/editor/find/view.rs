@@ -14,8 +14,8 @@ use crate::view_components::action_button::{ActionButton, DisabledSecondaryTheme
 use crate::view_components::find::FindDirection;
 use crate::{features::FeatureFlag, settings::AppEditorSettings};
 use pathfinder_color::ColorU;
-use warp_editor::editor::NavigationKey;
-use warp_editor::search::{SearchEvent, Searcher};
+use wish_editor::editor::NavigationKey;
+use wish_editor::search::{SearchEvent, Searcher};
 use wishui::elements::MainAxisAlignment;
 use wishui::elements::{ChildAnchor, OffsetPositioning, Radius, SavePosition, Shrinkable};
 use wishui::keymap::EditableBinding;

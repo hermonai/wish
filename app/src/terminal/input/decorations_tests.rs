@@ -14,7 +14,7 @@ use crate::{
     },
     themes::theme::AnsiColorIdentifier,
 };
-use warp_completer::completer::SuggestionTypeName;
+use wish_completer::completer::SuggestionTypeName;
 
 #[test]
 fn test_decorations_with_multibyte_chars() {

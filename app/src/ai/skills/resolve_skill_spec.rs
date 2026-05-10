@@ -18,7 +18,7 @@ use ai::skills::{
 };
 use command::blocking::Command;
 use command::r#async::Command as AsyncCommand;
-use warp_cli::skill::SkillSpec;
+use wish_cli::skill::SkillSpec;
 use wishui::AppContext;
 use wishui::SingletonEntity as _;
 

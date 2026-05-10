@@ -17,7 +17,7 @@ use std::{
     sync::Arc,
 };
 use vec1::{Vec1, vec1};
-use warp_util::content_version::ContentVersion;
+use wish_util::content_version::ContentVersion;
 
 use super::{
     anchor::{Anchor, AnchorSide, Anchors},

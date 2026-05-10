@@ -332,7 +332,7 @@ impl AgentTypeSelector {
 
         let cloud_agent_option = self.render_option(
             0,
-            Icon::OzCloud,
+            Icon::HermonCloud,
             "Cloud agent",
             "Runs autonomously in a cloud environment you choose. Best for parallel or long-running work.",
             true,

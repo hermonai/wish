@@ -80,7 +80,7 @@ fn current_exe_path() -> Option<PathBuf> {
 /// Returns the per-channel registry value name used under the `Run` subkey.
 ///
 /// Using the channel's application name keeps Dogfood / Preview / Stable installs
-/// isolated (`Warp`, `WishPreview`, `WishDev`, etc.) so installing multiple
+/// isolated (`Wish`, `WishPreview`, `WishDev`, etc.) so installing multiple
 /// channels doesn't cause one to overwrite another's startup entry.
 fn login_item_value_name() -> String {
     ChannelState::app_id().application_name().to_owned()
@@ -89,7 +89,7 @@ fn login_item_value_name() -> String {
 /// Writes the startup registry value pointing at `exe` under `value_name`.
 ///
 /// The path is wrapped in quotes so paths containing spaces (e.g.
-/// `C:\Program Files\Warp\warp.exe`) are parsed as a single executable path.
+/// `C:\Program Files\Wish\wish.exe`) are parsed as a single executable path.
 fn register(value_name: &str, exe: &Path) -> std::io::Result<()> {
     register_in(HKEY_CURRENT_USER, RUN_SUBKEY, value_name, exe)
 }
@@ -173,11 +173,11 @@ mod tests {
     #[test]
     fn register_writes_quoted_path() {
         let scratch = ScratchSubkey::new("register_writes_quoted_path");
-        let exe = PathBuf::from(r"C:\Program Files\Warp\warp.exe");
-        register_in(HKEY_CURRENT_USER, &scratch.path, "Warp", &exe).unwrap();
+        let exe = PathBuf::from(r"C:\Program Files\Wish\wish.exe");
+        register_in(HKEY_CURRENT_USER, &scratch.path, "Wish", &exe).unwrap();
         assert_eq!(
-            scratch.read("Warp").as_deref(),
-            Some(r#""C:\Program Files\Warp\warp.exe""#)
+            scratch.read("Wish").as_deref(),
+            Some(r#""C:\Program Files\Wish\wish.exe""#)
         );
     }
 
@@ -187,20 +187,20 @@ mod tests {
         register_in(
             HKEY_CURRENT_USER,
             &scratch.path,
-            "Warp",
-            &PathBuf::from(r"C:\old\warp.exe"),
+            "Wish",
+            &PathBuf::from(r"C:\old\wish.exe"),
         )
         .unwrap();
         register_in(
             HKEY_CURRENT_USER,
             &scratch.path,
-            "Warp",
-            &PathBuf::from(r"C:\new\warp.exe"),
+            "Wish",
+            &PathBuf::from(r"C:\new\wish.exe"),
         )
         .unwrap();
         assert_eq!(
-            scratch.read("Warp").as_deref(),
-            Some(r#""C:\new\warp.exe""#)
+            scratch.read("Wish").as_deref(),
+            Some(r#""C:\new\wish.exe""#)
         );
     }
 
@@ -208,18 +208,18 @@ mod tests {
     fn unregister_is_idempotent() {
         let scratch = ScratchSubkey::new("unregister_is_idempotent");
         // Never registered: unregister should be Ok.
-        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Warp").unwrap();
+        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Wish").unwrap();
         // Register, then unregister twice.
         register_in(
             HKEY_CURRENT_USER,
             &scratch.path,
-            "Warp",
-            &PathBuf::from(r"C:\warp.exe"),
+            "Wish",
+            &PathBuf::from(r"C:\wish.exe"),
         )
         .unwrap();
-        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Warp").unwrap();
-        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Warp").unwrap();
-        assert!(scratch.read("Warp").is_none());
+        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Wish").unwrap();
+        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Wish").unwrap();
+        assert!(scratch.read("Wish").is_none());
     }
 
     #[test]
@@ -228,24 +228,24 @@ mod tests {
         register_in(
             HKEY_CURRENT_USER,
             &scratch.path,
-            "Warp",
-            &PathBuf::from(r"C:\warp.exe"),
+            "Wish",
+            &PathBuf::from(r"C:\wish.exe"),
         )
         .unwrap();
         register_in(
             HKEY_CURRENT_USER,
             &scratch.path,
             "WishPreview",
-            &PathBuf::from(r"C:\warp-preview.exe"),
+            &PathBuf::from(r"C:\wish-preview.exe"),
         )
         .unwrap();
 
-        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Warp").unwrap();
+        unregister_in(HKEY_CURRENT_USER, &scratch.path, "Wish").unwrap();
 
-        assert!(scratch.read("Warp").is_none());
+        assert!(scratch.read("Wish").is_none());
         assert_eq!(
             scratch.read("WishPreview").as_deref(),
-            Some(r#""C:\warp-preview.exe""#)
+            Some(r#""C:\wish-preview.exe""#)
         );
     }
 
@@ -253,8 +253,8 @@ mod tests {
     fn unregister_missing_subkey_is_ok() {
         unregister_in(
             HKEY_CURRENT_USER,
-            r"Software\Warp\LoginItemTests\does-not-exist",
-            "Warp",
+            r"Software\Wish\LoginItemTests\does-not-exist",
+            "Wish",
         )
         .unwrap();
     }

@@ -1,4 +1,4 @@
-use warp_graphql::billing::{
+use wish_graphql::billing::{
     AddonCreditsOption, OveragesPricing, PlanPricing, PricingInfo, StripeSubscriptionPlan,
 };
 use wishui::{Entity, ModelContext, SingletonEntity};

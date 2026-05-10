@@ -4,7 +4,7 @@ use super::{
 };
 use crate::code_review::comments::CommentId;
 use serde_yaml::{Mapping, Value};
-use warp_editor::content::markdown::MarkdownStyle;
+use wish_editor::content::markdown::MarkdownStyle;
 use wishui::{EntityId, WindowId};
 
 #[test]

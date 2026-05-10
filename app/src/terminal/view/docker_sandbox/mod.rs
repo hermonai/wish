@@ -35,7 +35,7 @@ use crate::terminal::local_tty::docker_sandbox::DOCKER_SANDBOX_HOME_DIR;
 #[cfg(feature = "remote_tty")]
 use crate::terminal::remote_tty::TerminalManager as RemoteTtyTerminalManager;
 #[cfg(not(target_family = "wasm"))]
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 #[cfg(not(target_family = "wasm"))]
 use wishui::r#async::FutureExt;
 

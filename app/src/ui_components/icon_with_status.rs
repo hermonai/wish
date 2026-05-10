@@ -12,9 +12,9 @@ use crate::ai::agent::conversation::ConversationStatus;
 use crate::terminal::CLIAgent;
 use crate::themes::theme::Fill as ThemeFill;
 
-/// Background color used for the Oz agent's circle when it is running in an ambient (cloud)
+/// Background color used for the Hermon agent's circle when it is running in an ambient (cloud)
 /// run. Matches the Oz brand purple used in the cloud-mode design spec.
-const OZ_AMBIENT_BACKGROUND_COLOR: ColorU = ColorU {
+const HERMON_AMBIENT_BACKGROUND_COLOR: ColorU = ColorU {
     r: 203,
     g: 176,
     b: 247,
@@ -102,7 +102,7 @@ pub(crate) enum IconWithStatusVariant {
     },
     /// A pre-built icon element on an overlay background.
     NeutralElement { icon_element: Box<dyn Element> },
-    /// An Oz agent icon on the theme background.
+    /// An Hermon agent icon on the theme background.
     OzAgent {
         status: Option<ConversationStatus>,
         is_ambient: bool,
@@ -148,15 +148,15 @@ pub(crate) fn render_icon_with_status(
         ),
         IconWithStatusVariant::OzAgent { status, is_ambient } => {
             let circle_background = if is_ambient {
-                ThemeFill::Solid(OZ_AMBIENT_BACKGROUND_COLOR)
+                ThemeFill::Solid(HERMON_AMBIENT_BACKGROUND_COLOR)
             } else {
                 theme.background()
             };
-            // In ambient/cloud mode use the combined `OzCloud` silhouette (Oz + cloud),
+            // In ambient/cloud mode use the combined `HermonCloud` silhouette (Hermon Agent + cloud),
             // matching the treatment used in the agent view header. Non-ambient runs
             // continue to use the plain `Oz` glyph.
             let oz_glyph = if is_ambient {
-                WarpIcon::OzCloud
+                WarpIcon::HermonCloud
             } else {
                 WarpIcon::Oz
             };

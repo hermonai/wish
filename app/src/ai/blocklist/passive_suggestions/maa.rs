@@ -35,7 +35,7 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "local_fs")] {
         use std::{path::PathBuf, time::Duration};
         use crate::ai::blocklist::{read_local_file_context, BlocklistAIPermissions};
-        use warp_terminal::shell::ShellLaunchData;
+        use wish_terminal::shell::ShellLaunchData;
         use crate::util::link_detection::{detect_file_paths, DetectedLinkType};
         use crate::util::openable_file_type::is_binary_file;
         use ai::agent::FileLocations;
@@ -453,7 +453,7 @@ impl PassiveSuggestionsModel {
             return;
         }
 
-        // Startup commands run while bootstrapping an Oz cloud environment, so we skip
+        // Startup commands run while bootstrapping an Hermon Cloud environment, so we skip
         // passive prompt suggestion generation for them to avoid unnecessary requests.
         let is_oz_environment_startup_command = FeatureFlag::CloudModeSetupV2.is_enabled()
             && self

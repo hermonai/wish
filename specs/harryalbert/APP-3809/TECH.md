@@ -30,8 +30,8 @@ We need a 4-step guided onboarding flow for existing users that introduces HOA f
 - `app/src/workspace/view.rs:515` — `TAB_BAR_POSITION_ID`: the tab bar already has a `SavePosition`.
 
 ### Feature flags
-- `crates/warp_features/src/lib.rs:9` — `FeatureFlag` enum.
-- `crates/warp_features/src/lib.rs:797` — `DOGFOOD_FLAGS` array.
+- `crates/wish_features/src/lib.rs:9` — `FeatureFlag` enum.
+- `crates/wish_features/src/lib.rs:797` — `DOGFOOD_FLAGS` array.
 
 ### Workspace integration
 - `app/src/workspace/view.rs:779-901` — `Workspace` struct: holds all modal view handles, panel state.
@@ -52,7 +52,7 @@ We need a 4-step guided onboarding flow for existing users that introduces HOA f
 
 Add `HOAOnboardingFlow` to the `FeatureFlag` enum and `DOGFOOD_FLAGS`. Read the create feature flag skill for information on how to do this in a complete way.
 
-File: `crates/warp_features/src/lib.rs`
+File: `crates/wish_features/src/lib.rs`
 
 ### 2. Shared callout bubble component
 
@@ -220,7 +220,7 @@ Handle `HoaOnboardingFlowEvent`:
 
 2. **Callout positioning edge cases**: If the vertical tabs panel or inbox icon aren't rendered yet when the callout tries to anchor, `offset_from_save_position_element` may position incorrectly. Mitigation: the flow ensures vertical tabs are opened before Step 2, and the inbox icon is always in the title bar when `HOANotifications` is enabled.
 
-3. **Interaction with other one-time modals**: `OneTimeModalModel` runs checks sequentially — Oz launch modal takes priority. If the Oz launch modal shows, the HOA flow won't trigger until the next app launch. This is acceptable; the flow persists across launches until shown.
+3. **Interaction with other one-time modals**: `OneTimeModalModel` runs checks sequentially — Hermon Cloud launch modal takes priority. If the Hermon Cloud launch modal shows, the HOA flow won't trigger until the next app launch. This is acceptable; the flow persists across launches until shown.
 
 4. **Feature flag dependency**: The flow assumes `VerticalTabs`, `HOANotifications`, and `TabConfigs` flags are also enabled. If any are disabled, certain steps may reference UI that doesn't exist. Mitigation: gate the HOA flow on all required flags in `check_and_trigger_hoa_onboarding`.
 

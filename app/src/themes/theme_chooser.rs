@@ -1,6 +1,6 @@
 use pathfinder_color::ColorU;
 use settings::Setting as _;
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::{
     accessibility::{AccessibilityContent, WarpA11yRole},
     elements::{

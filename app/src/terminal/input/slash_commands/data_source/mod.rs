@@ -27,7 +27,7 @@ use crate::terminal::cli_agent_sessions::{
 };
 use crate::terminal::model::session::SessionType;
 #[cfg(not(target_family = "wasm"))]
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wish_core::ui::Icon as WarpIcon;
 
 use super::AcceptSlashCommandOrSavedPrompt;
@@ -275,8 +275,8 @@ impl SlashCommandDataSource {
                     command.name != commands::FEEDBACK.name
                         || !crate::workspace::is_feedback_skill_available(ctx)
                 })
-                // /continue-locally only applies to cloud Oz conversations. Local conversations
-                // and non-Oz cloud runs (Claude, Gemini) are filtered out so the slash menu
+                // /continue-locally only applies to cloud Hermon Agent conversations. Local conversations
+                // and non-Hermon Cloud runs (Claude, Gemini) are filtered out so the slash menu
                 // doesn't surface a no-op command.
                 .filter(|(_, command)| {
                     #[cfg(not(target_family = "wasm"))]

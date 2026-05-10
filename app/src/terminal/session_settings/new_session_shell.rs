@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 use wishui::platform::OperatingSystem;
 
 #[derive(

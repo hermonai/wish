@@ -152,7 +152,7 @@ mkdir -p "$OUT_DIR"
 if [[ $RELEASE_CHANNEL = "local" ]]; then
   WARP_BIN="wish"
   BINARY_NAME="wish-local"
-  APP_NAME="WishLocal"
+  APP_NAME="Wish"
   FEATURES="$FEATURES,agent_mode_debug"
   export HANDLE_MARKDOWN=1
 elif [[ $RELEASE_CHANNEL = "dev" ]]; then

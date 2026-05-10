@@ -7,7 +7,7 @@ use std::{
 
 use command::blocking::Command;
 use freedesktop_desktop_entry::DesktopEntry;
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 use wishui::AppContext;
 
 use super::Editor;

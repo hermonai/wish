@@ -4,7 +4,7 @@ use arborium::tree_sitter::{Node, Query, QueryCursor, TextProvider, Tree};
 use rangemap::RangeMap;
 use streaming_iterator::StreamingIterator;
 use string_offset::{ByteOffset, CharOffset};
-use warp_editor::content::{
+use wish_editor::content::{
     buffer::{Buffer, ToBufferByteOffset, ToBufferCharOffset},
     text::Bytes,
 };

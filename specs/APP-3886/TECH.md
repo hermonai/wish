@@ -60,7 +60,7 @@ The tab configs menu has no per-item management actions. Users cannot set a defa
 Current order:
 1. Agent (with Cmd+T shortcut label if default is Agent)
 2. Terminal (submenu on Windows, regular item elsewhere; Cmd+T shortcut if default is Terminal)
-3. Cloud Oz
+3. Hermon Cloud
 4. User tab configs (from `WarpConfig::tab_configs()`)
 5. Separator + "New worktree config" (submenu) + "New Tab Config"
 
@@ -152,7 +152,7 @@ How they interact on Cmd+T:
 "Make default" from the sidecar:
 - **Terminal item** → sets `DefaultSessionMode::Terminal`. Doesn't touch `NewSessionShell`.
 - **A specific shell** (Windows, e.g., PowerShell) → sets `DefaultSessionMode::Terminal` *and* updates `NewSessionShell` to that shell. Now Cmd+T → terminal → PowerShell.
-- **Agent / Cloud Oz** → sets `DefaultSessionMode` to `Agent` / `CloudAgent`. Doesn't touch `NewSessionShell`.
+- **Agent / Hermon Cloud** → sets `DefaultSessionMode` to `Agent` / `CloudAgent`. Doesn't touch `NewSessionShell`.
 - **A user tab config** → sets `DefaultSessionMode::TabConfig` + stores config path in `default_tab_config_path`.
 
 Key invariant: `NewSessionShell` is *always* the authority for which shell a terminal uses. `DefaultSessionMode` never duplicates that.
@@ -198,7 +198,7 @@ remove_tab_config_confirmation_dialog: ViewHandle<RemoveTabConfigConfirmationDia
 
 The sidecar is shown when `tab_config_action_sidecar_item` is `Some`. No separate `bool` is needed.
 
-**In `update_new_session_sidecar()`**: Extend the match to handle all actionable items (Terminal, shell variants, Agent, Cloud Oz, user tab configs). For these, set `tab_config_action_sidecar_item` to `Some(item_kind)`. For "New worktree config", keep existing behavior. For "New Tab Config" and separators, set it to `None`.
+**In `update_new_session_sidecar()`**: Extend the match to handle all actionable items (Terminal, shell variants, Agent, Hermon Cloud, user tab configs). For these, set `tab_config_action_sidecar_item` to `Some(item_kind)`. For "New worktree config", keep existing behavior. For "New Tab Config" and separators, set it to `None`.
 
 **In `render()`**: Add a second positioned overlay that calls `render_action_sidecar()` when `tab_config_action_sidecar_item` is `Some` (same positioning logic as the existing sidecar). This overlay uses the same `OffsetPositioning::offset_from_save_position_element` anchored to the hovered menu item label, so it works identically in both horizontal and vertical tabs modes.
 
@@ -267,7 +267,7 @@ In `unified_new_session_menu_items()`, the Cmd+T shortcut label is currently ass
 
 1. `DefaultSessionMode::TabConfig` → attach the shortcut label to the matching tab config's menu item (matched by `source_path`).
 2. `DefaultSessionMode::Agent` → attach to the Agent item (existing behavior).
-3. `DefaultSessionMode::CloudAgent` → attach to the Cloud Oz item.
+3. `DefaultSessionMode::CloudAgent` → attach to the Hermon Cloud item.
 4. `DefaultSessionMode::Terminal` → attach to the "Terminal" item.
 
 Note: Per-shell shortcut label logic (i.e., showing Cmd+T on the specific shell item when a shell is made default on Windows) is not implemented in v1. The shortcut label always appears on the "Terminal" item when mode is `Terminal`, regardless of which shell was selected via "Make default".

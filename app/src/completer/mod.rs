@@ -11,12 +11,12 @@ use async_trait::async_trait;
 use lazy_static::lazy_static;
 use smol_str::SmolStr;
 use typed_path::{TypedPath, TypedPathBuf};
-use warp_completer::completer::{
+use wish_completer::completer::{
     CommandExitStatus, CommandOutput, CompletionContext, EngineDirEntry, EngineFileType,
     GeneratorContext, PathCompletionContext, PathSeparators, TopLevelCommandCaseSensitivity,
 };
-use warp_completer::signatures::CommandRegistry;
-use warp_util::path::{EscapeChar, ShellFamily};
+use wish_completer::signatures::CommandRegistry;
+use wish_util::path::{EscapeChar, ShellFamily};
 use wish_core::features::FeatureFlag;
 use wishui::{AppContext, SingletonEntity};
 
@@ -320,10 +320,10 @@ impl CompletionContext for SessionContext {
     }
 
     #[cfg(feature = "completions_v2")]
-    fn js_context(&self) -> Option<&dyn warp_completer::completer::JsExecutionContext> {
+    fn js_context(&self) -> Option<&dyn wish_completer::completer::JsExecutionContext> {
         self.js_ctx
             .as_ref()
-            .map(|ctx| -> &dyn warp_completer::completer::JsExecutionContext { ctx })
+            .map(|ctx| -> &dyn wish_completer::completer::JsExecutionContext { ctx })
     }
 
     fn shell_family(&self) -> Option<ShellFamily> {
@@ -459,7 +459,7 @@ fn ls_script_for_dir(directory: &TypedPath) -> Option<String> {
         log::warn!("Non-unicode character found in path: `{directory:?}`");
         return None;
     };
-    let escaped_dir = warp_util::path::ShellFamily::Posix.shell_escape(dir_str);
+    let escaped_dir = wish_util::path::ShellFamily::Posix.shell_escape(dir_str);
 
     // Get all directories with -print0, which makes all items end in `\0` (null character)
     // Get all files with -print0, which makes all items end in `\0`

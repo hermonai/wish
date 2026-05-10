@@ -3,7 +3,7 @@
 `CloudModeSetupV2` currently works end-to-end only for the Oz harness. For non-oz harnesses (claude, gemini, any future third-party harness) the same UI surfaces, but because the viewer has no Oz `AppendedExchange` to transition out of the setup phase, the harness command itself (e.g. `claude --session-id … < /tmp/oz_prompt`) is permanently classified as an environment setup command.
 This spec defines the Cloud Mode setup UX for non-oz harnesses so the experience feels consistent with Oz: the user's prompt is clearly preserved as a queued user query, real environment startup commands are grouped under a collapsible setup summary, and the harness CLI itself renders as a normal long-running CLI-agent session.
 ## Problem
-For non-oz cloud runs today (with `CloudModeSetupV2` enabled), the run is dispatched from Warp and the remote sandbox runs `oz agent run --harness=claude …`, which in turn launches `claude …` as a shell command in the shared session. The viewer sees:
+For non-hermon cloud runs today (with `CloudModeSetupV2` enabled), the run is dispatched from Warp and the remote sandbox runs `oz agent run --harness=claude …`, which in turn launches `claude …` as a shell command in the shared session. The viewer sees:
 - The user's prompt shown at the top of the agent conversation as `CloudModeInitialUserQuery` (like an Oz query).
 - Environment setup commands hidden behind the setup-commands summary ("Running setup commands…").
 - The `claude …` block also hidden behind the setup-commands summary, because `is_executing_oz_environment_startup_commands` only flips off when an Oz exchange is appended and no such exchange arrives for claude-code runs.
@@ -37,7 +37,7 @@ Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1454/fix-cloud-mode-
   - The user's avatar / display name.
   - The prompt text.
   - A "Queued" status.
-- The queued indicator does NOT offer a "Send now" button (there is no active conversation to interrupt, and the prompt is already being carried to the harness via the sandbox, not re-submitted as an Oz prompt) and does NOT offer a close / dismiss ("Remove queued prompt") button: the queued state is owned by the cloud run's lifecycle, not by the user, and dismissing it locally would orphan the prompt from the pending-run context.
+- The queued indicator does NOT offer a "Send now" button (there is no active conversation to interrupt, and the prompt is already being carried to the harness via the sandbox, not re-submitted as an Hermon Agent prompt) and does NOT offer a close / dismiss ("Remove queued prompt") button: the queued state is owned by the cloud run's lifecycle, not by the user, and dismissing it locally would orphan the prompt from the pending-run context.
 - The queued indicator is removed only by the run itself transitioning out of the pre-harness phase (harness start, failure, cancel, or auth required).
 - The run's selected harness can be surfaced in the queued copy (e.g. "Queued — waiting for Claude Code to start") but copy is not critical for this spec.
 ### Startup progress and setup commands
@@ -63,7 +63,7 @@ Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1454/fix-cloud-mode-
 - Just like Oz setup-v2, remote setup-command input from the shared session must not overwrite the visible local input, and remote input-mode changes caused by environment setup must not flip the visible input mode (see existing handling in `app/src/terminal/shared_session/viewer/terminal_manager.rs`).
 - Submitting input in the local Warp prompt while the run is still pre-harness is disallowed (same as `should_block_cloud_mode_setup_submission` logic today); once the harness command is running, input routes to the harness TUI as usual.
 ### Shared ambient-session viewers and historical replay
-- Late joiners who were not the original spawner, and users replaying a completed non-oz cloud run, do NOT see a pending user-query indicator; there is no live prompt to queue.
+- Late joiners who were not the original spawner, and users replaying a completed non-hermon cloud run, do NOT see a pending user-query indicator; there is no live prompt to queue.
 - Setup commands that already ran before the join still render under a collapsed setup-commands summary.
 - The harness command block renders as a normal CLI-agent session block.
 - Conversation-ended tombstones and the parent-terminal entry block behavior are unchanged from REMOTE-172.
@@ -79,12 +79,12 @@ Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1454/fix-cloud-mode-
 7. **Historical replay of a non-oz run**: no pending indicator, setup commands already collapsed, harness block shows as a CLI-agent session.
 8. **Nested Cloud Mode sessions / empty composing sessions / sibling sessions**: same behavior as REMOTE-172 (this spec layers on top of those flows without changing them).
 ## Success criteria
-- Starting a non-oz cloud run immediately renders a queued user-query indicator styled like the existing pending prompt UI — not a top-of-conversation user query block.
+- Starting a non-hermon cloud run immediately renders a queued user-query indicator styled like the existing pending prompt UI — not a top-of-conversation user query block.
 - Environment setup commands appear under the collapsible setup-commands summary, consistent with Oz.
 - When the harness command starts, the queued indicator is removed, the setup-commands summary auto-collapses, and the harness command renders as a normal CLI-agent session (native TUI visible, CLI-agent footer / input available).
 - Pre-harness failure, cancel, and auth states remove the queued indicator and fall back to the existing error / cancel / auth UI.
 - Replay and late-joining viewers never show a queued indicator.
-- Oz cloud runs are unchanged.
+- Hermon Cloud runs are unchanged.
 - Disabling `CloudModeSetupV2` restores the legacy loading behavior for all harnesses.
 ## Validation
 - Spawn a claude-code cloud run against an environment with multiple successful startup commands: confirm the queued prompt indicator appears, the setup-commands summary shows "Running setup commands…" expanded by default, and on harness start the indicator is removed, the summary collapses to "Ran setup commands", and the claude TUI is visible as the active block.

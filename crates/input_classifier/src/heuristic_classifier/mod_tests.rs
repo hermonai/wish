@@ -1,4 +1,4 @@
-use warp_completer::util::parse_current_commands_and_tokens;
+use wish_completer::util::parse_current_commands_and_tokens;
 
 use crate::{Context, test_utils::CompletionContext};
 

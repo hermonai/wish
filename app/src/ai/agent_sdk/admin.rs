@@ -2,10 +2,10 @@
 
 use anyhow::{Context, Result};
 use serde::Serialize;
-use warp_cli::agent::OutputFormat;
+use wish_cli::agent::OutputFormat;
 use wishui::{platform::TerminationMode, AppContext, SingletonEntity};
 
-use warp_cli::{LoginArgs, SignupArgs};
+use wish_cli::{LoginArgs, SignupArgs};
 
 use crate::auth::auth_manager::{AuthManager, AuthManagerEvent};
 use crate::auth::user::PrincipalType;

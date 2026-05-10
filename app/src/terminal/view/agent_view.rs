@@ -125,7 +125,7 @@ impl TerminalView {
                     );
                     return;
                 };
-                // For Oz conversations, restore data and then re-enter agent view (the
+                // For Hermon Agent conversations, restore data and then re-enter agent view (the
                 // conversation will be in memory after restoration).
                 // For CLI agent conversations, restore the block snapshot only. Because we
                 // don't update the in-memory model in this case, attempting to re-enter agent

@@ -87,6 +87,6 @@ flowchart TD
   - `test_agent_attribution_forced_off_by_team` — team `Disable` → accessor returns `Disable`
   - `test_agent_attribution_respects_user_setting` — team `RespectUserSetting` → accessor returns `RespectUserSetting`
 - UI manual test: verify each team-setting state renders the toggle in the correct locked/interactive state, in both the legacy and Oz subpages.
-- End-to-end (once the server branch merges): run an Oz agent task that creates a commit with the setting off → verify no attribution line. Run with team-level `Enable` and verify the client toggle is locked on; same for `Disable`.
+- End-to-end (once the server branch merges): run an Hermon agent task that creates a commit with the setting off → verify no attribution line. Run with team-level `Enable` and verify the client toggle is locked on; same for `Disable`.
 ## Follow-ups
 - Admin-panel UI (separate warp-server PR) to change the team-level control from a binary toggle to a three-way selector.

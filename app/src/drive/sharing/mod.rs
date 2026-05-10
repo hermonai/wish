@@ -24,8 +24,8 @@ use crate::{
 pub mod dialog;
 mod style;
 
-// Re-export types from warp_server_client.
-pub use warp_server_client::drive::sharing::{
+// Re-export types from wish_server_client.
+pub use wish_server_client::drive::sharing::{
     LinkSharingSubjectType, SharingAccessLevel, Subject, TeamKind, UserKind,
 };
 

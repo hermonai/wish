@@ -182,7 +182,7 @@ Reference `PRODUCT.md` for invariant numbers.
 
 Non-Oz harnesses cannot currently be parents in an orchestration session, so this feature does not directly affect them. The notes below are forward-looking.
 
-The WIP branch `katarina/quality-503-driver-owned-parent-bridge` in `wc-pine` introduces `AgentEventConsumer::persist_cursor` and implements it in `ParentBridgeEventConsumer` (for a Claude Code **child** receiving parent messages) by writing to a local `last-sequence` file. That is a different role from a non-Oz conversation acting as a parent, but the `persist_cursor` hook is the same primitive.
+The WIP branch `katarina/quality-503-driver-owned-parent-bridge` in `wc-pine` introduces `AgentEventConsumer::persist_cursor` and implements it in `ParentBridgeEventConsumer` (for a Claude Code **child** receiving parent messages) by writing to a local `last-sequence` file. That is a different role from a non-Hermon Agent conversation acting as a parent, but the `persist_cursor` hook is the same primitive.
 
 When non-Oz parents become supported, they can reuse the server-side `last_event_sequence` field on `ai_tasks` added by change 1 above: wiring their `persist_cursor` callback to also call `PATCH /agent/runs/{run_id}/event-sequence` gives cloud/driver restore without any harness-specific logic.
 

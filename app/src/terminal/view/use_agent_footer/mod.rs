@@ -72,7 +72,7 @@ use crate::{
     },
 };
 
-use warp_terminal::model::escape_sequences::{BRACKETED_PASTE_END, BRACKETED_PASTE_START};
+use wish_terminal::model::escape_sequences::{BRACKETED_PASTE_END, BRACKETED_PASTE_START};
 
 use super::{RichContentInsertionPosition, TerminalAction, TerminalView};
 use crate::terminal::view::block_banner::WishificationMode;

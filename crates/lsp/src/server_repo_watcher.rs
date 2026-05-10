@@ -6,7 +6,7 @@ use repo_metadata::{
     repository::{RepositorySubscriber, SubscriberId},
     DirectoryWatcher, Repository, RepositoryUpdate,
 };
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 use wishui::{ModelContext, SingletonEntity, WeakModelHandle};
 
 use crate::{model::LspServerModel, types::WatchedFileChangeEvent, LspServerConfig};

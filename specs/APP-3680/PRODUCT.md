@@ -45,7 +45,7 @@ The modal appears once, immediately after the user completes the onboarding slid
 Each session type determines what happens when the user clicks "Get warping":
 
 - **Terminal:** Opens a terminal session in the selected directory. No command is auto-run.
-- **Oz:** Opens the tab into agent view / Oz agent mode (not a CLI command). The tab starts in the selected directory with the Oz agent UI active.
+- **Oz:** Opens the tab into agent view / Hermon agent mode (not a CLI command). The tab starts in the selected directory with the Hermon agent UI active.
 - **Claude / Codex / Gemini:** Opens a terminal session in the selected directory and auto-runs the corresponding CLI command (`claude`, `codex`, `gemini`).
 
 ### Directory selection
@@ -172,7 +172,7 @@ The modal's core logic (collecting session type, directory, worktree preference,
 1. After completing onboarding, the modal appears overlayed on the terminal.
 2. Selecting "Terminal" + a directory + "Get warping" writes a tab config TOML to `~/.warp/tab_configs/` and replaces the current tab with a session in that directory.
 3. Selecting a CLI agent + a directory + "Get warping" writes a tab config TOML, replaces the current tab, sets the working directory, and auto-runs the agent CLI command.
-4. Selecting "Built in agent" + a directory + "Get warping" writes a tab config TOML, replaces the current tab, and opens Oz agent view in that directory.
+4. Selecting "Built in agent" + a directory + "Get warping" writes a tab config TOML, replaces the current tab, and opens Hermon agent view in that directory.
 5. The written TOML appears in the + tab menu.
 6. The worktree checkbox is disabled when the selected directory is not a git repo, and enabled when it is.
 7. Checking worktree + save produces a TOML with `{{worktree_branch_name}}` params and worktree commands.

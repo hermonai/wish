@@ -28,7 +28,7 @@ use comfy_table::Cell;
 use futures::{future, StreamExt};
 use serde::Serialize;
 
-use warp_cli::{
+use wish_cli::{
     agent::{Harness, OutputFormat, Prompt, RunCloudArgs},
     json_filter::JsonOutput,
     task::{
@@ -995,12 +995,12 @@ fn task_id_from_run_id(run_id: &str) -> Option<AmbientAgentTaskId> {
 }
 
 fn task_id_from_oz_run_id_env() -> anyhow::Result<Option<AmbientAgentTaskId>> {
-    match std::env::var(warp_cli::OZ_RUN_ID_ENV) {
+    match std::env::var(wish_cli::OZ_RUN_ID_ENV) {
         Ok(run_id) => parse_ambient_task_id(&run_id, "Invalid OZ_RUN_ID").map(Some),
         Err(std::env::VarError::NotPresent) => Ok(None),
         Err(std::env::VarError::NotUnicode(_)) => Err(anyhow!(
             "{} is set but is not valid Unicode",
-            warp_cli::OZ_RUN_ID_ENV
+            wish_cli::OZ_RUN_ID_ENV
         )),
     }
 }

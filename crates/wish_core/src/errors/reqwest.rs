@@ -36,7 +36,9 @@ impl ErrorExt for reqwest::Error {
         // warning.
         if let (Some(url), Some(status)) = (self.url(), self.status()) {
             if let Some(domain) = url.domain() {
-                if domain == "staging.warp.dev" && status == StatusCode::FORBIDDEN {
+                if (domain == "staging.warp.dev" || domain == "staging.hermon.ai")
+                    && status == StatusCode::FORBIDDEN
+                {
                     return false;
                 }
             }

@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::Parser;
 use integration::test::*;
 use integration::Builder;
-use warp_cli::WorkerCommand;
+use wish_cli::WorkerCommand;
 use wish_core::channel::{Channel, ChannelConfig, ChannelState, HermonConfig, WishServerConfig};
 use wish_core::AppId;
 

@@ -7,8 +7,8 @@ use crate::ai::agent::conversation::{AIConversation, ConversationStatus};
 use anyhow::{Context, Result};
 use shell_words::quote as shell_quote;
 use uuid::Uuid;
-use warp_cli::agent::Harness;
-use warp_graphql::ai::AgentTaskState;
+use wish_cli::agent::Harness;
+use wish_graphql::ai::AgentTaskState;
 
 use crate::ai::agent_events::MessageHydrator;
 use crate::ai::ambient_agents::{AmbientAgentTaskId, AmbientAgentTaskState};

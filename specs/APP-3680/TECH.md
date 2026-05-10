@@ -98,7 +98,7 @@ Uses `toml::to_string_pretty(config)` (now possible with `Serialize`), finds an 
 
 Create `app/src/tab_configs/session_config_modal.rs`. This is a self-contained `View` that renders the Figma layout:
 - Session type pill buttons using `Wrap::row()` for flex-wrap (hardcoded list in order: Built in agent (Oz), Claude, Codex, Gemini, Terminal)
-- Directory picker button (opens native `FilePickerConfiguration::folders_only()`), displays `~` via `warp_util::path::user_friendly_path()`, left-aligned text with semibold weight, no folder icon
+- Directory picker button (opens native `FilePickerConfiguration::folders_only()`), displays `~` via `wish_util::path::user_friendly_path()`, left-aligned text with semibold weight, no folder icon
 - "Enable worktree support" checkbox (disabled when directory is not a git repo)
 - "Get warping" button using `ActionButton` with `PrimaryTheme` and `with_full_width(true)`, includes Enter keystroke badge via `with_keybinding()`
 

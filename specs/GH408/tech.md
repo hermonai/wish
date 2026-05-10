@@ -10,7 +10,7 @@ The `/open-file` slash command handler does not expand `~` before resolving the 
 
 - `app/src/terminal/input/slash_commands/mod.rs (445-450)` — The `/open-file` (`commands::EDIT`) handler that parses the path argument and resolves it. This is the code that needs to change.
 - `app/src/search/command_palette/files/data_source.rs:196` — The Cmd-O palette's tilde expansion: `shellexpand::tilde(&query_file_content).into_owned()`. This is the pattern to follow.
-- `crates/warp_util/src/path.rs (149-181)` — `CleanPathResult::with_line_and_column_number()`, which strips line/column suffixes from the path string. Called before path resolution.
+- `crates/wish_util/src/path.rs (149-181)` — `CleanPathResult::with_line_and_column_number()`, which strips line/column suffixes from the path string. Called before path resolution.
 - `app/src/terminal/input_test.rs (2553-2596)` — Existing test `test_open_slash_command_clears_buffer_on_success` that exercises the `/open-file` handler with a real file.
 
 ## Current state

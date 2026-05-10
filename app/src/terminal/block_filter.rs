@@ -1,7 +1,7 @@
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use regex_automata::hybrid::BuildError;
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::elements::{Align, Dash};
 use wishui::ui_components::components::UiComponent;
 use wishui::FocusContext;

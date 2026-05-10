@@ -1,11 +1,11 @@
 # Local-to-Cloud Handoff — Product Spec
 Linear: [REMOTE-1486](https://linear.app/warpdotdev/issue/REMOTE-1486)
 ## Summary
-Let a user mid-conversation in a local Oz agent send that conversation to a fresh cloud agent. The cloud agent picks up the conversation history, the workspace state (uncommitted git diffs and modified files), and the user's optional new prompt. The local agent stays usable and is unaffected.
+Let a user mid-conversation in a local Hermon agent send that conversation to a fresh cloud agent. The cloud agent picks up the conversation history, the workspace state (uncommitted git diffs and modified files), and the user's optional new prompt. The local agent stays usable and is unaffected.
 ## Problem
 Today there's no first-class way to delegate "what I'm working on right now" to the cloud. Users have to retell the cloud agent the context, copy/paste plans, and manually push uncommitted changes. The existing cloud-to-cloud handoff (REMOTE-1290) covers continuation across cloud sandboxes, but the symmetric local→cloud transition is missing.
 ## Goals
-- A user in a local Oz agent conversation can hand off to a cloud agent without leaving their flow — clicking the "Hand off to cloud" chip (or running `/move-to-cloud`) opens a split cloud-mode pane next to the local agent, where the user types a follow-up prompt and submits.
+- A user in a local Hermon agent conversation can hand off to a cloud agent without leaving their flow — clicking the "Hand off to cloud" chip (or running `/move-to-cloud`) opens a split cloud-mode pane next to the local agent, where the user types a follow-up prompt and submits.
 - The cloud agent receives the local conversation's history (forked into a fresh cloud conversation) and the workspace's uncommitted state (git diffs + modified files the agent has touched).
 - The new pane's env selector defaults to whichever env contains the most touched repos.
 - Handoff does not interrupt the local conversation — the user can keep typing into it.

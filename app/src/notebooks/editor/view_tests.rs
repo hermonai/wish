@@ -2,11 +2,11 @@ use crate::features::FeatureFlag;
 use async_channel::TryRecvError;
 use std::sync::Arc;
 use string_offset::CharOffset;
-use warp_editor::render::{
+use wish_editor::render::{
     element::RichTextAction,
     model::{HitTestBlockType, Location, RenderEvent},
 };
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 
 use wishui::event::ModifiersState;
 use wishui::r#async::block_on;
@@ -147,7 +147,7 @@ fn rendered_mermaid_block_range(
         let block_end = block_start + block.content_length();
         if matches!(
             block,
-            warp_editor::render::model::BlockItem::MermaidDiagram { .. }
+            wish_editor::render::model::BlockItem::MermaidDiagram { .. }
         ) {
             return Some(block_start..block_end);
         }

@@ -17,7 +17,7 @@ use crate::view_components::action_button::{
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::Vector2F;
 use std::cell::RefCell;
-use warp_editor::render::element::VerticalExpansionBehavior;
+use wish_editor::render::element::VerticalExpansionBehavior;
 use wish_core::ui::{appearance::Appearance, theme::Fill};
 use wishui::{
     elements::{

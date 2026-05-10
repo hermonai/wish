@@ -21,7 +21,7 @@ use lazy_static::lazy_static;
 use pathfinder_geometry::vector::vec2f;
 
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
-use warp_editor::{
+use wish_editor::{
     content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
 };
 use wish_core::semantic_selection::SemanticSelection;

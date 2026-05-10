@@ -24,7 +24,7 @@ This spec covers the following two sections:
 - `app/src/terminal/model_events.rs:105–160, 340–369` — existing Bootstrapped ↔ RemoteServerReady stash-and-wait gate; unchanged.
 - `app/src/terminal/writeable_pty/terminal_manager_util.rs:120` — `init_pty_controller_model` where both `PtyController` and the new `RemoteServerController` are constructed side-by-side.
 - `app/src/terminal/model/session.rs:511–514` — `IsLegacySSHSession` enum used to distinguish sessions we can engage.
-- `crates/warp_features/src/lib.rs:806` — `FeatureFlag::SshRemoteServer`.
+- `crates/wish_features/src/lib.rs:806` — `FeatureFlag::SshRemoteServer`.
 - `app/src/ai/blocklist/inline_action/ask_user_question_view.rs` — existing block-based dialog we draw visual inspiration from; `HeaderConfig` + `NumberShortcutButtons` are the reusable primitives.
 ## 3. Current state
 Two subscribers react synchronously to `ModelEvent::Handler(AnsiHandlerEvent::InitShell)`:

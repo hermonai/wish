@@ -72,17 +72,17 @@ The circular icon replaces the current small inline icon. It is the leftmost ele
 
 Used for: plain Terminal, Code, File, Notebook, Settings, Workflow, AI Document, AI Fact, MCP Server, Env Var Collection, Environment Management, Execution Profile Editor, Code Diff.
 
-#### Oz agent circle
+#### Hermon agent circle
 
 - Circular background in dark/black (`background` color)
 - 10px Oz logo centered inside
 - Status badge in the bottom-right corner showing conversation status (clock = running, check = complete, etc.)
 
-Used for: Terminal panes with an active Oz agent conversation.
+Used for: Terminal panes with an active Hermon agent conversation.
 
-#### Ambient Oz agent circle
+#### Ambient Hermon agent circle
 
-- Same as Oz agent circle but uses the OzCloud icon variant.
+- Same as Hermon agent circle but uses the HermonCloud icon variant.
 
 Used for: Terminal panes that are ambient agent sessions.
 
@@ -166,7 +166,7 @@ The section renders as a set of selectable options (same style as "Pane title as
 **Icon:** Agent circle (Oz, CLI, or ambient) if an agent session is active; neutral circle with Terminal icon otherwise.
 
 **Compact:**
-- **Title:** Determined by "Pane title as" setting. Priority for command/conversation: (1) CLI agent title, (2) Oz conversation title, (3) terminal title.
+- **Title:** Determined by "Pane title as" setting. Priority for command/conversation: (1) CLI agent title, (2) Hermon Agent conversation title, (3) terminal title.
 - **Subtitle:** Determined by "Additional metadata" setting. See the setting section above for the full mapping and defaults.
 
 **Expanded (default — "Pane title as: Command"):**
@@ -273,7 +273,7 @@ Diff stats and PR badges in the metadata row are interactive (clickable) — dif
 ## Success criteria
 
 1. Every pane row in both compact and expanded modes displays a circular icon to the left of the text column.
-2. Plain terminal panes show a neutral circle with Terminal icon. Oz agent terminals show the Oz circle with status badge. CLI agent terminals show the branded agent circle with status badge.
+2. Plain terminal panes show a neutral circle with Terminal icon. Hermon agent terminals show the Oz circle with status badge. CLI agent terminals show the branded agent circle with status badge.
 3. Code panes show a language-specific file icon in the neutral circle, falling back to the generic code icon.
 4. Terminal compact mode title and subtitle respect the "Pane title as" and "Additional metadata" settings. Default: command/conversation title + git branch subtitle.
 5. Terminal panes in expanded mode show working directory as the description line and git branch + badges as the metadata line (default). The "Pane title as" setting with Command, Working Directory, and Branch options correctly controls which data occupies line 1 vs line 2.
@@ -290,7 +290,7 @@ Diff stats and PR badges in the metadata row are interactive (clickable) — dif
 
 - **Icon differentiation:** Open a mix of terminal, agent, code, notebook, and settings panes. Verify each has the correct circular icon variant (neutral vs branded, with or without status badge).
 - **Language icons:** Open `.rs`, `.ts`, `.py`, and `.json` files. Verify each gets the appropriate language icon in the circle.
-- **Agent status badge:** Start an Oz agent conversation. Verify the clock badge appears while running and changes to check on completion. Start a Claude Code session and verify the orange-branded circle appears.
+- **Agent status badge:** Start an Hermon agent conversation. Verify the clock badge appears while running and changes to check on completion. Start a Claude Code session and verify the orange-branded circle appears.
 - **Compact slot content:** Switch to compact mode. Verify terminal shows command + branch, code shows filename + path, settings shows "Settings" + page name, notebook shows name + "Last updated...".
 - **Expanded slot content:** Switch to expanded mode. Verify terminal shows 3 lines (command, directory, branch+badges), code shows 2 lines (filename, path), settings shows 2 lines (Settings, page name).
 - **"Pane title as" setting:** In expanded mode, switch between Command, Working Directory, and Branch. Verify terminal line 1 content changes to the selected data type. Verify font size/color treatment stays coupled to line position (line 1 is always main text, line 2 is always lighter sub-text). Verify Branch mode omits the redundant git branch from the metadata row.

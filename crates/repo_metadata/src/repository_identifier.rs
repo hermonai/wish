@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 use wish_core::HostId;
 
 /// Identifies a repository across local and remote environments.

@@ -8,7 +8,7 @@ use std::{
 use futures::channel::oneshot;
 use parking_lot::Mutex;
 use tempfile::TempDir;
-use warp_util::path::ShellFamily;
+use wish_util::path::ShellFamily;
 use wishui::{AddSingletonModel, App, SingletonEntity, WindowId};
 
 use crate::{

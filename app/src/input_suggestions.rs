@@ -10,7 +10,7 @@ use std::cmp::Ordering;
 use std::collections::HashSet;
 use std::{cmp, ops::Range, vec};
 use warp_command_signatures::IconType;
-use warp_completer::completer::{
+use wish_completer::completer::{
     MatchType, PathSeparators, Suggestion, SuggestionResults, SuggestionType,
 };
 use wish_core::features::FeatureFlag;

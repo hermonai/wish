@@ -7,7 +7,7 @@ use anyhow::anyhow;
 use chrono::{DateTime, Duration, Utc};
 use parking_lot::RwLock;
 use uuid::Uuid;
-use warp_graphql::object_permissions::OwnerType;
+use wish_graphql::object_permissions::OwnerType;
 use wish_core::channel::{Channel, ChannelState};
 use wishui::{AppContext, Entity, SingletonEntity};
 
@@ -76,8 +76,9 @@ impl AuthState {
     /// Creates and initializes auth state. Checks, in order:
     /// 1. Test user (test/integration/skip_login builds)
     /// 2. Provided API key
-    /// 3. WARP_USER_SECRET environment variable
-    /// 4. Persisted user from secure storage
+    /// 3. WISH_GUEST_MODE or WISH_OFFLINE environment variable (guest/local mode)
+    /// 4. WARP_USER_SECRET environment variable (legacy)
+    /// 5. Persisted user from secure storage
     #[cfg_attr(target_family = "wasm", allow(dead_code))]
     pub fn initialize(ctx: &AppContext, api_key: Option<String>) -> Self {
         let state = Self::new(ctx);
@@ -103,7 +104,21 @@ impl AuthState {
             return state;
         }
 
-        // Try WARP_USER_SECRET environment variable.
+        // Guest/local mode — no Hermon server required.
+        // Set WISH_GUEST_MODE=1 or WISH_OFFLINE=1 to use Wish with local
+        // LLM providers (Ollama, hermon serve) without any account.
+        if std::env::var("WISH_GUEST_MODE")
+            .or_else(|_| std::env::var("WISH_OFFLINE"))
+            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+            .unwrap_or(false)
+        {
+            log::info!("Entering guest mode (WISH_GUEST_MODE / WISH_OFFLINE)");
+            state.set_user(Some(User::guest()));
+            state.set_credentials(Some(Credentials::Guest));
+            return state;
+        }
+
+        // Try WARP_USER_SECRET environment variable (legacy).
         if let Some(persisted) = option_env!("WARP_USER_SECRET")
             .and_then(|s| serde_json::from_str::<PersistedUser>(s).ok())
         {
@@ -165,9 +180,10 @@ impl AuthState {
             }
             // Remove persisted auth state if it is unset in-memory.
             (None, None) => PersistAction::Remove,
-            // Do not persist if using API keys, session cookies, or test credentials.
+            // Do not persist if using API keys, session cookies, guest mode, or test credentials.
             (Some(_), Some(Credentials::ApiKey { .. })) => PersistAction::DoNothing,
             (Some(_), Some(Credentials::SessionCookie)) => PersistAction::DoNothing,
+            (Some(_), Some(Credentials::Guest)) => PersistAction::DoNothing,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             (Some(_), Some(Credentials::Test)) => PersistAction::DoNothing,
             // Credentials without a user, or user without credentials - transient states
@@ -233,6 +249,16 @@ impl AuthState {
         self.credentials.read().is_some()
     }
 
+    /// Returns whether the user is in guest mode (no Hermon server, local-only).
+    /// Guest mode is activated via `WISH_GUEST_MODE=1` or `WISH_OFFLINE=1`.
+    pub fn is_guest(&self) -> bool {
+        self.credentials
+            .read()
+            .as_ref()
+            .map(|c| c.is_guest())
+            .unwrap_or(false)
+    }
+
     /// Returns whether the user should be treated as not having a full account.
     /// True if the user is anonymous OR if there is no user at all (fully logged out).
     ///
@@ -274,7 +300,7 @@ impl AuthState {
             .map(|user| user.metadata.email.clone())
     }
 
-    /// Returns whether the user considered onboarded to Warp.
+    /// Returns whether the user considered onboarded to Wish.
     pub fn is_onboarded(&self) -> Option<bool> {
         self.user.read().as_ref().map(|user| user.is_onboarded)
     }
@@ -466,8 +492,8 @@ impl AuthState {
     }
 }
 
-// Adapter for the [`warp_managed_secrets`] crate, which needs to access the current user.
-impl warp_managed_secrets::ActorProvider for AuthState {
+// Adapter for the [`wish_managed_secrets`] crate, which needs to access the current user.
+impl wish_managed_secrets::ActorProvider for AuthState {
     fn actor_uid(&self) -> Option<String> {
         self.user_id().map(|uid| uid.as_string())
     }

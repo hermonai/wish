@@ -81,7 +81,7 @@ fn test_serialize_persisted_user() {
 }
 
 /// Test serializing and deserializing persisted user data.
-/// See warpui_extras::secure_storage::linux_test.rs for Linux-specific tests.
+/// See wishui_extras::secure_storage::linux_test.rs for Linux-specific tests.
 #[cfg(target_os = "windows")]
 #[cfg_attr(windows, ignore = "passes locally but not in CI on Windows")]
 #[test]
@@ -93,7 +93,7 @@ fn test_windows_user_persistence() {
     };
     use crate::ServerApiProvider;
     use chrono::DateTime;
-    use warpui_extras::secure_storage;
+    use wishui_extras::secure_storage;
     use wish_core::channel::ChannelState;
     use wishui::{App, SingletonEntity};
 

@@ -22,9 +22,9 @@ This is gated behind a new feature flag `CloudModeInputV2`. When the flag is off
 - `app/src/ai/blocklist/agent_view/agent_input_footer/environment_selector.rs` — `EnvironmentSelector`. Already matches V2's chip styling (`Icon::Globe4` + `AgentInputButtonTheme`). Reused as-is.
 - `app/src/ai/blocklist/agent_view/agent_input_footer/mod.rs` (183-757, 2326-2398) — `AgentInputFooter` owns the mic, file/image, profile/model selector views and the theme structs. V2 reuses those view handles via accessors rather than duplicating construction/event wiring.
 - `app/src/terminal/input.rs` (1598-1600, 2140-2159, 3173-3175, 13462-13529) — where `AgentInputFooter` and `HarnessSelector` are constructed on `Input`, and where `render_input_box` lives. V2 adds a new `cloud_mode_input_v2` field on `Input`.
-- `crates/warp_features/src/lib.rs` — `FeatureFlag` enum + `DOGFOOD_FLAGS`.
+- `crates/wish_features/src/lib.rs` — `FeatureFlag` enum + `DOGFOOD_FLAGS`.
 - `crates/wish_core/src/ui/theme/color.rs` (485-560) — `internal_colors::{neutral_2, neutral_3, fg_overlay_1, text_sub, ...}` used for V2 theme tokens.
-- `crates/wish_core/src/ui/icons.rs` — `Icon::{Globe4, GitBranch, Microphone, Image, OzCloud, ChevronDown}` already exist. No new icons for this PR.
+- `crates/wish_core/src/ui/icons.rs` — `Icon::{Globe4, GitBranch, Microphone, Image, HermonCloud, ChevronDown}` already exist. No new icons for this PR.
 
 ### Figma → theme token mapping
 
@@ -42,7 +42,7 @@ No hex literals in client code.
 
 ### 1. Feature flag
 
-- `crates/warp_features/src/lib.rs`: add `FeatureFlag::CloudModeInputV2`; add to `DOGFOOD_FLAGS`.
+- `crates/wish_features/src/lib.rs`: add `FeatureFlag::CloudModeInputV2`; add to `DOGFOOD_FLAGS`.
 - `app/Cargo.toml`: add `cloud_mode_input_v2 = ["cloud_mode"]` and include it in the default Warp `[features]` list.
 - `app/src/lib.rs`: wire `#[cfg(feature = "cloud_mode_input_v2")] FeatureFlag::CloudModeInputV2` into the compile-time flag list.
 

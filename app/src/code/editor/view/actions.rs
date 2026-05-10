@@ -18,7 +18,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::ops::Range;
 use string_offset::CharOffset;
-use warp_editor::{
+use wish_editor::{
     content::version::BufferVersion,
     editor::{EmbeddedItemModel, RunnableCommandModel, TextDecoration},
     model::{CoreEditorModel, PlainTextEditorModel},
@@ -28,7 +28,7 @@ use warp_editor::{
     },
     selection::{TextDirection, TextUnit},
 };
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wishui::{
     actions::StandardAction,
     elements::Axis,
@@ -1109,7 +1109,7 @@ impl TypedActionView for CodeEditorView {
     }
 }
 
-impl warp_editor::editor::EditorView for CodeEditorView {
+impl wish_editor::editor::EditorView for CodeEditorView {
     type RichTextAction = CodeEditorViewAction;
 
     fn runnable_command_at<'a>(

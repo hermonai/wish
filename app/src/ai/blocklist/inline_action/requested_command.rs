@@ -7,7 +7,7 @@ use std::cmp::{Ordering, PartialEq};
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
-use warp_editor::render::element::VerticalExpansionBehavior;
+use wish_editor::render::element::VerticalExpansionBehavior;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::Icon;
 use wishui::elements::{ConstrainedBox, ScrollbarWidth};

@@ -296,7 +296,7 @@ fn dormant_local_claude_child_uses_task_harness_when_server_metadata_missing() {
     use crate::server::server_api::ai::MockAIClient;
     use crate::server::server_api::ServerApiProvider;
     use std::sync::Arc;
-    use warp_cli::agent::Harness;
+    use wish_cli::agent::Harness;
     use wishui::App;
 
     App::test((), |mut app| async move {

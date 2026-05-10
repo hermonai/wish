@@ -1,12 +1,12 @@
 use std::{borrow::Cow, mem, ops::Range, sync::Arc};
 
 use string_offset::{ByteOffset, CharOffset};
-use warp_completer::signatures::CommandRegistry;
-use warp_editor::{
+use wish_completer::signatures::CommandRegistry;
+use wish_editor::{
     content::{anchor::Anchor, buffer::Buffer, selection_model::BufferSelectionModel},
     editor::EmbeddedItemModel,
 };
-use warp_util::user_input::UserInput;
+use wish_util::user_input::UserInput;
 use wishui::{
     elements::{
         Align, Border, Container, CrossAxisAlignment, Empty, Flex, MainAxisAlignment,

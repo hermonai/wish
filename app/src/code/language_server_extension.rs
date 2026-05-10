@@ -2,7 +2,7 @@ use lsp::{HoverContents, LspServerLogLevel, MarkupKind};
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use num_traits::SaturatingSub;
 use string_offset::CharOffset;
-use warp_editor::{
+use wish_editor::{
     content::buffer::InitialBufferState,
     render::{element::VerticalExpansionBehavior, model::Decoration},
 };

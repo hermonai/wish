@@ -23,7 +23,7 @@ There is also a related state-leak: `register_watched_run_id` (line 138) only in
 - `app/src/ai/active_agent_views_model.rs` — already tracks "is this conversation expanded in any pane?" via `agent_view_handles`. Emits `ActiveAgentViewsEvent::ConversationClosed { conversation_id }` on `ExitedAgentView` (line 167-169) and on `unregister_agent_view_controller` from the pane-close path (line 200-202; see `pane_group/pane/terminal_pane.rs:383-385`). Helper `is_conversation_open(conversation_id, ctx)` (line 354) gives the cross-pane "open anywhere?" check.
 - `app/src/ai/agent/conversation.rs:781-792` — `parent_conversation_id()` and `is_child_agent_conversation()` classify a conversation as child or non-child; combined with the poller's own `watched_run_ids` set these classify a conversation as parent/child/solo.
 - `app/src/ai/agent_events/driver.rs (38-50, 177-199)` — `AgentEventDriverConfig::run_ids` is forwarded to `ServerApi::stream_agent_events` and is the server-side filter for which events come back. A run watching its own run_id is using that subscription as its inbox.
-- `app/src/ai/agent_sdk/driver.rs` — drives Oz conversations headlessly via the Warp CLI (locally for `start_agent` with `execution_mode: local` + Oz harness, and on cloud workers for cloud Oz runs). The same `OrchestrationEventStreamer` singleton is registered here (`lib.rs:1564-1566` is unconditional aside from the `OrchestrationV2` feature flag), so the streamer must serve a CLI/cloud process where there are no `AgentViewController` registrations at all.
+- `app/src/ai/agent_sdk/driver.rs` — drives Hermon Agent conversations headlessly via the Warp CLI (locally for `start_agent` with `execution_mode: local` + Oz harness, and on cloud workers for cloud Oz runs). The same `OrchestrationEventStreamer` singleton is registered here (`lib.rs:1564-1566` is unconditional aside from the `OrchestrationV2` feature flag), so the streamer must serve a CLI/cloud process where there are no `AgentViewController` registrations at all.
 
 ## Proposed changes
 
@@ -62,7 +62,7 @@ The subscription is the child's inbox. It is gated on having an active consumer 
 
 Today, child agent runs cannot themselves spawn children, so no live conversation simultaneously holds both roles. The design must still admit the case so that allowing children-of-children later is a code change to the spawn path, not to the subscription model. Both roles' run_id contributions are unioned into the SSE filter whenever both apply.
 
-The stronger present-day motivator for the consumer abstraction is a different shape: a top-level cloud Oz agent run — not itself a child — that spawns children. It has the parent role only, runs on a cloud worker with no agent view, and is driven by the agent_sdk driver. Without the consumer abstraction the parent gate would never be satisfied (no agent view ever exists in that process) and the cloud Oz agent could not receive its children's events. With the abstraction the driver registers as the consumer and the parent role is eligible.
+The stronger present-day motivator for the consumer abstraction is a different shape: a top-level cloud Hermon agent run — not itself a child — that spawns children. It has the parent role only, runs on a cloud worker with no agent view, and is driven by the agent_sdk driver. Without the consumer abstraction the parent gate would never be satisfied (no agent view ever exists in that process) and the cloud Hermon agent could not receive its children's events. With the abstraction the driver registers as the consumer and the parent role is eligible.
 
 **Solo conversations** — neither parent nor child — are excluded. They have no role in the orchestration tree and no inbox traffic to receive.
 
@@ -162,7 +162,7 @@ Add unit tests in `orchestration_event_streamer_tests.rs` covering the new invar
 
 1. **Solo conversation does not subscribe.** Server token assigned for a conversation that is not a child and never spawns one; consumers come and go; status reaches Success → no entry in `sse_connections` at any point.
 2. **Child subscribes immediately on server-token assignment regardless of consumer state.** A child conversation (parent_conversation_id set) gets server token while no consumer is registered → SSE is active. Adding/removing consumers does not affect the connection.
-3. **Headless CLI child of any harness subscribes.** Cover Oz, ClaudeCode, and Gemini harness children spawned with `execution_mode: local` — each must have a live SSE once their run_id is assigned, with no agent view ever opened. The Oz CLI case must also have the agent_sdk driver registered as a consumer.
+3. **Headless CLI child of any harness subscribes.** Cover Oz, ClaudeCode, and Gemini harness children spawned with `execution_mode: local` — each must have a live SSE once their run_id is assigned, with no agent view ever opened. The Wish CLI case must also have the agent_sdk driver registered as a consumer.
 4. **Parent subscribes when first child is registered while a consumer is active.** Register a consumer first, then `register_watched_run_id` → connection opens.
 5. **Parent latent until a consumer registers.** Children registered while no consumer exists → no connection. Consumer registers → connection opens with the right run_id list.
 6. **Last consumer leaving tears down (parent-only conversation).** A subscribed parent that is not itself a child has its only consumer unregister; `sse_connections`/cursor/timer state are all gone. `watched_run_ids` is preserved so the parent can re-subscribe when a new consumer appears.
@@ -171,7 +171,7 @@ Add unit tests in `orchestration_event_streamer_tests.rs` covering the new invar
 9. **Stale child run_id is pruned.** Parent with two children registered, one child conversation deleted → parent's `watched_run_ids` shrinks, SSE reconnects with the smaller set.
 10. **Last child removed leaves a non-child parent with no role → teardown.** Parent that was never a child has its only child removed → connection torn down even if a consumer is still registered.
 11. **Multiple consumers do not double-tear-down.** Two consumers (e.g. agent view + driver, or two agent views) for the same parent; one unregisters → SSE persists; second unregisters → SSE torn down.
-12. **Cloud Oz parent (driver-only consumer) receives child events.** A top-level cloud Oz conversation (not itself a child) that spawns one or more children, with only the agent_sdk driver registered as a consumer (no agent view), must have all the child run_ids in the SSE filter — verifies that the consumer abstraction admits the driver to satisfy the parent gate. This is the present-day motivator for the abstraction.
+12. **Hermon Cloud parent (driver-only consumer) receives child events.** A top-level cloud Hermon Agent conversation (not itself a child) that spawns one or more children, with only the agent_sdk driver registered as a consumer (no agent view), must have all the child run_ids in the SSE filter — verifies that the consumer abstraction admits the driver to satisfy the parent gate. This is the present-day motivator for the abstraction.
 
 Manual validation:
 
@@ -188,8 +188,8 @@ Log lines to watch for, all at info level unless noted:
 Where to tail:
 
 - GUI process: the Warp app log for the active build flavor (e.g. `~/Library/Logs/dev.warp.Warp-Stable/warp.log` on macOS).
-- Local CLI driver subprocess: the subprocess's stderr or its dedicated log file. `start_agent` with `execution_mode: local` runs `warp_cli` as a subprocess; tail wherever that subprocess writes logs.
-- Cloud Oz worker: the worker logs surfaced by the Oz UI / cloud logging tool for the run.
+- Local CLI driver subprocess: the subprocess's stderr or its dedicated log file. `start_agent` with `execution_mode: local` runs `wish_cli` as a subprocess; tail wherever that subprocess writes logs.
+- Hermon Cloud worker: the worker logs surfaced by the Oz UI / cloud logging tool for the run.
 - Server-side: `stream_agent_events` requests in the dev `warp-server` access log — one request per active SSE; new requests on reconnect; disconnects when the client closes the stream.
 
 ### A. Solo conversation

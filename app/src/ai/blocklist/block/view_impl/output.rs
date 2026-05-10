@@ -42,7 +42,7 @@ use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use ui_components::{button, Component as _, Options as _};
 #[allow(unused_imports)]
-use warp_util::path::{common_path, CleanPathResult};
+use wish_util::path::{common_path, CleanPathResult};
 use wish_core::ui::theme::color::internal_colors;
 use wishui::elements::new_scrollable::SingleAxisConfig;
 use wishui::elements::{

@@ -26,12 +26,12 @@ use crate::{
     terminal::ShellLaunchData,
 };
 use string_offset::CharOffset;
-use warp_editor::{
+use wish_editor::{
     content::{buffer::ShouldAutoscroll, selection_model::BufferSelectionModel},
     model::BufferUpdateWrapper,
     render::model::{BlockItem, StyleUpdateAction},
 };
-use warp_editor::{
+use wish_editor::{
     content::{
         buffer::{
             AutoScrollBehavior, Buffer, BufferEditAction, BufferEvent, BufferSelectAction,

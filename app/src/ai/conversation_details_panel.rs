@@ -6,8 +6,8 @@ use chrono::{DateTime, Duration, Local};
 use instant::Instant;
 use parking_lot::RwLock;
 use pathfinder_color::ColorU;
-use warp_cli::agent::Harness;
-use warp_cli::skill::SkillSpec;
+use wish_cli::agent::Harness;
+use wish_cli::skill::SkillSpec;
 use wish_core::channel::ChannelState;
 use wish_core::ui::color::coloru_with_opacity;
 use wishui::{
@@ -577,7 +577,7 @@ pub struct ConversationDetailsPanel {
     show_open_button: bool,
     #[cfg(not(target_family = "wasm"))]
     continue_locally_button: ViewHandle<ActionButton>,
-    /// Text button "View in Oz" shown next to "Continue locally".
+    /// Text button "View in Hermon Cloud" shown next to "Continue locally".
     open_in_oz_button: ViewHandle<ActionButton>,
     /// Tracks when each copy button was last clicked (for checkmark feedback).
     copy_feedback_times: HashMap<CopyButtonKind, Instant>,
@@ -610,8 +610,8 @@ impl ConversationDetailsPanel {
                 })
         });
         let open_in_oz_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new("View in Oz", SecondaryTheme)
-                .with_tooltip("View this run in the Oz web app")
+            ActionButton::new("View in Hermon Cloud", SecondaryTheme)
+                .with_tooltip("View this run in the Hermon Cloud dashboard")
                 .with_size(ButtonSize::Small)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(ConversationDetailsPanelAction::OpenInOz);
@@ -1165,7 +1165,7 @@ impl ConversationDetailsPanel {
         let oz_link = appearance
             .ui_builder()
             .link(
-                "Open in Oz".to_string(),
+                "Open in Hermon Cloud".to_string(),
                 Some(skill_url),
                 None,
                 self.mouse_states.skill_link.clone(),

@@ -25,7 +25,7 @@ use crate::workspaces::workspace::{
 use mockall::Sequence;
 use settings::{PrivatePreferences, PublicPreferences};
 use std::time::Duration;
-use warpui_extras::user_preferences;
+use wishui_extras::user_preferences;
 use wishui::{AddSingletonModel, App};
 
 use super::*;

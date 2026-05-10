@@ -2,11 +2,11 @@ use std::{path::PathBuf, sync::Arc};
 
 use anyhow::{Context, Result};
 use serde::Serialize;
-use warp_cli::agent::OutputFormat;
-use warp_cli::artifact::{
+use wish_cli::agent::OutputFormat;
+use wish_cli::artifact::{
     ArtifactCommand, DownloadArtifactArgs, GetArtifactArgs, UploadArtifactArgs,
 };
-use warp_cli::GlobalOptions;
+use wish_cli::GlobalOptions;
 use wishui::{platform::TerminationMode, AppContext, ModelContext, SingletonEntity};
 
 use crate::ai::artifact_download::{download_artifact_bytes, download_destination};

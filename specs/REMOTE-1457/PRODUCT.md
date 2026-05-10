@@ -11,7 +11,7 @@ Figma: none provided. Visual treatment matches the existing filter dropdowns in 
     2. `Warp Agent` — the default/Oz harness.
     3. `Claude Code` — the Claude harness.
     4. `Gemini CLI` — the Gemini harness.
-   Display names match `app/src/ai/harness_display.rs::display_name`. If a new harness is added to `warp_cli::agent::Harness` later, it is expected to appear here too, but adding it is out of scope for this feature.
+   Display names match `app/src/ai/harness_display.rs::display_name`. If a new harness is added to `wish_cli::agent::Harness` later, it is expected to appear here too, but adding it is out of scope for this feature.
 4. Each non-`All` option renders its harness's leading logo icon, tinted with that harness's brand color, matching the treatment used in the conversation details sidebar (REMOTE-1455): Warp/Oz uses the first-party Warp icon + theme foreground, Claude uses `Icon::ClaudeLogo` tinted Claude orange, Gemini uses `Icon::GeminiLogo` tinted Gemini blue. The `All` option has no leading icon, consistent with the existing Status dropdown's `All` row.
 5. The selected harness appears in the dropdown's collapsed button label, e.g. `Harness: Claude Code`. The default selection is `All`.
 6. Selecting a harness option filters the visible Runs list to items whose resolved harness equals the selected value:

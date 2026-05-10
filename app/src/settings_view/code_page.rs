@@ -48,7 +48,7 @@ use pathfinder_color::ColorU;
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use warp_util::path::user_friendly_path;
+use wish_util::path::user_friendly_path;
 use wish_core::{
     features::FeatureFlag,
     report_if_error,

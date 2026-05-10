@@ -4,11 +4,11 @@ use std::rc::Rc;
 use crate::ai::blocklist::inline_action::code_diff_view::DiffSessionType;
 use ai::diff_validation::DiffType;
 #[cfg(not(target_family = "wasm"))]
-use warp_files::{FileModel, FileModelEvent};
-use warp_util::file::FileId;
+use wish_files::{FileModel, FileModelEvent};
+use wish_util::file::FileId;
 #[cfg(not(target_family = "wasm"))]
-use warp_util::file::FileSaveError;
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::file::FileSaveError;
+use wish_util::standardized_path::StandardizedPath;
 use wishui::elements::ChildView;
 #[cfg(not(target_family = "wasm"))]
 use wishui::SingletonEntity;

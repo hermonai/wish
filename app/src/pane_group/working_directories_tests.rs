@@ -21,14 +21,14 @@ fn refresh_working_directories_collapses_subroots_to_nearest_repo_root() {
         fs::create_dir_all(&repo_a).expect("create repo/a");
         fs::create_dir_all(&repo_b).expect("create repo/b");
 
-        // Use dunce::canonicalize to match the behavior of warp_util::standardized_path::StandardizedPath and normalize_cwd,
+        // Use dunce::canonicalize to match the behavior of wish_util::standardized_path::StandardizedPath and normalize_cwd,
         // which strip the Windows extended-length path prefix (\\?\) for consistent comparison.
         let canonical_repo_root = dunce::canonicalize(&repo_root).expect("canonical repo root");
 
         // Seed DetectedRepositories so get_root_for_path resolves to this repo.
         detected_repos_handle.update(&mut app, |repos, _ctx| {
             let canonical =
-                warp_util::standardized_path::StandardizedPath::from_local_canonicalized(
+                wish_util::standardized_path::StandardizedPath::from_local_canonicalized(
                     canonical_repo_root.as_path(),
                 )
                 .expect("canonicalized path");

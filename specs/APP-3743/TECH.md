@@ -37,7 +37,7 @@ We initially attempted to use the built-in `MenuItem::Submenu` variant. After ex
 
 ### 1. Unified menu items (`unified_new_session_menu_items`)
 
-Replaced both `new_session_menu_items()` and `vertical_tabs_new_session_menu_items()` with a single function. Menu order: Agent → Terminal → Cloud Oz → Worktree in (submenu parent) → [user tab configs] → separator → New Tab Config.
+Replaced both `new_session_menu_items()` and `vertical_tabs_new_session_menu_items()` with a single function. Menu order: Agent → Terminal → Hermon Cloud → Worktree in (submenu parent) → [user tab configs] → separator → New Tab Config.
 
 On macOS/Linux, Terminal is a regular `MenuItemFields::new("Terminal")` with `AddTerminalTab` as its action and the ⌘T shortcut. On Windows (`#[cfg(target_os = "windows")]`), Terminal itself is a submenu parent using `MenuItemFields::new_submenu()` — this shows a sidecar with a "Default Terminal" row plus available shells on hover.
 
@@ -159,7 +159,7 @@ Params substituted: `repo` (selected path), `branch_name` (auto-generated via `g
 
 ## Follow-ups
 
-- **New Tab Config skill invocation**: V0 opens the TOML template. Follow-up: auto-invoke the `tab-configs` skill via Oz agent.
+- **New Tab Config skill invocation**: V0 opens the TOML template. Follow-up: auto-invoke the `tab-configs` skill via Hermon agent.
 - **`MenuItem::Submenu` cleanup**: The built-in submenu variant remains in the codebase (deprecated). Consider removing it or completing the safe-triangle wiring if a future use case requires inline submenus.
 - **Sidecar left-fade for long paths**: `ClipConfig::start()` exists in the text layout system but right-aligns the text. A proper left-aligned + left-fade clip mode would need UI framework work.
 - **macOS/Linux shell selector**: Currently only Windows shows the Terminal sidecar with shell choices. If shell selection is desired on other platforms, this can be re-enabled by removing the `#[cfg(target_os = "windows")]` gate.

@@ -8,7 +8,7 @@
 //! whichever source they hold and feed the resulting variant into
 //! [`render_icon_with_status`]. The pure inner functions in this module are exercised
 //! directly by the cross-surface consistency tests in `agent_icon_tests.rs`.
-use warp_cli::agent::Harness;
+use wish_cli::agent::Harness;
 use wishui::AppContext;
 use wishui::SingletonEntity;
 
@@ -163,7 +163,7 @@ fn agent_icon_variant_from_terminal_inputs(
         }
     }
 
-    // 3. Selected conversation OR ambient (Oz) terminal: Oz agent variant.
+    // 3. Selected conversation OR ambient (Oz) terminal: Hermon agent variant.
     if inputs.has_selected_conversation || inputs.is_ambient {
         return Some(IconWithStatusVariant::OzAgent {
             status: inputs.selected_conversation_status.clone(),

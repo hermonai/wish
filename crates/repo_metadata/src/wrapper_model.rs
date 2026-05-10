@@ -8,7 +8,7 @@
 #[cfg(feature = "local_fs")]
 use std::path::Path;
 
-use warp_util::standardized_path::StandardizedPath;
+use wish_util::standardized_path::StandardizedPath;
 use wish_core::HostId;
 use wishui::{AppContext, ModelContext, ModelHandle, SingletonEntity};
 

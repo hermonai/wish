@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use std::{collections::HashMap, rc::Rc};
 use strum::IntoEnumIterator;
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wish_core::ui::{appearance::Appearance, theme::Fill};
 use wishui::{
     elements::{

@@ -5,7 +5,7 @@ use crate::{
     editor::{EditorView, PropagateAndNoOpNavigationKeys, SingleLineEditorOptions, TextOptions},
 };
 use regex::Regex;
-use warp_editor::editor::NavigationKey;
+use wish_editor::editor::NavigationKey;
 use wishui::elements::{CrossAxisAlignment, Expanded, MainAxisSize};
 use wishui::{
     elements::{ChildView, Container, Empty, Flex, MouseStateHandle, ParentElement, Text},

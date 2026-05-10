@@ -11,7 +11,7 @@ use std::{
 use chrono::{Local, SecondsFormat};
 #[cfg(test)]
 use parking_lot::Mutex;
-use warp_completer::completer::{CommandExitStatus, CommandOutput};
+use wish_completer::completer::{CommandExitStatus, CommandOutput};
 
 #[cfg(test)]
 use std::sync::Arc;
@@ -133,7 +133,7 @@ impl PromptChipLogger {
 
 #[cfg(not(target_family = "wasm"))]
 pub(crate) fn log_file_path() -> anyhow::Result<PathBuf> {
-    let log_directory = warp_logging::log_directory()?;
+    let log_directory = wish_logging::log_directory()?;
     let channel_logfile_name = wish_core::channel::ChannelState::logfile_name();
     Ok(log_directory.join(prompt_chip_log_filename(&channel_logfile_name)))
 }

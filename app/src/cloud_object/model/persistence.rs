@@ -24,7 +24,7 @@ use crate::workspaces::user_workspaces::UserWorkspaces;
 use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 use std::sync::mpsc::SyncSender;
-use warp_graphql::scalars::time::ServerTimestamp;
+use wish_graphql::scalars::time::ServerTimestamp;
 
 use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 

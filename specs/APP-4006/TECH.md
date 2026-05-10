@@ -17,8 +17,8 @@ The follow-up should keep the displayed output height, cursor rendering, and the
 - `app/src/terminal/blockgrid_renderer.rs:146` — `BlockGrid::draw_cursor()` always translates and renders the cursor without checking `len_displayed()`.
 - `app/src/terminal/block_list_element.rs:2707` — active long-running output grids call `draw_cursor()` independently from output-grid height advancement.
 - `app/src/terminal/grid_renderer.rs:2320` — `render_cursor()` computes a pixel position directly from the supplied row and caches it indefinitely.
-- `crates/warp_terminal/src/model/grid/cell.rs:227` — `Cell::is_empty()` is a terminal-state predicate that includes background, foreground, and flags, not just visible glyph content.
-- `crates/warp_terminal/src/model/grid/cell.rs:245` — `Cell::is_visible()` filters whitespace but still depends on terminal-state emptiness, so trimming needs a narrower predicate for raw glyph content.
+- `crates/wish_terminal/src/model/grid/cell.rs:227` — `Cell::is_empty()` is a terminal-state predicate that includes background, foreground, and flags, not just visible glyph content.
+- `crates/wish_terminal/src/model/grid/cell.rs:245` — `Cell::is_visible()` filters whitespace but still depends on terminal-state emptiness, so trimming needs a narrower predicate for raw glyph content.
 ## 3. Current state
 APP-4004 has one source of truth for block height: `Block::output_grid_displayed_height()` delegates to `BlockGrid::len_displayed()`, and `len_displayed()` applies `base.min(grid_handler.content_len())`.
 That source of truth is not shared by cursor rendering. `BlockGrid::draw_cursor()` computes `cursor_render_point()`, translates through `maybe_translate_point_from_original_to_displayed()`, and passes the result to `render_cursor()`. If there is no displayed-output filter, translation returns the same row. A cursor at original row 8 with `len_displayed() == 5` therefore renders at displayed row 8 even though layout only reserved five rows.

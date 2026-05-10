@@ -1,4 +1,4 @@
-use warp_util::path::LineAndColumnArg;
+use wish_util::path::LineAndColumnArg;
 
 use super::{DesktopExecError, EditorMetadata};
 use std::path::PathBuf;
