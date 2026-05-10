@@ -17,11 +17,11 @@ use bounded_vec_deque::BoundedVecDeque;
 use pathfinder_geometry::vector::Vector2F;
 use rand::Rng;
 use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
+use wish_core::channel::ChannelState;
+use wish_core::features::FeatureFlag;
 use wish_terminal::model::ansi::CharsetIndex;
 use wish_terminal::model::grid::cell;
 use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
-use wish_core::channel::ChannelState;
-use wish_core::features::FeatureFlag;
 use wishui::image_cache::{resize_dimensions, FitType};
 
 use crate::server::telemetry::ImageProtocol;

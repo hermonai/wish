@@ -21,9 +21,9 @@ use crate::{
     },
 };
 use fuzzy_match::{match_indices_case_insensitive, FuzzyMatchResult};
-use wish_editor::editor::NavigationKey;
 use wish_core::ui::theme::color::internal_colors;
 use wish_core::ui::{appearance::Appearance, builder::MIN_FONT_SIZE, theme::Fill};
+use wish_editor::editor::NavigationKey;
 use wishui::units::Pixels;
 use wishui::{
     color::ColorU,

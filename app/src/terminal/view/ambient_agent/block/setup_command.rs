@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use parking_lot::FairMutex;
-use wish_terminal::model::BlockId;
 use wish_core::ui::appearance::Appearance;
+use wish_terminal::model::BlockId;
 use wishui::{
     prelude::{Container, Empty, MouseStateHandle},
     scene::{CornerRadius, Radius},

@@ -17,9 +17,9 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 
 use settings::schema::SettingSchemaEntry;
+use wish_core::features::{FeatureFlag, DEBUG_FLAGS, DOGFOOD_FLAGS, PREVIEW_FLAGS, RELEASE_FLAGS};
 use wishui_extras::user_preferences::toml_backed::TomlBackedUserPreferences;
 use wishui_extras::user_preferences::UserPreferences as _;
-use wish_core::features::{FeatureFlag, DEBUG_FLAGS, DOGFOOD_FLAGS, PREVIEW_FLAGS, RELEASE_FLAGS};
 
 /// Ensures all `inventory::submit!` registrations from the app crate's
 /// dependency tree are linked into the binary.

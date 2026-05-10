@@ -4,8 +4,8 @@ use std::{
     sync::Arc,
 };
 
-use wish_util::path::ShellFamily;
 use warp_workflows::workflows as global_workflows;
+use wish_util::path::ShellFamily;
 #[cfg(not(target_family = "wasm"))]
 use wishui::platform::OperatingSystem;
 use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
@@ -232,5 +232,5 @@ pub fn prompt_chip_logging_workflow(shell_family: ShellFamily) -> Option<Workflo
 }
 
 #[cfg(test)]
-#[path = "local_workflows_test.rs"]
+#[path = "local_workflows_tests.rs"]
 mod tests;

@@ -17,12 +17,12 @@ use wish_cli::{
     },
     GlobalOptions,
 };
+use wish_core::features::FeatureFlag;
 use wish_graphql::{
     managed_secrets::{ManagedSecret, ManagedSecretType},
     object::SpaceType,
 };
 use wish_managed_secrets::{client::SecretOwner, ManagedSecretManager, ManagedSecretValue};
-use wish_core::features::FeatureFlag;
 use wishui::{platform::TerminationMode, AppContext, SingletonEntity as _};
 
 use crate::{

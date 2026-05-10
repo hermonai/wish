@@ -62,10 +62,10 @@ use std::{
     sync::Arc,
 };
 use url::Url;
+use wish_core::{channel::Channel, features::FeatureFlag};
 use wish_graphql::{
     queries::get_updated_cloud_objects::UpdatedObjectInput, scalars::time::ServerTimestamp,
 };
-use wish_core::{channel::Channel, features::FeatureFlag};
 use wishui::{AppContext, SingletonEntity};
 
 pub mod breadcrumbs;

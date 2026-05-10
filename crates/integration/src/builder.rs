@@ -4,11 +4,11 @@ use std::future::Future;
 use std::path::PathBuf;
 use std::pin::Pin;
 use std::time::Duration;
-use wishui_extras::user_preferences::file_backed::FileBackedUserPreferences;
-use wishui_extras::user_preferences::UserPreferences;
 use wishui::integration::{self, PersistedDataMap, TestStep};
 use wishui::integration::{TestDriver, TestSetupUtils};
 use wishui::{App, WindowId};
+use wishui_extras::user_preferences::file_backed::FileBackedUserPreferences;
+use wishui_extras::user_preferences::UserPreferences;
 
 // We have logic in our build script to pass the path of the cargo target
 // tmp directory to our app. This needs to be done as a build script because

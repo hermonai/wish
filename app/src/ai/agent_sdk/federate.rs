@@ -4,8 +4,8 @@ use anyhow::{anyhow, Result};
 use serde_json::json;
 use wish_cli::federate::{FederateCommand, IssueGcpTokenArgs, IssueTokenArgs};
 use wish_cli::{agent::OutputFormat, GlobalOptions};
-use wish_managed_secrets::ManagedSecretManager;
 use wish_core::{features::FeatureFlag, report_error};
+use wish_managed_secrets::ManagedSecretManager;
 use wishui::{platform::TerminationMode, AppContext, SingletonEntity as _};
 
 use super::common::set_ambient_task_context_from_run_id;

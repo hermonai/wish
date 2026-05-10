@@ -1,6 +1,6 @@
 use std::sync::Arc;
-use wish_editor::render::element::VerticalExpansionBehavior;
 use wish_core::ui::appearance::Appearance;
+use wish_editor::render::element::VerticalExpansionBehavior;
 use wishui::{
     elements::{new_scrollable::ScrollableAppearance, ScrollbarWidth},
     platform::WindowStyle,

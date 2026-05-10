@@ -13,9 +13,9 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use url::Url;
 use uuid::Uuid;
-use wishui_extras::secure_storage::AppContextExt as _;
 use wish_core::channel::ChannelState;
 use wishui::ModelSpawner;
+use wishui_extras::secure_storage::AppContextExt as _;
 
 use super::{MCPServerState, TemplatableMCPServerManager};
 use {crate::ai::mcp::FileBasedMCPManager, wishui::SingletonEntity};

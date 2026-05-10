@@ -16,13 +16,13 @@ use crate::{
 use std::sync::Arc;
 use unindent::Unindent;
 use vim::vim::{MotionType, VimMode};
+use wish_core::{features::FeatureFlag, settings::Setting, ui::appearance::Appearance};
 use wish_editor::model::CoreEditorModel;
 use wish_editor::{
     content::buffer::{InitialBufferState, ToBufferCharOffset, ToBufferPoint},
     render::element::VerticalExpansionBehavior,
 };
 use wish_util::user_input::UserInput;
-use wish_core::{features::FeatureFlag, settings::Setting, ui::appearance::Appearance};
 use wishui::text::point::Point;
 use wishui::{
     keymap::Keystroke, platform::WindowStyle, App, SingletonEntity, TypedActionView, UpdateModel,

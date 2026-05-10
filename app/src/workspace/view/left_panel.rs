@@ -1,9 +1,9 @@
 use std::collections::HashSet;
 use std::path::PathBuf;
 
-use wish_util::path::LineAndColumnArg;
 use wish_core::ui::theme::color::internal_colors;
 use wish_core::{send_telemetry_from_ctx, ui::Icon};
+use wish_util::path::LineAndColumnArg;
 use wishui::{
     elements::{
         resizable_state_handle, ChildView, ConstrainedBox, Container, CrossAxisAlignment,

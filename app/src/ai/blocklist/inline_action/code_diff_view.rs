@@ -12,12 +12,6 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use wish_editor::{
-    content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
-};
-use wish_util::file::FileSaveError;
-use wish_util::path::common_path;
-use wish_util::standardized_path::StandardizedPath;
 use wish_core::{
     features::FeatureFlag,
     platform::SessionPlatform,
@@ -32,6 +26,12 @@ use wish_core::{
     },
     HostId,
 };
+use wish_editor::{
+    content::buffer::InitialBufferState, render::element::VerticalExpansionBehavior,
+};
+use wish_util::file::FileSaveError;
+use wish_util::path::common_path;
+use wish_util::standardized_path::StandardizedPath;
 use wishui::{
     elements::{
         new_scrollable::{ScrollableAppearance, SingleAxisConfig},

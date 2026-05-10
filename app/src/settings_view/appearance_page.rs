@@ -74,8 +74,8 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
-use wish_util::path::user_friendly_path;
 use wish_core::ui::theme::color::internal_colors;
+use wish_util::path::user_friendly_path;
 use wishui::elements::{
     Clipped, Empty, FormattedTextElement, MainAxisAlignment, MainAxisSize, Text, Wrap,
 };

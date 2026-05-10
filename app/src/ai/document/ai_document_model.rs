@@ -32,6 +32,7 @@ use crate::{
             model::{FileLinkResolutionContext, NotebooksEditorModel, RichTextEditorModelEvent},
             rich_text_styles,
         },
+        file::MarkdownDisplayMode,
         post_process_notebook, CloudNotebookModel, NotebookId,
     },
     server::{
@@ -50,8 +51,8 @@ use crate::{
 };
 use ai::agent::orchestration_config::{OrchestrationConfig, OrchestrationConfigStatus};
 use ai::diff_validation::DiffDelta;
-use wish_editor::{model::RichTextEditorModel, render::model::RichTextStyles};
 use warp_multi_agent_api as maa_api;
+use wish_editor::{model::RichTextEditorModel, render::model::RichTextStyles};
 use wishui::color::ColorU;
 
 /// The frequency at which we check for modifications and save the AI document to the server.
@@ -826,6 +827,7 @@ impl AIDocumentModel {
             let styles = rich_text_styles(appearance, font_settings);
 
             let mut model = NotebooksEditorModel::new_unbound(styles, ctx);
+            model.set_default_mermaid_display_mode(MarkdownDisplayMode::Rendered, ctx);
             model.set_file_link_resolution_context(file_link_resolution_context);
 
             let content = content.into();

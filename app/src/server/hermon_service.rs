@@ -68,23 +68,24 @@ impl HermonServiceModel {
         // instead of waiting for the first user-initiated request to fail.
         if let Some(ref client) = client {
             let client = Arc::clone(client);
-            let _ = ctx.spawn({
-                let client = client;
-                async move {
-                    match client.health().await {
-                        Ok(_) => Some(true),
-                        Err(e) => {
-                            log::warn!("Hermon health check failed: {e}");
-                            Some(false)
+            let _ = ctx.spawn(
+                {
+                    let client = client;
+                    async move {
+                        match client.health().await {
+                            Ok(_) => Some(true),
+                            Err(e) => {
+                                log::warn!("Hermon health check failed: {e}");
+                                Some(false)
+                            }
                         }
                     }
-                }
-            }, |me, result, ctx| {
-                match result {
+                },
+                |me, result, ctx| match result {
                     Some(true) => me.set_connected(ctx),
                     Some(false) | None => me.set_disconnected(ctx),
-                }
-            });
+                },
+            );
         }
 
         Self {

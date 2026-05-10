@@ -9,8 +9,8 @@ use crate::network::NetworkStatus;
 use crate::server::ids::SyncId;
 use crate::ui_components::buttons::icon_button;
 use crate::view_components::action_button::{ActionButton, DangerSecondaryTheme, PrimaryTheme};
-use wish_editor::editor::NavigationKey;
 use wish_core::ui::{appearance::Appearance, theme::color::internal_colors};
+use wish_editor::editor::NavigationKey;
 use wishui::elements::{Clipped, ConstrainedBox};
 use wishui::{
     elements::{

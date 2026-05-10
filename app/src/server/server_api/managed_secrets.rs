@@ -8,6 +8,9 @@ use wish_graphql::mutations::issue_task_identity_token::{
     IssueTaskIdentityTokenVariables,
 };
 use wish_graphql::object_permissions::OwnerType;
+use wish_graphql::queries::list_harness_auth_secrets::{
+    ListHarnessAuthSecrets, ListHarnessAuthSecretsInput, ListHarnessAuthSecretsVariables,
+};
 use wish_graphql::queries::list_managed_secrets::{
     ListManagedSecrets, ListManagedSecretsVariables, ManagedSecretsInput, ManagedSecretsResult,
 };
@@ -198,6 +201,37 @@ impl ManagedSecretsClient for ServerApi {
             }
             UpdateManagedSecretResult::Unknown => {
                 Err(anyhow!("Unknown error while updating managed secret"))
+            }
+        }
+    }
+
+    async fn list_harness_auth_secrets(
+        &self,
+        harness: wish_graphql::ai::AgentHarness,
+    ) -> Result<Vec<ManagedSecret>> {
+        let Some(harness_input) = Option::<
+            wish_graphql::queries::list_harness_auth_secrets::AgentHarnessInput,
+        >::from(harness) else {
+            return Ok(vec![]);
+        };
+        let variables = ListHarnessAuthSecretsVariables {
+            input: ListHarnessAuthSecretsInput {
+                harness: harness_input,
+            },
+            request_context: get_request_context(),
+        };
+        let operation = ListHarnessAuthSecrets::build(variables);
+        let response = self.send_graphql_request(operation, None).await?;
+
+        match response.harness_auth_secrets {
+            wish_graphql::queries::list_harness_auth_secrets::HarnessAuthSecretsResult::HarnessAuthSecretsOutput(output) => {
+                Ok(output.managed_secrets)
+            }
+            wish_graphql::queries::list_harness_auth_secrets::HarnessAuthSecretsResult::UserFacingError(error) => {
+                Err(anyhow!(get_user_facing_error_message(error)))
+            }
+            wish_graphql::queries::list_harness_auth_secrets::HarnessAuthSecretsResult::Unknown => {
+                Err(anyhow!("Unknown error while listing harness auth secrets"))
             }
         }
     }

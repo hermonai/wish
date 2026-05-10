@@ -24,9 +24,9 @@ use crate::ai::mcp::TemplatableMCPServerManager;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use wish_completer::parsers::simple::decompose_command;
-use wish_util::path::EscapeChar;
 use wish_core::user_preferences::GetUserPreferences;
 use wish_core::{features::FeatureFlag, settings::Setting};
+use wish_util::path::EscapeChar;
 use wishui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};
 
 use super::BlocklistAIHistoryModel;
@@ -1209,5 +1209,5 @@ pub fn is_agent_mode_autonomy_allowed(ctx: &AppContext) -> bool {
 }
 
 #[cfg(test)]
-#[path = "permissions_test.rs"]
+#[path = "permissions_tests.rs"]
 mod tests;

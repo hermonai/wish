@@ -1,6 +1,6 @@
 [package]
 name = "wish_util"
-authors = ["Hermon AI <support@hermon.ai>"]
+authors = ["Warp Team <dev@warp.dev>"]
 version = "0.1.0"
 edition = "2021"
 description = "General utilities and helpers used across warp crates"
@@ -21,6 +21,7 @@ regex.workspace = true
 thiserror.workspace = true
 typed-path.workspace = true
 dunce.workspace = true
+event-listener.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 pin-project.workspace = true
@@ -33,4 +34,5 @@ windows.workspace = true
 gloo.workspace = true
 
 [dev-dependencies]
+futures-lite.workspace = true
 wishui.workspace = true

@@ -29,11 +29,11 @@ use crate::{
 use anyhow::Result;
 use regex::Regex;
 use std::sync::Arc;
-use wish_graphql::workspace::FeatureModelChoice;
 use wish_core::{
     features::FeatureFlag,
     settings::{ChangeEventReason, Setting},
 };
+use wish_graphql::workspace::FeatureModelChoice;
 use wishui::{AppContext, Entity, ModelContext, SingletonEntity, Tracked};
 
 #[cfg(test)]

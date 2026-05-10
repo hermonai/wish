@@ -38,8 +38,8 @@ use pathfinder_color::ColorU;
 use settings::Setting as _;
 use snapshot::{EditorHeightShrinkDelay, ViewSnapshot};
 use vec1::{vec1, Vec1};
-use wish_util::{path::ShellFamily, user_input::UserInput};
 use wish_core::{safe_error, send_telemetry_from_ctx};
+use wish_util::{path::ShellFamily, user_input::UserInput};
 use wishui::platform::keyboard::KeyCode;
 use wishui::ui_components::button::ButtonTooltipPosition;
 use wishui::ui_components::components::{Coords, UiComponent, UiComponentStyles};
@@ -8771,5 +8771,5 @@ pub fn position_id_for_first_cursor(editor_view_id: EntityId) -> String {
 }
 
 #[cfg(test)]
-#[path = "mod_test.rs"]
+#[path = "mod_tests.rs"]
 mod tests;

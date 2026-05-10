@@ -10,6 +10,7 @@ use instant::Duration;
 use mockall::{automock, predicate::*};
 use oauth2::TokenResponse;
 use thiserror::Error;
+use wish_core::errors::{AnyhowErrorExt, ErrorExt};
 use wish_graphql::client::Operation;
 use wish_graphql::mutations::expire_api_key::{
     ExpireApiKey, ExpireApiKeyResult, ExpireApiKeyVariables,
@@ -17,7 +18,6 @@ use wish_graphql::mutations::expire_api_key::{
 use wish_graphql::queries::get_conversation_usage::{
     ConversationUsage, GetConversationUsage, GetConversationUsageVariables, UserResult,
 };
-use wish_core::errors::{AnyhowErrorExt, ErrorExt};
 
 use wish_graphql::mutations::set_user_is_onboarded::{
     SetUserIsOnboarded, SetUserIsOnboardedResult, SetUserIsOnboardedVariables,
@@ -66,6 +66,20 @@ use crate::{
 
 use super::ServerApi;
 
+/// A named agent identity from the public API.
+#[derive(Clone, Debug, serde::Deserialize)]
+pub struct AgentIdentity {
+    pub uid: String,
+    pub name: String,
+    pub available: bool,
+}
+
+/// Wrapper for the `GET /api/v1/agent/identities` response.
+#[derive(serde::Deserialize)]
+struct AgentIdentitiesResponse {
+    agents: Vec<AgentIdentity>,
+}
+
 /// Error messages returned from the Firebase REST API when attempting to convert a refresh token
 /// into an access token that indicate the user's token is in an errored state.
 /// These are "soft" errors because the user likely just needs to log in again.
@@ -86,10 +100,10 @@ static FETCH_ACCESS_TOKEN_HARD_ERROR_MESSAGES: &[&str] = &["USER_DISABLED", "USE
 const FETCH_ACCESS_TOKEN_TIMEOUT: Duration = Duration::from_secs(5);
 
 /// Header key for the ambient workload token attached to multi-agent requests.
-pub const AMBIENT_WORKLOAD_TOKEN_HEADER: &str = "X-Wish-Ambient-Workload-Token";
+pub const AMBIENT_WORKLOAD_TOKEN_HEADER: &str = "X-Warp-Ambient-Workload-Token";
 
 /// Header key for the cloud agent task ID attached to requests from ambient agents.
-pub const CLOUD_AGENT_ID_HEADER: &str = "X-Wish-Cloud-Agent-ID";
+pub const CLOUD_AGENT_ID_HEADER: &str = "X-Warp-Cloud-Agent-ID";
 
 /// Duration for which the ambient workload token is valid (3 hours).
 const AMBIENT_WORKLOAD_TOKEN_DURATION: Duration = Duration::from_secs(3 * 60 * 60);
@@ -201,10 +215,14 @@ pub trait AuthClient: 'static + Send + Sync {
         &self,
         name: String,
         team_id: Option<cynic::Id>,
+        agent_uid: Option<cynic::Id>,
         expires_at: Option<wish_graphql::scalars::Time>,
     ) -> Result<GenerateApiKeyResult>;
 
     async fn expire_api_key(&self, key_uid: &ApiKeyUid) -> Result<ExpireApiKeyResult>;
+
+    /// Fetches the list of named agent identities for the user's team.
+    async fn list_agent_identities(&self) -> Result<Vec<AgentIdentity>>;
 
     /// Returns a cached ambient workload token, or issues a new one if not present or expired.
     ///
@@ -212,45 +230,19 @@ pub trait AuthClient: 'static + Send + Sync {
     async fn get_or_create_ambient_workload_token(&self) -> Result<Option<String>>;
 }
 
-#[cfg_attr(not(target_family = "wasm"), async_trait)]
-#[cfg_attr(target_family = "wasm", async_trait(?Send))]
-impl AuthClient for ServerApi {
-    async fn create_anonymous_user(
-        &self,
-        referral_code: Option<String>,
-        anonymous_user_type: AnonymousUserType,
-    ) -> Result<CreateAnonymousUserResult> {
-        let variables = CreateAnonymousUserVariables {
-            input: wish_graphql::mutations::create_anonymous_user::CreateAnonymousUserInput {
-                anonymous_user_type,
-                expiration_type: wish_graphql::mutations::create_anonymous_user::AnonymousUserExpirationType::NoExpiration,
-                referral_code,
-            },
-            request_context: get_request_context(),
-        };
-
-        let operation = CreateAnonymousUser::build(variables);
-        let response = operation
-            .send_request(self.client.clone(), default_request_options())
-            .await?;
-
-        Ok(response
-            .data
-            .ok_or_else(|| anyhow!("missing data in response"))?
-            .create_anonymous_user)
-    }
-
-    async fn get_or_refresh_access_token(&self) -> Result<AuthToken> {
+impl ServerApi {
+    pub(super) async fn access_token(&self) -> Result<AuthToken> {
         if cfg!(feature = "skip_login") {
             bail!("skip_login enabled; failing all authenticated requests");
         }
 
         let Some(credentials) = self.auth_state.credentials() else {
-            bail!("Attempted to retrieve access token when user is logged out");
+            bail!("missing authentication credentials");
         };
 
         match credentials {
             Credentials::ApiKey { key, .. } => Ok(AuthToken::ApiKey(key)),
+            Credentials::Bearer(token) => Ok(AuthToken::Bearer(token)),
             Credentials::Firebase(auth_tokens) => {
                 let expiration_time = auth_tokens.expiration_time;
 
@@ -284,6 +276,39 @@ impl AuthClient for ServerApi {
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
             Credentials::Test => Ok(AuthToken::NoAuth),
         }
+    }
+}
+
+#[cfg_attr(not(target_family = "wasm"), async_trait)]
+#[cfg_attr(target_family = "wasm", async_trait(?Send))]
+impl AuthClient for ServerApi {
+    async fn create_anonymous_user(
+        &self,
+        referral_code: Option<String>,
+        anonymous_user_type: AnonymousUserType,
+    ) -> Result<CreateAnonymousUserResult> {
+        let variables = CreateAnonymousUserVariables {
+            input: wish_graphql::mutations::create_anonymous_user::CreateAnonymousUserInput {
+                anonymous_user_type,
+                expiration_type: wish_graphql::mutations::create_anonymous_user::AnonymousUserExpirationType::NoExpiration,
+                referral_code,
+            },
+            request_context: get_request_context(),
+        };
+
+        let operation = CreateAnonymousUser::build(variables);
+        let response = operation
+            .send_request(self.client.clone(), default_request_options())
+            .await?;
+
+        Ok(response
+            .data
+            .ok_or_else(|| anyhow!("missing data in response"))?
+            .create_anonymous_user)
+    }
+
+    async fn get_or_refresh_access_token(&self) -> Result<AuthToken> {
+        self.access_token().await
     }
 
     async fn fetch_user(
@@ -368,7 +393,7 @@ impl AuthClient for ServerApi {
                     auth_token: auth_token.map(ToOwned::to_owned),
                     headers: std::collections::HashMap::from([(
                         EXPERIMENT_ID_HEADER.to_string(),
-                        self.auth_state.anonymous_id(),
+                        self.anonymous_id(),
                     )]),
                     ..default_request_options()
                 },
@@ -607,12 +632,14 @@ impl AuthClient for ServerApi {
         &self,
         name: String,
         team_id: Option<cynic::Id>,
+        agent_uid: Option<cynic::Id>,
         expires_at: Option<wish_graphql::scalars::Time>,
     ) -> Result<GenerateApiKeyResult> {
         let variables = GenerateApiKeyVariables {
             input: GenerateApiKeyInput {
                 name,
                 team_id,
+                agent_uid,
                 expires_at,
             },
             request_context: get_request_context(),
@@ -621,6 +648,12 @@ impl AuthClient for ServerApi {
         let response = self.send_graphql_request(operation, None).await?;
         Ok(response.generate_api_key)
     }
+
+    async fn list_agent_identities(&self) -> Result<Vec<AgentIdentity>> {
+        let response: AgentIdentitiesResponse = self.get_public_api("agent/identities").await?;
+        Ok(response.agents)
+    }
+
     async fn expire_api_key(&self, key_uid: &ApiKeyUid) -> Result<ExpireApiKeyResult> {
         let variables = ExpireApiKeyVariables {
             key_uid: key_uid.into(),
@@ -698,38 +731,30 @@ fn fetch_auth_tokens(
 ) -> BoxFuture<'static, StdResult<FirebaseAuthTokens, UserAuthenticationError>> {
     Box::pin(async move {
         let firebase_api_key = ChannelState::firebase_api_key();
+        let url = token.access_token_url(&firebase_api_key);
         let request_body = token.access_token_request_body();
         let proxy_url = token.proxy_url(&ChannelState::server_root_url(), &firebase_api_key);
-
-        // Hermon-issued tokens (hrmrt_*) bypass Firebase entirely and go
-        // directly through the proxy/token endpoint on hermon-server.
-        let response = if token.is_hermon_token() {
-            log::info!("Hermon refresh token detected — exchanging via proxy (skipping Firebase)");
-            fetch_access_token_via_proxy(client, &request_body, proxy_url).await
-        } else {
-            let url = token.access_token_url(&firebase_api_key);
-            match client
-                .post(&url)
-                .form(&request_body)
-                .timeout(FETCH_ACCESS_TOKEN_TIMEOUT)
-                .send()
-                .await
-            {
-                Ok(response) => match response.error_for_status_ref() {
-                    Ok(_) => Ok(response),
-                    Err(error) => {
-                        log::warn!(
-                            "Request to firebase to fetch access token completed, but was unsuccessful: {error:?}"
-                        );
-
-                        fetch_access_token_via_proxy(client, &request_body, proxy_url).await
-                    }
-                },
+        let response = match client
+            .post(&url)
+            .form(&request_body)
+            .timeout(FETCH_ACCESS_TOKEN_TIMEOUT)
+            .send()
+            .await
+        {
+            Ok(response) => match response.error_for_status_ref() {
+                Ok(_) => Ok(response),
                 Err(error) => {
-                    log::warn!("Failed to make response to firebase to fetch access token: {error:?}");
+                    log::warn!(
+                        "Request to firebase to fetch access token completed, but was unsuccessful: {error:?}"
+                    );
 
                     fetch_access_token_via_proxy(client, &request_body, proxy_url).await
                 }
+            },
+            Err(error) => {
+                log::warn!("Failed to make response to firebase to fetch access token: {error:?}");
+
+                fetch_access_token_via_proxy(client, &request_body, proxy_url).await
             }
         }?;
 
@@ -932,5 +957,5 @@ pub enum MintCustomTokenError {
 }
 
 #[cfg(test)]
-#[path = "auth_test.rs"]
+#[path = "auth_tests.rs"]
 mod tests;

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use wish_editor::editor::NavigationKey;
 use wish_core::ui::appearance::Appearance;
+use wish_editor::editor::NavigationKey;
 use wishui::{
     elements::ChildView,
     ui_components::components::{Coords, UiComponent, UiComponentStyles},

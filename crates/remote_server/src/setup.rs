@@ -4,7 +4,7 @@ pub use glibc::{GlibcVersion, RemoteLibc};
 
 use std::time::Duration;
 
-use anyhow::{anyhow, Result};
+use anyhow::anyhow;
 use wish_core::channel::{Channel, ChannelState};
 
 /// State machine for the remote server install → launch → initialize flow.
@@ -240,31 +240,43 @@ impl RemoteArch {
 ///
 /// The expected format is `<os> <arch>`, e.g. `Linux x86_64` or `Darwin arm64`.
 /// Takes the last line to skip any shell initialization output.
-pub fn parse_uname_output(output: &str) -> Result<RemotePlatform> {
+pub fn parse_uname_output(
+    output: &str,
+) -> std::result::Result<RemotePlatform, crate::transport::Error> {
+    use crate::transport::Error;
+
     let line = output
         .lines()
         .last()
-        .ok_or_else(|| anyhow!("empty uname output"))?
-        .trim();
+        .ok_or_else(|| Error::Other(anyhow!("empty uname output")))
+        .map(str::trim)?;
 
     let mut parts = line.split_whitespace();
     let os_str = parts
         .next()
-        .ok_or_else(|| anyhow!("missing OS in uname output: {line}"))?;
+        .ok_or_else(|| Error::Other(anyhow!("missing OS in uname output: {line}")))?;
     let arch_str = parts
         .next()
-        .ok_or_else(|| anyhow!("missing arch in uname output: {line}"))?;
+        .ok_or_else(|| Error::Other(anyhow!("missing arch in uname output: {line}")))?;
 
     let os = match os_str {
         "Linux" => RemoteOs::Linux,
         "Darwin" => RemoteOs::MacOs,
-        other => return Err(anyhow!("unsupported OS: {other}")),
+        other => {
+            return Err(Error::UnsupportedOs {
+                os: other.to_string(),
+            })
+        }
     };
 
     let arch = match arch_str {
         "x86_64" => RemoteArch::X86_64,
         "aarch64" | "arm64" | "armv8l" => RemoteArch::Aarch64,
-        other => return Err(anyhow!("unsupported arch: {other}")),
+        other => {
+            return Err(Error::UnsupportedArch {
+                arch: other.to_string(),
+            })
+        }
     };
 
     Ok(RemotePlatform { os, arch })
@@ -277,7 +289,7 @@ pub fn parse_uname_output(output: &str) -> Result<RemotePlatform> {
 /// - dev:         `~/.warp-dev/remote-server`
 /// - local:       `~/.warp-local/remote-server`
 /// - integration: `~/.warp-dev/remote-server`
-/// - wish-oss:    `~/.wish-oss/remote-server`
+/// - warp-oss:    `~/.warp-oss/remote-server`
 pub fn remote_server_dir() -> String {
     let warp_dir = match ChannelState::channel() {
         Channel::Stable => ".warp",
@@ -285,7 +297,7 @@ pub fn remote_server_dir() -> String {
         Channel::Dev | Channel::Integration => ".warp-dev",
         Channel::Local => ".warp-local",
         Channel::Oss => {
-            // TODO(alokedesai): need to figure out how remote server works with wish-oss
+            // TODO(alokedesai): need to figure out how remote server works with warp-oss
             // For now, return what Dev returns.
             ".warp-dev"
         }
@@ -323,6 +335,12 @@ pub fn remote_server_daemon_dir(identity_key: &str) -> String {
         remote_server_dir(),
         remote_server_identity_dir_name(identity_key)
     )
+}
+
+/// Returns the identity-scoped remote directory used for daemon-owned
+/// per-user data files.
+pub fn remote_server_daemon_data_dir(identity_key: &str) -> String {
+    format!("{}/data", remote_server_daemon_dir(identity_key))
 }
 
 /// Returns the binary name, keyed by channel.
@@ -388,7 +406,7 @@ const INSTALL_SCRIPT_TEMPLATE: &str = include_str!("install_remote_server.sh");
 /// at the current client version.
 ///
 /// The script detects the remote architecture via `uname -m`, downloads
-/// the correct Wish CLI tarball from the download URL, and installs it at
+/// the correct Oz CLI tarball from the download URL, and installs it at
 /// the path returned by [`remote_server_binary`] so repeat invocations
 /// are idempotent. The `version_query` / `version_suffix` substitutions
 /// follow the same rule as [`remote_server_binary`]: empty on
@@ -438,7 +456,7 @@ fn download_channel() -> &'static str {
         Channel::Preview => "preview",
         Channel::Dev | Channel::Local | Channel::Integration => "dev",
         Channel::Oss => {
-            // TODO(alokedesai): need to figure out how remote server works with wish-oss
+            // TODO(alokedesai): need to figure out how remote server works with warp-oss
             // For now, return what Dev returns.
             "dev"
         }

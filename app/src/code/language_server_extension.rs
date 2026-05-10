@@ -2,13 +2,13 @@ use lsp::{HoverContents, LspServerLogLevel, MarkupKind};
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use num_traits::SaturatingSub;
 use string_offset::CharOffset;
-use wish_editor::{
-    content::buffer::InitialBufferState,
-    render::{element::VerticalExpansionBehavior, model::Decoration},
-};
 use wish_core::ui::{
     appearance::Appearance,
     theme::{color::internal_colors, WarpTheme},
+};
+use wish_editor::{
+    content::buffer::InitialBufferState,
+    render::{element::VerticalExpansionBehavior, model::Decoration},
 };
 use wishui::{
     elements::{

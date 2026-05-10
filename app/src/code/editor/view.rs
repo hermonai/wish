@@ -40,6 +40,7 @@ use std::{collections::HashSet, path::Path};
 use string_offset::CharOffset;
 use vec1::{vec1, Vec1};
 use vim::vim::{Direction, InsertPosition, VimMode, VimModel, VimState, VimSubscriber};
+use wish_core::platform::SessionPlatform;
 use wish_editor::{
     content::{
         buffer::{
@@ -64,7 +65,6 @@ use wish_editor::{
     search::{SearchEvent, Searcher, MATCH_FILL, SELECTED_MATCH_FILL},
 };
 use wish_util::content_version::ContentVersion;
-use wish_core::platform::SessionPlatform;
 use wishui::{
     elements::{
         new_scrollable::{

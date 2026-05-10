@@ -20,6 +20,7 @@ use num_traits::SaturatingSub;
 use pathfinder_geometry::{rect::RectF, vector::Vector2F};
 use string_offset::CharOffset;
 use vec1::Vec1;
+use wish_core::{features::FeatureFlag, ui::appearance::Appearance};
 use wish_editor::{
     content::{buffer::InitialBufferState, text::IndentUnit},
     render::model::{Decoration, LineCount},
@@ -28,8 +29,8 @@ use wish_util::{
     content_version::ContentVersion,
     file::{FileId, FileLoadError, FileSaveError},
     path::to_relative_path,
+    sync::Condition,
 };
-use wish_core::{features::FeatureFlag, ui::appearance::Appearance};
 use wishui::{
     elements::{
         Border, ChildAnchor, ChildView, ClippedScrollStateHandle, ConstrainedBox, Container,
@@ -52,6 +53,7 @@ use crate::menu::{Event, Menu, MenuItem, MenuItemFields};
 
 use crate::{
     code::{
+        buffer_location::BufferLocation,
         editor::model::HoverableLink,
         footer::{CodeFooterView, CodeFooterViewEvent},
         global_buffer_model::{BufferState, GlobalBufferModel},
@@ -60,7 +62,6 @@ use crate::{
     debounce::debounce,
     settings::AISettings,
     terminal::TerminalView,
-    util::sync::Condition,
 };
 use crate::{
     code::{editor::EditorReviewComment, global_buffer_model::GlobalBufferModelEvent},
@@ -1178,8 +1179,9 @@ impl LocalCodeEditorView {
     where
         T: FnOnce(BufferState, &mut ViewContext<Self>) -> ViewHandle<CodeEditorView>,
     {
-        let buffer_state = GlobalBufferModel::handle(ctx)
-            .update(ctx, |model, ctx| model.open(path.to_path_buf(), ctx));
+        let buffer_state = GlobalBufferModel::handle(ctx).update(ctx, |model, ctx| {
+            model.open(BufferLocation::Local(path.to_path_buf()), ctx)
+        });
         let file_id = buffer_state.file_id;
         let editor = editor_constructor(buffer_state, ctx);
 
@@ -1531,6 +1533,10 @@ impl LocalCodeEditorView {
                     ctx.emit(LocalCodeEditorEvent::FailedToSave {
                         error: error.clone(),
                     });
+                }
+                GlobalBufferModelEvent::RemoteBufferConflict { .. }
+                | GlobalBufferModelEvent::ServerLocalBufferUpdated { .. } => {
+                    // Not relevant for local code editors.
                 }
             }
         });
@@ -2284,7 +2290,7 @@ pub fn render_unsaved_changes_banner(
             Container::new(
                 ConstrainedBox::new(
                     Icon::Warning
-                        .to_warpui_icon(appearance.theme().active_ui_text_color())
+                        .to_wishui_icon(appearance.theme().active_ui_text_color())
                         .finish(),
                 )
                 .with_height(16.)

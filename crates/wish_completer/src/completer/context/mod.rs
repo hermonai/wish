@@ -12,8 +12,8 @@ use anyhow::Result;
 use async_trait::async_trait;
 use smol_str::SmolStr;
 use typed_path::{TypedPath, TypedPathBuf};
-use wish_util::path::{EscapeChar, ShellFamily};
 use wish_core::command::ExitCode;
+use wish_util::path::{EscapeChar, ShellFamily};
 use wishui::platform::OperatingSystem;
 
 use crate::{completer::TopLevelCommandCaseSensitivity, signatures::CommandRegistry};

@@ -5,7 +5,7 @@ use wishui::color::ColorU;
 use wishui::elements::{ConstrainedBox, Container, CornerRadius, Radius};
 use wishui::Element;
 
-use crate::ai::agent::conversation::ConversationStatus;
+use crate::ai::agent::conversation::{ConversationStatus, StatusColorStyle};
 use crate::ai::agent_conversations_model::AgentRunDisplayStatus;
 use crate::ui_components::icons::Icon;
 
@@ -18,7 +18,7 @@ pub trait StatusElementStyle {
 
 impl StatusElementStyle for ConversationStatus {
     fn status_icon_and_color(&self, theme: &WarpTheme) -> (Icon, ColorU) {
-        ConversationStatus::status_icon_and_color(self, theme)
+        ConversationStatus::status_icon_and_color(self, theme, StatusColorStyle::Standard)
     }
 }
 
@@ -38,7 +38,7 @@ pub fn render_status_element(
     let (icon, color) = status.status_icon_and_color(theme);
 
     Container::new(
-        ConstrainedBox::new(icon.to_warpui_icon(Fill::from(color)).finish())
+        ConstrainedBox::new(icon.to_wishui_icon(Fill::from(color)).finish())
             .with_width(icon_size)
             .with_height(icon_size)
             .finish(),

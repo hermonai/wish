@@ -3,8 +3,8 @@ use std::{collections::HashMap, ffi::OsString, future::Future, pin::Pin, time::D
 use anyhow::Context;
 use tempfile::{Builder, NamedTempFile};
 use vec1::Vec1;
-use wish_managed_secrets::ManagedSecretManager;
 use wish_core::safe_info;
+use wish_managed_secrets::ManagedSecretManager;
 use wishui::{ModelSpawner, SingletonEntity};
 
 use crate::ai::aws_credentials::aws_role_session_name;

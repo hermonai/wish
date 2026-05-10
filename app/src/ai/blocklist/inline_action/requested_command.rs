@@ -7,9 +7,9 @@ use std::cmp::{Ordering, PartialEq};
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
-use wish_editor::render::element::VerticalExpansionBehavior;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::Icon;
+use wish_editor::render::element::VerticalExpansionBehavior;
 use wishui::elements::{ConstrainedBox, ScrollbarWidth};
 use wishui::ui_components::components::UiComponent as _;
 use wishui::{
@@ -752,7 +752,7 @@ impl RequestedCommandView {
                     Container::new(
                         ConstrainedBox::new(
                             Icon::Info
-                                .to_warpui_icon(
+                                .to_wishui_icon(
                                     blended_colors::text_sub(theme, theme.surface_1()).into(),
                                 )
                                 .finish(),
@@ -1642,5 +1642,5 @@ pub fn format_command_text(text: &str) -> String {
 }
 
 #[cfg(test)]
-#[path = "requested_command_test.rs"]
+#[path = "requested_command_tests.rs"]
 mod tests;

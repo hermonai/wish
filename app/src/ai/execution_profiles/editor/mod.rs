@@ -61,7 +61,7 @@ fn render_upgrade_footer(
 
     let info_icon = ConstrainedBox::new(
         wish_core::ui::Icon::Info
-            .to_warpui_icon(text_color)
+            .to_wishui_icon(text_color)
             .finish(),
     )
     .with_width(16.)
@@ -1422,7 +1422,7 @@ fn initial_context_window_display_value(
 mod ui_helpers;
 
 #[cfg(test)]
-#[path = "mod_test.rs"]
+#[path = "mod_tests.rs"]
 mod tests;
 
 impl View for ExecutionProfileEditorView {

@@ -5,11 +5,11 @@ use chrono::{DateTime, Utc};
 use derivative::Derivative;
 use pathfinder_geometry::vector::vec2f;
 use serde::{Deserialize, Serialize};
-use wish_graphql::{object_permissions::AccessLevel, scalars::time::ServerTimestamp};
 use wish_core::{
     features::FeatureFlag,
     ui::{Icon, appearance::Appearance, theme::Fill},
 };
+use wish_graphql::{object_permissions::AccessLevel, scalars::time::ServerTimestamp};
 use wishui_core::{
     Element,
     elements::{

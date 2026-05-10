@@ -1,8 +1,7 @@
 use std::future::Future;
 
+use wish_util::sync::Condition;
 use wishui::{Entity, ModelContext, SingletonEntity};
-
-use crate::util::sync::Condition;
 
 /// Represents whether the client is connected to the network.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]

@@ -426,7 +426,7 @@ fn convert_touch_moved(
 /// Handles the `TouchPhase::Ended` phase of a touch event.
 ///
 /// Note: This function intentionally does NOT clear `last_touch_purpose` for normal taps.
-/// The purpose is cleared later in `handle_converted_warpui_event` after soft keyboard
+/// The purpose is cleared later in `handle_converted_wishui_event` after soft keyboard
 /// logic runs, which needs to check if the touch was still a Tap (vs Scroll/Select/WindowDrag).
 fn convert_touch_ended(
     touch: Touch,
@@ -434,7 +434,7 @@ fn convert_touch_ended(
     scale_factor: f32,
 ) -> Option<ConvertedEvent> {
     // Check the purpose but don't clear it yet - we'll clear it later
-    // in handle_converted_warpui_event after checking if we need to
+    // in handle_converted_wishui_event after checking if we need to
     // update the soft keyboard.
     let is_long_press =
         if let Some(TouchPurpose::Tap(_, _, start_time)) = &window_state.last_touch_purpose {
@@ -471,7 +471,7 @@ fn convert_touch_ended(
     }
 
     // Don't clear last_touch_purpose yet - it will be cleared in
-    // handle_converted_warpui_event after soft keyboard logic runs.
+    // handle_converted_wishui_event after soft keyboard logic runs.
     Some(ConvertedEvent::Event(crate::event::Event::LeftMouseUp {
         position: window_state.last_cursor_position.to_vec2f(),
         modifiers: from_winit_modifiers_state(window_state.modifiers),
@@ -831,7 +831,7 @@ impl EventLoop {
                 // Convert velocity (px/sec) to scroll delta using elapsed time.
                 let delta = velocity.velocity * elapsed;
                 let position = window_state.last_cursor_position.to_vec2f();
-                self.handle_converted_warpui_event(
+                self.handle_converted_wishui_event(
                     window_id,
                     crate::event::Event::ScrollWheel {
                         position,
@@ -1060,7 +1060,7 @@ impl EventLoop {
 
         match event {
             ConvertedEvent::Event(event) => {
-                self.handle_converted_warpui_event(window_id, event);
+                self.handle_converted_wishui_event(window_id, event);
             }
             ConvertedEvent::Resize => {
                 let window = downcast_window(window.as_ref());
@@ -1298,12 +1298,28 @@ impl EventLoop {
                 }
 
                 let event_text = event.text.as_ref().map(|text| text.to_string());
-                let warp_ui_event =
-                    convert_keyboard_input_event(event, window_state, is_synthetic)?;
-                Some(ConvertedEvent::KeyDownWithTypedCharacters {
-                    chars: event_text,
-                    event: warp_ui_event,
-                })
+                let event_state = event.state;
+                let is_unidentified_key =
+                    matches!(event.logical_key, keyboard::Key::Unidentified(_));
+                match convert_keyboard_input_event(event, window_state, is_synthetic) {
+                    Some(warp_ui_event) => Some(ConvertedEvent::KeyDownWithTypedCharacters {
+                        chars: event_text,
+                        event: warp_ui_event,
+                    }),
+                    None if is_unidentified_key
+                        && !is_synthetic
+                        && event_state == ElementState::Pressed =>
+                    {
+                        // Fallback for synthetic WM_CHAR messages injected by non-IME input methods
+                        // (e.g. Unikey/EVKey on Windows for Vietnamese Telex/VNI). These input
+                        // methods hook the keyboard at a low level and inject pre-composed
+                        // characters via `SendInput` instead of going through the standard IME
+                        // pipeline. The resulting key event has
+                        // `logical_key == Key::Unidentified(...)`
+                        event_text.map(|chars| ConvertedEvent::Event(TypedCharacters { chars }))
+                    }
+                    None => None,
+                }
             }
             WindowEvent::Resized(_) => Some(ConvertedEvent::Resize),
             WindowEvent::Focused(is_focused) => {
@@ -1442,7 +1458,7 @@ impl EventLoop {
         // Create and dispatch the batched drag-and-drop event
         let drag_drop_event = crate::Event::DragAndDropFiles { paths, location };
 
-        self.handle_converted_warpui_event(window_id, drag_drop_event);
+        self.handle_converted_wishui_event(window_id, drag_drop_event);
     }
 
     /// Handles a request to close the window with the given wishui and winit
@@ -1560,7 +1576,7 @@ impl EventLoop {
 
     /// Handle events that may be handled by wishui, or maybe not in some cases, e.g. window
     /// drag-to-resize or drag-to-move.
-    fn handle_converted_warpui_event(
+    fn handle_converted_wishui_event(
         &mut self,
         window_id: winit::window::WindowId,
         event: crate::Event,

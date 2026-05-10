@@ -20,7 +20,7 @@ use crate::setup::RemoteServerSetupState;
 use crate::setup::UnsupportedReason;
 #[cfg(not(target_family = "wasm"))]
 use crate::transport::Connection;
-use crate::transport::RemoteTransport;
+use crate::transport::{Error, RemoteTransport};
 use crate::HostId;
 use repo_metadata::RepoMetadataUpdate;
 use serde::Serialize;
@@ -173,6 +173,7 @@ fn client_event_kind(event: &ClientEvent) -> &'static str {
             "codebase_index_statuses_snapshot"
         }
         ClientEvent::CodebaseIndexStatusUpdated { .. } => "codebase_index_status_updated",
+        ClientEvent::BufferUpdated { .. } => "buffer_updated",
         ClientEvent::MessageDecodingError => "message_decoding_error",
     }
 }
@@ -345,6 +346,15 @@ pub enum RemoteServerManagerEvent {
         host_id: HostId,
         status: RemoteCodebaseIndexStatus,
     },
+    /// A buffer was updated on the remote host (file changed on disk).
+    /// The app layer should forward this to `GlobalBufferModel::handle_buffer_updated_push`.
+    BufferUpdated {
+        host_id: HostId,
+        path: String,
+        new_server_version: u64,
+        expected_client_version: u64,
+        edits: Vec<crate::proto::TextEdit>,
+    },
 
     // --- Setup events ---
     /// Intermediate state change during the binary check/install flow.
@@ -358,7 +368,7 @@ pub enum RemoteServerManagerEvent {
     /// - `Err(_)` means the check itself failed (e.g. SSH error or timeout).
     BinaryCheckComplete {
         session_id: SessionId,
-        result: Result<bool, String>,
+        result: Result<bool, Arc<Error>>,
         /// The detected remote platform (OS + arch) from `uname -sm`.
         /// `None` if detection failed or was not attempted.
         remote_platform: Option<RemotePlatform>,
@@ -382,7 +392,7 @@ pub enum RemoteServerManagerEvent {
     /// - `Err(_)` means the install failed and carries the failure reason (SSH error, timeout, script error, etc.).
     BinaryInstallComplete {
         session_id: SessionId,
-        result: Result<(), String>,
+        result: Result<(), Arc<Error>>,
     },
 
     // --- Telemetry events ---
@@ -421,7 +431,8 @@ impl RemoteServerManagerEvent {
             | RemoteServerManagerEvent::RepoMetadataUpdated { .. }
             | RemoteServerManagerEvent::RepoMetadataDirectoryLoaded { .. }
             | RemoteServerManagerEvent::CodebaseIndexStatusesSnapshot { .. }
-            | RemoteServerManagerEvent::CodebaseIndexStatusUpdated { .. } => None,
+            | RemoteServerManagerEvent::CodebaseIndexStatusUpdated { .. }
+            | RemoteServerManagerEvent::BufferUpdated { .. } => None,
         }
     }
 }
@@ -582,13 +593,13 @@ impl RemoteServerManager {
                                 ctx.emit(RemoteServerManagerEvent::SetupStateChanged {
                                     session_id,
                                     state: RemoteServerSetupState::Failed {
-                                        error: error.clone(),
+                                        error: error.to_string(),
                                     },
                                 });
                             }
                             ctx.emit(RemoteServerManagerEvent::BinaryCheckComplete {
                                 session_id,
-                                result: check_result,
+                                result: check_result.map_err(Arc::new),
                                 remote_platform: platform,
                                 preinstall_check: preinstall,
                                 has_old_binary,
@@ -676,13 +687,13 @@ impl RemoteServerManager {
                                 ctx.emit(RemoteServerManagerEvent::SetupStateChanged {
                                     session_id,
                                     state: RemoteServerSetupState::Failed {
-                                        error: error.clone(),
+                                        error: error.to_string(),
                                     },
                                 });
                             }
                             ctx.emit(RemoteServerManagerEvent::BinaryInstallComplete {
                                 session_id,
-                                result,
+                                result: result.map_err(Arc::new),
                             });
                         })
                         .await;
@@ -1312,6 +1323,20 @@ impl RemoteServerManager {
             }
             ClientEvent::MessageDecodingError => {
                 ctx.emit(RemoteServerManagerEvent::ServerMessageDecodingError { session_id });
+            }
+            ClientEvent::BufferUpdated {
+                path,
+                new_server_version,
+                expected_client_version,
+                edits,
+            } => {
+                ctx.emit(RemoteServerManagerEvent::BufferUpdated {
+                    host_id,
+                    path,
+                    new_server_version,
+                    expected_client_version,
+                    edits,
+                });
             }
             ClientEvent::Disconnected => {
                 // Handled by the drain loop's completion callback.

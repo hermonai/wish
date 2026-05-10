@@ -8,10 +8,10 @@ use std::{collections::HashMap, path::PathBuf};
 use lsp::ReferenceLocation;
 use pathfinder_geometry::vector::Vector2F;
 use string_offset::CharOffset;
-use wish_files::FileModel;
 use wish_core::ui::{
     appearance::Appearance, icons::Icon as WarpIcon, theme::color::internal_colors,
 };
+use wish_files::FileModel;
 use wishui::{
     elements::{
         Border, ChildAnchor, ChildView, ClippedScrollStateHandle, ClippedScrollable,

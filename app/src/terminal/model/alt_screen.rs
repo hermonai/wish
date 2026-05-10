@@ -32,8 +32,8 @@ use parking_lot::Mutex;
 use pathfinder_color::ColorU;
 use std::sync::Arc;
 use vec1::Vec1;
-use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 use wish_core::semantic_selection::SemanticSelection;
+use wish_terminal::model::{KeyboardModes, KeyboardModesApplyBehavior};
 use wishui::text::SelectionType;
 use wishui::units::Lines;
 
@@ -687,5 +687,5 @@ impl Dimensions for AltScreen {
 }
 
 #[cfg(test)]
-#[path = "alt_screen_test.rs"]
+#[path = "alt_screen_tests.rs"]
 mod tests;

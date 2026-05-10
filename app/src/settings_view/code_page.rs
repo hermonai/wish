@@ -48,13 +48,13 @@ use pathfinder_color::ColorU;
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use wish_util::path::user_friendly_path;
 use wish_core::{
     features::FeatureFlag,
     report_if_error,
     settings::ToggleableSetting as _,
     ui::theme::{AnsiColorIdentifier, Fill as ThemeFill},
 };
+use wish_util::path::user_friendly_path;
 use wishui::{
     elements::{
         ChildView, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment, Element, Empty,

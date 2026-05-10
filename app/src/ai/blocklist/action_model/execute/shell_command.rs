@@ -9,9 +9,9 @@ use futures::{select, FutureExt};
 use futures_lite::pin;
 use itertools::Itertools;
 use parking_lot::FairMutex;
-use wish_util::path::ShellFamily;
 use wish_core::command::ExitCode;
 use wish_core::execution_mode::AppExecutionMode;
+use wish_util::path::ShellFamily;
 use wishui::r#async::{Spawnable, Timer};
 use wishui::{Entity, EntityId, ModelContext, ModelHandle, SingletonEntity};
 

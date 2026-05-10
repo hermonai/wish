@@ -1,6 +1,7 @@
 use std::{fmt, path::PathBuf};
 
 use clap::{Args, Subcommand, ValueEnum};
+use serde::{Deserialize, Serialize};
 
 use crate::{
     config_file::ConfigFileArgs, environment::EnvironmentCreateArgs, mcp::MCPSpec,
@@ -119,11 +120,10 @@ impl HiddenComputerUseArgs {
     }
 }
 /// The execution harness for an agent run.
-#[derive(
-    Debug, Copy, Clone, ValueEnum, Eq, PartialEq, Default, serde::Serialize, serde::Deserialize,
-)]
+#[derive(Debug, Copy, Clone, ValueEnum, Eq, PartialEq, Hash, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum Harness {
-    /// Use Wish's built-in MAA infrastructure (default).
+    /// Use Warp's built-in MAA infrastructure (default).
     #[default]
     #[value(name = "oz")]
     Oz,
@@ -143,6 +143,7 @@ pub enum Harness {
     /// recognize. Surfaced via deserialization fallbacks (e.g. unknown GraphQL
     /// enum values, unknown `harness_type` strings); never selectable from the
     /// CLI or harness dropdown.
+    #[serde(other)]
     #[value(skip)]
     Unknown,
 }
@@ -227,9 +228,9 @@ pub enum AgentProfileCommand {
 /// Agent-related subcommands.
 #[derive(Debug, Clone, Subcommand)]
 pub enum AgentCommand {
-    /// Run a New Hermon agent.
+    /// Run a new Oz agent.
     Run(RunAgentArgs),
-    /// Dispatch an Hermon agent that runs remotely.
+    /// Dispatch an Oz agent that runs remotely.
     RunCloud(RunCloudArgs),
     /// Manage agent profiles.
     #[command(subcommand)]
@@ -343,7 +344,7 @@ pub struct RunAgentArgs {
 
     /// Execution harness for the agent run.
     ///
-    /// "oz" (default) uses Wish's built-in agent infrastructure.
+    /// "oz" (default) uses Warp's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
     #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Oz, hide = true)]
     pub harness: Harness,
@@ -426,7 +427,7 @@ pub struct RunCloudArgs {
     /// The environment to run this ambient agent in.
     #[command(flatten)]
     pub environment: EnvironmentCreateArgs,
-    /// Open the agent's session in Warp once it's available.
+    /// Open the agent's session in Wish once it's available.
     #[arg(long = "open")]
     pub open: bool,
 
@@ -437,7 +438,15 @@ pub struct RunCloudArgs {
     #[command(flatten)]
     pub scope: ObjectScope,
 
-    /// Where this job should be hosted. Setting "warp" runs it on Wish's infrastructure. Any other
+    /// UID of the agent to execute this run as.
+    ///
+    /// This will apply the agent's configuration, such
+    /// as its skills and base model, and attribute
+    /// credit usage back to the agent.
+    #[arg(long = "agent", value_name = "UID")]
+    pub agent_uid: Option<String>,
+
+    /// Where this job should be hosted. Setting "warp" runs it on Warp's infrastructure. Any other
     /// value is treated is a self-hosted job and the value will be matched with the self-hosted
     /// worker's name.
     #[arg(long = "host", value_name = "WORKER_ID")]
@@ -464,7 +473,7 @@ pub struct RunCloudArgs {
 
     /// Execution harness for the agent run.
     ///
-    /// "oz" (default) uses Wish's built-in agent infrastructure.
+    /// "oz" (default) uses Warp's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
     #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Oz, hide = true)]
     pub harness: Harness,

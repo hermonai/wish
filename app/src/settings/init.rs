@@ -1,7 +1,7 @@
 use settings::{Setting as _, SettingsManager};
-use wishui_extras::user_preferences;
 use wish_core::features::FeatureFlag;
 use wishui::{rendering::GPUPowerPreference, AppContext, SingletonEntity};
+use wishui_extras::user_preferences;
 
 use crate::{
     ai::cloud_agent_settings::CloudAgentSettings,

@@ -242,12 +242,12 @@ impl ConversationEndedTombstoneView {
         });
 
         // In wasm, continuing locally is impossible so we instead
-        // offer to open the conversation in warp (where you can continue locally).
+        // offer to open the conversation in Wish (where you can continue locally).
         #[cfg(target_family = "wasm")]
         let open_in_warp_button = conversation_id.map(|conv_id| {
             ctx.add_typed_action_view(move |_| {
-                ActionButton::new("Open in Warp", PrimaryTheme)
-                    .with_tooltip("Open this conversation in the Warp desktop app")
+                ActionButton::new("Open in Wish", PrimaryTheme)
+                    .with_tooltip("Open this conversation in the Wish desktop app")
                     .on_click(move |ctx| {
                         ctx.dispatch_typed_action(ConversationEndedTombstoneAction::OpenInWarp(
                             conv_id,

@@ -15,6 +15,10 @@ use pathfinder_geometry::{
     rect::RectF,
     vector::{vec2f, Vector2F},
 };
+use wish_core::ui::{
+    appearance::Appearance,
+    theme::{color::internal_colors, Fill},
+};
 use wish_editor::{
     editor::EditorView,
     render::{
@@ -26,10 +30,6 @@ use wish_editor::{
             gutter_expansion_button_types, BlockLocation, ExpansionType, LineCount, RenderState,
         },
     },
-};
-use wish_core::ui::{
-    appearance::Appearance,
-    theme::{color::internal_colors, Fill},
 };
 use wishui::{
     elements::{

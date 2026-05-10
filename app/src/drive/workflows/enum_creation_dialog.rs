@@ -2,8 +2,8 @@ use std::rc::Rc;
 
 use strum::IntoEnumIterator;
 use strum_macros::{EnumIter, IntoStaticStr};
-use wish_editor::editor::NavigationKey;
 use wish_core::{features::FeatureFlag, ui::appearance::Appearance};
+use wish_editor::editor::NavigationKey;
 use wishui::{
     elements::{
         Border, ClippedScrollStateHandle, ClippedScrollable, ConstrainedBox, Container,

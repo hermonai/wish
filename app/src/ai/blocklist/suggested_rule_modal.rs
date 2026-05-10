@@ -24,8 +24,8 @@ use crate::{
     ui_components::blended_colors,
 };
 use pathfinder_geometry::vector::vec2f;
-use wish_editor::editor::NavigationKey;
 use wish_core::ui::appearance::Appearance;
+use wish_editor::editor::NavigationKey;
 use wishui::elements::{
     ChildAnchor, OffsetPositioning, PositionedElementAnchor, PositionedElementOffsetBounds,
 };

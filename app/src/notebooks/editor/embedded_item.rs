@@ -6,6 +6,7 @@ use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use serde_yaml::Mapping;
 use string_offset::ByteOffset;
+use wish_core::ui::appearance::Appearance;
 use wish_editor::{
     content::{markdown::MarkdownStyle, text::TextStylesWithMetadata},
     editor::EmbeddedItemModel,
@@ -21,7 +22,6 @@ use wish_editor::{
         BLOCK_FOOTER_HEIGHT,
     },
 };
-use wish_core::ui::appearance::Appearance;
 use wishui::{
     elements::{Border, Empty},
     SingletonEntity,

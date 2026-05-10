@@ -2,8 +2,8 @@ use std::cmp::Ordering;
 
 use itertools::Itertools;
 use pathfinder_color::ColorU;
-use wish_editor::editor::NavigationKey;
 use wish_core::{features::FeatureFlag, ui::appearance::Appearance};
+use wish_editor::editor::NavigationKey;
 use wishui::{
     elements::{
         ChildView, ConstrainedBox, Container, CrossAxisAlignment, Fill, Flex, MainAxisAlignment,

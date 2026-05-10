@@ -1,7 +1,7 @@
 use pathfinder_geometry::vector::vec2f;
 use string_offset::ByteOffset;
-use wish_editor::model::CoreEditorModel;
 use wish_core::ui::appearance::Appearance;
+use wish_editor::model::CoreEditorModel;
 use wishui::{platform::WindowStyle, App};
 
 use crate::search::files::model::FileSearchModel;

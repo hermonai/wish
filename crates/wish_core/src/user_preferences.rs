@@ -7,8 +7,8 @@
 use std::ops::Deref;
 
 use settings::PrivatePreferences;
-use wishui_extras::user_preferences::UserPreferences;
 use wishui::SingletonEntity;
+use wishui_extras::user_preferences::UserPreferences;
 
 /// An extension trait on [`wishui::AppContext`] for accessing private user
 /// preferences.

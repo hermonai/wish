@@ -7,8 +7,8 @@ use std::{
     process,
 };
 use typed_path::UnixPathBuf;
-use wish_util::path::{canonicalize_git_bash_path, is_msys2_path, warp_shell_path};
 use wish_core::channel::{Channel, ChannelState};
+use wish_util::path::{canonicalize_git_bash_path, is_msys2_path, warp_shell_path};
 
 use crate::{
     terminal::{

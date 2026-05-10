@@ -12,8 +12,8 @@ use chrono::{DateTime, Utc};
 use instant::Instant;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use wish_graphql::scalars::time::ServerTimestamp;
 use wish_core::user_preferences::GetUserPreferences as _;
+use wish_graphql::scalars::time::ServerTimestamp;
 use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
 
 pub use wish_graphql::billing::BonusGrantType;
@@ -640,5 +640,5 @@ impl AIRequestUsageModel {
 impl SingletonEntity for AIRequestUsageModel {}
 
 #[cfg(test)]
-#[path = "request_usage_model_test.rs"]
+#[path = "request_usage_model_tests.rs"]
 mod tests;

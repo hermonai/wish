@@ -5,8 +5,8 @@ use std::{fmt::Display, ops::Range, time::SystemTime};
 use itertools::Itertools as _;
 use serde::{Deserialize, Serialize};
 use warp_multi_agent_api::apply_file_diffs_result::success::UpdatedFileContent;
-use wish_terminal::model::BlockId;
 use wish_core::command::ExitCode;
+use wish_terminal::model::BlockId;
 
 use crate::{
     agent::FileLocations,

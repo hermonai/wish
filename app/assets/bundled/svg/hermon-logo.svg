@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 65.5">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43.89 76.34">
   <defs>
     <style>
       .cls-1 {
-        fill: #4f2d82;
+        fill: #5270b2;
         fill-rule: evenodd;
-      }
-
-      .cls-2 {
-        opacity: 0;
       }
     </style>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
-    <rect class="cls-2" width="65" height="65.5" rx="10.83" ry="10.83"/>
-    <polygon class="cls-1" points="27.1 39 7.06 59.04 14.68 26.57 27.1 39"/>
-    <polygon class="cls-1" points="27.11 38.98 47.15 59.03 59.58 6.51 27.11 38.98"/>
+    <polygon class="cls-1" points="33.22 72.93 17.58 45.63 43.89 0 33.22 72.93"/>
+    <polygon class="cls-1" points="7.23 26.91 17.74 45.4 0 76.34 7.23 26.91"/>
   </g>
 </svg>

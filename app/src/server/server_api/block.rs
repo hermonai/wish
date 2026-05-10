@@ -12,6 +12,7 @@ use cynic::{MutationBuilder, QueryBuilder};
 #[cfg(test)]
 use mockall::automock;
 use std::convert::TryFrom;
+use wish_core::channel::{Channel, ChannelState};
 use wish_graphql::{
     mutations::{
         share_block::{BlockInput, ShareBlock, ShareBlockResult, ShareBlockVariables},
@@ -23,7 +24,6 @@ use wish_graphql::{
         Block as GqlBlock, GetBlocksForUser, GetBlocksForUserVariables,
     },
 };
-use wish_core::channel::{Channel, ChannelState};
 
 #[cfg_attr(test, automock)]
 #[cfg_attr(not(target_family = "wasm"), async_trait)]

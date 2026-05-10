@@ -70,9 +70,7 @@ impl View for WishChatView {
             .with_cross_axis_alignment(CrossAxisAlignment::Start);
 
         // ── Header ──────────────────────────────────────────
-        let header_label = mgr
-            .adapter_label()
-            .unwrap_or_else(|| "offline".to_string());
+        let header_label = mgr.adapter_label().unwrap_or_else(|| "offline".to_string());
         let header_text = format!("Wish · {header_label}");
         let header = Container::new(
             Text::new(header_text, font, META_FONT_SIZE)
@@ -178,10 +176,9 @@ fn render_turn(turn: &Turn, theme: &WarpTheme, font: FamilyId) -> Box<dyn wishui
         }
 
         Turn::System { note, .. } => {
-            let text =
-                Text::new(format!("[system] {note}"), font, META_FONT_SIZE)
-                    .with_color(theme.ansi_fg_yellow())
-                    .finish();
+            let text = Text::new(format!("[system] {note}"), font, META_FONT_SIZE)
+                .with_color(theme.ansi_fg_yellow())
+                .finish();
             Container::new(text)
                 .with_margin_top(2.)
                 .with_margin_bottom(2.)
@@ -196,11 +193,9 @@ fn render_message_block(
     font: FamilyId,
 ) -> Box<dyn wishui::Element> {
     match block {
-        MessageBlock::Text { text } => {
-            Text::new(text.clone(), font, CHAT_FONT_SIZE)
-                .with_color(theme.foreground().into_solid())
-                .finish()
-        }
+        MessageBlock::Text { text } => Text::new(text.clone(), font, CHAT_FONT_SIZE)
+            .with_color(theme.foreground().into_solid())
+            .finish(),
 
         MessageBlock::Thinking { text } => {
             // Truncate long thinking blocks.

@@ -50,13 +50,13 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::str::FromStr;
 use teams_page::{TeamsPageView, TeamsPageViewEvent};
-use wish_editor::editor::NavigationKey;
 use warpify_page::{WishifyPageAction, WishifyPageView};
 use wish_core::send_telemetry_from_ctx;
 use wish_core::{
     channel::ChannelState, context_flag::ContextFlag, features::FeatureFlag,
     settings::ToggleableSetting as _, ui::theme::color::internal_colors,
 };
+use wish_editor::editor::NavigationKey;
 use wishui::Element;
 use wishui::{
     elements::{
@@ -2226,7 +2226,7 @@ impl SettingsView {
                     Container::new(
                         ConstrainedBox::new(
                             icons::Icon::SearchSmall
-                                .to_warpui_icon(appearance.theme().active_ui_text_color())
+                                .to_wishui_icon(appearance.theme().active_ui_text_color())
                                 .finish(),
                         )
                         .with_width(16.)
@@ -2696,5 +2696,5 @@ impl BackingView for SettingsView {
 }
 
 #[cfg(test)]
-#[path = "mod_test.rs"]
+#[path = "mod_tests.rs"]
 mod tests;

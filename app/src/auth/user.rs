@@ -232,5 +232,5 @@ impl From<FirebaseProfile> for UserMetadata {
 }
 
 #[cfg(test)]
-#[path = "user_test.rs"]
+#[path = "user_tests.rs"]
 mod tests;

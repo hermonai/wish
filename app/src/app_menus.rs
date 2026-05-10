@@ -26,9 +26,9 @@ use enclose::enclose;
 use itertools::Itertools;
 use settings::manager::SettingsManager;
 use settings::Setting as _;
-use wish_util::path::user_friendly_path;
 use wish_core::channel::ChannelState;
 use wish_core::context_flag::ContextFlag;
+use wish_util::path::user_friendly_path;
 use wishui::actions::StandardAction;
 use wishui::keymap::{Keystroke, Trigger};
 use wishui::platform::menu::{
@@ -774,14 +774,18 @@ fn debug_menu_items() -> Vec<MenuItem> {
                     // Switch to production URLs
                     let _ = ChannelState::override_server_root_url("https://api.hermon.ai");
                     let _ = ChannelState::override_ws_server_url("wss://api.hermon.ai/graphql/v2");
-                    let _ = ChannelState::override_session_sharing_server_url("wss://api.hermon.ai/sessions");
+                    let _ = ChannelState::override_session_sharing_server_url(
+                        "wss://api.hermon.ai/sessions",
+                    );
                     let _ = ChannelState::override_hermon_root_url("https://wish.hermon.ai");
                     log::info!("Switched to production server URLs (api.hermon.ai)");
                 } else {
                     // Switch to local dev URLs
                     let _ = ChannelState::override_server_root_url("http://localhost:8080");
                     let _ = ChannelState::override_ws_server_url("ws://localhost:8080/graphql/v2");
-                    let _ = ChannelState::override_session_sharing_server_url("ws://localhost:8080/sessions");
+                    let _ = ChannelState::override_session_sharing_server_url(
+                        "ws://localhost:8080/sessions",
+                    );
                     let _ = ChannelState::override_hermon_root_url("http://localhost:3000");
                     log::info!("Switched to local dev server URLs (localhost:8080)");
                 }

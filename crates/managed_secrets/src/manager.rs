@@ -2,8 +2,8 @@ use std::{collections::HashMap, future::Future, sync::Arc, time::Duration};
 
 use vec1::vec1;
 
-use wish_graphql::managed_secrets::ManagedSecret;
 use wish_core::features::FeatureFlag;
+use wish_graphql::managed_secrets::ManagedSecret;
 use wishui::{Entity, SingletonEntity};
 
 use crate::{

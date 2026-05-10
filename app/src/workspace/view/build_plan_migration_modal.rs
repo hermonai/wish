@@ -11,9 +11,9 @@ use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use settings::Setting as _;
 use thousands::Separable;
-use wish_graphql::billing::{AddonCreditsOption, StripeSubscriptionPlan};
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::theme::Fill;
+use wish_graphql::billing::{AddonCreditsOption, StripeSubscriptionPlan};
 use wishui::elements::{
     Align, Border, CacheOption, ChildAnchor, ChildView, ConstrainedBox, Container, CornerRadius,
     CrossAxisAlignment, DropShadow, Flex, FormattedTextElement, HighlightedHyperlink, Image,

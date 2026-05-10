@@ -16,8 +16,8 @@ use wish_completer::completer::{
     GeneratorContext, PathCompletionContext, PathSeparators, TopLevelCommandCaseSensitivity,
 };
 use wish_completer::signatures::CommandRegistry;
-use wish_util::path::{EscapeChar, ShellFamily};
 use wish_core::features::FeatureFlag;
+use wish_util::path::{EscapeChar, ShellFamily};
 use wishui::{AppContext, SingletonEntity};
 
 use crate::safe_warn;

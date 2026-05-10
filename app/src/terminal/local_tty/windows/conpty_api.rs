@@ -1,11 +1,11 @@
 use std::mem::transmute;
 use std::path::Path;
 use thiserror::Error;
-use wish_util::path::TargetDirError;
 use windows::core::{s, HRESULT, HSTRING, PCWSTR};
 use windows::Win32::Foundation::HANDLE;
 use windows::Win32::System::Console::{COORD, HPCON};
 use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
+use wish_util::path::TargetDirError;
 
 const CREATE_PSUEDOCONSOLE_FN_NAME: &str = "CreatePsuedoConsole";
 const RESIZE_PSUEDOCONSOLE_FN_NAME: &str = "ResizePsuedoConsole";

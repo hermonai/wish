@@ -8,9 +8,9 @@ use wish_cli::WorkerCommand;
 use wish_core::channel::{Channel, ChannelConfig, ChannelState, HermonConfig, WishServerConfig};
 use wish_core::AppId;
 
-/// The Warp integration test runner.
+/// The Wish integration test runner.
 #[derive(Debug, Default, Parser, Clone)]
-#[command(name = "warp-integration-test")]
+#[command(name = "wish-integration-test")]
 #[clap(args_conflicts_with_subcommands = true)]
 pub struct Args {
     #[command(subcommand)]
@@ -28,14 +28,14 @@ pub fn main() -> Result<()> {
         ChannelConfig {
             app_id: AppId::new(
                 "dev",
-                "warp",
+                "hermon",
                 if cfg!(target_os = "macos") {
                     "Wish-Integration"
                 } else {
-                    "WarpIntegration"
+                    "WishIntegration"
                 },
             ),
-            logfile_name: "warp_integration.log".into(),
+            logfile_name: "wish_integration.log".into(),
             server_config: WishServerConfig {
                 firebase_auth_api_key: "".into(),
                 // Use an IP in the IANA testing range, with the TCP discard port, to
@@ -263,6 +263,14 @@ fn register_tests() -> HashMap<&'static str, BoxedBuilderFn> {
     register_test!(test_ssh_into_sh);
     register_test!(test_ssh_into_ash);
     register_test!(test_ssh_with_shell_override);
+
+    // Remote server integration tests
+    register_test!(test_remote_server_connect_bash);
+    register_test!(test_remote_server_connect_zsh);
+    register_test!(test_remote_server_navigate_to_repo);
+    register_test!(test_remote_server_completions);
+    register_test!(test_remote_server_file_operations);
+    register_test!(test_remote_server_lazy_load_directory);
     register_test!(test_custom_open_completions_menu_binding);
     register_test!(test_color_overrides_in_prompt_dont_crash);
     register_test!(test_copy_prompt_from_block_honor_ps1_disabled);
@@ -358,7 +366,7 @@ fn register_tests() -> HashMap<&'static str, BoxedBuilderFn> {
     register_test!(test_close_notebook_tab);
     register_test!(test_open_in_warp_banner);
     register_test!(test_close_notebook_window);
-    register_test!(test_backspace_inside_rendered_mermaid_block_is_atomic);
+    register_test!(test_backspace_inside_raw_mermaid_block_edits_text_without_removing_block);
 
     // Workflow tests
     register_test!(test_open_workflow_in_pane);

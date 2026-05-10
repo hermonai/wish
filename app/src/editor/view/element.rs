@@ -23,9 +23,9 @@ use pathfinder_geometry::{
     vector::{vec2f, Vector2F},
 };
 use vim::vim::{MotionType, VimMode};
-use wish_util::user_input::UserInput;
 use wish_core::features::FeatureFlag;
 use wish_core::ui::appearance::DEFAULT_UI_FONT_SIZE;
+use wish_util::user_input::UserInput;
 use wishui::event::KeyState;
 use wishui::text_selection_utils::{
     calculate_tick_width, create_newline_tick_rect, selection_crosses_newline_row_based,

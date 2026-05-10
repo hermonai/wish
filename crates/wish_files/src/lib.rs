@@ -16,8 +16,8 @@ use std::{
 
 use remote_server::client::RemoteServerClient;
 use remote_server::manager::RemoteServerManager;
-use wish_util::standardized_path::StandardizedPath;
 use wish_core::HostId;
+use wish_util::standardized_path::StandardizedPath;
 
 use futures::io::{AsyncBufReadExt, BufReader};
 use futures::StreamExt;
@@ -29,10 +29,10 @@ use repo_metadata::{
     repository::{RepositorySubscriber, SubscriberId},
     CanonicalizedPath, Repository, RepositoryUpdate,
 };
+use watcher::{BulkFilesystemWatcher, BulkFilesystemWatcherEvent};
 use wish_util::content_version::ContentVersion;
 use wish_util::file::FileSaveError;
 use wish_util::file::{FileId, FileLoadError};
-use watcher::{BulkFilesystemWatcher, BulkFilesystemWatcherEvent};
 use wishui::ModelHandle;
 use wishui::{r#async::SpawnedFutureHandle, AppContext, Entity, ModelContext, SingletonEntity};
 
@@ -1195,5 +1195,5 @@ impl RepositorySubscriber for FileRepositorySubscriber {
 }
 
 #[cfg(test)]
-#[path = "lib_test.rs"]
+#[path = "lib_tests.rs"]
 mod tests;

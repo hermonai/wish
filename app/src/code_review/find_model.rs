@@ -6,13 +6,13 @@ use std::collections::HashMap;
 use std::ops::Range;
 use string_offset::CharOffset;
 #[cfg(not(target_family = "wasm"))]
+use wish_core::channel::ChannelState;
+use wish_core::send_telemetry_from_ctx;
+#[cfg(not(target_family = "wasm"))]
 use wish_editor::content::find::SearchConfig;
 #[cfg(not(target_family = "wasm"))]
 use wish_editor::search::Searcher;
 use wish_editor::search::{RestorableSearchResults, SelectedResult};
-#[cfg(not(target_family = "wasm"))]
-use wish_core::channel::ChannelState;
-use wish_core::send_telemetry_from_ctx;
 use wishui::WeakViewHandle;
 use wishui::{
     r#async::SpawnedFutureHandle, AppContext, Entity, EntityId, ModelContext, ViewHandle,

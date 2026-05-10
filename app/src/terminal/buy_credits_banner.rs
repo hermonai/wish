@@ -5,9 +5,9 @@ use itertools::Itertools as _;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
-use wish_graphql::billing::AddonCreditsOption;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::Icon;
+use wish_graphql::billing::AddonCreditsOption;
 use wishui::elements::{
     Align, Border, ChildAnchor, ChildView, ConstrainedBox, Container, CornerRadius,
     CrossAxisAlignment, DropShadow, Expanded, Flex, FormattedTextElement, HighlightedHyperlink,

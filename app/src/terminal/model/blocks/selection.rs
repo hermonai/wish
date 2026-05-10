@@ -2,8 +2,8 @@ use std::{cmp::max, fmt::Debug, mem, ops::RangeInclusive};
 
 use sum_tree::SeekBias;
 use vec1::{vec1, Vec1};
-use wish_terminal::model::grid::CellType;
 use wish_core::semantic_selection::SemanticSelection;
+use wish_terminal::model::grid::CellType;
 use wishui::{
     text::{IsRect, SelectionType},
     units::{IntoLines as _, Lines},

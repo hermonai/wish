@@ -14,9 +14,9 @@ use session_sharing_protocol::common::{Role, SessionId};
 use session_sharing_protocol::sharer::SessionSourceType;
 use wish_cli::share::{ShareAccessLevel, ShareRequest, ShareSubject};
 use wish_completer::completer::CommandOutput;
-use wish_util::path::ShellFamily;
 use wish_core::command::ExitCode;
 use wish_core::features::FeatureFlag;
+use wish_util::{path::ShellFamily, sync::Condition};
 use wishui::{
     r#async::FutureExt, AppContext, Entity, ModelContext, ModelHandle, SingletonEntity as _,
     ViewHandle,
@@ -35,7 +35,6 @@ use crate::{
         view::ConversationRestorationInNewPaneType,
         TerminalView,
     },
-    util::sync::Condition,
     workspaces::user_workspaces::UserWorkspaces,
 };
 

@@ -60,8 +60,8 @@ pub const fn toml_path_hierarchy(path: &str) -> Option<&str> {
 use anyhow::{Context, Result};
 use serde::{Serialize, de::DeserializeOwned};
 use wish_features::FeatureFlag;
-use wishui_extras::user_preferences::UserPreferences;
 use wishui::{AppContext, Entity, ModelContext};
+use wishui_extras::user_preferences::UserPreferences;
 
 /// A newtype wrapper for the public preferences backend.
 ///

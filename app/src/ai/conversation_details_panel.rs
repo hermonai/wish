@@ -28,7 +28,7 @@ use wishui::{
 
 use crate::ai::agent::api::ServerConversationToken;
 use crate::ai::agent::conversation::AIConversation;
-use crate::ai::agent::conversation::{AIConversationId, ConversationStatus};
+use crate::ai::agent::conversation::{AIConversationId, ConversationStatus, StatusColorStyle};
 use crate::ai::agent_conversations_model::{AgentConversationEntry, AgentRunDisplayStatus};
 use crate::ai::agent_management::details_action_buttons::{
     ActionButtonsConfig, AgentDetailsButtonEvent, ConversationActionButtonsRow,
@@ -67,6 +67,8 @@ use crate::workspaces::user_profiles::UserProfiles;
 const FIELD_SPACING: f32 = 16.0;
 const HEADER_SPACING: f32 = 12.0;
 const STATUS_ICON_SIZE: f32 = 12.0;
+const HARNESS_CIRCLE_SIZE: f32 = 16.0;
+const HARNESS_ICON_IN_CIRCLE: f32 = 9.0;
 const LABEL_VALUE_GAP: f32 = 4.0;
 const SECTION_HEADER_GAP: f32 = 8.0;
 
@@ -1034,12 +1036,12 @@ impl ConversationDetailsPanel {
             }
             PanelMode::Conversation { status, .. } => {
                 let status = status.as_ref()?;
-                let (icon, color) = status.status_icon_and_color(theme);
+                let (icon, color) = status.status_icon_and_color(theme, StatusColorStyle::Standard);
                 (icon, color, status.to_string())
             }
         };
 
-        let status_icon = ConstrainedBox::new(icon.to_warpui_icon(color.into()).finish())
+        let status_icon = ConstrainedBox::new(icon.to_wishui_icon(color.into()).finish())
             .with_width(STATUS_ICON_SIZE)
             .with_height(STATUS_ICON_SIZE)
             .finish();
@@ -1095,18 +1097,24 @@ impl ConversationDetailsPanel {
         .with_color(blended_colors::text_sub(theme, theme.surface_1()))
         .finish();
 
-        let icon_tint = harness_display::brand_color(harness)
-            .map(Into::into)
-            .unwrap_or_else(|| theme.foreground());
-
-        let icon = ConstrainedBox::new(
+        let circle_bg = harness_display::circle_background(harness, theme);
+        let icon_fill = harness_display::icon_fill_on_circle(harness, theme);
+        let icon_glyph = ConstrainedBox::new(
             harness_display::icon_for(harness)
-                .to_warpui_icon(icon_tint)
+                .to_wishui_icon(icon_fill)
                 .finish(),
         )
-        .with_width(16.)
-        .with_height(16.)
+        .with_width(HARNESS_ICON_IN_CIRCLE)
+        .with_height(HARNESS_ICON_IN_CIRCLE)
         .finish();
+        let icon_padding = (HARNESS_CIRCLE_SIZE - HARNESS_ICON_IN_CIRCLE) / 2.;
+        let icon = Container::new(icon_glyph)
+            .with_uniform_padding(icon_padding)
+            .with_background(circle_bg)
+            .with_corner_radius(CornerRadius::with_all(Radius::Pixels(
+                HARNESS_CIRCLE_SIZE / 2.,
+            )))
+            .finish();
 
         let name = Text::new(
             availability.display_name_for(harness).to_string(),
@@ -1144,7 +1152,7 @@ impl ConversationDetailsPanel {
         let ui_font_size = appearance.ui_font_size();
         let sub_color = blended_colors::text_sub(theme, theme.surface_1());
 
-        let icon = ConstrainedBox::new(Icon::Warp.to_warpui_icon(theme.foreground()).finish())
+        let icon = ConstrainedBox::new(Icon::Warp.to_wishui_icon(theme.foreground()).finish())
             .with_width(20.)
             .with_height(20.)
             .finish();

@@ -9,12 +9,12 @@ use pathfinder_color::ColorU;
 use rangemap::RangeMap;
 use similar::{ChangeTag, DiffOp, TextDiff};
 use string_offset::CharOffset;
+use wish_core::ui::theme::Fill;
 use wish_editor::{
     content::{edit::TemporaryBlock, version::BufferVersion},
     multiline::{AnyMultilineString, MultilineStr, MultilineString, LF},
     render::model::{Decoration, LineCount, LineDecoration},
 };
-use wish_core::ui::theme::Fill;
 use wishui::{Entity, ModelContext};
 
 use super::super::DiffResult;

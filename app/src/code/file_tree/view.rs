@@ -1297,7 +1297,7 @@ impl FileTreeView {
                         {
                             Some(state.entry.clone())
                         }
-                        Some(IndexedRepoState::Pending) => {
+                        Some(IndexedRepoState::Pending(_)) => {
                             // Repo is being (re-)indexed. Keep whatever entry
                             // we already have so the tree doesn't flash to a
                             // loading state during the transition.
@@ -1576,7 +1576,7 @@ impl FileTreeView {
                 Some(IndexedRepoState::Indexed(state)) => {
                     root_dir.entry = state.entry.clone();
                 }
-                Some(IndexedRepoState::Pending) => {
+                Some(IndexedRepoState::Pending(_)) => {
                     // Repo is being (re-)indexed. Keep whatever entry we already
                     // have so the tree doesn't flash back to a loading state
                     // during the Pending → Indexed transition.
@@ -1829,7 +1829,7 @@ impl FileTreeView {
         let expand_icon = match expand_icon {
             Some(icon) => {
                 let chevron_icon_color = item_highlight_state.text_and_icon_color(appearance);
-                icon.to_warpui_icon(chevron_icon_color.into()).finish()
+                icon.to_wishui_icon(chevron_icon_color.into()).finish()
             }
             None => Empty::new().finish(),
         };
@@ -1848,7 +1848,7 @@ impl FileTreeView {
         // Add the icon for the item.
         let icon_color = item_highlight_state.text_and_icon_color(appearance);
         let icon = match render_state.icon {
-            ImageOrIcon::Icon(icon) => icon.to_warpui_icon(icon_color.into()).finish(),
+            ImageOrIcon::Icon(icon) => icon.to_wishui_icon(icon_color.into()).finish(),
             ImageOrIcon::Image(image) => image,
         };
         header_row.add_child(
@@ -2727,7 +2727,7 @@ impl FileTreeView {
                 Container::new(
                     ConstrainedBox::new(
                         Icon::AlertTriangle
-                            .to_warpui_icon(Fill::Solid(internal_colors::neutral_6(theme)))
+                            .to_wishui_icon(Fill::Solid(internal_colors::neutral_6(theme)))
                             .finish(),
                     )
                     .with_width(24.)
@@ -2792,7 +2792,7 @@ impl FileTreeView {
 
         // Create loading icon
         let loading_icon = Icon::Loading
-            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
+            .to_wishui_icon(wish_core::ui::theme::Fill::Solid(
                 internal_colors::neutral_6(theme),
             ))
             .finish();
@@ -2814,7 +2814,7 @@ impl FileTreeView {
         header_row.add_child(loading_icon);
 
         let folder_icon = Icon::Folder
-            .to_warpui_icon(wish_core::ui::theme::Fill::Solid(
+            .to_wishui_icon(wish_core::ui::theme::Fill::Solid(
                 internal_colors::neutral_6(theme),
             ))
             .finish();

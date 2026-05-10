@@ -3,8 +3,8 @@
 use std::cmp;
 
 use fuzzy_match::{match_indices_case_insensitive, FuzzyMatchResult};
-use wish_editor::editor::NavigationKey;
 use wish_core::ui::theme::Fill;
+use wish_editor::editor::NavigationKey;
 use wishui::{
     color::ColorU,
     elements::{

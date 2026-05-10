@@ -8,7 +8,6 @@ use crate::features::FeatureFlag;
 use crate::launch_configs::launch_config::LaunchConfig;
 use crate::menu::{MenuAction, MenuItem, MenuItemFields};
 use crate::pane_group::{PaneGroup, PaneId};
-use crate::terminal::model::terminal_model::ConversationTranscriptViewerStatus;
 use settings::Setting as _;
 use std::sync::Arc;
 use std::time::Duration;
@@ -790,14 +789,19 @@ impl<'a> TabComponent<'a> {
         let active_pane_is_ambient_agent_session = tab
             .pane_group
             .as_ref(ctx)
-            .active_session_terminal_model(ctx)
-            .map(|model| {
-                let model = model.lock();
-                model.is_shared_ambient_agent_session()
-                    || matches!(
-                        model.conversation_transcript_viewer_status(),
-                        Some(ConversationTranscriptViewerStatus::ViewingAmbientConversation(_))
-                    )
+            .active_session_view(ctx)
+            .map(|view| {
+                let view = view.as_ref(ctx);
+                view.is_ambient_agent_session(ctx) || {
+                    let model = view.model.lock();
+                    model.is_shared_ambient_agent_session()
+                        || matches!(
+                            model.conversation_transcript_viewer_status(),
+                            Some(
+                                crate::terminal::model::terminal_model::ConversationTranscriptViewerStatus::ViewingAmbientConversation(_)
+                            )
+                        )
+                }
             })
             .unwrap_or(false);
         let active_pane_has_unsaved_code_changes = tab
@@ -1208,22 +1212,22 @@ impl<'a> TabComponent<'a> {
             Indicator::None => None,
             Indicator::Synced => Some(
                 Icon::LinkHorizontal
-                    .to_warpui_icon(self.styles.synced_input_indicator_color.into())
+                    .to_wishui_icon(self.styles.synced_input_indicator_color.into())
                     .finish(),
             ),
             Indicator::Error => Some(
                 Icon::AlertTriangle
-                    .to_warpui_icon(self.styles.error_color.into())
+                    .to_wishui_icon(self.styles.error_color.into())
                     .finish(),
             ),
             Indicator::Shared => Some(
                 Icon::Sharing
-                    .to_warpui_icon(self.styles.sharing_color.into())
+                    .to_wishui_icon(self.styles.sharing_color.into())
                     .finish(),
             ),
             Indicator::Maximized => Some(
                 Icon::Maximize
-                    .to_warpui_icon(
+                    .to_wishui_icon(
                         self.styles
                             .default
                             .font_color
@@ -1235,7 +1239,7 @@ impl<'a> TabComponent<'a> {
             Indicator::Shell(shell_indicator_type) => Some(
                 shell_indicator_type
                     .to_icon()
-                    .to_warpui_icon(internal_colors::neutral_5(self.appearance.theme()).into())
+                    .to_wishui_icon(internal_colors::neutral_5(self.appearance.theme()).into())
                     .finish(),
             ),
             Indicator::Agent {
@@ -1250,7 +1254,7 @@ impl<'a> TabComponent<'a> {
                     }
                 } else {
                     let icon_color = self.appearance.theme().nonactive_ui_text_color();
-                    Some(Icon::Oz.to_warpui_icon(icon_color).finish())
+                    Some(Icon::Oz.to_wishui_icon(icon_color).finish())
                 }
             }
             Indicator::AmbientAgent => {
@@ -1265,7 +1269,7 @@ impl<'a> TabComponent<'a> {
                 Some(
                     Hoverable::new(mouse_state, move |state| {
                         let mut stack = Stack::new().with_child(
-                            Icon::HermonCloud.to_warpui_icon(icon_color.into()).finish(),
+                            Icon::HermonCloud.to_wishui_icon(icon_color.into()).finish(),
                         );
 
                         if state.is_hovered() {
@@ -1414,7 +1418,7 @@ impl<'a> TabComponent<'a> {
             } else {
                 // Fallback to terminal icon if no indicator is present
                 Icon::Terminal
-                    .to_warpui_icon(
+                    .to_wishui_icon(
                         self.styles
                             .default
                             .font_color
@@ -1651,7 +1655,7 @@ impl UiComponent for TabComponent<'_> {
 
                         if let Some(directory) = &tooltip_directory_clone {
                             let folder_icon = Icon::Folder
-                                .to_warpui_icon(ThemeFill::Solid(font_color))
+                                .to_wishui_icon(ThemeFill::Solid(font_color))
                                 .finish();
 
                             let directory_row = Flex::row()
@@ -1684,7 +1688,7 @@ impl UiComponent for TabComponent<'_> {
 
                         if let Some(branch) = &tooltip_git_branch_clone {
                             let branch_icon = Icon::GitBranch
-                                .to_warpui_icon(ThemeFill::Solid(font_color))
+                                .to_wishui_icon(ThemeFill::Solid(font_color))
                                 .finish();
 
                             let branch_row = Flex::row()

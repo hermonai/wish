@@ -30,9 +30,9 @@ use log::debug;
 #[cfg(not(target_family = "wasm"))]
 use std::collections::HashMap;
 use url::Url;
+use wish_core::send_telemetry_from_ctx;
 use wish_editor::editor::NavigationKey;
 use wish_graphql::queries::user_github_info::UserGithubInfoResult;
-use wish_core::send_telemetry_from_ctx;
 use wishui::{
     elements::{
         Border, ChildAnchor, ChildView, Clipped, ClippedScrollStateHandle, ClippedScrollable,

@@ -1,6 +1,6 @@
 pub mod telemetry;
 
-use crate::ai::agent::conversation::ConversationStatus;
+use crate::ai::agent::conversation::{ConversationStatus, StatusColorStyle};
 use crate::ai::agent_management::AgentNotificationsModel;
 use crate::ai::conversation_status_ui::render_status_element;
 use crate::code::editor::{add_color, remove_color};
@@ -1234,7 +1234,7 @@ fn render_control_bar(
     let theme = appearance.theme();
     let sub_text = theme.sub_text_color(theme.background());
 
-    let search_icon = ConstrainedBox::new(WarpIcon::Search.to_warpui_icon(sub_text).finish())
+    let search_icon = ConstrainedBox::new(WarpIcon::Search.to_wishui_icon(sub_text).finish())
         .with_width(SEARCH_ICON_SIZE)
         .with_height(SEARCH_ICON_SIZE)
         .finish();
@@ -1296,7 +1296,7 @@ fn render_detail_kind_badge_icon(
                     .and_then(|session| session.agent.brand_color())
                     .map(WarpThemeFill::Solid)
                     .unwrap_or_else(|| theme.accent());
-                return icon.to_warpui_icon(color).finish();
+                return icon.to_wishui_icon(color).finish();
             }
 
             let icon = if terminal_view.is_ambient_agent_session(app) {
@@ -1314,10 +1314,10 @@ fn render_detail_kind_badge_icon(
                 WarpIcon::Terminal => disabled_text,
                 _ => sub_text,
             };
-            icon.to_warpui_icon(color).finish()
+            icon.to_wishui_icon(color).finish()
         }
         TypedPane::Code(_) => icon_from_file_path(&props.title, appearance)
-            .unwrap_or_else(|| WarpIcon::Code2.to_warpui_icon(sub_text).finish()),
+            .unwrap_or_else(|| WarpIcon::Code2.to_wishui_icon(sub_text).finish()),
         typed => {
             let fill = typed
                 .warp_drive_object_type()
@@ -1325,7 +1325,7 @@ fn render_detail_kind_badge_icon(
                     WarpThemeFill::Solid(warp_drive_icon_color(appearance, object_type))
                 })
                 .unwrap_or(sub_text);
-            typed.icon().to_warpui_icon(fill).finish()
+            typed.icon().to_wishui_icon(fill).finish()
         }
     }
 }
@@ -1345,7 +1345,7 @@ fn render_settings_button(
         move |hover_state| {
             let icon = ConstrainedBox::new(
                 WarpIcon::Settings
-                    .to_warpui_icon(if is_popup_open { main_text } else { sub_text })
+                    .to_wishui_icon(if is_popup_open { main_text } else { sub_text })
                     .finish(),
             )
             .with_width(16.)
@@ -2195,7 +2195,7 @@ fn render_group_action_buttons(
 
     let kebab_button = Hoverable::new(kebab_mouse_state, move |button_state| {
         let mut container = Container::new(
-            ConstrainedBox::new(WarpIcon::DotsVertical.to_warpui_icon(meta_color).finish())
+            ConstrainedBox::new(WarpIcon::DotsVertical.to_wishui_icon(meta_color).finish())
                 .with_width(GROUP_ACTION_BUTTON_ICON_SIZE)
                 .with_height(GROUP_ACTION_BUTTON_ICON_SIZE)
                 .finish(),
@@ -2218,7 +2218,7 @@ fn render_group_action_buttons(
 
     let close_button = Hoverable::new(close_mouse_state, move |button_state| {
         let mut container = Container::new(
-            ConstrainedBox::new(WarpIcon::X.to_warpui_icon(meta_color).finish())
+            ConstrainedBox::new(WarpIcon::X.to_wishui_icon(meta_color).finish())
                 .with_width(GROUP_ACTION_BUTTON_ICON_SIZE)
                 .with_height(GROUP_ACTION_BUTTON_ICON_SIZE)
                 .finish(),
@@ -2448,7 +2448,7 @@ const INDICATOR_DOT_SIZE: f32 = 8.;
 fn render_title_indicator(theme: &WarpTheme) -> Box<dyn Element> {
     ConstrainedBox::new(
         WarpIcon::CircleFilled
-            .to_warpui_icon(theme.accent())
+            .to_wishui_icon(theme.accent())
             .finish(),
     )
     .with_width(INDICATOR_DOT_SIZE)
@@ -3445,7 +3445,7 @@ fn render_git_branch_text(
         .with_cross_axis_alignment(CrossAxisAlignment::Center)
         .with_spacing(2.)
         .with_child(
-            ConstrainedBox::new(UiIcon::GitBranch.to_warpui_icon(text_color).finish())
+            ConstrainedBox::new(UiIcon::GitBranch.to_wishui_icon(text_color).finish())
                 .with_width(font_size - 2.)
                 .with_height(font_size - 2.)
                 .finish(),
@@ -3872,7 +3872,7 @@ fn render_summary_pane_kind_icon_circle(
     let padding = total_size * SUMMARY_INLINE_PADDING_RATIO;
     let (icon_element, background): (Box<dyn Element>, ElementFill) = match kind {
         SummaryPaneKind::OzAgent { .. } => (
-            WarpIcon::Oz.to_warpui_icon(oz_icon_fill(theme)).finish(),
+            WarpIcon::Oz.to_wishui_icon(oz_icon_fill(theme)).finish(),
             theme.background().into(),
         ),
         SummaryPaneKind::CLIAgent { agent, .. } => {
@@ -3880,12 +3880,12 @@ fn render_summary_pane_kind_icon_circle(
             let icon_element = agent
                 .icon()
                 .map(|icon| {
-                    icon.to_warpui_icon(WarpThemeFill::Solid(icon_color))
+                    icon.to_wishui_icon(WarpThemeFill::Solid(icon_color))
                         .finish()
                 })
                 .unwrap_or_else(|| {
                     WarpIcon::Terminal
-                        .to_warpui_icon(theme.sub_text_color(theme.background()))
+                        .to_wishui_icon(theme.sub_text_color(theme.background()))
                         .finish()
                 });
             (
@@ -3901,7 +3901,7 @@ fn render_summary_pane_kind_icon_circle(
         SummaryPaneKind::Code { title } => (
             icon_from_file_path(&title, appearance).unwrap_or_else(|| {
                 WarpIcon::Code2
-                    .to_warpui_icon(theme.sub_text_color(theme.background()))
+                    .to_wishui_icon(theme.sub_text_color(theme.background()))
                     .finish()
             }),
             internal_colors::fg_overlay_2(theme).into(),
@@ -3920,7 +3920,7 @@ fn render_summary_pane_kind_icon_circle(
         | SummaryPaneKind::Other => {
             let (icon, icon_color) = summary_pane_kind_icon(kind, appearance);
             (
-                icon.to_warpui_icon(icon_color).finish(),
+                icon.to_wishui_icon(icon_color).finish(),
                 internal_colors::fg_overlay_2(theme).into(),
             )
         }
@@ -4122,7 +4122,7 @@ fn render_terminal_primary_line(
             .with_child(
                 ConstrainedBox::new(
                     UiIcon::AlertTriangle
-                        .to_warpui_icon(error_color.into())
+                        .to_wishui_icon(error_color.into())
                         .finish(),
                 )
                 .with_width(BADGE_ICON_SIZE)
@@ -4405,7 +4405,7 @@ fn render_pull_request_badge_content(label: &str, appearance: &Appearance) -> Bo
         .with_cross_axis_alignment(CrossAxisAlignment::Center)
         .with_spacing(4.)
         .with_child(
-            ConstrainedBox::new(UiIcon::Github.to_warpui_icon(main_text_color).finish())
+            ConstrainedBox::new(UiIcon::Github.to_wishui_icon(main_text_color).finish())
                 .with_width(BADGE_ICON_SIZE)
                 .with_height(BADGE_ICON_SIZE)
                 .finish(),
@@ -4967,7 +4967,7 @@ fn render_compact_subtitle_option(
     let main_text = theme.main_text_color(theme.background());
     Hoverable::new(mouse_state, move |hover_state| {
         let check_icon: Box<dyn Element> = if is_selected {
-            ConstrainedBox::new(WarpIcon::Check.to_warpui_icon(main_text).finish())
+            ConstrainedBox::new(WarpIcon::Check.to_wishui_icon(main_text).finish())
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish()
@@ -5020,7 +5020,7 @@ fn render_tab_item_mode_option(
     let main_text = theme.main_text_color(theme.background());
     Hoverable::new(mouse_state, move |hover_state| {
         let check_icon: Box<dyn Element> = if is_selected {
-            ConstrainedBox::new(WarpIcon::Check.to_warpui_icon(main_text).finish())
+            ConstrainedBox::new(WarpIcon::Check.to_wishui_icon(main_text).finish())
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish()
@@ -5073,7 +5073,7 @@ fn render_primary_info_option(
     let main_text = theme.main_text_color(theme.background());
     Hoverable::new(mouse_state, move |hover_state| {
         let check_icon: Box<dyn Element> = if is_selected {
-            ConstrainedBox::new(WarpIcon::Check.to_warpui_icon(main_text).finish())
+            ConstrainedBox::new(WarpIcon::Check.to_wishui_icon(main_text).finish())
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish()
@@ -5140,7 +5140,7 @@ fn render_show_toggle_option(
 
     Hoverable::new(mouse_state, move |hover_state| {
         let check_icon: Box<dyn Element> = if is_enabled {
-            ConstrainedBox::new(WarpIcon::Check.to_warpui_icon(main_text).finish())
+            ConstrainedBox::new(WarpIcon::Check.to_wishui_icon(main_text).finish())
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish()
@@ -5163,7 +5163,7 @@ fn render_show_toggle_option(
         {
             let builder = ui_builder.clone();
             let info_icon = Hoverable::new(info_ms, move |info_hover| {
-                let icon = ConstrainedBox::new(UiIcon::Info.to_warpui_icon(info_color).finish())
+                let icon = ConstrainedBox::new(UiIcon::Info.to_wishui_icon(info_color).finish())
                     .with_width(INFO_ICON_SIZE)
                     .with_height(INFO_ICON_SIZE)
                     .finish();
@@ -5228,7 +5228,7 @@ fn render_popup_segment(
 
         Container::new(
             Align::new(
-                ConstrainedBox::new(icon.to_warpui_icon(icon_color).finish())
+                ConstrainedBox::new(icon.to_wishui_icon(icon_color).finish())
                     .with_width(COMPACT_ICON_SIZE)
                     .with_height(COMPACT_ICON_SIZE)
                     .finish(),
@@ -5488,14 +5488,14 @@ fn render_detail_status_pill(
     appearance: &Appearance,
 ) -> Box<dyn Element> {
     let theme = appearance.theme();
-    let (icon, color) = status.status_icon_and_color(theme);
+    let (icon, color) = status.status_icon_and_color(theme, StatusColorStyle::Standard);
     Container::new(
         Flex::row()
             .with_main_axis_size(MainAxisSize::Min)
             .with_cross_axis_alignment(CrossAxisAlignment::Center)
             .with_spacing(4.)
             .with_child(
-                ConstrainedBox::new(icon.to_warpui_icon(WarpThemeFill::Solid(color)).finish())
+                ConstrainedBox::new(icon.to_wishui_icon(WarpThemeFill::Solid(color)).finish())
                     .with_width(12.)
                     .with_height(12.)
                     .finish(),

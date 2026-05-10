@@ -4,8 +4,8 @@ use std::ops::Deref;
 
 use anyhow::{Result, anyhow};
 use wish_features::FeatureFlag;
-use wishui_extras::user_preferences::UserPreferences;
 use wishui::{AppContext, Entity, ModelContext, SingletonEntity};
+use wishui_extras::user_preferences::UserPreferences;
 
 use super::PrivatePreferences;
 

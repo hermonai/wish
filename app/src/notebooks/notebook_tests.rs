@@ -3,8 +3,8 @@ use std::sync::Arc;
 use chrono::{Duration, Utc};
 use futures_util::future::BoxFuture;
 use itertools::Itertools;
-use wish_editor::editor::EditorView;
 use wish_core::ui::appearance::Appearance;
+use wish_editor::editor::EditorView;
 use wishui::{
     platform::WindowStyle, presenter::ChildView, r#async::Timer, telemetry::EventPayload,
     AddSingletonModel, App, AppContext, Element, Entity, SingletonEntity, TypedActionView, View,

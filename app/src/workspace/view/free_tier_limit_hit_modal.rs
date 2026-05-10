@@ -10,10 +10,10 @@ use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use thousands::Separable;
-use wish_graphql::billing::{PlanPricing, StripeSubscriptionPlan};
 use wish_core::send_telemetry_from_ctx;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::theme::{Fill, WarpTheme};
+use wish_graphql::billing::{PlanPricing, StripeSubscriptionPlan};
 use wishui::elements::{
     Align, Border, CacheOption, ChildAnchor, ConstrainedBox, Container, CornerRadius,
     CrossAxisAlignment, DropShadow, Flex, FormattedTextElement, HighlightedHyperlink, Image,

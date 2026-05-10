@@ -329,7 +329,7 @@ impl CodeReviewHeader {
                 TextAndIcon::new(
                     TextAndIconAlignment::IconFirst,
                     "Discard all".to_string(),
-                    Icon::ReverseLeft.to_warpui_icon(wish_core::ui::theme::Fill::Solid(
+                    Icon::ReverseLeft.to_wishui_icon(wish_core::ui::theme::Fill::Solid(
                         sub_text_color.into_solid(),
                     )),
                     MainAxisSize::Min,
@@ -425,7 +425,7 @@ impl CodeReviewHeader {
             .with_text_and_icon_label(TextAndIcon::new(
                 TextAndIconAlignment::IconFirst,
                 "",
-                Icon::Paperclip.to_warpui_icon(wish_core::ui::theme::Fill::Solid(
+                Icon::Paperclip.to_wishui_icon(wish_core::ui::theme::Fill::Solid(
                     theme.main_text_color(theme.background()).into(),
                 )),
                 MainAxisSize::Min,
@@ -495,7 +495,8 @@ impl CodeReviewHeader {
     }
 
     fn get_header_text(diff_state_model: &ModelHandle<DiffStateModel>, app: &AppContext) -> String {
-        let branch_name = diff_state_model.read(app, |model, _| model.get_current_branch_name());
+        let branch_name =
+            diff_state_model.read(app, |model, ctx| model.get_current_branch_name(ctx));
         branch_name.unwrap_or("Reviewing open changes".to_string())
     }
 }

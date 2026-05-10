@@ -708,4 +708,5 @@ pub enum MCPServerUpdate {
 }
 
 #[cfg(test)]
-mod mod_test;
+#[path = "mod_tests.rs"]
+mod mod_tests;

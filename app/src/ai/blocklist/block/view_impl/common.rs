@@ -114,11 +114,11 @@ use crate::{
     search::slash_command_menu::static_commands::commands,
     settings::{FontSettings, InputSettings},
 };
+use wish_core::channel::ChannelState;
 use wish_editor::content::{
     edit::resolve_asset_source_relative_to_directory, mermaid_diagram::mermaid_asset_source,
 };
 use wish_util::path::to_relative_path;
-use wish_core::channel::ChannelState;
 use wishui::elements::shimmering_text::ShimmeringTextStateHandle;
 use wishui::elements::{Highlight, HighlightedRange};
 
@@ -134,7 +134,6 @@ pub const LOAD_OUTPUT_MESSAGE: &str = "Wishing...";
 pub const LOAD_OUTPUT_MESSAGE_FOR_ADJUSTING: &str = "Adjusting tasks...";
 pub const LOAD_OUTPUT_MESSAGE_FOR_PASSIVE_CODE_GEN: &str = "Generating fix...";
 pub const LOAD_OUTPUT_MESSAGE_FOR_CREATING_DIFF: &str = "Creating diff...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_RUN_AGENTS: &str = "Spawning agents...";
 pub const LOAD_OUTPUT_MESSAGE_FOR_PREPARING_QUESTION: &str = "Preparing question...";
 pub const LOAD_OUTPUT_MESSAGE_FOR_GENERATING_PLAN: &str = "Generating plan...";
 pub const LOAD_OUTPUT_MESSAGE_FOR_UPDATING_PLAN: &str = "Updating plan...";
@@ -247,19 +246,6 @@ pub fn render_warping_indicator<V: View>(
         })
     });
 
-    let is_last_message_run_agents = output_to_render.as_ref().is_some_and(|output| {
-        let output = output.get();
-        output.messages.last().is_some_and(|m| {
-            matches!(
-                m.message,
-                AIAgentOutputMessageType::Action(AIAgentAction {
-                    action: AIAgentActionType::RunAgents(_),
-                    ..
-                })
-            )
-        })
-    });
-
     let is_last_message_asking_user_question = output_to_render.as_ref().is_some_and(|output| {
         let output = output.get();
         output.messages.last().is_some_and(|m| {
@@ -345,8 +331,6 @@ pub fn render_warping_indicator<V: View>(
         LOAD_OUTPUT_MESSAGE_FOR_PASSIVE_CODE_GEN.to_string()
     } else if is_last_message_requesting_file_edits {
         LOAD_OUTPUT_MESSAGE_FOR_CREATING_DIFF.to_string()
-    } else if is_last_message_run_agents && FeatureFlag::RunAgentsTool.is_enabled() {
-        LOAD_OUTPUT_MESSAGE_FOR_RUN_AGENTS.to_string()
     } else if is_last_message_asking_user_question {
         LOAD_OUTPUT_MESSAGE_FOR_PREPARING_QUESTION.to_string()
     } else if is_searching_web {
@@ -873,7 +857,7 @@ fn render_queue_next_prompt_button(
     };
     let icon_size = get_icon_size(appearance);
     let icon = Container::new(
-        ConstrainedBox::new(Icon::ClockPlus.to_warpui_icon(icon_color).finish())
+        ConstrainedBox::new(Icon::ClockPlus.to_wishui_icon(icon_color).finish())
             .with_height(icon_size)
             .with_width(icon_size)
             .finish(),
@@ -908,7 +892,7 @@ fn render_auto_approve_button(props: ButtonProps, appearance: &Appearance) -> Bo
     let icon_size = get_icon_size(appearance);
     let icon = Container::new(
         ConstrainedBox::new(
-            icon.to_warpui_icon(appearance.theme().active_ui_text_color())
+            icon.to_wishui_icon(appearance.theme().active_ui_text_color())
                 .finish(),
         )
         .with_height(icon_size)
@@ -2252,7 +2236,7 @@ fn render_visual_card(
     let theme = appearance.theme();
     let header_background = theme.surface_2();
     let header_text_color = blended_colors::text_main(theme, header_background);
-    let header_icon = ConstrainedBox::new(icon.to_warpui_icon(header_text_color.into()).finish())
+    let header_icon = ConstrainedBox::new(icon.to_wishui_icon(header_text_color.into()).finish())
         .with_width(16.)
         .with_height(16.)
         .finish();
@@ -3089,7 +3073,7 @@ fn render_invalid_api_key_error(
 
     let alert_icon = ConstrainedBox::new(
         Icon::AlertTriangle
-            .to_warpui_icon(error_color(appearance.theme()).into())
+            .to_wishui_icon(error_color(appearance.theme()).into())
             .finish(),
     )
     .with_width(icon_size(app))

@@ -469,12 +469,7 @@ impl LSPServerType {
                 client,
                 "jdtls",
                 &["--version"],
-                &[
-                    "pom.xml",
-                    "build.gradle",
-                    "build.gradle.kts",
-                    ".classpath",
-                ],
+                &["pom.xml", "build.gradle", "build.gradle.kts", ".classpath"],
                 &["java"],
             )),
             LSPServerType::KotlinLanguageServer => Box::new(GenericLspCandidate::new(

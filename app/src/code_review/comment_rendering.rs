@@ -18,10 +18,10 @@ use crate::editor::InteractionState;
 use crate::notebooks::editor::view::RichTextEditorView;
 use crate::util::time_format::human_readable_approx_duration;
 use pathfinder_color::ColorU;
-use wish_editor::content::buffer::InitialBufferState;
-use wish_editor::render::element::VerticalExpansionBehavior;
 use wish_core::ui::theme::color::internal_colors::{neutral_1, neutral_2, text_sub};
 use wish_core::ui::theme::Fill;
+use wish_editor::content::buffer::InitialBufferState;
+use wish_editor::render::element::VerticalExpansionBehavior;
 use wishui::elements::new_scrollable::ScrollableAppearance;
 use wishui::elements::ScrollbarWidth;
 use wishui::elements::{

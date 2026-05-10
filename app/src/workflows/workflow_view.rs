@@ -82,8 +82,8 @@ use crate::{
     FeatureFlag, UserWorkspaces,
 };
 
-use wish_editor::editor::NavigationKey;
 use wish_core::{context_flag::ContextFlag, settings::Setting, ui::theme::AnsiColorIdentifier};
+use wish_editor::editor::NavigationKey;
 use wishui::{
     clipboard::ClipboardContent,
     elements::{

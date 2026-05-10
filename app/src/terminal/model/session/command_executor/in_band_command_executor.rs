@@ -9,8 +9,8 @@ use async_channel::{self, Receiver, Sender};
 use async_trait::async_trait;
 use chrono::DateTime;
 use parking_lot::{Mutex, MutexGuard};
-use wish_terminal::model::Point;
 use wish_core::command::ExitCode;
+use wish_terminal::model::Point;
 use wishui::r#async::block_on;
 
 use crate::safe_info;

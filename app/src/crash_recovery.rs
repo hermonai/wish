@@ -6,9 +6,9 @@ use cfg_if::cfg_if;
 use lazy_static::lazy_static;
 use parking_lot::RwLock;
 use wish_cli::RecoveryMechanism;
-use wishui_extras::user_preferences::UserPreferences;
 use wish_core::channel::{Channel, ChannelState};
 use wishui::{Entity, ModelContext, SingletonEntity, WindowId};
+use wishui_extras::user_preferences::UserPreferences;
 
 use crate::{report_if_error, settings};
 

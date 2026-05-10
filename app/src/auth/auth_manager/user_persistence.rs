@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use wish_graphql::scalars::time::ServerTimestamp;
-use wishui_extras::secure_storage::{self, AppContextExt};
 use wishui::AppContext;
+use wishui_extras::secure_storage::{self, AppContextExt};
 
 use crate::auth::{
     user::{AnonymousUserType, FirebaseAuthTokens, PersonalObjectLimits, UserMetadata},
@@ -80,5 +80,5 @@ impl PersistedUser {
 }
 
 #[cfg(test)]
-#[path = "user_persistence_test.rs"]
+#[path = "user_persistence_tests.rs"]
 mod tests;

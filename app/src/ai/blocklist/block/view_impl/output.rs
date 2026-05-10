@@ -41,9 +41,9 @@ use ai::skills::SkillReference;
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use ui_components::{button, Component as _, Options as _};
+use wish_core::ui::theme::color::internal_colors;
 #[allow(unused_imports)]
 use wish_util::path::{common_path, CleanPathResult};
-use wish_core::ui::theme::color::internal_colors;
 use wishui::elements::new_scrollable::SingleAxisConfig;
 use wishui::elements::{
     ChildAnchor, NewScrollable, OffsetPositioning, ParentAnchor, ParentOffsetBounds, Stack,
@@ -788,17 +788,14 @@ pub(super) fn render(props: Props, app: &AppContext) -> Box<dyn Element> {
                             ..
                         }) if FeatureFlag::RunAgentsTool.is_enabled() => {
                             // Embed the per-action `RunAgentsCardView`
-                            // via `ChildView`. The view itself handles
-                            // the streaming gate and in-flight dispatch
-                            // states (a card is mid-dispatch when its
-                            // `is_spawning()` getter returns true).
+                            // via `ChildView`. The view renders a
+                            // "Configuring agents..." placeholder while
+                            // streaming, then transitions to the full
+                            // confirmation card once complete.
                             should_render_footer = false;
                             should_render_suggestions = false;
                             if let Some(card_view) = props.run_agents_card_views.get(id) {
-                                let is_spawning = card_view.as_ref(app).is_spawning();
-                                if !status.is_streaming() || is_spawning {
-                                    output_items.add_child(ChildView::new(card_view).finish());
-                                }
+                                output_items.add_child(ChildView::new(card_view).finish());
                             }
                         }
                         AIAgentOutputMessageType::Action(AIAgentAction {
@@ -902,10 +899,7 @@ pub(super) fn render(props: Props, app: &AppContext) -> Box<dyn Element> {
                         {
                             output_items.add_child(
                                 orchestration::render_messages_received_from_agents(
-                                    messages,
-                                    props,
-                                    &output_message.id,
-                                    app,
+                                    messages, props, app,
                                 ),
                             );
                         }
@@ -1993,7 +1987,7 @@ fn render_stopped_output(props: Props, app: &AppContext) -> Box<dyn Element> {
         let ui_builder = appearance.ui_builder().clone();
 
         let play_icon = Container::new(
-            ConstrainedBox::new(Icon::Play.to_warpui_icon(theme.foreground()).finish())
+            ConstrainedBox::new(Icon::Play.to_wishui_icon(theme.foreground()).finish())
                 .with_height(appearance.ui_font_size() + 1.)
                 .with_width(appearance.ui_font_size() + 1.)
                 .finish(),
@@ -2889,7 +2883,7 @@ fn render_references_footer(
                 .finish(),
         )
         .with_child(
-            ConstrainedBox::new(chevron.to_warpui_icon(title_row_color).finish())
+            ConstrainedBox::new(chevron.to_wishui_icon(title_row_color).finish())
                 .with_height(icon_size(app) - 2.)
                 .with_width(icon_size(app) - 2.)
                 .finish(),
@@ -3304,7 +3298,7 @@ fn render_usage_button(props: Props, app: &AppContext) -> Box<dyn Element> {
                 // Expansion icon
                 ConstrainedBox::new(
                     expansion_icon
-                        .to_warpui_icon(
+                        .to_wishui_icon(
                             appearance
                                 .theme()
                                 .sub_text_color(appearance.theme().background()),
@@ -3469,7 +3463,7 @@ fn render_collapsible_header(
             )
             .with_child(
                 Container::new(
-                    ConstrainedBox::new(chevron_icon.to_warpui_icon(text_color.into()).finish())
+                    ConstrainedBox::new(chevron_icon.to_wishui_icon(text_color.into()).finish())
                         .with_width(icon_size - 2.)
                         .with_height(icon_size - 2.)
                         .finish(),
@@ -3684,7 +3678,7 @@ fn render_collapsible_debug_output(
         // Chevron icon
         row.add_child(
             Container::new(
-                ConstrainedBox::new(chevron_icon.to_warpui_icon(text_color.into()).finish())
+                ConstrainedBox::new(chevron_icon.to_wishui_icon(text_color.into()).finish())
                     .with_width(icon_size - 2.)
                     .with_height(icon_size - 2.)
                     .finish(),

@@ -4,8 +4,8 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{anyhow, Context, Result};
 use command::blocking::Command;
-use wish_util::path::ShellFamily;
 use wish_core::channel::ChannelState;
+use wish_util::path::ShellFamily;
 
 /// Compute the target path where the symlink should be installed, based on channel
 fn cli_install_target_path() -> PathBuf {

@@ -64,12 +64,12 @@ use super::{
 use crate::code::editor_management::CodeSource;
 #[cfg(feature = "local_fs")]
 use crate::util::openable_file_type::FileTarget;
+use wish_core::ui::icons::ICON_DIMENSIONS;
 use wish_editor::model::CoreEditorModel;
 #[cfg(feature = "local_fs")]
 use wish_files::{FileModel, FileModelEvent};
 #[cfg(feature = "local_fs")]
 use wish_util::file::FileId;
-use wish_core::ui::icons::ICON_DIMENSIONS;
 
 pub use crate::util::openable_file_type::is_markdown_file;
 
@@ -244,7 +244,9 @@ impl FileNotebookView {
 
         let editor_model = ctx.add_model(|ctx| {
             let styles = rich_text_styles(Appearance::as_ref(ctx), FontSettings::as_ref(ctx));
-            NotebooksEditorModel::new(styles, window_id, ctx)
+            let mut model = NotebooksEditorModel::new(styles, window_id, ctx);
+            model.set_default_mermaid_display_mode(MarkdownDisplayMode::Rendered, ctx);
+            model
         });
         let editor = ctx.add_typed_action_view(|ctx| {
             let mut view = RichTextEditorView::new(
@@ -741,7 +743,7 @@ impl FileNotebookView {
                             TextAndIcon::new(
                                 TextAndIconAlignment::TextFirst,
                                 "Try again".to_string(),
-                                Icon::Refresh.to_warpui_icon(error_text_color),
+                                Icon::Refresh.to_wishui_icon(error_text_color),
                                 MainAxisSize::Min,
                                 MainAxisAlignment::Center,
                                 vec2f(16., 16.),

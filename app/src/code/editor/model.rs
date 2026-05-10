@@ -11,6 +11,9 @@ use std::path::Path;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::{cmp, mem};
+use wish_core::platform::SessionPlatform;
+use wish_core::send_telemetry_from_ctx;
+use wish_core::ui::theme::Fill;
 use wish_editor::content::anchor::Anchor;
 use wish_editor::content::edit::EditDelta;
 use wish_editor::content::find::{SearchConfig, SearchResults};
@@ -19,9 +22,6 @@ use wish_editor::content::version::BufferVersion;
 use wish_editor::multiline::{AnyMultilineString, MultilineString, LF};
 use wish_editor::render::model::{AutoScrollMode, LineCount, StyleUpdateAction};
 use wish_editor::selection::TextDirection;
-use wish_core::platform::SessionPlatform;
-use wish_core::send_telemetry_from_ctx;
-use wish_core::ui::theme::Fill;
 use wishui::units::{IntoPixels, Pixels};
 
 use crate::util::link_detection::get_word_range_at_offset;
@@ -47,6 +47,7 @@ use vim::{
     vim_a_quote, vim_a_word, vim_find_char_on_line, vim_find_matching_bracket, vim_inner_block,
     vim_inner_paragraph, vim_inner_quote, vim_inner_word, vim_word_iterator_from_offset,
 };
+use wish_core::semantic_selection::SemanticSelection;
 use wish_editor::content::buffer::{ShouldAutoscroll, VimInsertPoint};
 use wish_editor::{
     content::{
@@ -66,7 +67,6 @@ use wish_editor::{
     },
     selection::{SelectionMode, SelectionModel, TextUnit},
 };
-use wish_core::semantic_selection::SemanticSelection;
 use wishui::elements::{
     AnchorPair, OffsetPositioning, OffsetType, PositionedElementOffsetBounds, PositioningAxis,
     XAxisAnchor, YAxisAnchor,

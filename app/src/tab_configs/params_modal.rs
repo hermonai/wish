@@ -1,8 +1,8 @@
 use std::{collections::HashMap, path::PathBuf};
 
-use wish_editor::editor::NavigationKey;
 use wish_core::ui::theme::color::internal_colors;
 use wish_core::ui::Icon;
+use wish_editor::editor::NavigationKey;
 use wishui::{
     elements::{
         Border, ChildView, ClippedScrollStateHandle, ClippedScrollable, ConstrainedBox, Container,

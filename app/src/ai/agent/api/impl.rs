@@ -278,8 +278,8 @@ async fn generate_local_ollama_output(
     params: RequestParams,
     cancellation_rx: futures::channel::oneshot::Receiver<()>,
 ) -> Result<ResponseStream, ConvertToAPITypeError> {
-    use crate::ai::local_llm::{ChatCompletionRequest, ChatCompletionResponse, ChatMessage};
     use crate::ai::llms::ollama_base_url;
+    use crate::ai::local_llm::{ChatCompletionRequest, ChatCompletionResponse, ChatMessage};
     use crate::ai::wish_conversation::local_llm_adapter::chat_completions_url;
     use crate::server::server_api::AIApiError;
 
@@ -313,42 +313,45 @@ async fn generate_local_ollama_output(
     };
 
     // Run the HTTP request (async).
-    let http_result = async {
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(120))
-            .build()
-            .map_err(|e| format!("HTTP client init failed: {e}"))?;
+    let http_result =
+        async {
+            let client = reqwest::Client::builder()
+                .timeout(std::time::Duration::from_secs(120))
+                .build()
+                .map_err(|e| format!("HTTP client init failed: {e}"))?;
 
-        let resp = client
-            .post(&url)
-            .json(&request)
-            .send()
-            .await
-            .map_err(|e| format!("Ollama request failed (is Ollama running at {url}?): {e}"))?;
+            let resp =
+                client.post(&url).json(&request).send().await.map_err(|e| {
+                    format!("Ollama request failed (is Ollama running at {url}?): {e}")
+                })?;
 
-        let status = resp.status();
-        let text = resp
-            .text()
-            .await
-            .map_err(|e| format!("Ollama response read failed: {e}"))?;
+            let status = resp.status();
+            let text = resp
+                .text()
+                .await
+                .map_err(|e| format!("Ollama response read failed: {e}"))?;
 
-        if !status.is_success() {
-            return Err(format!("Ollama returned HTTP {}: {}", status.as_u16(), text));
+            if !status.is_success() {
+                return Err(format!(
+                    "Ollama returned HTTP {}: {}",
+                    status.as_u16(),
+                    text
+                ));
+            }
+
+            let parsed: ChatCompletionResponse = serde_json::from_str(&text)
+                .map_err(|e| format!("Ollama response parse error: {e}"))?;
+
+            let response_text = parsed
+                .choices
+                .into_iter()
+                .next()
+                .map(|c| c.message.content)
+                .unwrap_or_else(|| "No response from model.".to_string());
+
+            Ok::<String, String>(response_text)
         }
-
-        let parsed: ChatCompletionResponse = serde_json::from_str(&text)
-            .map_err(|e| format!("Ollama response parse error: {e}"))?;
-
-        let response_text = parsed
-            .choices
-            .into_iter()
-            .next()
-            .map(|c| c.message.content)
-            .unwrap_or_else(|| "No response from model.".to_string());
-
-        Ok::<String, String>(response_text)
-    }
-    .await;
+        .await;
 
     // Build ResponseEvent stream.
     let task_id = uuid::Uuid::new_v4().to_string();
@@ -374,44 +377,38 @@ async fn generate_local_ollama_output(
                         api::response_event::ClientActions {
                             actions: vec![
                                 api::ClientAction {
-                                    action: Some(
-                                        api::client_action::Action::CreateTask(
-                                            api::client_action::CreateTask {
-                                                task: Some(api::Task {
-                                                    id: task_id.clone(),
-                                                    description: String::new(),
-                                                    dependencies: None,
-                                                    messages: vec![],
-                                                    summary: String::new(),
-                                                    server_data: String::new(),
-                                                }),
-                                            },
-                                        ),
-                                    ),
+                                    action: Some(api::client_action::Action::CreateTask(
+                                        api::client_action::CreateTask {
+                                            task: Some(api::Task {
+                                                id: task_id.clone(),
+                                                description: String::new(),
+                                                dependencies: None,
+                                                messages: vec![],
+                                                summary: String::new(),
+                                                server_data: String::new(),
+                                            }),
+                                        },
+                                    )),
                                 },
                                 api::ClientAction {
-                                    action: Some(
-                                        api::client_action::Action::AddMessagesToTask(
-                                            api::client_action::AddMessagesToTask {
+                                    action: Some(api::client_action::Action::AddMessagesToTask(
+                                        api::client_action::AddMessagesToTask {
+                                            task_id: task_id.clone(),
+                                            messages: vec![api::Message {
+                                                id: message_id,
                                                 task_id: task_id.clone(),
-                                                messages: vec![api::Message {
-                                                    id: message_id,
-                                                    task_id: task_id.clone(),
-                                                    request_id: request_id.clone(),
-                                                    timestamp: None,
-                                                    server_message_data: String::new(),
-                                                    citations: vec![],
-                                                    message: Some(
-                                                        api::message::Message::AgentOutput(
-                                                            api::message::AgentOutput {
-                                                                text: response_text,
-                                                            },
-                                                        ),
-                                                    ),
-                                                }],
-                                            },
-                                        ),
-                                    ),
+                                                request_id: request_id.clone(),
+                                                timestamp: None,
+                                                server_message_data: String::new(),
+                                                citations: vec![],
+                                                message: Some(api::message::Message::AgentOutput(
+                                                    api::message::AgentOutput {
+                                                        text: response_text,
+                                                    },
+                                                )),
+                                            }],
+                                        },
+                                    )),
                                 },
                             ],
                         },
@@ -425,11 +422,9 @@ async fn generate_local_ollama_output(
                             should_refresh_model_config: false,
                             request_cost: None,
                             conversation_usage_metadata: None,
-                            reason: Some(
-                                api::response_event::stream_finished::Reason::Done(
-                                    api::response_event::stream_finished::Done {},
-                                ),
-                            ),
+                            reason: Some(api::response_event::stream_finished::Reason::Done(
+                                api::response_event::stream_finished::Done {},
+                            )),
                         },
                     )),
                 }),

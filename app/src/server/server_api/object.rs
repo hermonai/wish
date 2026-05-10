@@ -49,6 +49,7 @@ use cynic::{MutationBuilder, QueryBuilder, SubscriptionBuilder};
 #[cfg(test)]
 use mockall::{automock, predicate::*};
 use std::collections::HashMap;
+use wish_core::report_error;
 use wish_graphql::{
     error::UserFacingErrorInterface,
     generic_string_object::GenericStringObjectInput,
@@ -153,7 +154,6 @@ use wish_graphql::{
         get_warp_drive_updates::GetWarpDriveUpdates, start_graphql_streaming_operation,
     },
 };
-use wish_core::report_error;
 
 /// Identifies a guest to remove from an object.
 #[derive(Clone, Debug)]

@@ -1,11 +1,11 @@
 use instant::Duration;
 use settings::{PrivatePreferences, PublicPreferences, Setting, SettingsManager};
 use settings_value::SettingsValue;
-use wishui_extras::user_preferences;
 use wish_core::features::FeatureFlag;
 use wish_core::settings::{macros::define_settings_group, SupportedPlatforms, SyncToCloud};
 use wish_core::user_preferences::GetUserPreferences as _;
 use wishui::SingletonEntity;
+use wishui_extras::user_preferences;
 
 use crate::terminal::session_settings::{NotificationsMode, NotificationsSettings};
 
@@ -352,8 +352,8 @@ fn test_migration_with_multiple_setting_types() {
 
 mod notifications_migration {
     use settings::{PrivatePreferences, PublicPreferences, SettingsManager};
-    use wishui_extras::user_preferences;
     use wish_core::settings::{macros::define_settings_group, SupportedPlatforms, SyncToCloud};
+    use wishui_extras::user_preferences;
 
     use crate::terminal::session_settings::NotificationsSettings;
 

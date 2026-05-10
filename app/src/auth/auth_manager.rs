@@ -7,11 +7,11 @@ use std::time::Duration;
 use anyhow::{anyhow, Result};
 use settings::Setting as _;
 use uuid::Uuid;
+use wish_core::channel::ChannelState;
+use wish_core::features::FeatureFlag;
 use wish_graphql::mutations::create_anonymous_user::{
     AnonymousUserType, CreateAnonymousUserResult,
 };
-use wish_core::channel::ChannelState;
-use wish_core::features::FeatureFlag;
 use wishui::{clipboard::ClipboardContent, Entity, ModelContext, SingletonEntity, UpdateModel};
 
 use super::auth_state::{AuthState, PersistAction};
@@ -884,5 +884,5 @@ impl Entity for AuthManager {
 impl SingletonEntity for AuthManager {}
 
 #[cfg(test)]
-#[path = "auth_manager_test.rs"]
+#[path = "auth_manager_tests.rs"]
 mod auth_manager_test;

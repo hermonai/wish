@@ -13,7 +13,7 @@ pub(crate) mod openwarp_launch_modal;
 pub(crate) mod right_panel;
 mod startup_directory;
 #[cfg(test)]
-#[path = "view_test.rs"]
+#[path = "view_tests.rs"]
 mod tests;
 mod vertical_tabs;
 #[cfg(target_family = "wasm")]
@@ -43,8 +43,10 @@ use crate::ai::agent_management::notifications::NotificationFilter;
 use crate::ai::agent_management::telemetry::AgentManagementTelemetryEvent;
 use crate::ai::agent_management::view::{AgentManagementView, AgentManagementViewEvent};
 use crate::ai::agent_management::AgentManagementEvent;
+use crate::ai::agent_registry::{AgentRegistryModel, BuiltInAgentsUiState};
 #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
 use crate::ai::agent_sdk::driver::upload_snapshot_for_handoff;
+use crate::ai::agent_tasks::{AgentTaskRegistryModel, TaskId};
 use crate::ai::ambient_agents::telemetry::{CloudAgentTelemetryEvent, CloudModeEntryPoint};
 use crate::ai::ambient_agents::AmbientAgentTaskId;
 use crate::ai::blocklist::agent_view::agent_input_footer::editor::AgentToolbarEditorMode;
@@ -85,6 +87,7 @@ use crate::app_state::{
     PaneNodeSnapshot, PaneUuid, RightPanelSnapshot, SettingsPaneSnapshot, TabSnapshot,
     TerminalPaneSnapshot, WindowSnapshot, WorkflowPaneSnapshot,
 };
+use crate::code::buffer_location::BufferLocation;
 use crate::code_review::diff_state::DiffStateModel;
 #[cfg(feature = "local_fs")]
 use crate::code_review::CodeReviewTelemetryEvent;
@@ -96,6 +99,7 @@ use crate::notification::NotificationContext;
 use crate::pane_group::pane::ActionOrigin;
 use crate::projects::ProjectManagementModel;
 use crate::settings_view::mcp_servers_page::MCPServersSettingsPage;
+use crate::settings_view::sdlc_tasks_page::populate_demo_tasks;
 use crate::terminal::enable_auto_reload_modal::{
     EnableAutoReloadModal, EnableAutoReloadModalEvent,
 };
@@ -177,8 +181,9 @@ use crate::drive::export::ExportManager;
 use crate::drive::settings::WarpDriveSettings;
 use crate::launch_configs::launch_config::WindowTemplate;
 use crate::pane_group::{
-    AIFactPane, CodeReviewPanelArg, Direction as PaneGroupDirection, EnvironmentManagementPane,
-    ExecutionProfileEditorPane, NetworkLogPane, PaneGroup, PaneId, TerminalPaneId,
+    AIFactPane, ChildAgentOrigin, CodeReviewPanelArg, Direction as PaneGroupDirection,
+    EnvironmentManagementPane, ExecutionProfileEditorPane, NetworkLogPane, PaneGroup, PaneId,
+    TerminalPaneId,
 };
 use crate::quit_warning::UnsavedStateSummary;
 use crate::search::command_palette::view::NavigationMode;
@@ -271,6 +276,8 @@ use crate::terminal::keys_settings::KeysSettings;
 use crate::terminal::shared_session::SharedSessionActionSource;
 
 use crate::ai::blocklist::agent_view::editor::{AgentToolbarEditorEvent, AgentToolbarEditorModal};
+#[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+use crate::ai::blocklist::handoff::PendingCloudLaunch;
 use crate::prompt::editor_modal::{
     EditorModal as PromptEditorModal, EditorModalEvent as PromptEditorModalEvent,
     OpenSource as PromptEditorOpenSource,
@@ -327,7 +334,7 @@ use crate::terminal::settings::{SpacingMode, TerminalSettings};
 use crate::terminal::shell::ShellType;
 #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
 use crate::terminal::view::ambient_agent::{
-    HandoffSubmissionState, PendingHandoff, SnapshotUploadStatus,
+    AmbientAgentViewModel, HandoffSubmissionState, PendingHandoff, SnapshotUploadStatus,
 };
 #[cfg(feature = "local_tty")]
 use crate::terminal::view::docker_sandbox::DEFAULT_DOCKER_SANDBOX_BASE_IMAGE;
@@ -405,10 +412,10 @@ use std::convert::TryFrom;
 use std::time::Duration;
 #[cfg(target_os = "macos")]
 use std::time::{SystemTime, UNIX_EPOCH};
-use wish_util::path::{user_friendly_path, LineAndColumnArg};
 use wish_core::context_flag::ContextFlag;
 use wish_core::execution_mode::AppExecutionMode;
 use wish_core::semantic_selection::SemanticSelection;
+use wish_util::path::{user_friendly_path, LineAndColumnArg};
 use wishui::fonts::Weight;
 use wishui::modals::{AlertDialogWithCallbacks, AppModalCallback};
 
@@ -421,7 +428,7 @@ use wishui::elements::{
     MouseInBehavior, Rect,
 };
 use wishui::ui_components::button::{Button, ButtonVariant};
-use wishui::windowing::{StateEvent, WindowManager};
+use wishui::windowing::{state::ApplicationStage, StateEvent, WindowManager};
 use wishui::{elements::MouseStateHandle, fonts::Properties};
 
 use crate::{autoupdate, channel::ChannelState};
@@ -502,9 +509,9 @@ use std::path::PathBuf;
 use std::process;
 use std::sync::{mpsc, Mutex};
 use std::{cmp::Ordering, sync::Arc};
-use wish_editor::editor::NavigationKey;
 use wish_core::ui::theme::{color::internal_colors, phenomenon::PhenomenonStyle, Fill};
 use wish_core::ui::{color::coloru_with_opacity, Icon};
+use wish_editor::editor::NavigationKey;
 use wishui::keymap::Context;
 use wishui::notification::{RequestPermissionsOutcome, UserNotification};
 use wishui::platform::{
@@ -564,9 +571,9 @@ const TAB_BAR_ICON_PADDING: f32 = 4.;
 
 const TAB_BAR_PILL_WIDTH: f32 = 100.;
 const PILL_FONT_SIZE: f32 = 12.;
-// We use the word "Wish" in the Update Ready button to make it obvious that the terminal is Wish.
-// This can lead to free advertising when users screen-share Wish when an update is available.
-const UPDATE_READY_TEXT: &str = "Update Wish";
+// We use the word "Warp" in the Update Ready button to make it obvious that the terminal is Warp.
+// This can lead to free advertising when users screen-share Warp when an update is available.
+const UPDATE_READY_TEXT: &str = "Update Warp";
 
 const TAB_BAR_OVERFLOW_MENU_WIDTH: f32 = 300.;
 
@@ -595,7 +602,7 @@ const AI_ASSISTANT_BUTTON_ID: &str = "workspace_view:ai_assistant_button";
 
 const VERSION_DEPRECATION_BANNER_TEXT: &str = "Your app is out of date and some features may not work as expected. Please update immediately.";
 
-const VERSION_DEPRECATION_WITHOUT_PERMISSIONS_BANNER_TEXT: &str = "Some Wish features may not work as expected without updating immediately, but Wish is unable to perform the update.";
+const VERSION_DEPRECATION_WITHOUT_PERMISSIONS_BANNER_TEXT: &str = "Some Warp features may not work as expected without updating immediately, but Warp is unable to perform the update.";
 
 const ASK_AI_ASSISTANT_KEYBINDING_NAME: &str = "workspace:toggle_ai_assistant";
 const TOGGLE_RESOURCE_CENTER_KEYBINDING_NAME: &str = "workspace:toggle_resource_center";
@@ -819,7 +826,7 @@ pub enum BannerSeverity {
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 enum BannerButtonVariant {
     /// No fill, no border, just text (and optional icon). Used for the primary
-    /// action in the Figma design (e.g. "Fix with Hermon Agent").
+    /// action in the Figma design (e.g. "Fix with Oz").
     Naked,
     /// Border-only, no fill (e.g. "Open file").
     Outlined,
@@ -2160,9 +2167,9 @@ impl Workspace {
     }
 
     fn show_hoa_onboarding_flow(&mut self, ctx: &mut ViewContext<Self>) {
-        // Don't mark completed immediately – only mark when the user checks
-        // the "Don't show again" checkbox, so the onboarding is shown on
-        // each launch until the user opts out.
+        // Mark as completed immediately so the flow is never shown again,
+        // even if the user quits mid-flow.
+        mark_hoa_onboarding_completed(ctx);
 
         // Enable vertical tabs and open the panel so Step 2 has something to anchor to.
         TabSettings::handle(ctx).update(ctx, |settings, ctx| {
@@ -2208,21 +2215,16 @@ impl Workspace {
 
         match event {
             HoaOnboardingFlowEvent::Completed {
-                selection,
-                dont_show_again,
+                selection: Some(selection),
+                ..
             } => {
-                if *dont_show_again {
-                    mark_hoa_onboarding_completed(ctx);
-                }
                 self.hoa_onboarding_flow = None;
-                if let Some(selection) = selection {
-                    self.handle_session_config_completed(selection, ctx);
-                }
+                self.handle_session_config_completed(selection, ctx);
             }
-            HoaOnboardingFlowEvent::Dismissed { dont_show_again } => {
-                if *dont_show_again {
-                    mark_hoa_onboarding_completed(ctx);
-                }
+            HoaOnboardingFlowEvent::Completed {
+                selection: None, ..
+            }
+            | HoaOnboardingFlowEvent::Dismissed { .. } => {
                 self.hoa_onboarding_flow = None;
             }
             HoaOnboardingFlowEvent::StepChanged | HoaOnboardingFlowEvent::TabLayoutToggled => {
@@ -2332,7 +2334,7 @@ impl Workspace {
             |hover_state| {
                 let icon = ConstrainedBox::new(
                     icons::Icon::X
-                        .to_warpui_icon(Fill::Solid(PhenomenonStyle::modal_close_button_text()))
+                        .to_wishui_icon(Fill::Solid(PhenomenonStyle::modal_close_button_text()))
                         .finish(),
                 )
                 .with_width(16.)
@@ -4006,7 +4008,7 @@ impl Workspace {
         let history = BlocklistAIHistoryModel::as_ref(ctx);
         let Some(conversation_id) = history.find_conversation_id_by_server_token(&server_token)
         else {
-            self.load_cloud_conversation_into_new_transcript_viewer(server_token, ctx);
+            self.load_cloud_conversation_into_new_transcript_viewer(server_token, None, ctx);
             return;
         };
 
@@ -4027,7 +4029,7 @@ impl Workspace {
         };
 
         if !conversation_is_owned_by_current_user {
-            self.load_cloud_conversation_into_new_transcript_viewer(server_token, ctx);
+            self.load_cloud_conversation_into_new_transcript_viewer(server_token, None, ctx);
             return;
         }
 
@@ -4038,7 +4040,7 @@ impl Workspace {
         ) {
             ctx.dispatch_typed_action_deferred(action);
         } else {
-            self.load_cloud_conversation_into_new_transcript_viewer(server_token, ctx);
+            self.load_cloud_conversation_into_new_transcript_viewer(server_token, None, ctx);
         }
     }
 
@@ -4046,6 +4048,7 @@ impl Workspace {
     pub fn load_cloud_conversation_into_new_transcript_viewer(
         &mut self,
         conversation_id: ServerConversationToken,
+        ambient_agent_task_id: Option<AmbientAgentTaskId>,
         ctx: &mut ViewContext<Self>,
     ) {
         // Create the tab immediately with a loading state
@@ -4092,8 +4095,11 @@ impl Workspace {
 
                 // Update the pane group with the loaded conversation
                 new_pane_group.update(ctx, |pane_group, ctx| {
-                    pane_group
-                        .load_data_into_conversation_transcript_viewer(cloud_conversation, ctx);
+                    pane_group.load_data_into_conversation_transcript_viewer(
+                        cloud_conversation,
+                        ambient_agent_task_id,
+                        ctx,
+                    );
                 });
 
                 // Open the transcript details panel by default on WASM (unless on mobile)
@@ -4115,9 +4121,8 @@ impl Workspace {
                         .as_ref(ctx)
                         .active_session_view(ctx)
                         .map(|view| view.id());
-                    let ambient_agent_task_id = me
-                        .get_active_session_terminal_model(ctx)
-                        .and_then(|model| model.lock().ambient_agent_task_id());
+                    let ambient_agent_task_id =
+                        me.ambient_agent_task_id_for_focused_terminal_view(ctx);
                     me.notify_terminal_focus_change(
                         focused_terminal_view_id,
                         ambient_agent_task_id,
@@ -4877,8 +4882,8 @@ impl Workspace {
                         if active_terminal_view_id == Some(tv.id()) {
                             return true;
                         }
-                        // Fall back to checking the terminal model directly
-                        tv.as_ref(ctx).model.lock().ambient_agent_task_id() == Some(task_id)
+                        // Fall back to checking the terminal view directly.
+                        tv.as_ref(ctx).ambient_agent_task_id_for_details_panel(ctx) == Some(task_id)
                     })
             });
             has_task.then_some(index)
@@ -4972,6 +4977,21 @@ impl Workspace {
     }
 
     /// Notifies the agent views model and notifications model that a terminal view gained focus.
+    fn ambient_agent_task_id_for_focused_terminal_view(
+        &self,
+        ctx: &AppContext,
+    ) -> Option<AmbientAgentTaskId> {
+        let pane_group = self.active_tab_pane_group().as_ref(ctx);
+        let focused_pane_id = pane_group.focused_pane_id(ctx);
+        pane_group
+            .terminal_view_from_pane_id(focused_pane_id, ctx)
+            .and_then(|view| {
+                view.as_ref(ctx)
+                    .ambient_agent_task_id_for_details_panel(ctx)
+            })
+    }
+
+    /// Notifies the agent views model and notifications model that a terminal view gained focus.
     fn notify_terminal_focus_change(
         &self,
         focused_terminal_view_id: Option<EntityId>,
@@ -5053,9 +5073,7 @@ impl Workspace {
             .as_ref(ctx)
             .terminal_view_from_pane_id(pane_group.as_ref(ctx).focused_pane_id(ctx), ctx)
             .map(|tv| tv.id());
-        let ambient_agent_task_id = self
-            .get_active_session_terminal_model(ctx)
-            .and_then(|model| model.lock().ambient_agent_task_id());
+        let ambient_agent_task_id = self.ambient_agent_task_id_for_focused_terminal_view(ctx);
         self.notify_terminal_focus_change(focused_terminal_view_id, ambient_agent_task_id, ctx);
 
         self.update_active_session(ctx);
@@ -5379,7 +5397,8 @@ impl Workspace {
             .collect::<Vec<_>>()
     }
 
-    /// Focuses the given pane within the pane group.
+    /// Focuses the given pane, revealing it first if it is hidden behind a
+    /// temporary swap.
     pub fn focus_pane(&mut self, pane_view_locator: PaneViewLocator, ctx: &mut ViewContext<Self>) {
         if let Some((index, tab)) = self
             .tabs
@@ -5394,7 +5413,7 @@ impl Workspace {
             // remain focused (as opposed to the pane with pane_id) since its
             // input would remain focused.
             tab.pane_group.update(ctx, |view, ctx| {
-                view.focus_pane_by_id(pane_view_locator.pane_id, ctx);
+                view.reveal_and_focus_pane(pane_view_locator.pane_id, ctx);
             });
             self.activate_tab_internal(index, ctx);
             ctx.notify();
@@ -6107,7 +6126,7 @@ impl Workspace {
     /// Builds the unified new-session menu items
     /// tab bar chevron and the vertical tab bar `+` button.
     ///
-    /// Order: Agent → Terminal (sidecar) → Hermon Cloud → [tab configs] → separator → New worktree config (sidecar) → New tab config → separator → Reopen closed session.
+    /// Order: Agent → Terminal (sidecar) → Cloud Oz → [tab configs] → separator → New worktree config (sidecar) → New tab config → separator → Reopen closed session.
     fn unified_new_session_menu_items(
         &self,
         ctx: &mut ViewContext<Self>,
@@ -6189,12 +6208,12 @@ impl Workspace {
             }
         }
 
-        // 3. Hermon Cloud (if flags enabled)
+        // 3. Cloud Oz (if flags enabled)
         if is_any_ai_enabled
             && FeatureFlag::AgentView.is_enabled()
             && FeatureFlag::CloudMode.is_enabled()
         {
-            let mut cloud_item = MenuItemFields::new("Hermon Cloud")
+            let mut cloud_item = MenuItemFields::new("Cloud Oz")
                 .with_on_select_action(WorkspaceAction::AddAmbientAgentTab)
                 .with_icon(icons::Icon::LayoutAlt01);
             if effective_default == DefaultSessionMode::CloudAgent {
@@ -6399,7 +6418,7 @@ impl Workspace {
                 },
             ),
             NewSessionMenuItem::OpenLaunchConfigDocs => {
-                ctx.open_url("https://wish.hermon.ai/docs/terminal/sessions/launch-configurations")
+                ctx.open_url("https://docs.warp.dev/terminal/sessions/launch-configurations")
             }
             #[cfg(feature = "local_fs")]
             NewSessionMenuItem::CreateNewTabConfig => {
@@ -6632,7 +6651,7 @@ impl Workspace {
     }
 
     /// The tab bar overflow menu is the context menu that appears when
-    /// a user clicks "Update Wish" in the top right of the tab bar.
+    /// a user clicks "Update Warp" in the top right of the tab bar.
     pub fn toggle_tab_bar_overflow_menu(&mut self, ctx: &mut ViewContext<Self>) {
         if self.show_tab_bar_overflow_menu {
             self.close_tab_bar_overflow_menu(ctx);
@@ -6660,7 +6679,7 @@ impl Workspace {
                             .into_item(),
                     ),
                     AutoupdateStage::UnableToUpdateToNewVersion { .. } => menu_items.push(
-                        MenuItemFields::new("Update Wish manually")
+                        MenuItemFields::new("Update Warp manually")
                             .with_on_select_action(WorkspaceAction::DownloadNewVersion)
                             .into_item(),
                     ),
@@ -7698,19 +7717,19 @@ impl Workspace {
             match result {
                 Ok(_) => {
                     let command_name = ChannelState::channel().cli_command_name();
-                    let message = format!("Successfully installed the Wish CLI! You can now run '{command_name}' from the command line.");
+                    let message = format!("Successfully installed the Oz CLI! You can now run '{command_name}' from the command line.");
                     view.toast_stack.update(ctx, |toast_stack, ctx| {
                         let toast = DismissibleToast::success(message.to_string())
                             .with_link(
                                 ToastLink::new("Learn more".to_string()).with_href(
-                                    "https://wish.hermon.ai/docs/reference/cli".to_string(),
+                                    "https://docs.warp.dev/reference/cli".to_string(),
                                 ),
                             );
                         toast_stack.add_ephemeral_toast(toast, ctx);
                     });
                 }
                 Err(error) => {
-                    let error_message = format!("Failed to install Wish command: {error}");
+                    let error_message = format!("Failed to install Oz command: {error}");
                     log::error!("{error_message}");
                     view.toast_stack.update(ctx, |toast_stack, ctx| {
                         let toast = DismissibleToast::error(error_message);
@@ -7728,14 +7747,14 @@ impl Workspace {
             async { cli_install::uninstall_cli() },
             |view, result, ctx| match result {
                 Ok(_) => {
-                    let message = "Successfully uninstalled the Wish command.";
+                    let message = "Successfully uninstalled the Oz command.";
                     view.toast_stack.update(ctx, |toast_stack, ctx| {
                         let toast = DismissibleToast::success(message.to_string());
                         toast_stack.add_ephemeral_toast(toast, ctx);
                     });
                 }
                 Err(error) => {
-                    let error_message = format!("Failed to uninstall Wish command: {error}");
+                    let error_message = format!("Failed to uninstall Oz command: {error}");
                     log::error!("{error_message}");
                     view.toast_stack.update(ctx, |toast_stack, ctx| {
                         let toast = DismissibleToast::error(error_message);
@@ -8081,7 +8100,10 @@ impl Workspace {
                 |(repo_path, terminal_view): (Option<PathBuf>, WeakViewHandle<TerminalView>)| {
                     let diff_state_model = repo_path.as_ref().and_then(|rp: &PathBuf| {
                         self.working_directories_model.update(ctx, |model, ctx| {
-                            model.get_or_create_diff_state_model(rp.clone(), ctx)
+                            model.get_or_create_diff_state_model(
+                                BufferLocation::Local(rp.clone()),
+                                ctx,
+                            )
                         })
                     })?;
                     Some((repo_path, diff_state_model, terminal_view))
@@ -8126,7 +8148,7 @@ impl Workspace {
         let repo_path = panel_context.repo_path.clone();
         let diff_state_model = repo_path.as_ref().and_then(|rp| {
             self.working_directories_model.update(ctx, |model, ctx| {
-                model.get_or_create_diff_state_model(rp.clone(), ctx)
+                model.get_or_create_diff_state_model(BufferLocation::Local(rp.clone()), ctx)
             })
         });
         let Some(diff_state_model) = diff_state_model else {
@@ -8243,7 +8265,7 @@ impl Workspace {
             |(repo_path, terminal_view): (Option<PathBuf>, WeakViewHandle<TerminalView>)| {
                 let diff_state_model = repo_path.as_ref().and_then(|rp: &PathBuf| {
                     self.working_directories_model.update(ctx, |model, ctx| {
-                        model.get_or_create_diff_state_model(rp.clone(), ctx)
+                        model.get_or_create_diff_state_model(BufferLocation::Local(rp.clone()), ctx)
                     })
                 })?;
                 Some(CodeReviewPaneContext {
@@ -8371,7 +8393,7 @@ impl Workspace {
                     ) =>
                 {
                     items.push(
-                        MenuItemFields::new("Update and relaunch Wish")
+                        MenuItemFields::new("Update and relaunch Warp")
                             .with_on_select_action(WorkspaceAction::ApplyUpdate)
                             .with_override_text_color(appearance.theme().ansi_fg_red())
                             .into_item(),
@@ -8394,7 +8416,7 @@ impl Workspace {
                     ) =>
                 {
                     items.push(
-                        MenuItemFields::new("Update Wish manually")
+                        MenuItemFields::new("Update Warp manually")
                             .with_on_select_action(WorkspaceAction::DownloadNewVersion)
                             .with_override_text_color(appearance.theme().ansi_fg_red())
                             .into_item(),
@@ -8425,7 +8447,7 @@ impl Workspace {
 
         #[cfg(not(target_family = "wasm"))]
         items.push(
-            MenuItemFields::new("View Wish logs")
+            MenuItemFields::new("View Warp logs")
                 .with_on_select_action(WorkspaceAction::ViewLogs)
                 .into_item(),
         );
@@ -8650,7 +8672,7 @@ impl Workspace {
                 let theme = appearance.theme();
                 let search_icon = ConstrainedBox::new(
                     icons::Icon::SearchSmall
-                        .to_warpui_icon(theme.sub_text_color(theme.surface_2()))
+                        .to_wishui_icon(theme.sub_text_color(theme.surface_2()))
                         .finish(),
                 )
                 .with_width(16.)
@@ -10225,6 +10247,51 @@ impl Workspace {
         }
     }
 
+    /// If a closing tab is an untouched split-off child-agent tab, move its
+    /// pane back to the original tab instead of closing it. Returns true if
+    /// handled.
+    fn try_re_adopt_split_off_child_agent_tab(
+        &mut self,
+        index: usize,
+        ctx: &mut ViewContext<Self>,
+    ) -> bool {
+        let Some(tab_data) = self.tabs.get(index) else {
+            return false;
+        };
+        let Some(origin) = tab_data
+            .pane_group
+            .as_ref(ctx)
+            .child_agent_origin()
+            .cloned()
+        else {
+            return false;
+        };
+        let Some(source_pane_group) = origin.source_pane_group.upgrade(ctx) else {
+            return false;
+        };
+
+        let pane_group = tab_data.pane_group.clone();
+        // Only re-adopt untouched split-off tabs; changed layouts use normal
+        // close handling.
+        let pane_ids: Vec<PaneId> = pane_group.as_ref(ctx).pane_ids().collect();
+        if pane_ids.len() != 1 {
+            return false;
+        }
+        let pane_id = pane_ids[0];
+
+        let Some(pane_content) =
+            pane_group.update(ctx, |pg, ctx| pg.remove_pane_for_move(&pane_id, ctx))
+        else {
+            return false;
+        };
+
+        source_pane_group.update(ctx, |pg, ctx| {
+            pg.re_adopt_child_agent_pane(pane_content, origin.conversation_id, ctx);
+        });
+
+        true
+    }
+
     fn remove_tab(
         &mut self,
         index: usize,
@@ -10232,17 +10299,14 @@ impl Workspace {
         detach_panes_for_close: bool,
         ctx: &mut ViewContext<Self>,
     ) {
-        let Some(tab_data) = self.tabs.get(index) else {
+        let Some(pane_group) = self.tabs.get(index).map(|t| t.pane_group.clone()) else {
             debug_assert!(false, "Tried to remove a tab with an invalid index");
             return;
         };
 
-        // If the vertical-tabs detail sidecar is anchored to this tab's pane group, clear it.
-        // Otherwise it will try to position itself against a pane row that is about to disappear
-        // (either because the tab is being removed from `self.tabs`, or because we're about to
-        // close the window for the last tab).
+        // Clear a detail sidecar anchored to this tab before the tab disappears.
         self.vertical_tabs_panel
-            .clear_detail_sidecar_if_for_pane_group(tab_data.pane_group.id());
+            .clear_detail_sidecar_if_for_pane_group(pane_group.id());
 
         // If this is the last tab, close the window instead of actually removing
         // the tab.
@@ -10253,9 +10317,15 @@ impl Workspace {
             return;
         }
 
-        if detach_panes_for_close {
+        // Preserve split-off child-agent tabs by moving their lone pane back
+        // before close cleanup. Skip tab moves so the destination keeps the
+        // pane.
+        let re_adopted =
+            detach_panes_for_close && self.try_re_adopt_split_off_child_agent_tab(index, ctx);
+
+        if !re_adopted && detach_panes_for_close {
             let working_directories_model = self.working_directories_model.clone();
-            tab_data.pane_group.update(ctx, |pane_group, ctx| {
+            pane_group.update(ctx, |pane_group, ctx| {
                 pane_group.for_all_terminal_panes(
                     |terminal_view, ctx| {
                         if terminal_view
@@ -10280,7 +10350,9 @@ impl Workspace {
         let removed_pane_group_id = tab_data.pane_group.id();
         self.tab_mru_order.retain(|id| *id != removed_pane_group_id);
 
-        if add_to_undo_stack {
+        // Re-adopted child tabs leave no useful tab contents to restore; the
+        // live pane already moved back.
+        if add_to_undo_stack && !re_adopted {
             let handle = ctx.handle();
             UndoCloseStack::handle(ctx).update(ctx, |stack, ctx| {
                 log::info!("storing data for closed tab");
@@ -10603,7 +10675,7 @@ impl Workspace {
 
     pub fn open_autoupdate_failure_link(&mut self, ctx: &mut ViewContext<Self>) {
         ctx.open_url(
-            "https://wish.hermon.ai/docs/support-and-community/troubleshooting-and-support/updating-wish",
+            "https://docs.warp.dev/support-and-community/troubleshooting-and-support/updating-warp",
         );
     }
 
@@ -11651,9 +11723,7 @@ impl Workspace {
 
         ctx.spawn(future, move |workspace, source_conversation, ctx| {
             let Some(CloudConversationData::Oz(source_conversation)) = source_conversation else {
-                log::error!(
-                    "Failed to load Hermon Agent conversation {conversation_id} for forking."
-                );
+                log::error!("Failed to load Oz conversation {conversation_id} for forking.");
                 WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     let toast = DismissibleToast::error(
                         "Failed to load conversation for forking.".to_owned(),
@@ -12108,7 +12178,7 @@ impl Workspace {
                         let url = NOTIFICATIONS_TROUBLESHOOT_URL.to_string();
                         view.toast_stack.update(ctx, |toast_stack, ctx| {
                             let toast = DismissibleToast::error(
-                                "Wish doesn't have permission to send desktop notifications.".to_string(),
+                                "Warp doesn't have permission to send desktop notifications.".to_string(),
                             )
                             .with_link(ToastLink::new("Troubleshoot notifications".to_string()).with_href(url));
                             toast_stack.add_persistent_toast(toast, ctx);
@@ -12759,7 +12829,7 @@ impl Workspace {
                                 link = link.with_keystroke(keystroke);
                             }
 
-                            let toast = DismissibleToast::default(String::from("Wish updated!"))
+                            let toast = DismissibleToast::default(String::from("Warp updated!"))
                                 .with_link(link);
 
                             stack.add_ephemeral_toast(toast, ctx);
@@ -13005,59 +13075,139 @@ impl Workspace {
         });
     }
 
-    /// Open a local-to-cloud handoff pane in place over the active local pane.
-    /// Triggered by the `/move-to-cloud` slash command and the "Hand off to
-    /// cloud" footer chip.
-    ///
-    /// When the active conversation is non-empty and has a server token, mints a
-    /// server-side fork via `POST /agent/conversations/{conversation_id}/fork`,
-    /// then pushes a fresh cloud-mode view onto the active pane's navigation stack
-    /// and pre-populates it with the forked conversation. Pressing Escape in the
-    /// cloud-mode view pops back to the original local pane (the same pattern used
-    /// by Cmd-Alt-Enter / Ctrl-Alt-Enter to enter cloud mode from a local session).
-    ///
-    /// All failure modes — ineligibility, fork RPC failure, and local fork
-    /// materialization failure — surface an error toast and **do not open** any
-    /// pane. The local conversation is unaffected.
+    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+    fn show_handoff_prepare_failed_toast(window_id: WindowId, ctx: &mut ViewContext<Self>) {
+        WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
+            let toast =
+                DismissibleToast::error("Failed to prepare handoff. Please try again.".to_owned());
+            toast_stack.add_ephemeral_toast(toast, window_id, ctx);
+        });
+    }
+
+    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+    fn restore_source_handoff_draft(
+        source_view: &ViewHandle<TerminalView>,
+        launch: Option<PendingCloudLaunch>,
+        explicit_environment_id: Option<SyncId>,
+        ctx: &mut ViewContext<Self>,
+    ) {
+        let Some(launch) = launch else {
+            return;
+        };
+        source_view.update(ctx, |view, ctx| {
+            let input = view.input().clone();
+            input.update(ctx, |input, ctx| {
+                input.restore_cloud_handoff_draft(launch, explicit_environment_id, ctx);
+            });
+        });
+    }
+
+    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+    fn maybe_auto_submit_handoff(
+        _target_view: &ViewHandle<TerminalView>,
+        model_handle: &ModelHandle<AmbientAgentViewModel>,
+        ctx: &mut ViewContext<Self>,
+    ) {
+        let launch = model_handle.update(ctx, |model, ctx| model.maybe_auto_submit_handoff(ctx));
+        let Some(launch) = launch else {
+            return;
+        };
+        model_handle.update(ctx, |model, ctx| {
+            model.submit_handoff(launch.prompt, launch.attachments.request_attachments, ctx);
+        });
+    }
+
+    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+    fn show_handoff_success_toast(ctx: &mut ViewContext<Self>) {
+        let window_id = ctx.window_id();
+        WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
+            toast_stack.add_ephemeral_toast(
+                DismissibleToast::success("Handing off to cloud".to_owned()),
+                window_id,
+                ctx,
+            );
+        });
+    }
+
+    /// Opens a cloud pane without forking when there is no local conversation to hand off.
+    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+    fn start_fresh_cloud_launch(
+        &mut self,
+        source_view: ViewHandle<TerminalView>,
+        launch: Option<PendingCloudLaunch>,
+        explicit_environment_id: Option<SyncId>,
+        ctx: &mut ViewContext<Self>,
+    ) {
+        // Push a cloud-mode pane for the fresh launch.
+        let Some((_new_pane_view, model_handle)) = source_view.update(ctx, |view, view_ctx| {
+            view.start_local_to_cloud_handoff_pane(view_ctx)
+        }) else {
+            log::warn!("start_local_to_cloud_handoff: failed to push fresh cloud-mode pane");
+            Self::restore_source_handoff_draft(&source_view, launch, explicit_environment_id, ctx);
+            Self::show_handoff_prepare_failed_toast(ctx.window_id(), ctx);
+            return;
+        };
+
+        if let Some(environment_id) = explicit_environment_id {
+            model_handle.update(ctx, |model, ctx| {
+                model.set_environment_id(Some(environment_id), ctx);
+            });
+        }
+        Self::show_handoff_success_toast(ctx);
+
+        if let Some(launch) = launch {
+            model_handle.update(ctx, |model, ctx| {
+                model.spawn_agent(launch.prompt, launch.attachments.request_attachments, ctx);
+            });
+        }
+    }
+
+    /// Opens a local-to-cloud handoff pane in place over the active local pane.
+    /// Triggered by `/move-to-cloud`, `&` compose mode, and the handoff footer chip.
     #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
     fn start_local_to_cloud_handoff(
         &mut self,
-        initial_prompt: Option<String>,
+        launch: Option<PendingCloudLaunch>,
+        explicit_environment_id: Option<SyncId>,
         ctx: &mut ViewContext<Self>,
     ) {
         if !FeatureFlag::OzHandoff.is_enabled() || !FeatureFlag::HandoffLocalCloud.is_enabled() {
             return;
         }
 
-        let source = self
+        let Some(source_view) = self
             .active_tab_pane_group()
             .as_ref(ctx)
             .active_session_view(ctx)
-            .and_then(|view| {
-                let terminal_view_id = view.id();
-                let history = BlocklistAIHistoryModel::handle(ctx);
-                history
-                    .as_ref(ctx)
-                    .active_conversation(terminal_view_id)
-                    .filter(|c| !c.is_empty())
-                    .and_then(|conversation| {
-                        conversation
-                            .server_conversation_token()
-                            .cloned()
-                            .map(|token| (view.clone(), conversation.clone(), token))
-                    })
-            });
+        else {
+            Self::show_handoff_prepare_failed_toast(ctx.window_id(), ctx);
+            return;
+        };
 
-        let Some((source_view, source_conversation, source_token)) = source else {
-            // Ineligible: don't open a fresh unrelated pane — the chip is a
-            // hand-off-this-conversation action.
-            let window_id = ctx.window_id();
-            WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                let toast = DismissibleToast::error(
-                    "Failed to prepare handoff. Please try again.".to_owned(),
-                );
-                toast_stack.add_ephemeral_toast(toast, window_id, ctx);
-            });
+        let terminal_view_id = source_view.id();
+        let source_conversation = BlocklistAIHistoryModel::handle(ctx)
+            .as_ref(ctx)
+            .active_conversation(terminal_view_id)
+            .cloned();
+
+        let Some(source_conversation) =
+            source_conversation.filter(|conversation| !conversation.is_empty())
+        else {
+            self.start_fresh_cloud_launch(source_view, launch, explicit_environment_id, ctx);
+            return;
+        };
+
+        if source_conversation.status().is_in_progress()
+            || source_conversation.status().is_blocked()
+        {
+            Self::restore_source_handoff_draft(&source_view, launch, explicit_environment_id, ctx);
+            Self::show_handoff_prepare_failed_toast(ctx.window_id(), ctx);
+            return;
+        }
+
+        let Some(source_token) = source_conversation.server_conversation_token().cloned() else {
+            Self::restore_source_handoff_draft(&source_view, launch, explicit_environment_id, ctx);
+            Self::show_handoff_prepare_failed_toast(ctx.window_id(), ctx);
             return;
         };
 
@@ -13071,117 +13221,69 @@ impl Workspace {
                         source_view,
                         source_conversation,
                         response.forked_conversation_id,
-                        initial_prompt,
+                        launch,
+                        explicit_environment_id,
                         ctx,
                     );
                 }
                 Err(err) => {
                     log::warn!("fork_conversation failed: {err:#}");
-                    let window_id = ctx.window_id();
-                    WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                        let toast = DismissibleToast::error(
-                            "Failed to prepare handoff. Please try again.".to_owned(),
-                        );
-                        toast_stack.add_ephemeral_toast(toast, window_id, ctx);
-                    });
+                    Self::restore_source_handoff_draft(
+                        &source_view,
+                        launch,
+                        explicit_environment_id,
+                        ctx,
+                    );
+                    Self::show_handoff_prepare_failed_toast(ctx.window_id(), ctx);
                 }
             },
         );
     }
 
-    /// Finishes the local-to-cloud handoff open after the fork RPC returns.
-    /// Materializes a local fork bound to the server's forked conversation id,
-    /// pushes a fresh cloud-mode view onto `source_view`'s navigation stack,
-    /// restores the forked conversation into it, exits the source pane's agent
-    /// view (so Esc returns to a clean terminal), seeds `PendingHandoff`, and
-    /// kicks off async derivation + snapshot upload.
-    ///
-    /// The source's agent-view exit happens AFTER the new pane is pushed, so the
-    /// source pane is hidden behind the cloud-mode view when its chrome flips
-    /// from agent mode to terminal mode — the user never sees the transition.
-    /// The pane-stack pop logic in `terminal/view.rs` skips popping when the
-    /// `ExitedAgentView` event has `is_exit_before_new_entrance: true`, which
-    /// prevents the bookkeeping exit triggered by `restore_conversation_after_view_creation`
-    /// (re-entering agent view for the forked conversation) from tearing down
-    /// the just-pushed pane.
+    /// Finishes the handoff after the fork RPC returns by restoring the forked
+    /// conversation in a cloud pane and starting snapshot prep.
     #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
     fn complete_local_to_cloud_handoff_open(
         &mut self,
         source_view: ViewHandle<TerminalView>,
         source_conversation: AIConversation,
         forked_conversation_id: String,
-        initial_prompt: Option<String>,
+        launch: Option<PendingCloudLaunch>,
+        explicit_environment_id: Option<SyncId>,
         ctx: &mut ViewContext<Self>,
     ) {
-        // Materialize the local fork up-front so the new pane has something to restore.
-        // Preserve source task ids so the local fork's task store matches the cloud-side
-        // fork (the cloud agent's ClientActions reference these task ids).
         let history_model = BlocklistAIHistoryModel::handle(ctx);
+        // Materialize the fork locally so the new pane can restore it.
         let local_fork = match history_model.update(ctx, |history_model, ctx| {
-            history_model.fork_conversation(
-                &source_conversation,
-                FORK_PREFIX,
-                true, /* preserve_task_ids */
-                ctx,
-            )
+            history_model.fork_conversation(&source_conversation, FORK_PREFIX, true, ctx)
         }) {
             Ok(forked) => forked,
             Err(err) => {
                 log::warn!("Failed to materialize local fork for handoff: {err:#}");
-                let window_id = ctx.window_id();
-                WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::error(
-                        "Failed to prepare handoff. Please try again.".to_owned(),
-                    );
-                    toast_stack.add_ephemeral_toast(toast, window_id, ctx);
-                });
+                Self::show_handoff_prepare_failed_toast(ctx.window_id(), ctx);
                 return;
             }
         };
         let local_fork_id = local_fork.id();
 
-        // Push the cloud-mode pane onto the source's nav stack.
+        // Push the cloud-mode pane before attaching the forked conversation.
         let Some((new_pane_view, model_handle)) = source_view.update(ctx, |view, view_ctx| {
             view.start_local_to_cloud_handoff_pane(view_ctx)
         }) else {
             log::warn!("start_local_to_cloud_handoff: failed to push cloud-mode pane");
-            let window_id = ctx.window_id();
-            WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                let toast = DismissibleToast::error(
-                    "Failed to prepare handoff. Please try again.".to_owned(),
-                );
-                toast_stack.add_ephemeral_toast(toast, window_id, ctx);
-            });
+            Self::show_handoff_prepare_failed_toast(ctx.window_id(), ctx);
             return;
         };
-
-        if let Some(prompt) = initial_prompt.as_deref().filter(|p| !p.is_empty()) {
-            new_pane_view.update(ctx, |terminal_view, view_ctx| {
-                terminal_view.input().update(view_ctx, |input, input_ctx| {
-                    input.replace_buffer_content(prompt, input_ctx);
-                });
-            });
-        }
-
-        // Restore the forked conversation into the new pane so its AI exchanges are
-        // visible immediately. This re-enters agent view for the forked conversation,
-        // which emits an internal `ExitedAgentView { is_exit_before_new_entrance: true }`
-        // for the cloud-mode placeholder; the pane-stack pop is skipped for that flag.
+        // Restore the forked conversation into the newly-created pane.
         new_pane_view.update(ctx, |terminal_view, view_ctx| {
             terminal_view.restore_conversation_after_view_creation(
                 RestoredAIConversation::new(local_fork.clone()),
-                /* use_live_appearance */ true,
+                true,
                 view_ctx,
             );
         });
 
-        // Enter fullscreen agent view for the restored fork in the new pane. Without this the
-        // pane sits in shared-session-viewer-pending mode and the input renders read-only;
-        // entering agent view activates the editable cloud-mode input flow. Use
-        // `RestoreExistingConversation` to indicate the conversation is restored (not new) —
-        // the `is_local_to_cloud_handoff` flag set via `set_pending_handoff` below is the
-        // authoritative "this is a cloud agent pane" signal for downstream gating
-        // (`is_cloud_agent_pre_first_exchange`, etc.).
+        // Enter fullscreen agent view once restoration has populated history.
         new_pane_view.update(ctx, |terminal_view, view_ctx| {
             terminal_view.enter_agent_view_for_conversation(
                 None,
@@ -13191,7 +13293,7 @@ impl Workspace {
             );
         });
 
-        // Bind the local fork to the cloud-side conversation id and mark it as a shared conversation.
+        // Bind the local fork to the server fork token.
         history_model.update(ctx, |history_model, _| {
             history_model.set_server_conversation_token_for_conversation(
                 local_fork_id,
@@ -13200,39 +13302,48 @@ impl Workspace {
             history_model.set_viewing_shared_session_for_conversation(local_fork_id, true);
         });
 
-        // Exit the source pane's fullscreen agent view (if active) so pressing Esc in the
-        // cloud-mode pane returns to a terminal-mode source. This runs AFTER the push, so
-        // the source pane is hidden behind the cloud-mode view and the transition is
-        // invisible to the user. `was_ambient_agent` is false for a local source, so this
-        // exit doesn't pop the pane stack.
         let source_agent_view_controller = source_view.as_ref(ctx).agent_view_controller().clone();
         if source_agent_view_controller
             .as_ref(ctx)
             .agent_view_state()
             .is_fullscreen()
         {
+            // Exit the source pane so focus and input move to the cloud pane.
             source_agent_view_controller.update(ctx, |controller, ctx| {
                 controller.exit_agent_view_without_confirmation(ctx);
             });
         }
 
+        if let Some(env_id) = explicit_environment_id {
+            model_handle.update(ctx, |model, ctx| {
+                model.set_environment_id(Some(env_id), ctx);
+            });
+        }
+
+        // Keep handoff state on the cloud model until snapshot prep and submit finish.
         let pending = PendingHandoff {
             forked_conversation_id: forked_conversation_id.clone(),
             touched_workspace: None,
             snapshot_upload: SnapshotUploadStatus::Pending,
             submission_state: HandoffSubmissionState::Idle,
+            auto_submit: launch,
+            explicit_environment_id,
         };
         model_handle.update(ctx, |model, model_ctx| {
             model.set_pending_handoff(Some(pending), model_ctx);
         });
 
-        // Async background prep: derive the touched workspace, then upload the
-        // snapshot. The pane is fully interactive throughout. `submit_handoff`
-        // gates on both completing before allowing a spawn.
+        Self::show_handoff_success_toast(ctx);
+        model_handle.update(ctx, |model, ctx| {
+            model.queue_handoff_auto_submit(ctx);
+        });
+
+        let async_pane_view = new_pane_view.clone();
         let async_model_handle = model_handle.clone();
         let server_api_provider = ServerApiProvider::as_ref(ctx);
         let ai_client = server_api_provider.get_ai_client();
         let http = server_api_provider.get_http_client();
+        // Derive touched repos and upload the initial snapshot off the UI thread.
         ctx.spawn(
             async move {
                 let paths = extract_paths_from_conversation(&source_conversation);
@@ -13253,10 +13364,14 @@ impl Workspace {
                     if !model.is_local_to_cloud_handoff() {
                         return;
                     }
-                    let mut envs = CloudAmbientAgentEnvironment::get_all(model_ctx);
-                    sort_environments_by_recency(&mut envs);
-                    if let Some(overlap_env) = pick_handoff_overlap_env(&derived_workspace, envs) {
-                        model.set_environment_id(Some(overlap_env), model_ctx);
+                    if !model.pending_handoff_has_explicit_environment() {
+                        let mut envs = CloudAmbientAgentEnvironment::get_all(model_ctx);
+                        sort_environments_by_recency(&mut envs);
+                        if let Some(overlap_env) =
+                            pick_handoff_overlap_env(&derived_workspace, envs)
+                        {
+                            model.set_environment_id(Some(overlap_env), model_ctx);
+                        }
                     }
                     model.set_pending_handoff_workspace(derived_workspace, model_ctx);
                     match upload_result {
@@ -13279,6 +13394,7 @@ impl Workspace {
                         }
                     }
                 });
+                Self::maybe_auto_submit_handoff(&async_pane_view, &async_model_handle, ctx);
             },
         );
     }
@@ -13543,7 +13659,7 @@ impl Workspace {
                         ctx,
                     ),
                     _ => {
-                        log::warn!("Attempted to open an unsupported Wish Drive link")
+                        log::warn!("Attempted to open an unsupported Warp Drive link")
                     }
                 }
             }
@@ -13556,7 +13672,7 @@ impl Workspace {
                 self.open_code(source.clone(), *layout, *line_col, false, &[], ctx);
             }
             #[cfg(feature = "local_fs")]
-            pane_group::Event::PreviewCodeInWarp { source } => {
+            pane_group::Event::PreviewCodeInWish { source } => {
                 self.open_code(
                     source.clone(),
                     EditorLayout::SplitPane, // preview always uses split pane
@@ -13796,9 +13912,8 @@ impl Workspace {
                         .terminal_view_from_pane_id(pane_group.focused_pane_id(ctx), ctx)
                         .map(|tv| tv.id())
                 };
-                let ambient_agent_task_id = self
-                    .get_active_session_terminal_model(ctx)
-                    .and_then(|model| model.lock().ambient_agent_task_id());
+                let ambient_agent_task_id =
+                    self.ambient_agent_task_id_for_focused_terminal_view(ctx);
                 self.notify_terminal_focus_change(
                     focused_terminal_view_id,
                     ambient_agent_task_id,
@@ -13846,39 +13961,34 @@ impl Workspace {
             #[cfg(not(feature = "local_fs"))]
             pane_group::Event::RemoteRepoNavigated { .. } => {}
             pane_group::Event::OpenChildAgentInNewTab { conversation_id } => {
-                // "Open in new tab" from the orchestration pill bar's 3-dot
-                // menu. Spawn a fresh session tab and enter agent view for
-                // the child conversation. The conversation already lives in
-                // `BlocklistAIHistoryModel`, so the new terminal view can
-                // adopt it without any restoration plumbing — just call
-                // `enter_agent_view_for_conversation` on it.
+                // Move the existing child pane into a new tab so the live
+                // session stays intact.
                 let conversation_id = *conversation_id;
-                let window_id = ctx.window_id();
-                self.add_new_session_tab_with_default_mode(
-                    NewSessionSource::Tab,
-                    Some(window_id),
-                    None, /* chosen_shell */
-                    None, /* conversation_restoration */
-                    true, /* hide_homepage */
-                    ctx,
-                );
-                if let Some(terminal_view) = self
-                    .active_tab_pane_group()
-                    .as_ref(ctx)
-                    .active_session_view(ctx)
-                {
-                    terminal_view.update(ctx, |view, ctx| {
-                        view.enter_agent_view_for_conversation(
-                            None,
-                            AgentViewEntryOrigin::OrchestrationPillBar,
-                            conversation_id,
-                            ctx,
-                        );
-                    });
-                } else {
+                let removed_pane = pane_group.update(ctx, |pg, ctx| {
+                    pg.take_child_agent_pane_for_split_off(conversation_id, ctx)
+                });
+                let Some(removed_pane) = removed_pane else {
                     log::warn!(
-                        "OpenChildAgentInNewTab: no active terminal view in newly created tab"
+                        "OpenChildAgentInNewTab: no hidden child pane registered for conversation {conversation_id:?}"
                     );
+                    return;
+                };
+                let new_tab_index = match TabSettings::as_ref(ctx).new_tab_placement {
+                    NewTabPlacement::AfterAllTabs => self.tab_count(),
+                    NewTabPlacement::AfterCurrentTab => self.active_tab_index + 1,
+                };
+                let source_pane_group = pane_group.downgrade();
+                self.add_tab_from_existing_pane(removed_pane, new_tab_index, ctx);
+                // Mark the new tab so closing it can move the pane back.
+                if let Some(new_pane_group) =
+                    self.get_pane_group_view(self.active_tab_index).cloned()
+                {
+                    new_pane_group.update(ctx, |pg, _ctx| {
+                        pg.set_child_agent_origin(ChildAgentOrigin {
+                            source_pane_group,
+                            conversation_id,
+                        });
+                    });
                 }
             }
             pane_group::Event::DroppedOnTabBar { origin, pane_id } => {
@@ -15485,7 +15595,7 @@ impl Workspace {
                                             },
                                         ) {
                                             new_toast = DismissibleToast::success(
-                                                "Plan synced to your Wish Drive".to_string(),
+                                                "Plan synced to your Warp Drive".to_string(),
                                             )
                                             .with_object_id(object_id_clone)
                                             .with_link(
@@ -16167,11 +16277,41 @@ impl Workspace {
     fn handle_window_state_change(&mut self, event: &StateEvent, ctx: &mut ViewContext<Self>) {
         match &event {
             StateEvent::ValueChanged { current, previous } => {
+                let did_window_change_focus =
+                    WindowManager::did_window_change_focus(self.window_id, current, previous);
+                let cached_window_is_active = current.active_window == Some(self.window_id);
+                let app_became_active = previous.stage != ApplicationStage::Active
+                    && current.stage == ApplicationStage::Active;
+                let platform_window_is_active =
+                    ctx.windows().active_window() == Some(self.window_id);
+
+                // Notify focus listeners when this window is active after either a window focus
+                // change or app reactivation while the active window stayed the same.
+                // On macOS, app activation can beat the deferred key-window update, so
+                // reactivation also verifies the live platform window.
+                if cached_window_is_active
+                    && (did_window_change_focus || (app_became_active && platform_window_is_active))
+                {
+                    if let Some(terminal_view) = self
+                        .active_tab_pane_group()
+                        .as_ref(ctx)
+                        .focused_session_view(ctx)
+                    {
+                        let ambient_agent_task_id = terminal_view
+                            .as_ref(ctx)
+                            .ambient_agent_task_id_for_details_panel(ctx);
+                        self.notify_terminal_focus_change(
+                            Some(terminal_view.id()),
+                            ambient_agent_task_id,
+                            ctx,
+                        );
+                    }
+                }
+
                 // Re-render if fullscreen state for active window has changed.
                 if current.is_active_window_fullscreen != previous.is_active_window_fullscreen {
                     ctx.notify();
-                } else if WindowManager::did_window_change_focus(self.window_id, current, previous)
-                {
+                } else if did_window_change_focus {
                     // Re-render if this window's focus state has changed.
                     ctx.notify();
                 } else if current.stage != previous.stage {
@@ -16198,7 +16338,7 @@ impl Workspace {
                 let command = code.trim().to_string();
                 let args_state =
                     ArgumentsState::for_command_workflow(&Default::default(), command.clone());
-                let workflow = Workflow::new("Command from Wish AI", command)
+                let workflow = Workflow::new("Command from Warp AI", command)
                     .with_arguments(args_state.arguments);
                 self.run_workflow_in_active_input(
                     &WorkflowType::AIGenerated {
@@ -16250,7 +16390,7 @@ impl Workspace {
                     model.mark_oz_launch_modal_dismissed(ctx);
                 });
 
-                // Clear the "Introducing Hermon Agent" custom tab name so normal tab naming rules apply.
+                // Clear the "Introducing Oz" custom tab name so normal tab naming rules apply.
                 if let Some(pane_group_id) = self.oz_launch_modal.tab_pane_group_id.take() {
                     if let Some(tab) = self
                         .tabs
@@ -16919,7 +17059,7 @@ impl Workspace {
         let body = appearance
             .ui_builder()
             .wrappable_text(
-                "Ask Wish AI to explain errors, suggest commands or write scripts.".to_owned(),
+                "Ask Warp AI to explain errors, suggest commands or write scripts.".to_owned(),
                 true,
             )
             .with_style(UiComponentStyles {
@@ -17100,7 +17240,7 @@ impl Workspace {
                     {
                         ToolPanelView::ProjectExplorer => "Project explorer",
                         ToolPanelView::GlobalSearch { .. } => "Global search",
-                        ToolPanelView::WarpDrive => "Wish Drive",
+                        ToolPanelView::WarpDrive => "Warp Drive",
                         ToolPanelView::ConversationListView => "Agent conversations",
                     }
                 } else {
@@ -17154,7 +17294,7 @@ impl Workspace {
             {
                 ToolPanelView::ProjectExplorer => "Project explorer",
                 ToolPanelView::GlobalSearch { .. } => "Global search",
-                ToolPanelView::WarpDrive => "Wish Drive",
+                ToolPanelView::WarpDrive => "Warp Drive",
                 ToolPanelView::ConversationListView => "Agent conversations",
             }
         } else {
@@ -17217,7 +17357,7 @@ impl Workspace {
         };
 
         // Build the button content: Diff icon + optional diff stats
-        let icon = ConstrainedBox::new(icons::Icon::Diff.to_warpui_icon(font_color).finish())
+        let icon = ConstrainedBox::new(icons::Icon::Diff.to_wishui_icon(font_color).finish())
             .with_width(16.)
             .with_height(16.)
             .finish();
@@ -17398,7 +17538,7 @@ impl Workspace {
                     .with_spacing(10.)
                     .with_child(
                         ConstrainedBox::new(
-                            icons::Icon::Search.to_warpui_icon(text_color).finish(),
+                            icons::Icon::Search.to_wishui_icon(text_color).finish(),
                         )
                         .with_width(16.)
                         .with_height(16.)
@@ -17470,11 +17610,11 @@ impl Workspace {
                 .with_main_axis_size(MainAxisSize::Max);
             let bg_color = blended_colors::neutral_1(appearance.theme());
 
-            // Left: Hermon logo - clickable to link to Wish.
-            let hermon_logo = Hoverable::new(self.mouse_states.hermon_logo.clone(), |_state| {
+            // Left: Warp logo - clickable to link to warp.dev
+            let warp_logo = Hoverable::new(self.mouse_states.warp_logo.clone(), |_state| {
                 ConstrainedBox::new(
                     wish_core::ui::Icon::Warp
-                        .to_warpui_icon(appearance.theme().foreground())
+                        .to_wishui_icon(appearance.theme().foreground())
                         .finish(),
                 )
                 .with_height(24.)
@@ -17482,13 +17622,11 @@ impl Workspace {
                 .finish()
             })
             .on_click(|ctx, _, _| {
-                ctx.dispatch_typed_action(WorkspaceAction::OpenLink(
-                    "https://wish.hermon.ai".to_owned(),
-                ));
+                ctx.dispatch_typed_action(WorkspaceAction::OpenLink("https://warp.dev".to_owned()));
             })
             .with_cursor(Cursor::PointingHand)
             .finish();
-            tab_bar.add_child(hermon_logo);
+            tab_bar.add_child(warp_logo);
 
             // Right: Info button + "View all cloud runs" button (for ambient agent sessions) + "Open in Warp" button
             let mut right_row = Flex::row()
@@ -18334,7 +18472,7 @@ impl Workspace {
                 icons::Icon::Lightbulb,
                 &self.mouse_states.resource_center_icon,
                 WorkspaceAction::ToggleResourceCenter,
-                "Wish Essentials".to_string(),
+                "Warp Essentials".to_string(),
                 self.cached_keybindings[TOGGLE_RESOURCE_CENTER_KEYBINDING_NAME].clone(),
                 false,
                 false,
@@ -18479,7 +18617,7 @@ impl Workspace {
         let icon = ConstrainedBox::new(
             Container::new(
                 icons::Icon::CloudOffline
-                    .to_warpui_icon(appearance.theme().foreground())
+                    .to_wishui_icon(appearance.theme().foreground())
                     .finish(),
             )
             .with_uniform_padding(3.)
@@ -18832,7 +18970,7 @@ impl Workspace {
             AISettings::as_ref(app)
                 .is_any_ai_enabled(app)
                 .then(|| WorkspaceBannerButtonDetails {
-                    text: "Fix with Hermon Agent".to_owned(),
+                    text: "Fix with Oz".to_owned(),
                     action: WorkspaceAction::FixSettingsWithOz {
                         error_description: error.to_string(),
                     },
@@ -18896,7 +19034,7 @@ impl Workspace {
                         if is_incoming_version_past_current(new_version.soft_cutoff.as_deref()) {
                             VERSION_DEPRECATION_WITHOUT_PERMISSIONS_BANNER_TEXT.to_owned()
                         } else {
-                            "A new version is available but Wish is unable to perform the update."
+                            "A new version is available but Warp is unable to perform the update."
                                 .to_owned()
                         };
 
@@ -18907,7 +19045,7 @@ impl Workspace {
                         description,
                         secondary_button: None,
                         button: Some(WorkspaceBannerButtonDetails {
-                            text: "Update Wish manually".to_string(),
+                            text: "Update Warp manually".to_string(),
                             action: WorkspaceAction::DownloadNewVersion,
                             variant: BannerButtonVariant::Outlined,
                             icon: None,
@@ -18922,7 +19060,7 @@ impl Workspace {
                         if is_incoming_version_past_current(new_version.soft_cutoff.as_deref()) {
                             VERSION_DEPRECATION_WITHOUT_PERMISSIONS_BANNER_TEXT.to_owned()
                         } else {
-                            "Wish was unable to launch the new installed version.".to_owned()
+                            "Warp was unable to launch the new installed version.".to_owned()
                         };
 
                     Some(WorkspaceBannerFields {
@@ -18932,7 +19070,7 @@ impl Workspace {
                         description,
                         secondary_button: None,
                         button: Some(WorkspaceBannerButtonDetails {
-                            text: "Update Wish manually".to_string(),
+                            text: "Update Warp manually".to_string(),
                             action: WorkspaceAction::DownloadNewVersion,
                             variant: BannerButtonVariant::Outlined,
                             icon: None,
@@ -19007,7 +19145,7 @@ impl Workspace {
 
         // Left side: alert icon + bold heading + regular description, all inline.
         let icon =
-            ConstrainedBox::new(Icon::AlertCircle.to_warpui_icon(text_color.into()).finish())
+            ConstrainedBox::new(Icon::AlertCircle.to_wishui_icon(text_color.into()).finish())
                 .with_width(16.)
                 .with_height(16.)
                 .finish();
@@ -19108,7 +19246,7 @@ impl Workspace {
                                     // `x-close.svg`), matching the Figma
                                     // design. `Icon::XCircle` wraps the x in
                                     // a circle which is not what we want.
-                                    Icon::X.to_warpui_icon(text_color.into()).finish(),
+                                    Icon::X.to_wishui_icon(text_color.into()).finish(),
                                 )
                                 .with_width(16.)
                                 .with_height(16.)
@@ -19171,7 +19309,7 @@ impl Workspace {
             if let Some(icon) = icon {
                 row.add_child(
                     Container::new(
-                        ConstrainedBox::new(icon.to_warpui_icon(text_color.into()).finish())
+                        ConstrainedBox::new(icon.to_wishui_icon(text_color.into()).finish())
                             .with_width(14.)
                             .with_height(14.)
                             .finish(),
@@ -20074,7 +20212,7 @@ impl Workspace {
     }
 
     fn open_tab_and_focus_oz_launch_modal(&mut self, ctx: &mut ViewContext<Self>) {
-        // Create a new tab with one terminal session titled "Introducing Hermon Agent"
+        // Create a new tab with one terminal session titled "Introducing Oz"
         self.add_tab_with_pane_layout(
             PanesLayout::SingleTerminal(Box::new(NewTerminalOptions {
                 shell: None,
@@ -20083,7 +20221,7 @@ impl Workspace {
                 ..Default::default()
             })),
             Arc::new(HashMap::new()),
-            Some("Introducing Hermon Agent".to_string()),
+            Some("Introducing Oz".to_string()),
             ctx,
         );
         self.oz_launch_modal.tab_pane_group_id = self
@@ -20164,7 +20302,7 @@ impl Workspace {
         });
     }
 
-    /// Opens a given URL in the desktop Warp app if installed, or redirects to download page.
+    /// Opens a given URL in the desktop Wish app if installed, or redirects to download page.
     #[cfg(target_family = "wasm")]
     fn open_link_on_desktop(&mut self, url: &Url, ctx: &mut ViewContext<Self>) {
         use crate::settings::app_installation_detection::{
@@ -20179,7 +20317,7 @@ impl Workspace {
 
         if !is_app_installed {
             // App not installed - redirect to download page
-            ctx.open_url("https://wish.hermon.ai/download");
+            ctx.open_url("https://warp.dev/download");
             // In webapp code we cannot distinguish between
             // the localhost:9277/install_detection endpoint not running (not installed) vs
             // the browser blocking Local Network Access which results in CORS error;
@@ -20187,7 +20325,7 @@ impl Workspace {
             // Many users' browser settings will block Local Network Access so this will end up redirecting to download page,
             // even if they have the app installed.
             let toast_message = format!(
-                "Have Wish installed but redirecting to download page?\nEnable Local Network Access for {} in your browser.",
+                "Have Warp installed but redirecting to download page?\nEnable Local Network Access for {} in your browser.",
                 ChannelState::server_root_url()
             );
             self.toast_stack.update(ctx, |toast_stack, ctx| {
@@ -20357,6 +20495,7 @@ impl TypedActionView for Workspace {
             DismissSessionConfigTabConfigChip => {
                 self.dismiss_session_config_tab_config_chip(ctx);
             }
+            #[cfg(debug_assertions)]
             ShowHoaOnboardingFlow => self.show_hoa_onboarding_flow(ctx),
             SaveCurrentTabAsNewConfig(tab_index) => {
                 self.save_current_tab_as_new_config(*tab_index, ctx)
@@ -20484,11 +20623,16 @@ impl TypedActionView for Workspace {
                 let path = crate::settings::user_preferences_toml_file_path();
                 self.add_tab_for_code_file(path, None, ctx);
             }
-            OpenLocalToCloudHandoffPane { initial_prompt } => {
+            OpenLocalToCloudHandoffPane {
+                launch,
+                explicit_environment_id,
+            } => {
                 #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
-                self.start_local_to_cloud_handoff(initial_prompt.clone(), ctx);
+                self.start_local_to_cloud_handoff(launch.clone(), *explicit_environment_id, ctx);
                 #[cfg(not(all(feature = "local_fs", not(target_family = "wasm"))))]
-                let _ = initial_prompt;
+                {
+                    let _ = (launch, explicit_environment_id);
+                }
             }
             OpenNetworkLogPane => {
                 self.open_network_log_pane(ctx);
@@ -20557,9 +20701,7 @@ impl TypedActionView for Workspace {
                 self.export_all_warp_drive_objects(ctx);
             }
             CopyVersion(version) => self.copy_version(version, ctx),
-            ShowWelcomePage => {
-                self.add_get_started_tab(ctx);
-            }
+            ShowWelcomePage => self.add_welcome_tab(ctx),
             DownloadNewVersion => self.download_new_version(ctx),
             ConfigureKeybindingSettings { keybinding_name } => {
                 self.show_keyboard_settings(keybinding_name.as_deref(), ctx)
@@ -20606,38 +20748,38 @@ impl TypedActionView for Workspace {
                 self.show_settings_with_section(Some(SettingsSection::Referrals), ctx);
             }
             RefreshAgentRegistry => {
-                let registry = crate::ai::agent_registry::AgentRegistryModel::handle(ctx);
-                registry.update(ctx, |registry, ctx| registry.refresh(ctx));
+                AgentRegistryModel::handle(ctx).update(ctx, |registry, ctx| {
+                    registry.refresh(ctx);
+                });
             }
             ToggleAgentDetails { slug } => {
-                let ui_state = crate::ai::agent_registry::BuiltInAgentsUiState::handle(ctx);
-                ui_state.update(ctx, |state, ctx| state.toggle(slug, ctx));
+                BuiltInAgentsUiState::handle(ctx).update(ctx, |ui_state, ctx| {
+                    ui_state.toggle(slug, ctx);
+                });
             }
             CopyAgentSlug { slug } => {
                 ctx.clipboard()
-                    .write(ClipboardContent::plain_text(slug.clone()));
+                    .write(ClipboardContent::plain_text(slug.to_string()));
             }
             SetAgentSearchQuery { query } => {
-                let ui_state = crate::ai::agent_registry::BuiltInAgentsUiState::handle(ctx);
-                ui_state.update(ctx, |state, ctx| {
-                    state.set_search_query(query.clone(), ctx);
+                BuiltInAgentsUiState::handle(ctx).update(ctx, |ui_state, ctx| {
+                    ui_state.set_search_query(query.to_string(), ctx);
                 });
             }
             ClearCompletedTasks => {
-                let registry = crate::ai::agent_tasks::AgentTaskRegistryModel::handle(ctx);
-                registry.update(ctx, |registry, ctx| registry.clear_completed(ctx));
+                AgentTaskRegistryModel::handle(ctx).update(ctx, |registry, ctx| {
+                    registry.clear_completed(ctx);
+                });
             }
             CreateDemoTasks => {
-                let registry = crate::ai::agent_tasks::AgentTaskRegistryModel::handle(ctx);
-                registry.update(ctx, |registry, ctx| {
-                    crate::settings_view::sdlc_tasks_page::populate_demo_tasks(registry, ctx);
+                AgentTaskRegistryModel::handle(ctx).update(ctx, |registry, ctx| {
+                    populate_demo_tasks(registry, ctx);
                 });
             }
             DismissTask { task_id } => {
-                let registry = crate::ai::agent_tasks::AgentTaskRegistryModel::handle(ctx);
-                registry.update(ctx, |registry, ctx| {
-                    let task_id = crate::ai::agent_tasks::TaskId::new(task_id.clone());
-                    registry.remove(&task_id, ctx);
+                let id = TaskId::new(task_id.to_string());
+                AgentTaskRegistryModel::handle(ctx).update(ctx, |registry, ctx| {
+                    registry.remove(&id, ctx);
                 });
             }
             JoinSlack => self.join_slack(ctx),
@@ -20900,7 +21042,10 @@ impl TypedActionView for Workspace {
                     if let Some((repo_path, terminal_view)) = read_result {
                         let diff_state_model = repo_path.as_ref().and_then(|rp| {
                             self.working_directories_model.update(ctx, |model, ctx| {
-                                model.get_or_create_diff_state_model(rp.clone(), ctx)
+                                model.get_or_create_diff_state_model(
+                                    BufferLocation::Local(rp.clone()),
+                                    ctx,
+                                )
                             })
                         });
                         if let Some(diff_state_model) = diff_state_model {
@@ -21449,7 +21594,7 @@ impl TypedActionView for Workspace {
             }
             RunAISuggestedCommand(code) => {
                 let command = code.trim().to_string();
-                let workflow = Workflow::new("Command from Hermon Agent", command);
+                let workflow = Workflow::new("Command from Oz", command);
                 self.run_workflow_in_active_input(
                     &WorkflowType::AIGenerated {
                         workflow,
@@ -21488,7 +21633,7 @@ impl TypedActionView for Workspace {
             #[cfg(all(enable_crash_recovery, target_os = "linux"))]
             DismissWaylandCrashRecoveryBannerAndOpenLink => {
                 self.dismiss_workspace_banner(ctx, &WorkspaceBanner::WaylandCrashRecovery);
-                ctx.open_url("https://wish.hermon.ai/docs/terminal/more-features/linux#native-wayland");
+                ctx.open_url("https://docs.warp.dev/terminal/more-features/linux#native-wayland");
             }
             FixInAgentMode { query } => {
                 self.active_tab_pane_group().update(ctx, |pane_group, ctx| {
@@ -21744,6 +21889,7 @@ impl TypedActionView for Workspace {
                 }
                 self.load_cloud_conversation_into_new_transcript_viewer(
                     conversation_id.clone(),
+                    *ambient_agent_task_id,
                     ctx,
                 );
             }
@@ -21900,7 +22046,7 @@ impl TypedActionView for Workspace {
             }
             #[cfg(debug_assertions)]
             OpenOzLaunchModal => {
-                // Force open the Hermon Cloud launch modal for debugging
+                // Force open the Oz launch modal for debugging
                 OneTimeModalModel::handle(ctx).update(ctx, |model, ctx| {
                     model.force_open_oz_launch_modal(ctx);
                 });
@@ -21908,21 +22054,19 @@ impl TypedActionView for Workspace {
             }
             #[cfg(debug_assertions)]
             ResetOzLaunchModalState => {
-                // Reset the Hermon Cloud launch modal dismissed state for debugging
+                // Reset the Oz launch modal dismissed state for debugging
                 let old_value = *AISettings::as_ref(ctx).did_check_to_trigger_oz_launch_modal;
                 AISettings::handle(ctx).update(ctx, |ai_settings, ctx| {
                     if let Err(e) = ai_settings
                         .did_check_to_trigger_oz_launch_modal
                         .set_value(false, ctx)
                     {
-                        log::warn!(
-                            "Failed to reset Hermon Cloud launch modal dismissed setting: {e}"
-                        );
+                        log::warn!("Failed to reset Oz launch modal dismissed setting: {e}");
                     }
                 });
                 let new_value = *AISettings::as_ref(ctx).did_check_to_trigger_oz_launch_modal;
                 log::info!(
-                    "Hermon Cloud launch modal state: old={}, new={}, feature_flag_enabled={}",
+                    "Oz launch modal state: old={}, new={}, feature_flag_enabled={}",
                     old_value,
                     new_value,
                     FeatureFlag::OzLaunchModal.is_enabled()
@@ -22903,7 +23047,7 @@ impl View for Workspace {
                 }
             }
 
-            // Action sidecar for actionable items (Terminal, Agent, Hermon Cloud, tab configs).
+            // Action sidecar for actionable items (Terminal, Agent, Cloud Oz, tab configs).
             if let Some(sidecar_item) = &self.tab_config_action_sidecar_item {
                 let anchor_label = self.new_session_dropdown_menu.read(app, |menu, _| {
                     menu.hovered_index().and_then(|idx| {

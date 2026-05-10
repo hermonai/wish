@@ -9,9 +9,9 @@ use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
 use thousands::Separable;
-use wish_graphql::billing::StripeSubscriptionPlan;
 use wish_core::ui::appearance::Appearance;
 use wish_core::ui::theme::Fill;
+use wish_graphql::billing::StripeSubscriptionPlan;
 use wishui::elements::{
     Align, CacheOption, ChildAnchor, ConstrainedBox, Container, CornerRadius, CrossAxisAlignment,
     DropShadow, Expanded, Flex, FormattedTextElement, HighlightedHyperlink, Image,

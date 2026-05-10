@@ -1,19 +1,18 @@
 ---
 name: create-pr
-description: Create a pull request in the Wish repository for the current branch. Use when the user mentions opening a PR, creating a pull request, submitting changes for review, or preparing code for merge.
+description: Create a pull request in the warp repository for the current branch. Use when the user mentions opening a PR, creating a pull request, submitting changes for review, or preparing code for merge.
 ---
 
 # create-pr
 
 ## Overview
 
-This guide covers best practices for creating pull requests in the Wish repository, including merging master, running presubmit checks, linking Linear tasks, ensuring appropriate test coverage, and structuring your PR for effective review.
+This guide covers best practices for creating pull requests in the warp repository, including merging master, running presubmit checks, linking Linear tasks, ensuring appropriate test coverage, and structuring your PR for effective review.
 
 ## Related Skills
 
 - `fix-errors` - Fix presubmit failures (formatting, linting, tests) before opening PR
-- `rust-unit-tests` - Write unit tests for your changes, if applicable (see "Testing Requirements" below)
-- `warp-integration-test` - Add or update integration coverage for user-visible flows, regressions, and P0 use cases. The skill name is still inherited; the tests should use Wish product language.
+- `warp-integration-test` - Add or update integration coverage for user-visible flows, regressions, and P0 use cases
 - `add-feature-flag` - Gate changes behind feature flags
 
 ## Pre-PR Checklist
@@ -80,7 +79,7 @@ When possible, PRs should be associated with a Linear task. Use the Linear MCP t
 Remote branches should be prefixed with your name (e.g., `zheng/feature`, `alice/fix-bug`).
 
 **How to link PRs to Linear:**
-Include the issue ID in the PR title (e.g., `[WISH-1234] Add new feature`). Do this **before** creating the PR for automatic linking.
+Include the issue ID in the PR title (e.g., `[WARP-1234] Add new feature`). Do this **before** creating the PR for automatic linking.
 
 ### 5. Open the PR
 
@@ -128,7 +127,7 @@ Add changelog entries when appropriate using the format at the bottom of the PR 
 When committing changes or creating a PR, include attribution at the end of every commit message or PR description:
 
 ```
-Co-Authored-By: Wish <agent@hermon.ai>
+Co-Authored-By: Warp <agent@warp.dev>
 ```
 
 ## Testing Requirements
@@ -156,7 +155,7 @@ Code with non-trivial logic should have unit tests to validate functionality:
 - Sufficiently-simple functions
 - Trivial getters/setters
 
-See the `rust-unit-tests` skill for guidance on writing unit tests.
+Follow the repository's local testing conventions for guidance on writing unit tests.
 
 ### UI components need layout validation tests
 
@@ -168,7 +167,7 @@ This provides high-level coverage over rendering "safety" (though not "correctne
 #[test]
 fn test_component_can_layout() {
     use wishui::App;
-    use wish::test_util::{terminal::initialize_app_for_terminal_view, add_window_with_terminal};
+    use warp::test_util::{terminal::initialize_app_for_terminal_view, add_window_with_terminal};
     
     App::test((), |mut app| async move {
         initialize_app_for_terminal_view(&mut app);

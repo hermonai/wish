@@ -11,6 +11,7 @@ use itertools::Itertools;
 use lazy_static::lazy_static;
 use pathfinder_color::ColorU;
 use serde::{Deserialize, Serialize};
+use wish_core::command::ExitCode;
 use wish_graphql::{
     ai::{
         RequestLimitInfo as RequestLimitInfoGraphql,
@@ -18,7 +19,6 @@ use wish_graphql::{
     },
     mutations::generate_commands::{GenerateCommandsFailureType, GeneratedCommand},
 };
-use wish_core::command::ExitCode;
 
 pub mod execution_context;
 pub mod panel;
