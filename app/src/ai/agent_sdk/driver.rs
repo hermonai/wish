@@ -134,7 +134,7 @@ const LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV: &str =
 const LEGACY_OZ_PARENT_STATE_ROOT_ENV: &str = "OZ_PARENT_STATE_ROOT";
 
 /// IdleTimeoutSender is wrapper around a sender that signals when a run is done after
-/// an idle timeout. Used for both Oz runs and third-party harnesses.
+/// an idle timeout. Used for both Hermon runs and third-party harnesses.
 ///
 /// We use a generation-based approach to cancel timers instead of storing timer handles:
 ///
@@ -205,11 +205,11 @@ impl<T: Send + 'static> IdleTimeoutSender<T> {
 
 /// How to resume an existing conversation when starting an agent run.
 ///
-/// The Oz harness restores the full conversation transcript into the terminal pane and treats
+/// The Hermon harness restores the full conversation transcript into the terminal pane and treats
 /// any new prompt as a follow-up; third-party harnesses round-trip a harness-specific payload
 /// (see [`ResumePayload`]) instead.
 pub enum ResumeOptions {
-    Oz(Box<ConversationRestorationInNewPaneType>),
+    Hermon(Box<ConversationRestorationInNewPaneType>),
     ThirdParty(Box<ResumePayload>),
 }
 
@@ -228,7 +228,7 @@ pub struct AgentDriverOptions {
     /// How long to keep the session alive after the agent run completes, if at all.
     pub idle_on_complete: Option<Duration>,
     /// If set, resume an existing conversation instead of starting fresh. The variant
-    /// determines which harness-specific path is taken (Oz transcript restore vs.
+    /// determines which harness-specific path is taken (Hermon transcript restore vs.
     /// third-party-harness payload rehydration).
     pub resume: Option<ResumeOptions>,
     /// Cloud providers to configure within the agent's session.
@@ -237,7 +237,7 @@ pub struct AgentDriverOptions {
     pub environment: Option<AmbientAgentEnvironment>,
     /// Selected execution harness for this run.
     pub selected_harness: Harness,
-    /// Model ID for the selected harness. Only used for non-Oz harnesses.
+    /// Model ID for the selected harness. Only used for non-Hermon harnesses.
     pub third_party_harness_model_id: Option<String>,
     /// Whether to skip end-of-run snapshot upload.
     pub snapshot_disabled: Option<bool>,
@@ -311,7 +311,7 @@ pub struct AgentDriver {
     third_party_harness_model_id: Option<String>,
 
     /// Async writer that records `file` declarations for paths the agent creates or edits
-    /// via `RequestFileEdits`. `Some` only when `FeatureFlag::OzHandoff` is enabled, the run
+    /// via `RequestFileEdits`. `Some` only when `FeatureFlag::HermonHandoff` is enabled, the run
     /// has a cloud task id, and `--no-snapshot` was not set; `None` keeps the observer a
     /// pure no-op for local and disabled runs.
     snapshot_file_writer: Option<snapshot::DeclarationsWriterHandle>,
@@ -512,10 +512,10 @@ impl AgentDriver {
         } = options;
 
         // Split the unified resume option into the two internal slots that the rest of
-        // the driver consumes: terminal-driven Oz transcript restoration vs. third-party
+        // the driver consumes: terminal-driven Hermon transcript restoration vs. third-party
         // harness payload rehydration.
         let (conversation_restoration, resume_payload) = match resume {
-            Some(ResumeOptions::Oz(restoration)) => (Some(*restoration), None),
+            Some(ResumeOptions::Hermon(restoration)) => (Some(*restoration), None),
             Some(ResumeOptions::ThirdParty(payload)) => (None, Some(*payload)),
             None => (None, None),
         };
@@ -602,7 +602,7 @@ impl AgentDriver {
         // read what it produces: feature enabled, cloud task run, and --no-snapshot not set.
         let snapshot_disabled_value = snapshot_disabled.unwrap_or(false);
         let snapshot_file_writer = match task_id {
-            Some(id) if FeatureFlag::OzHandoff.is_enabled() && !snapshot_disabled_value => {
+            Some(id) if FeatureFlag::HermonHandoff.is_enabled() && !snapshot_disabled_value => {
                 let background = ctx.background_executor();
                 Some(snapshot::DeclarationsWriterHandle::new(
                     id,
@@ -1264,8 +1264,8 @@ impl AgentDriver {
         // MCP servers *may* rely on cloud provider credentials.
         Self::setup_cloud_providers(&foreground).await?;
 
-        // For the Oz harness only: set up MCP servers, model overrides, and profile information.
-        if matches!(task.harness, HarnessKind::Oz) {
+        // For the Hermon harness only: set up MCP servers, model overrides, and profile information.
+        if matches!(task.harness, HarnessKind::Hermon) {
             // Resolve MCP specs into existing server UUIDs and ephemeral installations.
             let mcp_specs = task.mcp_specs.clone();
             let (existing_uuids, ephemeral_installations) = foreground
@@ -1330,10 +1330,10 @@ impl AgentDriver {
             // Subscribe to file-based MCP discovery BEFORE prepare_environment triggers the
             // pipeline so no CloudEnvMcpScanComplete events are missed.
             //
-            // File-based MCP discovery is Oz-only.
+            // File-based MCP discovery is Hermon-only.
             // TODO(REMOTE-1345): handle MCP setup for third-party harnesses.
             let file_based_discovery_rx = match &task.harness {
-                HarnessKind::Oz => {
+                HarnessKind::Hermon => {
                     let github_repos = environment_github_repos.clone();
                     Some(
                         foreground
@@ -1404,9 +1404,9 @@ impl AgentDriver {
                 }
             }
 
-            // Skill loading is Oz-only; third-party harnesses have their own skill systems.
+            // Skill loading is Hermon-only; third-party harnesses have their own skill systems.
             match &task.harness {
-                HarnessKind::Oz => {
+                HarnessKind::Hermon => {
                     // Load skills from environment repos synchronously so the initial
                     // message includes them. File trees are ready after prepare_environment.
                     let github_repos = environment_github_repos.clone();
@@ -1456,7 +1456,7 @@ impl AgentDriver {
         // refresh loop. The refresh future never resolves on its own — it is dropped
         // automatically when `select!` resolves on the harness result.
         match task.harness {
-            HarnessKind::Oz => {
+            HarnessKind::Hermon => {
                 let status_rx = foreground
                     .spawn(move |me, ctx| me.execute_run(task.prompt, ctx))
                     .await?;
@@ -2377,7 +2377,7 @@ impl AgentDriver {
     /// driver is associated with a cloud task. Errors are logged internally; this helper always
     /// returns so cleanup can proceed.
     async fn run_snapshot_upload(spawner: &ModelSpawner<Self>) {
-        if !FeatureFlag::OzHandoff.is_enabled() {
+        if !FeatureFlag::HermonHandoff.is_enabled() {
             return;
         }
 

@@ -32,17 +32,17 @@ use wishui::{AppContext, Entity, SingletonEntity, TypedActionView, View, ViewCon
 const DOCS_URL: &str = "https://wish.hermon.ai/docs/agent-platform/cloud-agents/overview";
 const ENV_DOCS_URL: &str =
     "https://wish.hermon.ai/docs/reference/cli/integration-setup#creating-an-environment";
-const OZ_URL: &str = "https://wish.hermon.ai";
+const HERMON_URL: &str = "https://wish.hermon.ai";
 
 const CONTENT_MAX_WIDTH: f32 = 720.;
 
 const CREATE_ENV_SLASH_CMD: &str = "/create-environment";
 const CREATE_ENV_CLI_CMD: &str =
-    "oz environment create [OPTIONS] --name <NAME> --docker-image <DOCKER_IMAGE>";
+    "wish environment create [OPTIONS] --name <NAME> --docker-image <DOCKER_IMAGE>";
 const CREATE_SLACK_INTEGRATION_CMD: &str =
-    "oz integration create slack --environment {{environment_id}}";
+    "wish integration create slack --environment {{environment_id}}";
 const CREATE_LINEAR_INTEGRATION_CMD: &str =
-    "oz integration create linear --environment {{environment_id}}";
+    "wish integration create linear --environment {{environment_id}}";
 
 pub struct CloudSetupGuideView {
     create_env_code_handles: CodeSnippetButtonHandles,
@@ -52,7 +52,7 @@ pub struct CloudSetupGuideView {
     docs_link_mouse_state: MouseStateHandle,
     env_docs_link_mouse_state: MouseStateHandle,
     integration_docs_link_mouse_state: MouseStateHandle,
-    visit_oz_button: ViewHandle<ActionButton>,
+    visit_hermon_button: ViewHandle<ActionButton>,
     parsed_tokens: HashMap<&'static str, ParsedTokensSnapshot>,
     vertical_scroll_state: ClippedScrollStateHandle,
     horizontal_scroll_state: ClippedScrollStateHandle,
@@ -115,7 +115,7 @@ impl CloudSetupGuideView {
             },
         );
 
-        let visit_oz_button = ctx.add_typed_action_view(|_| {
+        let visit_hermon_button = ctx.add_typed_action_view(|_| {
             ActionButton::new("Visit Hermon", SecondaryTheme)
                 .on_click(|ctx| ctx.dispatch_typed_action(CloudSetupGuideAction::VisitOz))
         });
@@ -128,7 +128,7 @@ impl CloudSetupGuideView {
             docs_link_mouse_state: MouseStateHandle::default(),
             env_docs_link_mouse_state: MouseStateHandle::default(),
             integration_docs_link_mouse_state: MouseStateHandle::default(),
-            visit_oz_button,
+            visit_hermon_button,
             parsed_tokens: HashMap::new(),
             vertical_scroll_state: ClippedScrollStateHandle::default(),
             horizontal_scroll_state: ClippedScrollStateHandle::default(),
@@ -230,7 +230,7 @@ impl CloudSetupGuideView {
                 .with_main_axis_alignment(MainAxisAlignment::SpaceBetween)
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
                 .with_child(text)
-                .with_child(ChildView::new(&self.visit_oz_button).finish())
+                .with_child(ChildView::new(&self.visit_hermon_button).finish())
                 .finish(),
         )
         .with_background(theme.surface_overlay_1())
@@ -653,7 +653,7 @@ impl TypedActionView for CloudSetupGuideView {
                 ));
             }
             CloudSetupGuideAction::VisitOz => {
-                ctx.open_url(OZ_URL);
+                ctx.open_url(HERMON_URL);
                 send_telemetry_from_ctx!(
                     AgentManagementTelemetryEvent::SetupGuideStepRun {
                         step: SetupGuideStep::VisitOz

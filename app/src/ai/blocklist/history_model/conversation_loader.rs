@@ -42,9 +42,9 @@ pub struct CLIAgentConversation {
 ///
 /// The exact format depends on the agent harness that produced the conversation.
 pub enum CloudConversationData {
-    /// A conversation produced by the Oz harness, which we can materialize into the
-    /// [`AIConversation`] data model.
-    Oz(Box<AIConversation>),
+    /// A conversation produced by Hermon's first-party harness (formerly `Hermon`),
+    /// which we can materialize into the [`AIConversation`] data model.
+    Hermon(Box<AIConversation>),
     /// A conversation produced by an external CLI agent harness.
     CLIAgent(Box<CLIAgentConversation>),
 }
@@ -127,11 +127,11 @@ pub async fn load_conversation_from_server(
                             log::info!(
                                 "Loaded Hermon Agent conversation {conversation_id} from server"
                             );
-                            Some(CloudConversationData::Oz(Box::new(conversation)))
+                            Some(CloudConversationData::Hermon(Box::new(conversation)))
                         }
                         None => {
                             log::warn!(
-                                "Failed to convert Oz server conversation data for {conversation_id}"
+                                "Failed to convert Hermon server conversation data for {conversation_id}"
                             );
                             None
                         }
@@ -212,7 +212,7 @@ impl BlocklistAIHistoryModel {
     ) -> wishui::r#async::BoxFuture<'static, Option<CloudConversationData>> {
         // First check if the conversation is already in memory
         if let Some(conversation) = self.conversations_by_id.get(&conversation_id) {
-            return box_future(futures::future::ready(Some(CloudConversationData::Oz(
+            return box_future(futures::future::ready(Some(CloudConversationData::Hermon(
                 Box::new(conversation.clone()),
             ))));
         }
@@ -231,7 +231,7 @@ impl BlocklistAIHistoryModel {
             // Load from local database synchronously
             let result = self
                 .load_conversation_from_db(&conversation_id)
-                .map(|c| CloudConversationData::Oz(Box::new(c)));
+                .map(|c| CloudConversationData::Hermon(Box::new(c)));
             box_future(futures::future::ready(result))
         } else {
             // Load from server asynchronously

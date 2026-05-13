@@ -4738,7 +4738,7 @@ impl SettingsWidget for AutoOpenCodeReviewPaneWidget {
     type View = FeaturesPageView;
 
     fn search_terms(&self) -> &str {
-        "oz auto open code review pane panel agent mode change first time accepted diff view conversation"
+        "oz hermon auto open code review pane panel agent mode change first time accepted diff view conversation"
     }
 
     fn render(
@@ -4785,7 +4785,7 @@ impl SettingsWidget for DefaultTerminalWidget {
     type View = FeaturesPageView;
 
     fn search_terms(&self) -> &str {
-        "warp default terminal application"
+        "wish default terminal application"
     }
 
     fn render(

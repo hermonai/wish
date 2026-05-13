@@ -502,7 +502,7 @@ pub enum WorkspaceAction {
     /// (REMOTE-1486). Triggered by the `/move-to-cloud` slash command
     /// and the footer chip of the same name. The dispatch site reads the
     /// active conversation's `server_conversation_token` and gates on
-    /// `FeatureFlag::OzHandoff && FeatureFlag::HandoffLocalCloud`.
+    /// `FeatureFlag::HermonHandoff && FeatureFlag::HandoffLocalCloud`.
     /// Falls through to splitting a fresh cloud-mode pane when the active
     /// conversation isn't handoff-able (no synced server token, empty, or no
     /// active conversation at all).
@@ -576,10 +576,10 @@ pub enum WorkspaceAction {
     DebugResetAwsBedrockLoginBannerDismissed,
     /// Open the Hermon Cloud Launch Modal (for debugging)
     #[cfg(debug_assertions)]
-    OpenOzLaunchModal,
+    OpenHermonLaunchModal,
     /// Reset the Hermon Cloud launch modal dismissed state (for debugging)
     #[cfg(debug_assertions)]
-    ResetOzLaunchModalState,
+    ResetHermonLaunchModalState,
     /// Open the OpenWarp Launch Modal (for debugging)
     #[cfg(debug_assertions)]
     OpenOpenWarpLaunchModal,
@@ -980,8 +980,8 @@ impl WorkspaceAction {
             OpenBuildPlanMigrationModal
             | ResetBuildPlanMigrationModalState
             | DebugResetAwsBedrockLoginBannerDismissed
-            | OpenOzLaunchModal
-            | ResetOzLaunchModalState
+            | OpenHermonLaunchModal
+            | ResetHermonLaunchModalState
             | OpenOpenWarpLaunchModal
             | ResetOpenWarpLaunchModalState
             | InstallOpenCodeWarpPlugin

@@ -290,7 +290,7 @@ static DEFAULT_TIPS: LazyLock<Vec<AgentTip>> = LazyLock::new(|| {
             kind: AgentTipKind::Context,
         },
         AgentTip {
-            description: "Wishify a remote SSH session to enable Oz inside that environment.".to_string(),
+            description: "Wishify a remote SSH session to enable Hermon inside that environment.".to_string(),
             link: Some("https://wish.hermon.ai/docs/terminal/warpify".to_string()),
             binding_name: None,
             action: None,
@@ -304,7 +304,7 @@ static DEFAULT_TIPS: LazyLock<Vec<AgentTip>> = LazyLock::new(|| {
             kind: AgentTipKind::General,
         },
         AgentTip {
-            description: "`/init` to generate a `WARP.md` file and define project rules for the agent.".to_string(),
+            description: "`/init` to generate a `WISH.md` file and define project rules for the agent.".to_string(),
             link: Some("https://wish.hermon.ai/docs/agent-platform/capabilities/rules".to_string()),
             binding_name: None,
             action: None,

@@ -141,7 +141,7 @@ fn run_message_send_telemetry_defaults_to_unknown_harness() {
 
 #[test]
 fn reconcile_task_harness_adopts_task_harness_when_cli_uses_default() {
-    let mut selected_harness = Harness::Oz;
+    let mut selected_harness = Harness::Hermon;
     let harness = reconcile_task_harness(TASK_ID, &mut selected_harness, Harness::Claude)
         .expect("default harness should adopt task harness");
 

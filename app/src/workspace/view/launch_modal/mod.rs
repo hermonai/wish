@@ -3,7 +3,7 @@ pub mod cta_button;
 pub mod oz_launch;
 
 // Re-export slide types for convenience
-pub use oz_launch::OzLaunchSlide;
+pub use oz_launch::HermonLaunchSlide;
 
 use crate::settings::PrivacySettings;
 use crate::ui_components::blended_colors;

@@ -925,6 +925,15 @@ impl History {
         &self.session_commands
     }
 
+    /// Iterate every command the user has run in this Wish session across all
+    /// shell hosts. Used by the agent context tray to give the agent a
+    /// "what did the user just do?" view alongside diagnostics and opened
+    /// files. Order is by-host then insertion (chronological per host); the
+    /// agent context tray re-sorts globally by timestamp before display.
+    pub fn iter_all_session_commands(&self) -> impl Iterator<Item = &Arc<HistoryEntry>> {
+        self.session_commands.values().flatten()
+    }
+
     pub fn mark_command_as_finished(
         &mut self,
         session_id: SessionId,

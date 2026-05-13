@@ -163,8 +163,8 @@ impl OrchestrationConfigBlockView {
             },
         );
 
-        // Repopulate the model picker when available LLMs change (Oz
-        // harness only — non-Oz harnesses get their catalog from
+        // Repopulate the model picker when available LLMs change (Hermon
+        // harness only — non-Hermon harnesses get their catalog from
         // HarnessAvailabilityModel, not LLMPreferences).
         ctx.subscribe_to_model(&LLMPreferences::handle(ctx), |me, _, event, ctx| {
             if let LLMPreferencesEvent::UpdatedAvailableLLMs = event {

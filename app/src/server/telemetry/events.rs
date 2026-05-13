@@ -517,8 +517,13 @@ pub enum PluginChipTelemetryKind {
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum NotificationAgentVariant {
-    /// Wish's built-in agent (Oz).
-    Oz,
+    /// Wish's built-in agent (Hermon).
+    ///
+    /// Wire format stays `"oz"` (via `rename`) so telemetry analytics don't see
+    /// a discontinuity at the rename point. `"hermon"` accepted as an alias for
+    /// any forward-rolling readers.
+    #[serde(rename = "oz", alias = "hermon")]
+    Hermon,
     /// A CLI agent (e.g., Claude Code, Gemini CLI, etc.).
     CLIAgent(CLIAgentType),
 }
@@ -526,7 +531,7 @@ pub enum NotificationAgentVariant {
 impl From<NotificationSourceAgent> for NotificationAgentVariant {
     fn from(agent: NotificationSourceAgent) -> Self {
         match agent {
-            NotificationSourceAgent::Oz { .. } => Self::Oz,
+            NotificationSourceAgent::Hermon { .. } => Self::Hermon,
             NotificationSourceAgent::CLI { agent, .. } => Self::CLIAgent(agent.into()),
         }
     }

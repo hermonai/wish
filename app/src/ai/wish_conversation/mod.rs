@@ -59,6 +59,8 @@
 //! ```
 
 pub mod adapter;
+#[cfg(not(target_family = "wasm"))]
+pub mod agent_context;
 pub mod local_llm_adapter;
 pub mod model;
 pub mod types;

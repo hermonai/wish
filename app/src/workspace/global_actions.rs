@@ -194,7 +194,7 @@ fn trigger_maybe_log_out(_: &(), ctx: &mut AppContext) {
 }
 
 /// Dispatches an action to the active workspace, if one exists.
-fn dispatch_to_active_workspace(ctx: &mut AppContext, action: WorkspaceAction) {
+pub(crate) fn dispatch_to_active_workspace(ctx: &mut AppContext, action: WorkspaceAction) {
     if let Some(window_id) = WindowManager::as_ref(ctx).active_window() {
         if let Some(workspaces) = ctx.views_of_type::<Workspace>(window_id) {
             if let Some(workspace) = workspaces.into_iter().next() {

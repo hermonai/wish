@@ -272,7 +272,7 @@ impl SearchItem for ModelSearchItem {
 
         let icon = self
             .provider_icon
-            .unwrap_or(Icon::Oz)
+            .unwrap_or(Icon::Hermon)
             .to_warpui_icon(icon_color)
             .finish();
 

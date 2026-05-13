@@ -645,7 +645,7 @@ impl TemplatableMCPServerManager {
         );
     }
 
-    /// Spawns an ephemeral MCP server started via the CLI (`oz agent run --mcp`).
+    /// Spawns an ephemeral MCP server started via the CLI (`hermon agent run --mcp`).
     pub fn spawn_cli_ephemeral_server(
         &mut self,
         installation: TemplatableMCPServerInstallation,

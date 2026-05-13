@@ -401,14 +401,14 @@ impl SlashCommandDataSource {
             .map(|s| s.agent.supported_skill_providers())
     }
 
-    /// Returns true when the active conversation is associated with a cloud Oz
+    /// Returns true when the active conversation is associated with a cloud Hermon
     /// `AmbientAgentTask`. Used to gate `/continue-locally` to runs that can
     /// actually be forked into a local Warp conversation.
     ///
     /// Permissive when the harness is not yet known: we consider an absent task or
-    /// missing `agent_config_snapshot.harness` to be Oz, matching the existing
+    /// missing `agent_config_snapshot.harness` to be Hermon, matching the existing
     /// tombstone gate (`conversation_ended_tombstone_view::render_action_buttons`).
-    /// Only an explicit non-Oz harness (Claude, Gemini, OpenCode, Unknown) hides the
+    /// Only an explicit non-Hermon harness (Claude, Gemini, OpenCode, Unknown) hides the
     /// command. Conversations without a `task_id` are local and never qualify.
     #[cfg(not(target_family = "wasm"))]
     fn active_conversation_is_cloud_oz(&self, ctx: &AppContext) -> bool {
@@ -432,9 +432,9 @@ impl SlashCommandDataSource {
         };
 
         let Some(task) = AgentConversationsModel::as_ref(ctx).get_task_data(&task_id) else {
-            // Task data not yet fetched. Permissive default: assume Oz so the command
+            // Task data not yet fetched. Permissive default: assume Hermon so the command
             // is reachable while the fetch is in flight; once the fetch resolves,
-            // `TasksUpdated` triggers a recompute and a non-Oz task hides the command.
+            // `TasksUpdated` triggers a recompute and a non-Hermon task hides the command.
             return true;
         };
 
@@ -443,7 +443,7 @@ impl SlashCommandDataSource {
             .as_ref()
             .and_then(|s| s.harness.as_ref())
         {
-            Some(config) => config.harness_type == Harness::Oz,
+            Some(config) => config.harness_type == Harness::Hermon,
             None => true,
         }
     }

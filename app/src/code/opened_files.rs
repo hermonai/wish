@@ -42,6 +42,13 @@ impl OpenedFilesModel {
         self.opened_files.get(repo_path)
     }
 
+    /// Iterate over every `(repo, files_in_repo)` pair we've recorded. Used
+    /// by the agent context tray to inject a "recently opened files" block
+    /// into prompts so the model sees the user's current focus.
+    pub fn iter(&self) -> impl Iterator<Item = (&PathBuf, &OpenedFilesInRepo)> {
+        self.opened_files.iter()
+    }
+
     /// Record that a file has been opened in a repository. If the `file_path` is not within the `repo_path`,
     /// then the file is not recorded.
     #[cfg_attr(not(feature = "local_fs"), allow(dead_code))]

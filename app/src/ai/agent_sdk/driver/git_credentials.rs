@@ -24,8 +24,8 @@ use command::blocking::Command as BlockingCommand;
 /// well ahead of the one-hour GitHub token expiry).
 pub(crate) const GIT_CREDENTIALS_REFRESH_INTERVAL: Duration = Duration::from_secs(50 * 60);
 
-const DEFAULT_GIT_NAME: &str = "Oz";
-const DEFAULT_GIT_EMAIL: &str = "oz-agent@warp.dev";
+const DEFAULT_GIT_NAME: &str = "Wish";
+const DEFAULT_GIT_EMAIL: &str = "wish-agent@hermon.ai";
 
 fn home_dir() -> Result<PathBuf> {
     dirs::home_dir().ok_or_else(|| anyhow::anyhow!("Could not determine home directory"))
@@ -218,7 +218,7 @@ pub(crate) fn setup_git_config(credentials: &[GitCredential]) {
 /// Configure the git user identity from the server-returned credential.
 ///
 /// Uses the first credential's `username`/`email` fields, falling back to the
-/// Oz defaults when either is absent (e.g. service-account principals).
+/// Hermon defaults when either is absent (e.g. service-account principals).
 pub(crate) fn configure_git_identity(credentials: &[GitCredential]) {
     let (name, email) = credentials
         .first()

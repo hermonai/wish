@@ -314,7 +314,7 @@ use wishui::{AppContext, SingletonEntity, WindowId};
 #[include = "async/**"] // Should be kept in sync with ASYNC_ASSETS_DIR.
 #[cfg_attr(target_family = "wasm", exclude = "async/**")]
 // Excludes take precedence.
-// Standalone CLI builds (the `oz` tarball) are headless and never render the
+// Standalone CLI builds (the `hermon` tarball) are headless and never render the
 // onboarding/theme imagery in `async/`, so we exclude those bytes from the
 // embedded asset set to keep the CLI binary small — mirroring the carve-out
 // already applied for the WASM target above.
@@ -1664,6 +1664,14 @@ pub(crate) fn initialize_app(
     #[cfg(not(target_family = "wasm"))]
     code::editor::find::view::init(ctx);
     workspace::init(ctx);
+
+    // Workspace-wide LSP diagnostics aggregator. Must be registered *after*
+    // `workspace::init(ctx)`, which calls `lsp::init` and registers
+    // `LspManagerModel` — the aggregator's constructor takes a handle to it.
+    // Has no UI yet; the model is invisible until a view subscribes.
+    #[cfg(not(target_family = "wasm"))]
+    ctx.add_singleton_model(crate::code::diagnostics::DiagnosticsAggregatorModel::new);
+
     pane_group::init(ctx);
     terminal::init(ctx);
     input::init(ctx);
@@ -2487,6 +2495,51 @@ fn launch(ctx: &mut wishui::AppContext, app_state: Option<AppState>, launch_mode
                 uri::handle_incoming_uri(url, ctx);
             }
 
+            // Resolve `--folder` and `--file` from the CLI into a workspace open
+            // (recent-projects upsert + file tree root) followed by code-pane tabs
+            // for each file. When no folder is given, derive one from the first
+            // file's canonical parent so LSP and the file tree still anchor on a
+            // sensible project root.
+            let cli_folder = launch_mode.args().folder.clone();
+            let cli_files = launch_mode.args().files.clone();
+            let parsed_files: Vec<(
+                std::path::PathBuf,
+                Option<wish_util::path::LineAndColumnArg>,
+            )> = cli_files
+                .iter()
+                .map(|raw| {
+                    let cleaned =
+                        wish_util::path::CleanPathResult::with_line_and_column_number(raw);
+                    let resolved = std::fs::canonicalize(&cleaned.path)
+                        .unwrap_or_else(|_| std::path::PathBuf::from(&cleaned.path));
+                    (resolved, cleaned.line_and_column_num)
+                })
+                .collect();
+
+            let folder_to_open: Option<std::path::PathBuf> = cli_folder
+                .as_ref()
+                .map(|p| std::fs::canonicalize(p).unwrap_or_else(|_| p.clone()))
+                .or_else(|| {
+                    parsed_files
+                        .first()
+                        .and_then(|(p, _)| p.parent().map(|parent| parent.to_path_buf()))
+                });
+
+            if let Some(folder) = folder_to_open.as_ref() {
+                let folder_str = folder.to_string_lossy().into_owned();
+                ctx.dispatch_global_action("workspace:open_repository", &folder_str);
+            }
+
+            for (path, line_and_column) in parsed_files {
+                workspace::dispatch_to_active_workspace(
+                    ctx,
+                    WorkspaceAction::OpenFileInNewTab {
+                        full_path: path,
+                        line_and_column,
+                    },
+                );
+            }
+
             // If, after session restoration and command-line argument handling, we
             // haven't opened any windows, open a new window.
             if ctx.window_ids().count() == 0 {
@@ -2959,15 +3012,15 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         #[cfg(feature = "inline_profile_selector")]
         FeatureFlag::InlineProfileSelector,
         #[cfg(feature = "oz_platform_skills")]
-        FeatureFlag::OzPlatformSkills,
+        FeatureFlag::HermonPlatformSkills,
         #[cfg(feature = "oz_identity_federation")]
-        FeatureFlag::OzIdentityFederation,
+        FeatureFlag::HermonIdentityFederation,
         #[cfg(feature = "oz_changelog_updates")]
-        FeatureFlag::OzChangelogUpdates,
+        FeatureFlag::HermonChangelogUpdates,
         #[cfg(feature = "bundled_skills")]
         FeatureFlag::BundledSkills,
-        #[cfg(feature = "oz_launch_modal")]
-        FeatureFlag::OzLaunchModal,
+        #[cfg(feature = "hermon_launch_modal")]
+        FeatureFlag::HermonLaunchModal,
         #[cfg(feature = "open_warp_launch_modal")]
         FeatureFlag::OpenWarpLaunchModal,
         #[cfg(feature = "new_tab_styling")]
@@ -3009,7 +3062,7 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         #[cfg(feature = "agent_harness")]
         FeatureFlag::AgentHarness,
         #[cfg(feature = "oz_handoff")]
-        FeatureFlag::OzHandoff,
+        FeatureFlag::HermonHandoff,
         #[cfg(feature = "handoff_local_cloud")]
         FeatureFlag::HandoffLocalCloud,
         #[cfg(feature = "hoa_notifications")]

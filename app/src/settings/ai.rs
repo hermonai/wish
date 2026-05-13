@@ -1162,7 +1162,7 @@ define_settings_group!(AISettings, settings: [
     //
     // We model it as a setting so it's only shown once to a given user regardless of the number of
     // devices they use.
-    did_check_to_trigger_oz_launch_modal: DidShowOzLaunchModal {
+    did_check_to_trigger_oz_launch_modal: DidShowHermonLaunchModal {
         type: bool,
         default: false,
         supported_platforms: SupportedPlatforms::ALL,
@@ -1172,7 +1172,7 @@ define_settings_group!(AISettings, settings: [
 
     // Used to determine whether the "What's new in Hermon Agent" section of the agent view
     // zero state is expanded or collapsed by default.
-    should_expand_oz_updates: ShouldExpandOzUpdates {
+    should_expand_oz_updates: ShouldExpandHermonUpdates {
         type: bool,
         default: false,
         supported_platforms: SupportedPlatforms::ALL,
@@ -1182,7 +1182,7 @@ define_settings_group!(AISettings, settings: [
 
     // Used to determine whether the "What's new in Hermon Agent" section of the agent view
     // zero state is shown or hidden.
-    should_show_oz_updates_in_zero_state: ShouldShowOzUpdatesInZeroState {
+    should_show_oz_updates_in_zero_state: ShouldShowHermonUpdatesInZeroState {
         type: bool,
         default: true,
         supported_platforms: SupportedPlatforms::ALL,
@@ -1447,7 +1447,7 @@ define_settings_group!(AISettings, settings: [
         private: true,
     }
 
-    // Whether Oz should add attribution (co-author line) to commit messages and PRs.
+    // Whether Hermon should add attribution (co-author line) to commit messages and PRs.
     // This is the user-level preference; it may be overridden by the team-level
     // `enable_warp_attribution` AdminEnablementSetting (see
     // `UserWorkspaces::get_agent_attribution_setting`).

@@ -234,9 +234,9 @@ impl AgentViewZeroStateBlock {
             let should_rerender_for_oz_updates_visibility = !me.origin.is_cloud_agent()
                 && matches!(
                     event,
-                    AISettingsChangedEvent::ShouldShowOzUpdatesInZeroState { .. }
+                    AISettingsChangedEvent::ShouldShowHermonUpdatesInZeroState { .. }
                 )
-                && FeatureFlag::OzChangelogUpdates.is_enabled()
+                && FeatureFlag::HermonChangelogUpdates.is_enabled()
                 && !ChangelogModel::as_ref(ctx).oz_updates.is_empty();
             if should_rerender_for_oz_updates_visibility {
                 ctx.notify();
@@ -425,7 +425,7 @@ impl View for AgentViewZeroStateBlock {
             HeaderProps {
                 title: "New Hermon agent conversation".into(),
                 description: AgentViewDescription::PlainText(vec![local_description.into()]),
-                icon: Icon::Oz,
+                icon: Icon::Hermon,
             }
         };
 
@@ -1007,7 +1007,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
         .should_show_oz_updates_in_zero_state
         .value();
     if !should_render_oz_updates_section(
-        FeatureFlag::OzChangelogUpdates.is_enabled(),
+        FeatureFlag::HermonChangelogUpdates.is_enabled(),
         should_show_oz_updates,
         !changelog_model.oz_updates.is_empty(),
     ) {

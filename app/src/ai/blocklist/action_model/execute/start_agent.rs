@@ -260,7 +260,7 @@ impl StartAgentExecutor {
                 harness_type: None,
                 model_id,
             } => {
-                // Legacy local Oz child agents do not use
+                // Legacy local Hermon child agents do not use
                 // StartAgentRequest.parent_run_id. Instead, the child
                 // conversation is linked back to its parent on the first
                 // request via Request.metadata.parent_agent_id, sourced

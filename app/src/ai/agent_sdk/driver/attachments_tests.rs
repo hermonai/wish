@@ -91,7 +91,7 @@ fn mock_client_returning(attachments: Vec<TaskAttachment>) -> Arc<MockAIClient> 
 async fn e2e_happy_path_downloads_all_and_writes_to_disk() {
     // Two attachments, both served 200 with distinct payloads. The pipeline must write each
     // byte stream to `{attachments_dir}/handoff/{file_id}` and report the dir back.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(true);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(true);
     let tempdir = handoff_tempdir();
     let attachments_dir = tempdir.path().to_path_buf();
     let http = build_test_http_client();
@@ -143,7 +143,7 @@ async fn e2e_happy_path_downloads_all_and_writes_to_disk() {
 async fn e2e_transient_5xx_retried_then_succeeds() {
     // Declare the failing 503 mock first, then the success mock. Mockito serves them in
     // registration order, so attempt #1 hits 503 and attempt #2 hits 200.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(true);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(true);
     let tempdir = handoff_tempdir();
     let attachments_dir = tempdir.path().to_path_buf();
     let http = build_test_http_client();
@@ -186,7 +186,7 @@ async fn e2e_transient_5xx_retried_then_succeeds() {
 #[tokio::test]
 async fn e2e_permanent_4xx_fails_fast_without_retries() {
     // 404 is a permanent error; the retry loop must NOT retry. Exactly one GET is expected.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(true);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(true);
     let tempdir = handoff_tempdir();
     let attachments_dir = tempdir.path().to_path_buf();
     let http = build_test_http_client();
@@ -224,7 +224,7 @@ async fn e2e_permanent_4xx_fails_fast_without_retries() {
 #[tokio::test]
 async fn e2e_retry_exhaustion_marks_failed() {
     // Three persistent 5xxs: the retry loop bails out after MAX_ATTEMPTS (3); no file lands.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(true);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(true);
     let tempdir = handoff_tempdir();
     let attachments_dir = tempdir.path().to_path_buf();
     let http = build_test_http_client();
@@ -257,7 +257,7 @@ async fn e2e_retry_exhaustion_marks_failed() {
 async fn e2e_partial_success_returns_dir_with_downloaded_subset() {
     // One attachment succeeds, one fails permanently. The dir is returned so the caller can
     // still see `{handoff_dir}/ok-uuid` downstream; the failed sibling's file is absent.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(true);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(true);
     let tempdir = handoff_tempdir();
     let attachments_dir = tempdir.path().to_path_buf();
     let http = build_test_http_client();
@@ -305,7 +305,7 @@ async fn e2e_partial_success_returns_dir_with_downloaded_subset() {
 async fn e2e_empty_attachment_list_returns_none_without_creating_dir() {
     // With zero attachments listed, the function returns None early and does NOT create the
     // handoff dir — nothing to land there.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(true);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(true);
     let tempdir = handoff_tempdir();
     let attachments_dir = tempdir.path().to_path_buf();
     let http = build_test_http_client();
@@ -330,7 +330,7 @@ async fn e2e_empty_attachment_list_returns_none_without_creating_dir() {
 async fn e2e_get_handoff_snapshot_attachments_failure_is_fatal() {
     // When the listing call errors, the function must return Err wrapping the underlying
     // message with a context describing where it happened.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(true);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(true);
     let tempdir = handoff_tempdir();
     let http = build_test_http_client();
 
@@ -368,7 +368,7 @@ async fn e2e_returns_none_when_oz_handoff_flag_is_disabled() {
     // With the feature flag off, the function short-circuits to None without calling the
     // AIClient. Any call site that forgot to gate on the flag would log an error; here we
     // just verify the return value.
-    let _guard = FeatureFlag::OzHandoff.override_enabled(false);
+    let _guard = FeatureFlag::HermonHandoff.override_enabled(false);
     let tempdir = handoff_tempdir();
     let attachments_dir = tempdir.path().to_path_buf();
     let http = build_test_http_client();

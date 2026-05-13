@@ -184,7 +184,7 @@ impl SearchItemIcon for BindingGroup {
                 if !FeatureFlag::AgentMode.is_enabled() {
                     Icon::AiAssistant
                 } else {
-                    Icon::Oz
+                    Icon::Hermon
                 }
             }
             Self::Close => Icon::X,

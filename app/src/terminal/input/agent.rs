@@ -512,7 +512,7 @@ impl Input {
         };
         let vm = view_model.as_ref(app);
         let harness = vm.selected_harness();
-        if harness == Harness::Oz {
+        if harness == Harness::Hermon {
             return false;
         }
         // Skip FTUX for harnesses that have no auth secret types defined.
@@ -597,8 +597,8 @@ impl Input {
             let harness = self
                 .ambient_agent_view_model()
                 .map(|m| m.as_ref(app).selected_harness())
-                .unwrap_or(wish_cli::agent::Harness::Oz);
-            if harness != wish_cli::agent::Harness::Oz && !self.should_show_auth_secret_ftux(app) {
+                .unwrap_or(wish_cli::agent::Harness::Hermon);
+            if harness != wish_cli::agent::Harness::Hermon && !self.should_show_auth_secret_ftux(app) {
                 row.add_child(ChildView::new(auth_secret_selector).finish());
             }
         }

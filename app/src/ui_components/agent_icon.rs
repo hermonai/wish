@@ -61,7 +61,7 @@ pub(crate) fn terminal_view_agent_icon_variant(
                 .as_ref()
                 .and_then(|config| config.harness.as_ref())
                 .map(|harness| harness.harness_type)
-                .unwrap_or(Harness::Oz);
+                .unwrap_or(Harness::Hermon);
             return Some(agent_icon_variant_for_run(harness, status, true));
         }
     }
@@ -94,7 +94,7 @@ pub(crate) fn agent_conversation_entry_icon_variant(
         || entry.backing.has_ambient_run
         || entry.identity.ambient_agent_task_id.is_some();
     agent_icon_variant_for_run(
-        entry.display.harness.unwrap_or(Harness::Oz),
+        entry.display.harness.unwrap_or(Harness::Hermon),
         status,
         is_ambient,
     )
@@ -163,9 +163,9 @@ fn agent_icon_variant_from_terminal_inputs(
         }
     }
 
-    // 3. Selected conversation OR ambient (Oz) terminal: Hermon agent variant.
+    // 3. Selected conversation OR ambient (Hermon) terminal: Hermon agent variant.
     if inputs.has_selected_conversation || inputs.is_ambient {
-        return Some(IconWithStatusVariant::OzAgent {
+        return Some(IconWithStatusVariant::HermonAgent {
             status: inputs.selected_conversation_status.clone(),
             is_ambient: inputs.is_ambient,
         });
@@ -175,7 +175,7 @@ fn agent_icon_variant_from_terminal_inputs(
 }
 
 /// Pure run-card logic: maps a [`Harness`], status, and ambient flag into an
-/// [`IconWithStatusVariant`]. Falls back to the Oz variant for [`Harness::Oz`] and
+/// [`IconWithStatusVariant`]. Falls back to the Hermon variant for [`Harness::Hermon`] and
 /// [`Harness::Unknown`], the latter so a future-server harness this client doesn't
 /// recognize doesn't render an unbranded gray circle.
 pub(crate) fn agent_icon_variant_for_run(
@@ -191,7 +191,7 @@ pub(crate) fn agent_icon_variant_for_run(
             status: Some(status),
             is_ambient,
         },
-        None => IconWithStatusVariant::OzAgent {
+        None => IconWithStatusVariant::HermonAgent {
             status: Some(status),
             is_ambient,
         },

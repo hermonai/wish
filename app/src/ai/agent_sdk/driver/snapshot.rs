@@ -61,7 +61,7 @@ const DECLARATION_VERSION: u32 = 1;
 const DECLARATIONS_PATH_ENV_VAR: &str = "OZ_SNAPSHOT_DECLARATIONS_FILE";
 
 /// Env var pointing directly at the declarations-generator script.
-/// Set by `entrypoint.sh` in containerized runs and by `oz-local --docker-dir` in local dev.
+/// Set by `entrypoint.sh` in containerized runs and by `hermon-local --docker-dir` in local dev.
 const DECLARATIONS_SCRIPT_PATH_ENV_VAR: &str = "OZ_SNAPSHOT_DECLARATIONS_SCRIPT";
 
 /// Upper bound on declarations-script runtime. If the script takes longer we log an error and

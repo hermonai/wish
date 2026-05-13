@@ -57,6 +57,7 @@ pub use action::{
     VerticalTabsPaneContextMenuTarget, WorkspaceAction,
 };
 pub use active_session::ActiveSession;
+pub(crate) use global_actions::dispatch_to_active_workspace;
 pub use global_actions::{
     ForkAIConversationParams, ForkFromExchange, ForkedConversationDestination,
 };
@@ -214,13 +215,13 @@ pub fn init(app: &mut AppContext) {
                 EditableBinding::new(
                     "workspace:open_oz_launch_modal",
                     "[Debug] Open Hermon Cloud Launch Modal",
-                    WorkspaceAction::OpenOzLaunchModal,
+                    WorkspaceAction::OpenHermonLaunchModal,
                 )
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
                     "workspace:reset_oz_launch_modal_state",
                     "[Debug] Reset Hermon Cloud Launch Modal State",
-                    WorkspaceAction::ResetOzLaunchModalState,
+                    WorkspaceAction::ResetHermonLaunchModalState,
                 )
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
@@ -930,7 +931,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "workspace:terminate_app",
-            "Quit Warp",
+            "Quit Wish",
             WorkspaceAction::TerminateApp,
         )
         .with_context_predicate(id!("Workspace"))

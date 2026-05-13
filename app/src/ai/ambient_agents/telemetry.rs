@@ -14,7 +14,7 @@ pub enum CloudModeEntryPoint {
     /// User entered Cloud Mode from an existing local terminal session (e.g., via keyboard shortcut or command).
     LocalSession,
     /// User entered Cloud Mode through the Hermon Cloud launch modal.
-    OzLaunchModal,
+    HermonLaunchModal,
     /// User re-entered Cloud Mode by clicking on an ambient agent entry block.
     EntryBlock,
 }

@@ -365,7 +365,7 @@ impl AgentNotificationsModel {
         }
 
         let metadata = TerminalViewMetadata::lookup(effective_terminal_view_id, ctx);
-        let oz_agent = NotificationSourceAgent::Oz {
+        let hermon_agent = NotificationSourceAgent::Hermon {
             is_ambient: metadata.is_ambient,
         };
 
@@ -385,7 +385,7 @@ impl AgentNotificationsModel {
                     title,
                     message.to_owned(),
                     NotificationCategory::Complete,
-                    oz_agent,
+                    hermon_agent,
                     origin,
                     effective_terminal_view_id,
                     artifacts,
@@ -404,7 +404,7 @@ impl AgentNotificationsModel {
                     title,
                     message.to_owned(),
                     NotificationCategory::Complete,
-                    oz_agent,
+                    hermon_agent,
                     origin,
                     effective_terminal_view_id,
                     artifacts,
@@ -417,7 +417,7 @@ impl AgentNotificationsModel {
                     title,
                     blocked_action.clone(),
                     NotificationCategory::Request,
-                    oz_agent,
+                    hermon_agent,
                     origin,
                     effective_terminal_view_id,
                     vec![],
@@ -436,7 +436,7 @@ impl AgentNotificationsModel {
                     title,
                     message.to_owned(),
                     NotificationCategory::Error,
-                    oz_agent,
+                    hermon_agent,
                     origin,
                     effective_terminal_view_id,
                     artifacts,

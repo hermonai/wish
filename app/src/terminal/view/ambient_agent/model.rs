@@ -203,18 +203,18 @@ pub struct AmbientAgentViewModel {
     conversation_id: Option<AIConversationId>,
 
     /// Selected execution harness for the cloud agent run.
-    /// Defaults to `Harness::Oz`. Used to populate `AgentConfigSnapshot.harness` on spawn.
+    /// Defaults to `Harness::Hermon`. Used to populate `AgentConfigSnapshot.harness` on spawn.
     harness: Harness,
     /// Selected worker host for the cloud agent run. Populated from the HostSelector
     /// (which resolves env var > workspace setting) and read by `spawn_agent`.
     worker_host: Option<String>,
     /// Selected model id for a third-party harness (e.g. `"opus"` for Claude).
     harness_model_id: Option<String>,
-    /// Name of the selected auth secret for the current non-Oz harness.
+    /// Name of the selected auth secret for the current non-Hermon harness.
     harness_auth_secret_name: Option<String>,
     /// Whether the harness CLI
     /// Used to transition the cloud-mode setup UI out of the pre-first-exchange phase when
-    /// there is no oz `AppendedExchange` to key off of.
+    /// there is no hermon `AppendedExchange` to key off of.
     harness_command_started: bool,
 
     /// Session ID for the currently running ambient execution, if the run has attached to a live
@@ -404,18 +404,18 @@ impl AmbientAgentViewModel {
 
     pub fn selected_harness(&self) -> Harness {
         if self.is_local_to_cloud_handoff() {
-            Harness::Oz
+            Harness::Hermon
         } else {
             self.harness
         }
     }
 
     pub fn set_harness(&mut self, harness: Harness, ctx: &mut ModelContext<Self>) {
-        // for local to cloud handoff, oz is the only option
+        // for local to cloud handoff, hermon is the only option
         // (we'll need to update this to lock to the correct 3p harness if/when
-        // we implement local -> cloud handoff for non-oz conversations).
+        // we implement local -> cloud handoff for non-hermon conversations).
         let harness = if self.is_local_to_cloud_handoff() {
-            Harness::Oz
+            Harness::Hermon
         } else {
             harness
         };
@@ -465,15 +465,15 @@ impl AmbientAgentViewModel {
         ctx.emit(AmbientAgentViewModelEvent::AuthSecretSelected);
     }
 
-    /// True when the run is configured to use a non-Oz execution harness and the
+    /// True when the run is configured to use a non-Hermon execution harness and the
     /// required feature flags are enabled.
     pub(super) fn is_third_party_harness(&self) -> bool {
-        FeatureFlag::AgentHarness.is_enabled() && self.selected_harness() != Harness::Oz
+        FeatureFlag::AgentHarness.is_enabled() && self.selected_harness() != Harness::Hermon
     }
 
     /// Returns the [`CLIAgent`] corresponding to the currently selected harness when it is a
-    /// third-party harness (e.g. Claude, Gemini). Returns `None` for [`Harness::Oz`].
-    /// Used to drive the correct tab icon for a cloud run as soon as a non-oz harness is
+    /// third-party harness (e.g. Claude, Gemini). Returns `None` for [`Harness::Hermon`].
+    /// Used to drive the correct tab icon for a cloud run as soon as a non-hermon harness is
     /// selected, even before the CLI session is registered with [`CLIAgentSessionsModel`].
     pub fn selected_third_party_cli_agent(&self) -> Option<CLIAgent> {
         CLIAgent::from_harness(self.selected_harness())
@@ -667,7 +667,7 @@ impl AmbientAgentViewModel {
         Some(launch)
     }
 
-    /// Whether the harness CLI has started running. Only meaningful for non-oz runs.
+    /// Whether the harness CLI has started running. Only meaningful for non-hermon runs.
     pub(super) fn harness_command_started(&self) -> bool {
         self.harness_command_started
     }
@@ -680,7 +680,7 @@ impl AmbientAgentViewModel {
         ctx: &mut ModelContext<Self>,
     ) {
         debug_assert!(
-            self.harness != Harness::Oz,
+            self.harness != Harness::Hermon,
             "harness_command_started is only meaningful for non-oz runs"
         );
         if self.harness_command_started {
@@ -839,7 +839,7 @@ impl AmbientAgentViewModel {
         self.status = Status::AgentRunning;
 
         // Fetch the task so we can set the correct environment (instead of defaulting to the most
-        // recently-used one) and the correct harness (so non-oz viewers know to use the
+        // recently-used one) and the correct harness (so non-hermon viewers know to use the
         // queued-prompt / harness-command-started flow).
         ctx.spawn(
             async move { ai_client.get_ambient_agent_task(&task_id).await },
@@ -853,7 +853,7 @@ impl AmbientAgentViewModel {
                     let harness = snapshot
                         .and_then(|s| s.harness.as_ref())
                         .map(|h| h.harness_type)
-                        .unwrap_or(Harness::Oz);
+                        .unwrap_or(Harness::Hermon);
 
                     me.set_environment_id(environment_id, ctx);
                     me.set_harness(harness, ctx);
@@ -976,13 +976,13 @@ impl AmbientAgentViewModel {
 
         let selected_harness = self.selected_harness();
 
-        let oz_model = (selected_harness == Harness::Oz).then(|| {
+        let oz_model = (selected_harness == Harness::Hermon).then(|| {
             LLMPreferences::as_ref(ctx)
                 .get_active_base_model(ctx, Some(self.terminal_view_id))
                 .id
                 .to_string()
         });
-        let third_party_harness = (selected_harness != Harness::Oz).then(|| HarnessConfig {
+        let third_party_harness = (selected_harness != Harness::Hermon).then(|| HarnessConfig {
             harness_type: selected_harness,
             model_id: self.harness_model_id.clone(),
         });
@@ -1549,13 +1549,13 @@ pub enum AmbientAgentViewModelEvent {
     NeedsGithubAuth,
     /// The ambient agent was cancelled.
     Cancelled,
-    /// The selected execution harness (Oz / Claude Code) changed.
+    /// The selected execution harness (Hermon / Claude Code) changed.
     HarnessSelected,
     /// The selected worker host changed via the HostSelector.
     HostSelected,
     /// The selected third-party harness model id changed (e.g. user picked `"opus"` for Claude).
     HarnessModelSelected,
-    /// The harness CLI (for non-oz runs) has started executing in the shared session.
+    /// The harness CLI (for non-hermon runs) has started executing in the shared session.
     /// Fires once per run and signals the transition out of the pre-first-exchange phase
     /// for claude / gemini / other third-party harnesses.
     HarnessCommandStarted {

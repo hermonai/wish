@@ -528,7 +528,7 @@ pub mod text {
         )
     }
 
-    /// Report the run ID with a link to the Oz dashboard.
+    /// Report the run ID with a link to the Hermon dashboard.
     pub fn run_started<W: Write>(run_id: &str, w: &mut W) -> io::Result<()> {
         let run_url = super::run_url(run_id);
         writeln!(w, "Run ID: {run_id}")?;
@@ -1300,7 +1300,7 @@ use crate::code::editor_management::CodeSource;
 use std::io::{self, BufWriter, Write};
 use wish_core::channel::ChannelState;
 
-/// Constructs the Oz dashboard URL for a given run ID.
+/// Constructs the Hermon dashboard URL for a given run ID.
 fn run_url(run_id: &str) -> String {
     let hermon_root_url = ChannelState::hermon_root_url();
     format!("{hermon_root_url}/runs/{run_id}")

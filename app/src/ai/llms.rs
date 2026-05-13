@@ -1126,20 +1126,52 @@ impl LLMPreferences {
                     (server_result, ollama_result)
                 },
                 |me, (server_result, ollama_result), ctx| {
-                    // Prefer server models, then merge local Ollama on top.
-                    if let Ok(server_models) = server_result {
-                        me.on_server_update(server_models, ctx);
-                    }
-                    // Merge Ollama models into whatever we have.
-                    match ollama_result {
-                        Ok(Some(ollama_models)) => {
-                            me.merge_local_models(ollama_models, ctx);
+                    // Three cases:
+                    //   1. Server reachable: take server's model list as the
+                    //      primary; merge local Ollama on top so locals still
+                    //      appear in the picker as additional choices.
+                    //   2. Server unreachable + locals discovered: replace the
+                    //      stale hardcoded `Default::default()` ("auto
+                    //      (cost-efficient)") with the local-only list, the
+                    //      same way the guest/unauth path does. Otherwise the
+                    //      "auto" default routes through Hermon's /proxy/token
+                    //      and fails with Connection refused — the bug
+                    //      reported in 0.4.0 release notes (P0).
+                    //   3. Server unreachable + no locals: leave the existing
+                    //      models alone so a transient outage doesn't wipe
+                    //      the user's last-good list.
+                    match (server_result, ollama_result) {
+                        (Ok(server_models), ollama_outcome) => {
+                            me.on_server_update(server_models, ctx);
+                            match ollama_outcome {
+                                Ok(Some(ollama_models)) => {
+                                    me.merge_local_models(ollama_models, ctx);
+                                }
+                                Ok(None) => {
+                                    log::info!("No local Ollama models discovered");
+                                }
+                                Err(e) => {
+                                    log::warn!(
+                                        "Failed to discover local Ollama models: {e:#}"
+                                    );
+                                }
+                            }
                         }
-                        Ok(None) => {
-                            log::info!("No local Ollama models discovered");
+                        (Err(server_err), Ok(Some(ollama_models))) => {
+                            log::warn!(
+                                "Server LLM fetch failed ({server_err:#}); falling back to local Ollama models"
+                            );
+                            me.on_server_update(ollama_models, ctx);
                         }
-                        Err(e) => {
-                            log::warn!("Failed to discover local Ollama models: {e:#}");
+                        (Err(server_err), Ok(None)) => {
+                            log::warn!(
+                                "Server LLM fetch failed ({server_err:#}) and no local Ollama models discovered; keeping existing choices"
+                            );
+                        }
+                        (Err(server_err), Err(ollama_err)) => {
+                            log::warn!(
+                                "Server LLM fetch failed ({server_err:#}) and local Ollama discovery failed ({ollama_err:#}); keeping existing choices"
+                            );
                         }
                     }
                 },

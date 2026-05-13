@@ -299,7 +299,7 @@ impl AuthSecretFtuxView {
     fn handle_cancel(&mut self, ctx: &mut ViewContext<Self>) {
         let model = self.ambient_agent_model.clone();
         model.update(ctx, |model, ctx| {
-            model.set_harness(Harness::Oz, ctx);
+            model.set_harness(Harness::Hermon, ctx);
         });
     }
 

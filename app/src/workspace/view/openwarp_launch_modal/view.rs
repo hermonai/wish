@@ -26,7 +26,7 @@ const HERO_HEIGHT: f32 = 92.;
 const HERO_IMAGE_PATH: &str = "async/png/onboarding/openwarp_launch_banner.png";
 const REPO_URL: &str = "https://github.com/hermonai/wish";
 const CONTRIBUTING_URL: &str = "https://github.com/hermonai/wish/blob/master/CONTRIBUTING.md";
-const OZ_URL: &str = "https://wish.hermon.ai";
+const HERMON_URL: &str = "https://wish.hermon.ai";
 
 struct InlineLink {
     text: &'static str,
@@ -52,12 +52,12 @@ const FEATURE_ITEMS: &[FeatureItem] = &[
         }),
     },
     FeatureItem {
-        icon: Icon::Oz,
+        icon: Icon::Hermon,
         title: "Open Automated Development",
         description: "The Wish repo is managed by an agent-first workflow powered by Hermon, our cloud agent orchestration platform.",
         inline_link: Some(InlineLink {
             text: "Hermon",
-            url: OZ_URL,
+            url: HERMON_URL,
         }),
     },
     FeatureItem {

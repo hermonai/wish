@@ -32,7 +32,7 @@ const FOOTER_FONT_SIZE: f32 = 12.;
 const OPEN_BUTTON_HEIGHT: f32 = 32.;
 /// Height of action buttons inside the error alert.
 const ALERT_ACTION_BUTTON_HEIGHT: f32 = 24.;
-/// Size of the leading icons (search-sm, code-02, alert-circle, oz).
+/// Size of the leading icons (search-sm, code-02, alert-circle, hermon).
 const FOOTER_ICON_SIZE: f32 = 16.;
 /// Size of the Hermon Agent brand mark inside the "Fix with Hermon Agent" button. Matches the
 /// Figma spec and the workspace banner's secondary-button icon sizing.
@@ -250,7 +250,7 @@ pub fn render_settings_error_alert(
             text_color,
             mouse_states.alert_fix_with_oz_button.clone(),
             "Fix with Hermon Agent",
-            Some(Icon::Oz),
+            Some(Icon::Hermon),
             /*bordered=*/ false,
             WorkspaceAction::FixSettingsWithOz { error_description },
         );

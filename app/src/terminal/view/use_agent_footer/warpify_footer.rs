@@ -45,7 +45,7 @@ impl WishifyFooterView {
 
         let use_agent_button = ctx.add_typed_action_view(|ctx| {
             ActionButton::new("Use agent", AgentFooterButtonTheme::new(None))
-                .with_icon(Icon::Oz)
+                .with_icon(Icon::Hermon)
                 .with_keybinding(KeystrokeSource::Fixed(USE_AGENT_KEYSTROKE.clone()), ctx)
                 .with_size(button_size)
                 .with_tooltip("Ask the Wish agent to assist")

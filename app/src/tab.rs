@@ -1254,7 +1254,7 @@ impl<'a> TabComponent<'a> {
                     }
                 } else {
                     let icon_color = self.appearance.theme().nonactive_ui_text_color();
-                    Some(Icon::Oz.to_wishui_icon(icon_color).finish())
+                    Some(Icon::Hermon.to_wishui_icon(icon_color).finish())
                 }
             }
             Indicator::AmbientAgent => {

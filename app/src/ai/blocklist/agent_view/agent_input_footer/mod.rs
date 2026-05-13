@@ -947,7 +947,7 @@ impl AgentInputFooter {
                 .as_ref()
                 .map(|m| m.as_ref(app).selected_harness())
                 .is_none_or(|harness| match harness {
-                    Harness::Oz | Harness::Unknown => true,
+                    Harness::Hermon | Harness::Unknown => true,
                     _ => HarnessAvailabilityModel::as_ref(app)
                         .models_for(harness)
                         .is_some_and(|models| !models.is_empty()),

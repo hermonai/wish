@@ -2779,7 +2779,7 @@ pub struct TerminalView {
     pending_cloud_followup_task_id: Option<AmbientAgentTaskId>,
 
     /// Conversation details panel (side panel showing conversation/task metadata).
-    /// Available for cloud Oz runs and for any active local AI conversation.
+    /// Available for cloud Hermon runs and for any active local AI conversation.
     conversation_details_panel:
         ViewHandle<crate::ai::conversation_details_panel::ConversationDetailsPanel>,
     /// Whether the conversation details panel is currently open.
@@ -4078,7 +4078,7 @@ impl TerminalView {
                 })
         });
 
-        // Conversation details panel (cloud Oz runs and any active local AI conversation).
+        // Conversation details panel (cloud Hermon runs and any active local AI conversation).
         let conversation_details_panel = ctx.add_typed_action_view(|ctx| {
             crate::ai::conversation_details_panel::ConversationDetailsPanel::new(
                 false, // don't show "Open" button since we're already viewing the conversation
@@ -5309,8 +5309,8 @@ impl TerminalView {
                         .set_is_executing_oz_environment_startup_commands(false);
                 }
 
-                // For an oz local-to-cloud handoff, the first `AppendedExchange` is the
-                // analogue of `HarnessCommandStarted` for non-oz harnesses: the moment we
+                // For an hermon local-to-cloud handoff, the first `AppendedExchange` is the
+                // analogue of `HarnessCommandStarted` for non-hermon harnesses: the moment we
                 // tear down the queued-prompt block in favor of the live agent UI.
                 if self
                     .ambient_agent_view_model
@@ -14687,7 +14687,7 @@ impl TerminalView {
             trigger,
             block_summary.title,
             block_summary.description,
-            Some(NotificationAgentVariant::Oz),
+            Some(NotificationAgentVariant::Hermon),
             ctx,
         );
     }

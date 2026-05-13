@@ -1,0 +1,39 @@
+[package]
+name = "wishd_client"
+version = "0.0.0"
+edition = "2021"
+
+# Rust client crate for the `wishd` local daemon (see
+# /Users/wenyan/ClaudeProjects/wishd). Talks to wishd-server over a Unix
+# domain socket using gRPC. Used by the `wish` GUI and `wish-cli` to
+# delegate privileged operations (fs/git/process/terminal/index/capability/
+# cell-verify) to the trusted local daemon.
+#
+# Why this crate lives here, not in the wishd workspace, for now:
+#   * the wishd workspace pins tonic 0.12 / prost 0.13; wish workspace
+#     pins prost 0.14. A duplicate Rust client built against wish's
+#     versions is the lowest-friction starting point.
+#   * once the integration is stable, this crate may be promoted to a
+#     `wishd-client-rs` member of the wishd workspace itself so wishcode
+#     can also consume it; both options are open.
+#
+# This first slice ships only the `health.proto` surface — enough to probe
+# whether wishd is running. Subsequent slices vendor fs / git / process /
+# terminal / index protos and expose their generated clients here.
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+prost.workspace = true
+tonic.workspace = true
+# tonic 0.14 moved the prost runtime codec into a separate crate.
+tonic-prost.workspace = true
+
+[dev-dependencies]
+serial_test = "0.8.0"
+
+[build-dependencies]
+tonic-build.workspace = true
+# tonic 0.14 moved prost codegen integration into a separate crate.
+tonic-prost-build.workspace = true

@@ -552,10 +552,11 @@ pub fn render_warping_indicator_base(
         is_passive_code_diff,
         secondary_element,
     } = props;
-    // Unicode code point for the Warp glyph that is embedded in the version of Roboto we bundle
-    // into the app. This code point MUST be rendered using Roboto (the default ui font) or else the
-    // glyph may not be rendered.
-    const WARP_GLYPH: &str = "\u{E500}";
+    // Glyph rendered before the "Wishing..." shimmering text. Was originally
+    // the upstream Warp brand glyph at PUA `U+E500` (only renders inside the
+    // bundled Roboto font); now the universally-rendered sparkles emoji which
+    // carries the "AI / wish / magic" semantic in any font, on any platform.
+    const WARP_GLYPH: &str = "\u{2728}";
 
     let appearance = Appearance::as_ref(app);
 

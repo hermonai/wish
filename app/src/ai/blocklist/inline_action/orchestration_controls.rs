@@ -113,7 +113,7 @@ impl OrchestrationEditState {
         }
     }
 
-    /// Toggle Local ↔ Cloud. Resets OpenCode to Oz when switching
+    /// Toggle Local ↔ Cloud. Resets OpenCode to Hermon when switching
     /// to Cloud (unsupported combination).
     pub fn toggle_execution_mode_to_remote(&mut self, is_remote: bool) {
         if is_remote {
@@ -314,10 +314,10 @@ pub fn new_standard_picker_dropdown<A: OrchestrationControlAction, V: View>(
 
 /// Populates the model picker based on the active harness.
 ///
-/// - **Oz / empty**: shows the Warp LLM catalog (existing behavior).
+/// - **Hermon / empty**: shows the Warp LLM catalog (existing behavior).
 /// - **Local Codex**: shows only a "Default model" entry (no model delivery
 ///   possible for local Codex children).
-/// - **Other non-Oz harnesses**: shows "Default model" at the top, followed
+/// - **Other non-Hermon harnesses**: shows "Default model" at the top, followed
 ///   by the server-provided harness model catalog from
 ///   `HarnessAvailabilityModel::models_for()`.
 pub fn populate_model_picker_for_harness<A: OrchestrationControlAction, V: View>(
@@ -332,8 +332,8 @@ pub fn populate_model_picker_for_harness<A: OrchestrationControlAction, V: View>
     dropdown.update(ctx, |dropdown, ctx_dropdown| {
         let harness = Harness::parse_orchestration_harness(&harness_type);
         match harness {
-            Some(Harness::Oz) | None => {
-                // Oz / unset: current behavior — Warp LLM catalog.
+            Some(Harness::Hermon) | None => {
+                // Hermon / unset: current behavior — Warp LLM catalog.
                 let llm_prefs = LLMPreferences::as_ref(ctx_dropdown);
                 let choices: Vec<_> = llm_prefs.get_base_llm_choices_for_agent_mode().collect();
                 let selected_display_name = choices
@@ -363,7 +363,7 @@ pub fn populate_model_picker_for_harness<A: OrchestrationControlAction, V: View>
                 dropdown.set_selected_by_name(DEFAULT_MODEL_LABEL, ctx_dropdown);
             }
             Some(harness) => {
-                // Non-Oz harness: "Default model" at top, then server-provided
+                // Non-Hermon harness: "Default model" at top, then server-provided
                 // harness models.
                 let mut items: Vec<MenuItem<DropdownAction<A>>> =
                     vec![default_model_menu_item::<A>()];
@@ -421,7 +421,7 @@ pub fn is_model_in_filtered_choices<V: View>(
 ) -> bool {
     let harness = Harness::parse_orchestration_harness(harness_type);
     match harness {
-        Some(Harness::Oz) | None => {
+        Some(Harness::Hermon) | None => {
             let llm_prefs = LLMPreferences::as_ref(ctx);
             llm_prefs
                 .get_base_llm_choices_for_agent_mode()
@@ -443,7 +443,7 @@ pub fn is_model_in_filtered_choices<V: View>(
 
 /// Returns the default model_id for the given harness.
 ///
-/// For Oz this is the first Warp LLM; for non-Oz harnesses it is an empty
+/// For Hermon this is the first Warp LLM; for non-Hermon harnesses it is an empty
 /// string (the "Default model" entry).
 pub fn first_filtered_model_id<V: View>(
     harness_type: &str,
@@ -451,7 +451,7 @@ pub fn first_filtered_model_id<V: View>(
 ) -> Option<String> {
     let harness = Harness::parse_orchestration_harness(harness_type);
     match harness {
-        Some(Harness::Oz) | None => {
+        Some(Harness::Hermon) | None => {
             let llm_prefs = LLMPreferences::as_ref(ctx);
             llm_prefs
                 .get_base_llm_choices_for_agent_mode()
@@ -621,7 +621,7 @@ pub fn populate_host_picker<A: OrchestrationControlAction, V: View>(
 
 /// Normalizes a harness_type string for use as a HashMap key in
 /// per-harness model memory. Empty string (the wire representation
-/// of Oz) is mapped to "oz" so saves and lookups are consistent.
+/// of Hermon) is mapped to "oz" so saves and lookups are consistent.
 pub fn harness_save_key(harness_type: &str) -> &str {
     if harness_type.is_empty() {
         "oz"
@@ -664,7 +664,7 @@ pub fn apply_harness_change<A: OrchestrationControlAction, V: View>(
         state.model_id = saved_id;
     } else if !is_model_in_filtered_choices(&state.model_id, new_harness_type, is_local, ctx) {
         // No saved model — fall back to conversation base model
-        // for Oz, or default for non-Oz.
+        // for Hermon, or default for non-Hermon.
         let reset_id = fallback_base_model_id(ctx)
             .filter(|id| is_model_in_filtered_choices(id, new_harness_type, is_local, ctx))
             .or_else(|| first_filtered_model_id(new_harness_type, ctx))
@@ -752,7 +752,7 @@ pub fn sync_picker_selections<A: OrchestrationControlAction, V: View>(
         model_picker.update(ctx, |dropdown, ctx_dropdown| {
             let harness = Harness::parse_orchestration_harness(&harness_type);
             let display_name = match harness {
-                Some(Harness::Oz) | None => {
+                Some(Harness::Hermon) | None => {
                     let llm_prefs = LLMPreferences::as_ref(ctx_dropdown);
                     llm_prefs
                         .get_base_llm_choices_for_agent_mode()
@@ -781,7 +781,7 @@ pub fn sync_picker_selections<A: OrchestrationControlAction, V: View>(
     if let Some(harness_picker) = handles.harness_picker.clone() {
         let harness_type = state.harness_type.clone();
         harness_picker.update(ctx, |dropdown, ctx_dropdown| {
-            let target = Harness::parse_orchestration_harness(&harness_type).unwrap_or(Harness::Oz);
+            let target = Harness::parse_orchestration_harness(&harness_type).unwrap_or(Harness::Hermon);
             // Use the server-provided display_name from HarnessAvailabilityModel
             // so the selection matches the labels (which also use display_name).
             let display = HarnessAvailabilityModel::as_ref(ctx_dropdown)

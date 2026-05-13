@@ -33,12 +33,12 @@ pub struct HarnessAvailability {
 }
 
 /// Default fallback used before the server responds.
-/// Oz is enabled by default so the UI is usable pre-fetch; the server
+/// Hermon is enabled by default so the UI is usable pre-fetch; the server
 /// list (which respects admin overrides) replaces this once available.
 fn default_harnesses() -> Vec<HarnessAvailability> {
     vec![HarnessAvailability {
-        harness: Harness::Oz,
-        display_name: "Warp".to_string(),
+        harness: Harness::Hermon,
+        display_name: "Wish".to_string(),
         enabled: true,
         available_models: vec![],
     }]
@@ -289,7 +289,7 @@ fn get_cached(ctx: &ModelContext<HarnessAvailabilityModel>) -> Option<Vec<Harnes
 
 fn harness_to_graphql_harness(harness: Harness) -> Option<wish_graphql::ai::AgentHarness> {
     match harness {
-        Harness::Oz => Some(wish_graphql::ai::AgentHarness::Oz),
+        Harness::Hermon => Some(wish_graphql::ai::AgentHarness::Oz),
         Harness::Claude => Some(wish_graphql::ai::AgentHarness::ClaudeCode),
         Harness::Gemini => Some(wish_graphql::ai::AgentHarness::Gemini),
         Harness::Codex => Some(wish_graphql::ai::AgentHarness::Codex),

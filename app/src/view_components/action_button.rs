@@ -915,6 +915,17 @@ impl View for ActionButton {
                     constrained_box = constrained_box.with_width(width).with_max_width(width);
                 } else if let Some(width) = self.width {
                     constrained_box = constrained_box.with_max_width(width);
+                } else if self.full_width {
+                    // `full_width` puts the inner row in MainAxisSize::Max,
+                    // which requires a finite parent max constraint. Some
+                    // containers (e.g. the HOA welcome modal) forget to bound
+                    // the button's width and the flex layer then panics with
+                    // "A flex that should expand to a max space can't be
+                    // rendered in an infinite max constraint." Cap defensively
+                    // at a generous finite width — well-bounded parents still
+                    // shrink us to their width, and the pathological "infinite
+                    // parent" case no longer crashes.
+                    constrained_box = constrained_box.with_max_width(f32::MAX / 2.0);
                 }
 
                 Container::new(constrained_box.finish())

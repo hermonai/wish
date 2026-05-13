@@ -343,7 +343,7 @@ fn cloud_conversation_with_ambient_task(task_id: AmbientAgentTaskId) -> CloudCon
     let mut conversation = AIConversation::new(false);
     conversation.set_task_id(task_id);
     conversation.set_server_metadata(test_server_conversation_metadata(Some(task_id)));
-    CloudConversationData::Oz(Box::new(conversation))
+    CloudConversationData::Hermon(Box::new(conversation))
 }
 
 fn start_parent_conversation(

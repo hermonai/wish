@@ -1522,7 +1522,7 @@ impl TerminalManager {
                             },
                             move |_view, result, _ctx| {
                                 if let Err(e) = result {
-                                    log::warn!("Failed to link shared session to Oz task: {e}");
+                                    log::warn!("Failed to link shared session to Hermon task: {e}");
                                 }
                             },
                         );
@@ -1947,7 +1947,7 @@ impl TerminalManager {
                     return;
                 }
 
-                // Execute the agent prompt in the Oz-harness case
+                // Execute the agent prompt in the Hermon-harness case
                 terminal_view.update(ctx, |view, ctx| {
                     // Clear the sharer's input (as the prompt in the input is now being executed)
                     view.input().update(ctx, |input, ctx| {

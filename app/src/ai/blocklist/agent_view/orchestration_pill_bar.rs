@@ -90,7 +90,7 @@ pub(super) fn render_orchestrator_avatar_disc(
 ) -> Box<dyn Element> {
     render_avatar_disc(
         theme.ansi_fg_cyan(),
-        AvatarGlyph::Icon(Icon::Oz),
+        AvatarGlyph::Icon(Icon::Hermon),
         size,
         theme,
         appearance,
@@ -442,7 +442,7 @@ impl OrchestrationPillBar {
             conversation_id: orchestrator_id,
             label: orchestrator_label(orchestrator),
             avatar_color: theme.ansi_fg_cyan(),
-            avatar_glyph: AvatarGlyph::Icon(Icon::Oz),
+            avatar_glyph: AvatarGlyph::Icon(Icon::Hermon),
             is_selected: orchestrator_id == active_id,
             kind: PillKind::Orchestrator,
             pin_state: PillPinState::Unpinned,
@@ -1023,14 +1023,14 @@ fn render_hover_card(
     // harness (always when known). Hidden entirely when no chip applies.
     let mut chips: Vec<Box<dyn Element>> = Vec::new();
 
-    // Harness chip: defaults to Warp Agent (Oz) when server metadata
+    // Harness chip: defaults to Warp Agent (Hermon) when server metadata
     // hasn't loaded yet so the chip slot stays useful for in-progress
     // local conversations. The brand color matches `harness_display`
     // (e.g. orange for Claude Code, blue for Gemini CLI).
     let harness = conversation
         .server_metadata()
         .map(|m| Harness::from(m.harness))
-        .unwrap_or(Harness::Oz);
+        .unwrap_or(Harness::Hermon);
     let harness_icon = harness_display::icon_for(harness);
     let harness_label = harness_display::display_name(harness).to_string();
     let harness_color = harness_display::brand_color(harness).unwrap_or(sub_text);
@@ -1741,13 +1741,13 @@ pub fn render_orchestration_breadcrumbs(
         .unwrap_or("Agent");
     let child_label = child_name.to_string();
 
-    // Parent crumb uses the Oz glyph on a neutral disc to match the
+    // Parent crumb uses the Hermon glyph on a neutral disc to match the
     // orchestrator pill in the pill bar.
     let parent_spec = CrumbSpec {
         conversation_id: parent_id,
         label: parent_label,
         avatar_color: theme.ansi_fg_cyan(),
-        avatar_glyph: AvatarGlyph::Icon(Icon::Oz),
+        avatar_glyph: AvatarGlyph::Icon(Icon::Hermon),
         is_active: false,
     };
 

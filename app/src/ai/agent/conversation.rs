@@ -3649,7 +3649,11 @@ impl TryFrom<String> for AIConversationId {
     }
 }
 
-/// The harness that produced an agent conversation.
+/// The harness that produced an agent conversation. The `Oz` variant maps to
+/// the user-facing [`crate::ai::Harness::Hermon`] (see `Harness::config_name`);
+/// the variant name stays `Oz` here because this enum mirrors the GraphQL schema
+/// enum `AgentHarness::OZ` exposed by `hermon-server`. Renaming requires a
+/// coordinated schema change.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AIAgentHarness {
     Oz,

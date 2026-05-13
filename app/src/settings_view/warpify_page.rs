@@ -629,7 +629,7 @@ impl SettingsWidget for SubshellsWidget {
     type View = WishifyPageView;
 
     fn search_terms(&self) -> &str {
-        "warpify subshell"
+        "wishify warpify subshell"
     }
 
     fn render(

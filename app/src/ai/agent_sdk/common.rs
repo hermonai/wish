@@ -150,7 +150,7 @@ pub fn refresh_warp_drive(
 ///
 /// Called up-front before any task/config-build logic consumes `args.harness`, so a mismatch
 /// error surfaces before side effects like task creation. We deliberately do NOT auto-upgrade
-/// the harness: `Harness::Oz` default with a Claude conversation id is treated as a mismatch
+/// the harness: `Harness::Hermon` default with a Claude conversation id is treated as a mismatch
 /// and errors out.
 pub(super) async fn fetch_and_validate_conversation_harness(
     ai_client: Arc<dyn AIClient>,

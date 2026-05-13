@@ -83,6 +83,21 @@ pub enum FeatureFlag {
     /// Wish Agent Mode.
     AgentMode,
 
+    /// Inject live workspace context (today: LSP diagnostics summary) into every
+    /// Wish-chat user message as a tagged preamble, so the agent always sees the
+    /// same state the human does in the Problems panel. Off by default; enabled
+    /// in dogfood. The agent receives `<workspace_diagnostics>…</workspace_diagnostics>`
+    /// followed by `<user_message>…</user_message>`. Empty workspaces (no
+    /// diagnostics) produce no preamble, so behavior is unchanged on clean repos.
+    AgentLiveWorkspaceContext,
+
+    /// Observability companion to `AgentLiveWorkspaceContext`: when on, the
+    /// composed wire message (every tagged block + the user's text) is logged
+    /// at INFO level on each Wish-chat send. Lets a dogfooder `tail -f` the
+    /// wish log and see exactly what the agent received — the AI-native seam
+    /// in motion. No effect when `AgentLiveWorkspaceContext` is off.
+    LogAgentWorkspaceContext,
+
     /// Whether the user is part of the Warp Alpha Program (AI Trusted Testers).
     /// This is enabled automatically for local and dev builds.
     /// Collect conversation and input autodetection data for agent mode.
@@ -656,12 +671,12 @@ pub enum FeatureFlag {
     ///
     /// Skills are loaded from `.agents/skills/`, `.warp/skills/`, `.claude/skills/`, and `.codex/skills/`
     /// directories to provide base prompts for agent runs.
-    OzPlatformSkills,
-    /// Enables Oz identity federation commands.
-    OzIdentityFederation,
+    HermonPlatformSkills,
+    /// Enables Hermon identity federation commands.
+    HermonIdentityFederation,
 
-    /// Gates populating/reading oz updates from channel versions in the changelog model.
-    OzChangelogUpdates,
+    /// Gates populating/reading hermon updates from channel versions in the changelog model.
+    HermonChangelogUpdates,
 
     /// Enables image upload for ambient agents.
     AmbientAgentsImageUpload,
@@ -673,7 +688,7 @@ pub enum FeatureFlag {
     BundledSkills,
 
     /// Enables the Hermon Cloud launch modal for introducing cloud agent features.
-    OzLaunchModal,
+    HermonLaunchModal,
 
     /// Enables the OpenWarp launch modal announcing Warp going open-source.
     /// When enabled, the HOA onboarding flow is suppressed.
@@ -766,7 +781,7 @@ pub enum FeatureFlag {
     /// from code review + code editor for House Of Agents work
     HoaCodeReview,
 
-    /// Enables the `--harness` flag for `oz agent run`, allowing external agent
+    /// Enables the `--harness` flag for `hermon agent run`, allowing external agent
     /// CLIs (e.g. `claude`) to execute prompts instead of Wish's agent harness.
     AgentHarness,
 
@@ -778,7 +793,7 @@ pub enum FeatureFlag {
     /// - Subsequent executions download the prior execution's handoff snapshot attachments.
     /// - Third-party harness conversations hydrate their terminal output inline by fetching a
     ///   block snapshot from the server.
-    OzHandoff,
+    HermonHandoff,
 
     /// Enables the upgraded CLI agent session tracking and notifications infrastructure.
     HOANotifications,
@@ -815,7 +830,7 @@ pub enum FeatureFlag {
     /// Replaces the in-block warpification banner with a warpify footer.
     WishifyFooter,
 
-    /// Enables conversation retrieval via the CLI (oz run conversation get, oz run get --conversation).
+    /// Enables conversation retrieval via the CLI (hermon run conversation get, hermon run get --conversation).
     ConversationApi,
 
     /// Guided onboarding flow for existing users introducing HOA features
@@ -854,10 +869,10 @@ pub enum FeatureFlag {
     /// Enables continuing cloud mode conversations in the cloud after an execution ends.
     HandoffCloudCloud,
 
-    /// Enables the local-to-cloud Oz handoff entry points (footer chip and
-    /// `/move-to-cloud` slash command) that fork the active local Oz
+    /// Enables the local-to-cloud Hermon handoff entry points (footer chip and
+    /// `/move-to-cloud` slash command) that fork the active local Hermon
     /// conversation into a fresh cloud agent run with the current workspace
-    /// snapshot attached. Requires `OzHandoff` to also be enabled.
+    /// snapshot attached. Requires `HermonHandoff` to also be enabled.
     HandoffLocalCloud,
 
     /// Enables creating API keys scoped to named agents in the API key
@@ -903,6 +918,8 @@ pub const DOGFOOD_FLAGS: &[FeatureFlag] = &[
     #[cfg(not(windows))]
     FeatureFlag::SSHTmuxWrapper,
     FeatureFlag::AgentModeAnalytics,
+    FeatureFlag::AgentLiveWorkspaceContext,
+    FeatureFlag::LogAgentWorkspaceContext,
     FeatureFlag::LazySceneBuilding,
     FeatureFlag::SshDragAndDrop,
     FeatureFlag::MultiWorkspace,
@@ -920,10 +937,10 @@ pub const DOGFOOD_FLAGS: &[FeatureFlag] = &[
     FeatureFlag::FileGlobV2Warnings,
     FeatureFlag::SummarizationViaMessageReplacement,
     FeatureFlag::LocalComputerUse,
-    FeatureFlag::OzPlatformSkills,
+    FeatureFlag::HermonPlatformSkills,
     FeatureFlag::AgentViewBlockContext,
-    FeatureFlag::OzLaunchModal,
-    FeatureFlag::OzChangelogUpdates,
+    FeatureFlag::HermonLaunchModal,
+    FeatureFlag::HermonChangelogUpdates,
     FeatureFlag::PendingUserQueryIndicator,
     FeatureFlag::QueueSlashCommand,
     // These are enabled via 100% experiment on prod warp-server,
@@ -936,7 +953,7 @@ pub const DOGFOOD_FLAGS: &[FeatureFlag] = &[
     FeatureFlag::EditableMarkdownMermaid,
     FeatureFlag::CodeReviewScrollPreservation,
     FeatureFlag::AgentHarness,
-    FeatureFlag::OzHandoff,
+    FeatureFlag::HermonHandoff,
     FeatureFlag::ConversationApi,
     FeatureFlag::RememberFastForwardState,
     FeatureFlag::HOANotifications,

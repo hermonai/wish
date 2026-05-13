@@ -837,6 +837,18 @@ impl AgentConversationsModel {
                     model.has_finished_initial_load = true;
                     model.update_polling_state(ctx);
                     report_error!(e);
+                } else if let RequestState::RequestFailedRetryPending(e) = result {
+                    // Flip the flag on the first transient failure too. Without
+                    // this, an offline Hermon backend (Connection refused on every
+                    // attempt) keeps the agent management panel on "Loading
+                    // agents…" forever because the retry chain never falls into
+                    // the `RequestFailed` branch until exhaustion. With the flag
+                    // flipped, the panel switches to the no-items / setup-guide
+                    // empty state while retries continue in the background; the
+                    // moment a retry actually succeeds, `RequestSucceeded` above
+                    // populates the list normally.
+                    model.has_finished_initial_load = true;
+                    log::debug!("AgentConversations initial-load attempt failed (retries pending): {e}");
                 }
             },
         );

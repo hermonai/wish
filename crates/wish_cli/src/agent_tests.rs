@@ -6,7 +6,7 @@ use super::*;
 #[test]
 fn harness_config_name_round_trips_for_known_variants() {
     for harness in [
-        Harness::Oz,
+        Harness::Hermon,
         Harness::Claude,
         Harness::OpenCode,
         Harness::Gemini,

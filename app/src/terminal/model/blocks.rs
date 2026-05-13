@@ -1654,7 +1654,7 @@ impl BlockList {
         modified_blocks
     }
 
-    /// Attaches every non-oz-startup block in the list to `conversation_id` so each block is
+    /// Attaches every non-hermon-startup block in the list to `conversation_id` so each block is
     /// visible while that conversation is the active one in agent view. Skips blocks flagged
     /// as `is_oz_environment_startup_command` since those are hidden by their own mechanism.
     pub fn attach_non_startup_blocks_to_conversation(&mut self, conversation_id: AIConversationId) {

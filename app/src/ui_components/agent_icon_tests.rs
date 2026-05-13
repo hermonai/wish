@@ -43,7 +43,7 @@ struct AgentIconFields {
 impl AgentIconFields {
     fn from_variant(variant: &IconWithStatusVariant) -> Option<Self> {
         match variant {
-            IconWithStatusVariant::OzAgent { status, is_ambient } => Some(Self {
+            IconWithStatusVariant::HermonAgent { status, is_ambient } => Some(Self {
                 is_cli: false,
                 cli_agent: None,
                 status: status.clone(),
@@ -71,10 +71,10 @@ impl AgentIconFields {
 enum CanonicalRunState {
     /// Plain terminal, no conversation, no agent activity.
     PlainTerminal,
-    /// Local Warp-native (Oz) conversation, in-progress.
-    LocalOzInProgress,
-    /// Cloud-mode Oz run, in-progress.
-    CloudOzInProgress,
+    /// Local Warp-native (Hermon) conversation, in-progress.
+    LocalHermonInProgress,
+    /// Cloud-mode Hermon run, in-progress.
+    CloudHermonInProgress,
     /// Cloud Claude harness selected, pre-dispatch (no session, no status yet).
     /// This is the state the pre-setup icon bug regressed on — the tab must already render
     /// the Claude brand circle even though no CLI session exists yet.
@@ -98,8 +98,8 @@ impl CanonicalRunState {
         use CanonicalRunState::*;
         &[
             PlainTerminal,
-            LocalOzInProgress,
-            CloudOzInProgress,
+            LocalHermonInProgress,
+            CloudHermonInProgress,
             CloudClaudePreDispatch,
             CloudClaudeInProgress,
             ViewingCloudCodexTranscript,
@@ -115,13 +115,13 @@ impl CanonicalRunState {
         use CanonicalRunState::*;
         match self {
             PlainTerminal => None,
-            LocalOzInProgress => Some(AgentIconFields {
+            LocalHermonInProgress => Some(AgentIconFields {
                 is_cli: false,
                 cli_agent: None,
                 status: Some(ConversationStatus::InProgress),
                 is_ambient: false,
             }),
-            CloudOzInProgress => Some(AgentIconFields {
+            CloudHermonInProgress => Some(AgentIconFields {
                 is_cli: false,
                 cli_agent: None,
                 status: Some(ConversationStatus::InProgress),
@@ -179,14 +179,14 @@ impl CanonicalRunState {
                 selected_conversation_status: None,
                 has_selected_conversation: false,
             },
-            LocalOzInProgress => TerminalIconInputs {
+            LocalHermonInProgress => TerminalIconInputs {
                 is_ambient: false,
                 cli_session: None,
                 selected_third_party_cli_agent: None,
                 selected_conversation_status: Some(ConversationStatus::InProgress),
                 has_selected_conversation: true,
             },
-            CloudOzInProgress => TerminalIconInputs {
+            CloudHermonInProgress => TerminalIconInputs {
                 is_ambient: true,
                 cli_session: None,
                 selected_third_party_cli_agent: None,
@@ -262,7 +262,7 @@ impl CanonicalRunState {
     fn run_inputs(&self) -> Option<(Harness, ConversationStatus, bool)> {
         use CanonicalRunState::*;
         match self {
-            CloudOzInProgress => Some((Harness::Oz, ConversationStatus::InProgress, true)),
+            CloudHermonInProgress => Some((Harness::Hermon, ConversationStatus::InProgress, true)),
             CloudClaudePreDispatch | CloudClaudeInProgress => {
                 Some((Harness::Claude, ConversationStatus::InProgress, true))
             }
@@ -270,7 +270,7 @@ impl CanonicalRunState {
                 Some((Harness::Codex, ConversationStatus::Success, true))
             }
             PlainTerminal
-            | LocalOzInProgress
+            | LocalHermonInProgress
             | LocalClaudePluginInProgress
             | LocalClaudePluginBlocked
             | LocalClaudeCommandDetected => None,
@@ -329,7 +329,7 @@ fn terminal_is_ambient_matches_inputs_for_every_state() {
 
 #[test]
 fn cli_agent_from_harness_maps_known_harnesses() {
-    assert_eq!(CLIAgent::from_harness(Harness::Oz), None);
+    assert_eq!(CLIAgent::from_harness(Harness::Hermon), None);
     assert_eq!(
         CLIAgent::from_harness(Harness::Claude),
         Some(CLIAgent::Claude)
@@ -346,13 +346,13 @@ fn cli_agent_from_harness_maps_known_harnesses() {
 
 #[test]
 fn run_card_with_oz_or_unknown_harness_renders_as_oz() {
-    // Oz harness explicitly: local Oz is the spec-defined fallback.
-    let variant = agent_icon_variant_for_run(Harness::Oz, ConversationStatus::Success, true);
+    // Hermon harness explicitly: local Hermon is the spec-defined fallback.
+    let variant = agent_icon_variant_for_run(Harness::Hermon, ConversationStatus::Success, true);
     let fields = AgentIconFields::from_variant(&variant).unwrap();
     assert!(!fields.is_cli);
     assert!(fields.is_ambient);
 
-    // Unknown harness (e.g. server surfaced a future variant): also falls back to Oz so we
+    // Unknown harness (e.g. server surfaced a future variant): also falls back to Hermon so we
     // don't render an unbranded gray circle.
     let variant = agent_icon_variant_for_run(Harness::Unknown, ConversationStatus::Success, true);
     let fields = AgentIconFields::from_variant(&variant).unwrap();

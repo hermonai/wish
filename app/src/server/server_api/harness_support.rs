@@ -143,7 +143,7 @@ impl ReportShutdownRequest {
     }
 }
 
-/// Trait for API endpoints used to support third-party agent harnesses in Oz.
+/// Trait for API endpoints used to support third-party agent harnesses in Hermon.
 #[cfg_attr(test, automock)]
 #[cfg_attr(not(target_family = "wasm"), async_trait)]
 #[cfg_attr(target_family = "wasm", async_trait(?Send))]

@@ -71,7 +71,7 @@ pub(crate) use driver::harness::{task_env_vars, validate_cli_installed, ClaudeHa
 pub use driver::AgentDriver;
 use telemetry::CliTelemetryEvent;
 use wish_cli::agent::{Harness, Prompt, RunAgentArgs};
-use wish_cli::OZ_HARNESS_ENV;
+use wish_cli::WISH_HARNESS_ENV;
 
 mod admin;
 mod agent_config;
@@ -180,7 +180,7 @@ fn dispatch_command(
             secret::run(ctx, global_options, secret_cmd)
         }
         CliCommand::Federate(federate_cmd) => {
-            if !FeatureFlag::OzIdentityFederation.is_enabled() {
+            if !FeatureFlag::HermonIdentityFederation.is_enabled() {
                 return Err(anyhow::anyhow!("invalid value 'federate'"));
             }
             federate::run(ctx, global_options, federate_cmd)
@@ -249,10 +249,10 @@ fn run_agent(
                     "unexpected argument '--conversation' found"
                 ));
             }
-            if args.skill.is_some() && !FeatureFlag::OzPlatformSkills.is_enabled() {
+            if args.skill.is_some() && !FeatureFlag::HermonPlatformSkills.is_enabled() {
                 return Err(anyhow::anyhow!("unexpected argument '--skill' found"));
             }
-            if args.harness != Harness::Oz && !FeatureFlag::AgentHarness.is_enabled() {
+            if args.harness != Harness::Hermon && !FeatureFlag::AgentHarness.is_enabled() {
                 return Err(anyhow::anyhow!("unexpected argument '--harness' found"));
             }
             if args.harness == Harness::OpenCode {
@@ -296,7 +296,7 @@ fn run_agent(
                     "unexpected argument '--conversation' found"
                 ));
             }
-            if args.harness != Harness::Oz && !FeatureFlag::AgentHarness.is_enabled() {
+            if args.harness != Harness::Hermon && !FeatureFlag::AgentHarness.is_enabled() {
                 return Err(anyhow::anyhow!("unexpected argument '--harness' found"));
             }
             if args.claude_auth_secret.is_some() && args.harness != Harness::Claude {
@@ -342,18 +342,18 @@ fn build_merged_config_and_task(
         None => (None, None),
     };
 
-    // When a non-Oz harness is active, --model targets the harness rather than the Oz model.
-    let harness_model_id = if args.harness != Harness::Oz {
+    // When a non-Hermon harness is active, --model targets the harness rather than the Hermon model.
+    let harness_model_id = if args.harness != Harness::Hermon {
         args.model.model.clone()
     } else {
         None
     };
-    let harness_override = (args.harness != Harness::Oz).then_some(HarnessConfig {
+    let harness_override = (args.harness != Harness::Hermon).then_some(HarnessConfig {
         harness_type: args.harness,
         model_id: harness_model_id,
     });
 
-    let oz_model = if args.harness == Harness::Oz {
+    let oz_model = if args.harness == Harness::Hermon {
         args.model.model.clone().or(file_merged.model_id)
     } else {
         None
@@ -386,7 +386,7 @@ fn build_merged_config_and_task(
     let model_override: Option<LLMId> = merged_config
         .model_id
         .as_deref()
-        .filter(|_| args.harness == Harness::Oz)
+        .filter(|_| args.harness == Harness::Hermon)
         .map(|model_id| common::validate_agent_mode_base_model_id(model_id, ctx))
         .transpose()?;
 
@@ -433,12 +433,12 @@ fn build_server_side_task(
         None => Vec::new(),
     };
 
-    let harness_model_id = if args.harness != Harness::Oz {
+    let harness_model_id = if args.harness != Harness::Hermon {
         args.model.model.clone()
     } else {
         None
     };
-    let model_override: Option<LLMId> = if args.harness == Harness::Oz {
+    let model_override: Option<LLMId> = if args.harness == Harness::Hermon {
         args.model
             .model
             .as_deref()
@@ -448,7 +448,7 @@ fn build_server_side_task(
         None
     };
 
-    let harness_override = (args.harness != Harness::Oz).then_some(HarnessConfig {
+    let harness_override = (args.harness != Harness::Hermon).then_some(HarnessConfig {
         harness_type: args.harness,
         model_id: harness_model_id,
     });
@@ -493,7 +493,7 @@ fn reconcile_task_harness(
     selected_harness: &mut Harness,
     task_harness: Harness,
 ) -> Result<HarnessKind, AgentDriverError> {
-    if *selected_harness == Harness::Oz {
+    if *selected_harness == Harness::Hermon {
         *selected_harness = task_harness;
     } else if task_harness != *selected_harness {
         return Err(AgentDriverError::TaskHarnessMismatch {
@@ -682,7 +682,7 @@ impl AgentDriverRunner {
                         ),
                     });
                 }
-                HarnessKind::Oz | HarnessKind::ThirdParty(_) => {}
+                HarnessKind::Hermon | HarnessKind::ThirdParty(_) => {}
             }
 
             // Validate that the third-party harness is installed and authed.
@@ -753,7 +753,7 @@ impl AgentDriverRunner {
         args: &RunAgentArgs,
         working_dir: &Path,
     ) -> Result<Option<ResolvedSkill>, AgentDriverError> {
-        if !FeatureFlag::OzPlatformSkills.is_enabled() {
+        if !FeatureFlag::HermonPlatformSkills.is_enabled() {
             return Ok(None);
         }
         let Some(skill_spec) = args.skill.clone() else {
@@ -1008,7 +1008,7 @@ impl AgentDriverRunner {
         let handoff_snapshot_server_api = server_api.clone();
         let handoff_snapshot_download_dir = attachments_download_dir.clone();
         let handoff_snapshot = async move {
-            if !FeatureFlag::OzHandoff.is_enabled() {
+            if !FeatureFlag::HermonHandoff.is_enabled() {
                 return Ok(None);
             }
             let Some(task_id_parsed) = parsed_task_id else {
@@ -1129,14 +1129,14 @@ impl AgentDriverRunner {
         let (parent_run_id, task_conversation_id, task_harness, task_harness_model_id) =
             match task_metadata_result {
                 Ok(Some(task_metadata)) => {
-                    // The task's harness is stored on the snapshot; if absent, it's the default Oz.
+                    // The task's harness is stored on the snapshot; if absent, it's the default Hermon.
                     let task_harness_config = task_metadata
                         .agent_config_snapshot
                         .as_ref()
                         .and_then(|c| c.harness.as_ref());
                     let task_harness = task_harness_config
                         .map(|h| h.harness_type)
-                        .unwrap_or(Harness::Oz);
+                        .unwrap_or(Harness::Hermon);
                     let task_harness_model_id =
                         task_harness_config.and_then(|h| h.model_id.clone());
                     (
@@ -1202,7 +1202,7 @@ impl AgentDriverRunner {
     /// `harness` is the resolved harness from the task config (already validated against the
     /// conversation's metadata up-front by [`common::fetch_and_validate_conversation_harness`]).
     ///
-    /// For the Oz harness, fetches the full conversation and returns a [`driver::ResumeOptions::Oz`].
+    /// For the Hermon harness, fetches the full conversation and returns a [`driver::ResumeOptions::Hermon`].
     /// For third-party harnesses, delegates to [`ThirdPartyHarness::fetch_resume_payload`] and
     /// wraps the returned payload (if any) in [`driver::ResumeOptions::ThirdParty`]; each harness
     /// owns its server call and error mapping. Returns `None` if a third-party harness has no
@@ -1213,7 +1213,7 @@ impl AgentDriverRunner {
         harness: &HarnessKind,
     ) -> Result<Option<driver::ResumeOptions>, AgentDriverError> {
         match harness {
-            HarnessKind::Oz => {
+            HarnessKind::Hermon => {
                 let server_api = foreground
                     .spawn(|_, ctx| {
                         ServerApiProvider::handle(ctx)
@@ -1238,7 +1238,7 @@ impl AgentDriverRunner {
                         "Failed to convert conversation data to AIConversation".into(),
                     )
                 })?;
-                Ok(Some(driver::ResumeOptions::Oz(Box::new(
+                Ok(Some(driver::ResumeOptions::Hermon(Box::new(
                     ConversationRestorationInNewPaneType::Historical {
                         conversation,
                         should_use_live_appearance: false,
@@ -1296,7 +1296,7 @@ impl AgentDriverRunner {
             })
             .await??;
 
-        if FeatureFlag::OzIdentityFederation.is_enabled() {
+        if FeatureFlag::HermonIdentityFederation.is_enabled() {
             let run_id = driver_options
                 .task_id
                 .map(|id| id.to_string())
@@ -1495,11 +1495,11 @@ fn report_fatal_error(err: anyhow::Error, ctx: &mut AppContext) {
 }
 
 fn resolve_orchestration_harness_label() -> &'static str {
-    let Ok(raw) = std::env::var(OZ_HARNESS_ENV) else {
+    let Ok(raw) = std::env::var(WISH_HARNESS_ENV) else {
         return "unknown";
     };
     match Harness::parse_orchestration_harness(&raw) {
-        Some(Harness::Oz) => "oz",
+        Some(Harness::Hermon) => "oz",
         Some(Harness::Claude) => "claude",
         Some(Harness::OpenCode) => "opencode",
         Some(Harness::Gemini) => "gemini",

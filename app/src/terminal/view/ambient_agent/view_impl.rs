@@ -300,7 +300,7 @@ impl TerminalView {
             AmbientAgentViewModelEvent::HarnessModelSelected => {}
             AmbientAgentViewModelEvent::HarnessCommandStarted { block_id } => {
                 // Stop classifying the harness block as an environment setup command, mirroring
-                // the Oz path in the `AppendedExchange` handler.
+                // the Hermon path in the `AppendedExchange` handler.
                 let conversation_id = self
                     .agent_view_controller
                     .as_ref(ctx)
@@ -320,7 +320,7 @@ impl TerminalView {
                             );
                     }
                 }
-                // Collapse the setup-commands summary, matching the oz first-exchange behavior.
+                // Collapse the setup-commands summary, matching the hermon first-exchange behavior.
                 ambient_agent_view_model.update(ctx, |model, ctx| {
                     let group_id = model.setup_command_state().current_group_id();
                     model.finish_setup_command_group(group_id, ctx);
@@ -406,7 +406,7 @@ impl TerminalView {
             return;
         }
 
-        // For non-oz harness runs, transition out of the setup phase when the harness CLI
+        // For non-hermon harness runs, transition out of the setup phase when the harness CLI
         // starts (e.g. `claude --session-id …`). The block is the actual harness session
         // and should NOT be classified as a setup command; the `HarnessCommandStarted`
         // handler flips the block-list flag so the block renders like a normal CLI-agent
@@ -558,7 +558,7 @@ impl TerminalView {
     }
 
     /// Returns `true` when the block's command is the CLI for the run's configured
-    /// non-oz harness (e.g. `claude …` for [`Harness::Claude`]).
+    /// non-hermon harness (e.g. `claude …` for [`Harness::Claude`]).
     /// Used to detect the harness-start transition at `AfterBlockStarted` time. Unlike
     /// `detect_cli_agent_from_model`, this does NOT gate on `is_active_and_long_running` —
     /// we want to classify the block as the harness session as soon as it starts, before the
@@ -578,7 +578,7 @@ impl TerminalView {
             return false;
         };
         match ambient_agent_view_model.as_ref(ctx).selected_harness() {
-            Harness::Oz => false,
+            Harness::Hermon => false,
             Harness::Claude => matches!(cli_agent, CLIAgent::Claude),
             Harness::OpenCode => matches!(cli_agent, CLIAgent::OpenCode),
             Harness::Gemini => matches!(cli_agent, CLIAgent::Gemini),

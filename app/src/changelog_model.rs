@@ -78,7 +78,7 @@ impl ChangelogModel {
     ) {
         match changelog {
             Ok(Some(changelog)) => {
-                if FeatureFlag::OzChangelogUpdates.is_enabled() {
+                if FeatureFlag::HermonChangelogUpdates.is_enabled() {
                     self.oz_updates = changelog
                         .oz_updates
                         .iter()

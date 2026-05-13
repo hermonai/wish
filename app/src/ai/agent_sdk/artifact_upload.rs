@@ -20,7 +20,11 @@ use crate::server::server_api::presigned_upload::upload_file_to_target;
 use crate::server::server_api::ServerApi;
 use crate::util::image::{infer_mime_type, MIME_SNIFF_BYTES};
 
-const OZ_RUN_ID_ENV_VAR: &str = "OZ_RUN_ID";
+const WISH_RUN_ID_ENV_VAR: &str = "WISH_RUN_ID";
+/// Legacy env var name kept for backward compatibility — set by older agent
+/// harness runs and CI configs that predate the Wish rename. Read as a fallback
+/// when `WISH_RUN_ID` is not set.
+const LEGACY_RUN_ID_ENV_VAR: &str = "OZ_RUN_ID";
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub(crate) struct FileArtifactUploadRequest {
@@ -289,18 +293,23 @@ fn parse_run_id(run_id: &str, error_prefix: &str) -> Result<AmbientAgentTaskId> 
 }
 
 fn load_env_run_id() -> Result<Option<String>> {
-    match env::var(OZ_RUN_ID_ENV_VAR) {
-        Ok(run_id) => Ok(Some(run_id)),
-        Err(env::VarError::NotPresent) => Ok(None),
-        Err(env::VarError::NotUnicode(_)) => Err(anyhow!(
-            "{OZ_RUN_ID_ENV_VAR} is set but is not valid Unicode"
-        )),
+    // Prefer the new env var; fall back to the legacy `OZ_RUN_ID` for CI
+    // configs and harness invocations that predate the rename.
+    for name in [WISH_RUN_ID_ENV_VAR, LEGACY_RUN_ID_ENV_VAR] {
+        match env::var(name) {
+            Ok(run_id) => return Ok(Some(run_id)),
+            Err(env::VarError::NotPresent) => continue,
+            Err(env::VarError::NotUnicode(_)) => {
+                return Err(anyhow!("{name} is set but is not valid Unicode"));
+            }
+        }
     }
+    Ok(None)
 }
 
 fn resolve_env_run_id(env_run_id: Option<String>) -> Result<AmbientAgentTaskId> {
     let Some(run_id) = env_run_id else {
-        bail!("{OZ_RUN_ID_ENV_VAR} is not set");
+        bail!("{WISH_RUN_ID_ENV_VAR} is not set");
     };
 
     parse_run_id(&run_id, "Invalid OZ_RUN_ID")
@@ -341,7 +350,7 @@ fn resolve_upload_association_from_sources(
                 let env_err = match resolve_env_run_id(env_run_id) {
                     Ok(ambient_task_id) => {
                         log::warn!(
-                            "Conversation '{}' task resolution failed ({conversation_err}); falling back to {OZ_RUN_ID_ENV_VAR} for ambient task context",
+                            "Conversation '{}' task resolution failed ({conversation_err}); falling back to {WISH_RUN_ID_ENV_VAR} for ambient task context",
                             conversation_id.as_str()
                         );
                         return Ok(ResolvedUploadAssociation {
@@ -354,7 +363,7 @@ fn resolve_upload_association_from_sources(
                 };
 
                 return Err(anyhow!(
-                    "Failed to resolve artifact upload association for conversation '{}': {conversation_err}; also failed to use {OZ_RUN_ID_ENV_VAR}: {env_err}",
+                    "Failed to resolve artifact upload association for conversation '{}': {conversation_err}; also failed to use {WISH_RUN_ID_ENV_VAR}: {env_err}",
                     conversation_id.as_str()
                 ));
             }
@@ -363,7 +372,7 @@ fn resolve_upload_association_from_sources(
 
     let ambient_task_id = resolve_env_run_id(env_run_id).map_err(|env_err| {
         anyhow!(
-            "Failed to resolve artifact upload association: no usable --run-id or --conversation-id was provided, and {OZ_RUN_ID_ENV_VAR}: {env_err}"
+            "Failed to resolve artifact upload association: no usable --run-id or --conversation-id was provided, and {WISH_RUN_ID_ENV_VAR}: {env_err}"
         )
     })?;
 

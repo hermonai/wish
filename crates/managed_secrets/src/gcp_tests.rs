@@ -18,7 +18,7 @@ fn basic_config_shape() {
     let result = generate_gcp_credential_config(
         "task-42",
         &config,
-        Path::new("/usr/bin/oz"),
+        Path::new("/usr/bin/wish"),
         Path::new("/tmp/token_cache"),
     )
     .unwrap();
@@ -32,7 +32,7 @@ fn basic_config_shape() {
             "token_url": "https://sts.googleapis.com/v1/token",
             "credential_source": {
                 "executable": {
-                    "command": "/usr/bin/oz federate issue-gcp-token --run-id task-42",
+                    "command": "/usr/bin/wish federate issue-gcp-token --run-id task-42",
                     "timeout_millis": 30000,
                     "output_file": "/tmp/token_cache"
                 }
@@ -54,7 +54,7 @@ fn rejects_binary_path_with_spaces() {
     let result = generate_gcp_credential_config(
         "task-1",
         &config,
-        Path::new("/path with spaces/oz"),
+        Path::new("/path with spaces/wish"),
         Path::new("/tmp/out"),
     );
     assert!(matches!(
@@ -76,7 +76,7 @@ fn rejects_task_id_with_spaces() {
     let result = generate_gcp_credential_config(
         "task with spaces",
         &config,
-        Path::new("/bin/oz"),
+        Path::new("/bin/wish"),
         Path::new("/tmp/out"),
     );
     assert!(matches!(
@@ -96,7 +96,7 @@ fn service_account_impersonation() {
     };
 
     let result =
-        generate_gcp_credential_config("t-1", &config, Path::new("/bin/oz"), Path::new("/tmp/out"))
+        generate_gcp_credential_config("t-1", &config, Path::new("/bin/wish"), Path::new("/tmp/out"))
             .unwrap();
 
     assert_eq!(
@@ -108,7 +108,7 @@ fn service_account_impersonation() {
             "token_url": "https://sts.googleapis.com/v1/token",
             "credential_source": {
                 "executable": {
-                    "command": "/bin/oz federate issue-gcp-token --run-id t-1 --duration 1800s",
+                    "command": "/bin/wish federate issue-gcp-token --run-id t-1 --duration 1800s",
                     "timeout_millis": 30000,
                     "output_file": "/tmp/out"
                 }
@@ -132,7 +132,7 @@ fn no_duration_flag_when_lifetime_absent() {
     };
 
     let result =
-        generate_gcp_credential_config("t-3", &config, Path::new("/bin/oz"), Path::new("/tmp/out"))
+        generate_gcp_credential_config("t-3", &config, Path::new("/bin/wish"), Path::new("/tmp/out"))
             .unwrap();
     assert_eq!(
         result,
@@ -143,7 +143,7 @@ fn no_duration_flag_when_lifetime_absent() {
             "token_url": "https://sts.googleapis.com/v1/token",
             "credential_source": {
                 "executable": {
-                    "command": "/bin/oz federate issue-gcp-token --run-id t-3",
+                    "command": "/bin/wish federate issue-gcp-token --run-id t-3",
                     "timeout_millis": 30000,
                     "output_file": "/tmp/out"
                 }

@@ -257,7 +257,13 @@ impl ConversationManagerModel {
             }));
         });
 
-        adapter.send(&conversation, &message, sink);
+        // If the AgentLiveWorkspaceContext flag is on, prepend a tagged
+        // preamble of live workspace state (today: LSP diagnostics) so the
+        // agent never has a divergent view from the human. Empty workspaces
+        // produce no preamble — the message goes through unchanged.
+        let outgoing = compose_outgoing(&message, ctx);
+
+        adapter.send(&conversation, &outgoing, sink);
         true
     }
 
@@ -448,6 +454,41 @@ impl ConversationManagerModel {
             adapter: None,
         }
     }
+}
+
+/// Build the outgoing message string to hand to the adapter. When
+/// `FeatureFlag::AgentLiveWorkspaceContext` is on, prepends a tagged
+/// preamble of live workspace state (diagnostics today) so the agent
+/// never sees a divergent view from the human. On clean workspaces or
+/// with the flag off, returns `message` unchanged.
+///
+/// When the companion `FeatureFlag::LogAgentWorkspaceContext` is also on,
+/// the composed wire message is logged at INFO level so dogfooders can
+/// `tail -f` the wish log and see exactly what the agent received.
+#[cfg(not(target_family = "wasm"))]
+fn compose_outgoing(message: &str, ctx: &wishui::AppContext) -> String {
+    use crate::features::FeatureFlag;
+    let composed = if FeatureFlag::AgentLiveWorkspaceContext.is_enabled() {
+        let blocks = super::agent_context::collect_workspace_context(ctx);
+        super::agent_context::compose_message_with_context(message, &blocks)
+    } else {
+        message.to_string()
+    };
+    if FeatureFlag::AgentLiveWorkspaceContext.is_enabled()
+        && FeatureFlag::LogAgentWorkspaceContext.is_enabled()
+    {
+        log::info!(
+            "[Wish Chat → agent] Outgoing message ({} chars):\n{}",
+            composed.len(),
+            composed
+        );
+    }
+    composed
+}
+
+#[cfg(target_family = "wasm")]
+fn compose_outgoing(message: &str, _ctx: &wishui::AppContext) -> String {
+    message.to_string()
 }
 
 /// Used by [`ConversationManagerModel::create`]. Same scheme as

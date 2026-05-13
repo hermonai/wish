@@ -343,7 +343,7 @@ impl QueryFilter {
                 if !FeatureFlag::AgentMode.is_enabled() {
                     Some(Icon::AiAssistant.into())
                 } else {
-                    Some(Icon::Oz.into())
+                    Some(Icon::Hermon.into())
                 }
             }
             QueryFilter::Actions => None,

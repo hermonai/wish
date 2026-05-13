@@ -1,8 +1,8 @@
 use clap::{Args, Subcommand};
 
-/// Federated authentication between Oz and cloud providers.
+/// Federated authentication between Hermon and cloud providers.
 ///
-/// Oz supports OIDC federation to allow agents to securely authenticate to other systems
+/// Hermon supports OIDC federation to allow agents to securely authenticate to other systems
 /// using short-lived credentials.
 #[derive(Debug, Clone, Subcommand)]
 pub enum FederateCommand {

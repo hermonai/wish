@@ -30,7 +30,9 @@ pub enum WorktreeBranchNamingMode {
 #[serde(rename_all = "snake_case")]
 pub enum GuidedModalSessionType {
     Terminal,
-    Oz,
+    /// Wire format stays `"oz"` so telemetry analytics see no discontinuity.
+    #[serde(rename = "oz")]
+    Hermon,
     CliAgent,
 }
 
@@ -38,7 +40,7 @@ impl From<&SessionType> for GuidedModalSessionType {
     fn from(value: &SessionType) -> Self {
         match value {
             SessionType::Terminal => Self::Terminal,
-            SessionType::Oz => Self::Oz,
+            SessionType::Hermon => Self::Hermon,
             SessionType::CliAgent(_) => Self::CliAgent,
         }
     }

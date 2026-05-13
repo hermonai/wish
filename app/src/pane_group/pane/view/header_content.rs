@@ -134,8 +134,13 @@ pub enum HeaderContent {
 impl HeaderContent {
     /// Creates a simple standard header with just a title.
     ///
-    /// Uses `ClipConfig::start()` and default options. This is the most common
-    /// header configuration for panes that just need to display a title.
+    /// Uses `ClipConfig::start()` and always-visible icons. The close button
+    /// (and overflow menu, when populated) render persistently rather than
+    /// only on hover — this is the modern editor / "vibe coding" default that
+    /// VS Code, Cursor, and friends use. Hover-reveal was the upstream Warp
+    /// behavior; it tested poorly with users who couldn't tell tabs were
+    /// closeable. Per-view headers that need hover-reveal can still construct
+    /// `Standard` directly with their own `StandardHeaderOptions`.
     pub fn simple(title: impl Into<String>) -> Self {
         Self::Standard(StandardHeader {
             title: title.into(),
@@ -146,7 +151,10 @@ impl HeaderContent {
             left_of_title: None,
             right_of_title: None,
             left_of_overflow: None,
-            options: StandardHeaderOptions::default(),
+            options: StandardHeaderOptions {
+                always_show_icons: true,
+                ..Default::default()
+            },
         })
     }
 }

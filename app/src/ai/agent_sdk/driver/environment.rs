@@ -39,7 +39,7 @@ pub enum PrepareEnvironmentError {
 
 /// Prepare a cloud agent environment within a terminal session. This will:
 /// 1. Clone all repositories, skipping any that are already cloned.
-/// 2. Begin codebase indexing for all repositories (Oz harness only).
+/// 2. Begin codebase indexing for all repositories (Hermon harness only).
 /// 3. Run any setup commands.
 /// 4. If there is only one repository, navigate into it.
 ///
@@ -64,9 +64,9 @@ pub fn prepare_environment(
             ..
         } = environment;
 
-        // Only index the codebase for the Oz harness; third-party harnesses (e.g. Claude)
+        // Only index the codebase for the Hermon harness; third-party harnesses (e.g. Claude)
         // have their own methods for navigating a codebase.
-        let should_index_codebase = harness == Harness::Oz;
+        let should_index_codebase = harness == Harness::Hermon;
         let should_subscribe_to_index_updates = should_index_codebase && !github_repos.is_empty();
         let repo_channels = Arc::new(Mutex::new(HashMap::<PathBuf, oneshot::Sender<()>>::new()));
 

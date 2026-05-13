@@ -274,7 +274,7 @@ impl FreeTierLimitHitModal {
                                 let formatted_text = FormattedText::new([FormattedTextLine::Line(vec![
                                     FormattedTextFragment::hyperlink(
                                         "Extended cloud agents access".to_string(),
-                                        "https://wish.hermon.ai/oz".to_string(),
+                                        "https://wish.hermon.ai/hermon".to_string(),
                                     ),
                                 ])]);
                                 Flex::row()

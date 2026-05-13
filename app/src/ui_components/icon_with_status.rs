@@ -13,7 +13,7 @@ use crate::terminal::CLIAgent;
 use crate::themes::theme::Fill as ThemeFill;
 
 /// Background color used for the Hermon agent's circle when it is running in an ambient (cloud)
-/// run. Matches the Oz brand purple used in the cloud-mode design spec.
+/// run. Matches the Hermon brand purple used in the cloud-mode design spec.
 const HERMON_AMBIENT_BACKGROUND_COLOR: ColorU = ColorU {
     r: 203,
     g: 176,
@@ -102,8 +102,8 @@ pub(crate) enum IconWithStatusVariant {
     },
     /// A pre-built icon element on an overlay background.
     NeutralElement { icon_element: Box<dyn Element> },
-    /// An Hermon agent icon on the theme background.
-    OzAgent {
+    /// A Hermon agent icon on the theme background.
+    HermonAgent {
         status: Option<ConversationStatus>,
         is_ambient: bool,
     },
@@ -146,7 +146,7 @@ pub(crate) fn render_icon_with_status(
             internal_colors::fg_overlay_2(theme),
             total_size,
         ),
-        IconWithStatusVariant::OzAgent { status, is_ambient } => {
+        IconWithStatusVariant::HermonAgent { status, is_ambient } => {
             let circle_background = if is_ambient {
                 ThemeFill::Solid(HERMON_AMBIENT_BACKGROUND_COLOR)
             } else {
@@ -154,11 +154,11 @@ pub(crate) fn render_icon_with_status(
             };
             // In ambient/cloud mode use the combined `HermonCloud` silhouette (Hermon Agent + cloud),
             // matching the treatment used in the agent view header. Non-ambient runs
-            // continue to use the plain `Oz` glyph.
+            // continue to use the plain `Hermon` glyph.
             let oz_glyph = if is_ambient {
                 WarpIcon::HermonCloud
             } else {
-                WarpIcon::Oz
+                WarpIcon::Hermon
             };
             // Cloud (ambient) runs use a black glyph on the light-purple background
             // for consistency with the web app; local runs keep the theme text color.

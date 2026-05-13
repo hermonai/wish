@@ -16,7 +16,7 @@ pub fn run(
     global_options: GlobalOptions,
     command: FederateCommand,
 ) -> Result<()> {
-    if !FeatureFlag::OzIdentityFederation.is_enabled() {
+    if !FeatureFlag::HermonIdentityFederation.is_enabled() {
         return Err(anyhow::anyhow!("This feature is not enabled"));
     }
     match command {

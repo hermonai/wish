@@ -28,7 +28,7 @@ impl CloudProviderSetupError {
     }
 }
 
-/// A cloud provider that we configure automatic Oz access to.
+/// A cloud provider that we configure automatic Hermon access to.
 pub(crate) trait CloudProvider: Send {
     /// Return environment variables that should be injected into the terminal
     /// session.

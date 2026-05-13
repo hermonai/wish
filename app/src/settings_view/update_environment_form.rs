@@ -1248,8 +1248,14 @@ impl UpdateEnvironmentForm {
                             Some("Failed to load GitHub repos".to_string());
                     }
                     Err(e) => {
+                        // The raw error chain on backend-offline cascades 4
+                        // levels deep through the Firebase token proxy and the
+                        // GraphQL client — surfacing that to the user is noise.
+                        // Detect the two failure modes we care about and give
+                        // each a short, actionable message; otherwise fall
+                        // back to the leaf cause only.
                         me.github_dropdown_state.load_error_message =
-                            Some(format!("Failed to load GitHub repos: {}", e));
+                            Some(friendly_github_load_error(&e));
                     }
                 }
 
@@ -3542,6 +3548,102 @@ impl View for UpdateEnvironmentForm {
     }
 }
 
+/// Convert the raw error from a GitHub-repo fetch into a short, actionable
+/// message for the "Repo(s)" field in the Create-environment form. The raw
+/// error chain often looks like
+///
+/// > Failed to get access token for GraphQL request: unexpected error
+/// > occurred when fetching an ID token: error sending request for url
+/// > (http://localhost:8080/proxy/token?key=…): client error (Connect):
+/// > tcp connect error: Connection refused (os error 61)
+///
+/// — useful in logs, but noise in the UI. We collapse it to a single
+/// sentence with a clear next step for the two common failure modes
+/// (Hermon backend unreachable, GraphQL auth missing). Anything else
+/// falls back to the leaf cause so the message stays short.
+pub(crate) fn friendly_github_load_error(err: &anyhow::Error) -> String {
+    let chain: Vec<String> = err.chain().map(|c| c.to_string()).collect();
+    let full = chain.join(" — ");
+    let lower = full.to_lowercase();
+
+    if lower.contains("connection refused") || lower.contains("tcp connect error") {
+        return "Failed to load GitHub repos: Hermon backend isn't reachable. \
+                Start hermon-server or sign in via the user menu, then click Retry."
+            .to_string();
+    }
+    if lower.contains("access token") || lower.contains("id token") {
+        return "Failed to load GitHub repos: Hermon authentication is required. \
+                Sign in via the user menu, then click Retry."
+            .to_string();
+    }
+
+    // Fall back to the deepest cause — usually the most descriptive single
+    // line — rather than the whole chain.
+    let leaf = chain
+        .last()
+        .cloned()
+        .unwrap_or_else(|| "unknown error".to_string());
+    format!("Failed to load GitHub repos: {leaf}")
+}
+
 #[cfg(test)]
 #[path = "update_environment_form_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod friendly_error_tests {
+    use super::friendly_github_load_error;
+    use anyhow::anyhow;
+
+    #[test]
+    fn connection_refused_chain_collapses_to_actionable_message() {
+        let err = anyhow!("Connection refused (os error 61)")
+            .context("tcp connect error")
+            .context("client error (Connect)")
+            .context(
+                "error sending request for url (http://localhost:8080/proxy/token?key=foo)",
+            )
+            .context("unexpected error occurred when fetching an ID token")
+            .context("Failed to get access token for GraphQL request");
+        let msg = friendly_github_load_error(&err);
+        assert!(
+            msg.contains("Hermon backend isn't reachable"),
+            "got: {msg}"
+        );
+        assert!(msg.contains("Retry"));
+        // Should NOT include the raw URL, the os error number, or any of the
+        // 4-level-deep firebase plumbing.
+        assert!(!msg.contains("os error 61"));
+        assert!(!msg.contains("proxy/token"));
+        assert!(!msg.contains("Firebase"));
+    }
+
+    #[test]
+    fn id_token_chain_without_connection_refused_collapses_to_auth_message() {
+        let err = anyhow!("Unauthorized")
+            .context("unexpected error occurred when fetching an ID token")
+            .context("Failed to get access token for GraphQL request");
+        let msg = friendly_github_load_error(&err);
+        assert!(
+            msg.contains("Hermon authentication is required"),
+            "got: {msg}"
+        );
+        assert!(msg.contains("Sign in"));
+    }
+
+    #[test]
+    fn unrecognized_error_collapses_to_leaf_cause() {
+        let err = anyhow!("repository not found").context("Failed to enumerate user repos");
+        let msg = friendly_github_load_error(&err);
+        // Leaf cause is the deepest — should appear; outer context should not.
+        assert!(msg.contains("repository not found"), "got: {msg}");
+        assert!(!msg.contains("Failed to enumerate"));
+    }
+
+    #[test]
+    fn single_error_renders_verbatim_with_prefix() {
+        let err = anyhow!("rate limited");
+        let msg = friendly_github_load_error(&err);
+        assert_eq!(msg, "Failed to load GitHub repos: rate limited");
+    }
+}

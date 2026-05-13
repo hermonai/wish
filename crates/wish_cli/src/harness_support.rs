@@ -1,13 +1,16 @@
 use clap::{Args, Subcommand, ValueEnum};
 
-/// Commands to support third-party agent harnesses running within Oz.
+/// Commands to support third-party agent harnesses running within Hermon.
 ///
 /// These commands are invoked by external agent harnesses (e.g. Claude Code)
 /// during a cloud agent run to interact with Hermon Cloud APIs.
 #[derive(Debug, Clone, Args)]
 pub struct HarnessSupportArgs {
-    /// The run ID to associate with harness-support API calls.
-    #[arg(long = "run-id", env = "OZ_RUN_ID")]
+    /// The run ID to associate with harness-support API calls. Reads
+    /// `WISH_RUN_ID` from the environment by default; legacy invocations that
+    /// set `OZ_RUN_ID` are still supported by the `WISH_RUN_ID_ENV_VAR`
+    /// fallback chain in `crates/wish_cli` and `app/src/ai/agent_sdk`.
+    #[arg(long = "run-id", env = "WISH_RUN_ID")]
     pub run_id: String,
 
     #[command(subcommand)]

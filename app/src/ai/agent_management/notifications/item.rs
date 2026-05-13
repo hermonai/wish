@@ -48,14 +48,16 @@ impl NotificationFilter {
 #[derive(Debug, Clone, Copy)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum NotificationSourceAgent {
-    Oz { is_ambient: bool },
+    /// Hermon's first-party harness (the variant formerly named `Hermon`). Wire-format
+    /// is not affected — this enum is in-process only.
+    Hermon { is_ambient: bool },
     CLI { agent: CLIAgent, is_ambient: bool },
 }
 
 impl NotificationSourceAgent {
     pub fn is_ambient(&self) -> bool {
         match self {
-            NotificationSourceAgent::Oz { is_ambient }
+            NotificationSourceAgent::Hermon { is_ambient }
             | NotificationSourceAgent::CLI { is_ambient, .. } => *is_ambient,
         }
     }

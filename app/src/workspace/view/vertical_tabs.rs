@@ -736,7 +736,8 @@ enum VerticalTabsResolvedMode {
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum SummaryPaneKind {
     Terminal,
-    OzAgent { is_ambient: bool },
+    /// Hermon's first-party agent (the variant formerly named `OzAgent`).
+    HermonAgent { is_ambient: bool },
     CLIAgent { agent: CLIAgent, is_ambient: bool },
     Code { title: String },
     CodeDiff,
@@ -1305,12 +1306,12 @@ fn render_detail_kind_badge_icon(
                 .selected_conversation_display_title(app)
                 .is_some()
             {
-                WarpIcon::Oz
+                WarpIcon::Hermon
             } else {
                 WarpIcon::Terminal
             };
             let color = match icon {
-                WarpIcon::Oz | WarpIcon::HermonCloud => oz_icon_fill(theme),
+                WarpIcon::Hermon | WarpIcon::HermonCloud => oz_icon_fill(theme),
                 WarpIcon::Terminal => disabled_text,
                 _ => sub_text,
             };
@@ -2577,8 +2578,8 @@ impl TypedPane<'_> {
                 // Route through the shared helper so summary mode agrees with
                 // `resolve_icon_with_status_variant` on what the tab represents.
                 match terminal_view_agent_icon_variant(terminal_view, app) {
-                    Some(IconWithStatusVariant::OzAgent { is_ambient, .. }) => {
-                        SummaryPaneKind::OzAgent { is_ambient }
+                    Some(IconWithStatusVariant::HermonAgent { is_ambient, .. }) => {
+                        SummaryPaneKind::HermonAgent { is_ambient }
                     }
                     Some(IconWithStatusVariant::CLIAgent {
                         agent, is_ambient, ..
@@ -3861,7 +3862,7 @@ fn render_summary_pane_kind_icon_circle(
     appearance: &Appearance,
 ) -> Box<dyn Element> {
     let theme = appearance.theme();
-    // For ambient Oz / CLI agent kinds, delegate to `render_icon_with_status` so the
+    // For ambient Hermon / CLI agent kinds, delegate to `render_icon_with_status` so the
     // brand-color circle is overlaid with the white cloud badge (status-less in summary
     // mode). Non-ambient agent kinds and all other pane kinds fall through to the inline
     // circle rendering below.
@@ -3871,8 +3872,8 @@ fn render_summary_pane_kind_icon_circle(
     let icon_size = total_size * SUMMARY_INLINE_ICON_RATIO;
     let padding = total_size * SUMMARY_INLINE_PADDING_RATIO;
     let (icon_element, background): (Box<dyn Element>, ElementFill) = match kind {
-        SummaryPaneKind::OzAgent { .. } => (
-            WarpIcon::Oz.to_wishui_icon(oz_icon_fill(theme)).finish(),
+        SummaryPaneKind::HermonAgent { .. } => (
+            WarpIcon::Hermon.to_wishui_icon(oz_icon_fill(theme)).finish(),
             theme.background().into(),
         ),
         SummaryPaneKind::CLIAgent { agent, .. } => {
@@ -3939,12 +3940,12 @@ fn render_summary_pane_kind_icon_circle(
     .finish()
 }
 
-/// Maps an ambient Oz / CLI agent summary-pane kind to the `IconWithStatusVariant` used to
+/// Maps an ambient Hermon / CLI agent summary-pane kind to the `IconWithStatusVariant` used to
 /// render the brand-color circle with the white cloud badge. Non-ambient kinds (and all
 /// other pane kinds) return `None` so the caller falls back to its inline rendering.
 fn ambient_agent_variant(kind: &SummaryPaneKind) -> Option<IconWithStatusVariant> {
     match kind {
-        SummaryPaneKind::OzAgent { is_ambient: true } => Some(IconWithStatusVariant::OzAgent {
+        SummaryPaneKind::HermonAgent { is_ambient: true } => Some(IconWithStatusVariant::HermonAgent {
             status: None,
             is_ambient: true,
         }),
@@ -3973,7 +3974,7 @@ fn summary_pane_kind_icon(
 
     match kind {
         SummaryPaneKind::Terminal => (WarpIcon::Terminal, main_text),
-        SummaryPaneKind::OzAgent { .. } => (WarpIcon::Oz, main_text),
+        SummaryPaneKind::HermonAgent { .. } => (WarpIcon::Hermon, main_text),
         SummaryPaneKind::CLIAgent { agent, .. } => (
             agent.icon().unwrap_or(WarpIcon::Terminal),
             WarpThemeFill::Solid(agent.brand_icon_color()),

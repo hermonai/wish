@@ -3921,7 +3921,7 @@ impl PaneGroup {
         }
 
         match cloud_conversation {
-            CloudConversationData::Oz(conversation) => {
+            CloudConversationData::Hermon(conversation) => {
                 terminal_view.update(ctx, |view, ctx| {
                     view.restore_conversation_after_view_creation(
                         RestoredAIConversation::new(*conversation),
@@ -5215,7 +5215,7 @@ impl PaneGroup {
         cloud_conversation: &CloudConversationData,
     ) -> Option<AmbientAgentTaskId> {
         match cloud_conversation {
-            CloudConversationData::Oz(conversation) => conversation
+            CloudConversationData::Hermon(conversation) => conversation
                 .server_metadata()
                 .and_then(|metadata| metadata.ambient_agent_task_id),
             CloudConversationData::CLIAgent(cli_conversation) => {
@@ -5276,7 +5276,7 @@ impl PaneGroup {
         let mut conversation_id = None;
         terminal_view.update(ctx, |view, ctx| {
             match cloud_conversation {
-                CloudConversationData::Oz(conversation) => {
+                CloudConversationData::Hermon(conversation) => {
                     let id = conversation.id();
                     view.restore_conversation_after_view_creation(
                         RestoredAIConversation::new(*conversation),
@@ -6128,7 +6128,7 @@ impl PaneGroup {
             }
         }
         let restoration = match cloud_conversation {
-            CloudConversationData::Oz(conversation) => {
+            CloudConversationData::Hermon(conversation) => {
                 ConversationRestorationInNewPaneType::Historical {
                     conversation: *conversation,
                     should_use_live_appearance: true,

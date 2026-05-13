@@ -178,7 +178,7 @@ impl AgentSource {
             AgentSource::Cli => "CLI",
             AgentSource::ScheduledAgent => "Scheduled",
             AgentSource::Interactive | AgentSource::CloudMode => "Wish App",
-            AgentSource::WebApp => "Oz Web",
+            AgentSource::WebApp => "Hermon Web",
             AgentSource::GitHubAction => "GitHub Action",
         }
     }

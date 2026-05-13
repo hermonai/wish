@@ -88,7 +88,7 @@ fn all_filter_flags_parse() {
         "--updated-after",
         "2026-04-03T12:30:00Z",
         "-q",
-        "oz run",
+        "hermon run",
         "--sort-by",
         "created-at",
         "--sort-order",
@@ -121,7 +121,7 @@ fn all_filter_flags_parse() {
         args.updated_after,
         Some(Utc.with_ymd_and_hms(2026, 4, 3, 12, 30, 0).unwrap())
     );
-    assert_eq!(args.query.as_deref(), Some("oz run"));
+    assert_eq!(args.query.as_deref(), Some("hermon run"));
     assert_eq!(args.sort_by, Some(RunSortByArg::CreatedAt));
     assert_eq!(args.sort_order, Some(RunSortOrderArg::Asc));
     assert_eq!(args.cursor.as_deref(), Some("abcd=="));

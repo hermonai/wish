@@ -22,7 +22,7 @@ use crate::terminal::model::block::{BlockId, SerializedBlock};
 use crate::terminal::CLIAgent;
 use crate::util::path::resolve_executable;
 use wish_cli::{
-    OZ_CLI_ENV, OZ_HARNESS_ENV, OZ_PARENT_RUN_ID_ENV, OZ_RUN_ID_ENV, SERVER_ROOT_URL_OVERRIDE_ENV,
+    WISH_CLI_ENV, WISH_HARNESS_ENV, WISH_PARENT_RUN_ID_ENV, WISH_RUN_ID_ENV, SERVER_ROOT_URL_OVERRIDE_ENV,
     SESSION_SHARING_SERVER_URL_OVERRIDE_ENV, WS_SERVER_URL_OVERRIDE_ENV,
 };
 use wish_core::channel::ChannelState;
@@ -186,7 +186,9 @@ pub(crate) trait ThirdPartyHarness: Send + Sync {
 
 /// Harness type for driver dispatch.
 pub(crate) enum HarnessKind {
-    Oz,
+    /// Hermon's first-party harness (the variant formerly named `Hermon`; see
+    /// [`Harness::Hermon`] for the user-facing identifier).
+    Hermon,
     /// Third-party CLI-backed harness (e.g. Claude, Gemini).
     ThirdParty(Box<dyn ThirdPartyHarness>),
     /// Harnesses that exist in the shared CLI enum but are not supported by the
@@ -198,7 +200,7 @@ impl HarnessKind {
     /// Corresponding [`Harness`] enum value.
     pub(crate) fn harness(&self) -> Harness {
         match self {
-            HarnessKind::Oz => Harness::Oz,
+            HarnessKind::Hermon => Harness::Hermon,
             HarnessKind::ThirdParty(h) => h.harness(),
             HarnessKind::Unsupported(harness) => *harness,
         }
@@ -218,7 +220,7 @@ impl fmt::Debug for HarnessKind {
 /// it.
 pub(crate) fn harness_kind(harness: Harness) -> Result<HarnessKind, AgentDriverError> {
     match harness {
-        Harness::Oz => Ok(HarnessKind::Oz),
+        Harness::Hermon => Ok(HarnessKind::Hermon),
         Harness::Claude => Ok(HarnessKind::ThirdParty(Box::new(ClaudeHarness))),
         Harness::Codex => Ok(HarnessKind::ThirdParty(Box::new(CodexHarness))),
         Harness::OpenCode => Ok(HarnessKind::Unsupported(Harness::OpenCode)),
@@ -286,20 +288,20 @@ fn task_env_vars_for_harness_name(
 
     if let Some(id) = task_id {
         env_vars.insert(
-            OsString::from(OZ_RUN_ID_ENV),
+            OsString::from(WISH_RUN_ID_ENV),
             OsString::from(id.to_string()),
         );
     }
 
     if let Some(parent_run_id) = parent_run_id.filter(|id| !id.is_empty()) {
         env_vars.insert(
-            OsString::from(OZ_PARENT_RUN_ID_ENV),
+            OsString::from(WISH_PARENT_RUN_ID_ENV),
             OsString::from(parent_run_id),
         );
     }
 
     env_vars.insert(
-        OsString::from(OZ_CLI_ENV),
+        OsString::from(WISH_CLI_ENV),
         OsString::from(
             std::env::current_exe()
                 .unwrap_or_else(|_| ChannelState::channel().cli_command_name().into()),
@@ -308,7 +310,7 @@ fn task_env_vars_for_harness_name(
     // `OZ_HARNESS` is only consumed by child orchestration telemetry when the child
     // CLI emits `run message *` events.
     env_vars.insert(
-        OsString::from(OZ_HARNESS_ENV),
+        OsString::from(WISH_HARNESS_ENV),
         OsString::from(selected_harness.to_string()),
     );
     if selected_harness == Harness::Claude && task_id.is_some() {
@@ -367,7 +369,7 @@ pub(crate) fn task_env_vars(
 }
 
 /// Returns environment variables that configure the model for a third-party harness.
-/// Returns an empty map for Oz or when no model is specified.
+/// Returns an empty map for Hermon or when no model is specified.
 ///
 /// We use the `ANTHROPIC_MODEL` env var rather than the `--model` CLI flag because
 /// the env var is the most reliable mechanism and avoids precedence conflicts with
@@ -385,7 +387,7 @@ pub(crate) fn harness_model_env_vars(
         Harness::Claude => {
             env_vars.insert(OsString::from("ANTHROPIC_MODEL"), OsString::from(model_id));
         }
-        Harness::Oz | Harness::OpenCode | Harness::Gemini | Harness::Codex | Harness::Unknown => {}
+        Harness::Hermon | Harness::OpenCode | Harness::Gemini | Harness::Codex | Harness::Unknown => {}
     }
 
     env_vars

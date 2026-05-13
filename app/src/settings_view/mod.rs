@@ -343,7 +343,7 @@ impl FromStr for SettingsSection {
             "Teams" => Ok(Self::Teams),
             "Wishify" => Ok(Self::Wishify),
             "WarpDrive" | "Wish Drive" => Ok(Self::WarpDrive),
-            // This page was called "Oz" at one point, keep for backward compatibility.
+            // This page was called "Hermon" at one point, keep for backward compatibility.
             "Oz" | "Wish Agent" => Ok(Self::WarpAgent),
             "Profiles" | "AgentProfiles" => Ok(Self::AgentProfiles),
             "MCP servers" | "AgentMCPServers" => Ok(Self::AgentMCPServers),
@@ -2300,7 +2300,7 @@ impl View for SettingsView {
         let appearance = Appearance::as_ref(app);
 
         // For AI subpages, the backing SettingsPage has a different section
-        // (e.g. Oz -> AI, AgentMCPServers -> MCPServers).
+        // (e.g. Hermon -> AI, AgentMCPServers -> MCPServers).
         let content_page_section = self.current_settings_page.parent_page_section();
         let (page, current_page_handle) = if settings_pages.is_empty() {
             (self.render_search_zero_state(appearance), None)

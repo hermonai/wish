@@ -3,7 +3,7 @@ use wishui::{Entity, SingletonEntity};
 #[cfg(feature = "local_fs")]
 use std::path::{Path, PathBuf};
 #[cfg(feature = "local_fs")]
-use wishui::ModelContext;
+use wishui::{AppContext, ModelContext};
 
 #[cfg(feature = "local_fs")]
 use {
@@ -102,6 +102,25 @@ impl GitStatusUpdateModel {
 
         self.repos.insert(repo_path_buf, handle.downgrade());
         Ok(handle)
+    }
+
+    /// Walk every repo we have a *live* [`GitRepoStatusModel`] cached for and
+    /// return a snapshot of each one's current metadata (if computed yet).
+    /// Used by the agent context tray to inject a `git_status` block — a
+    /// read-only view that does **not** create new subscriptions, so this
+    /// is cheap to call on every Wish-chat turn.
+    ///
+    /// Repos whose metadata hasn't been computed yet (initial scan in flight)
+    /// are skipped: better to omit the block than to inject a half-empty one.
+    pub fn cached_repo_metadata(&self, ctx: &AppContext) -> Vec<(PathBuf, GitStatusMetadata)> {
+        self.repos
+            .iter()
+            .filter_map(|(path, weak)| {
+                let handle = weak.upgrade(ctx)?;
+                let metadata = handle.as_ref(ctx).metadata()?.clone();
+                Some((path.clone(), metadata))
+            })
+            .collect()
     }
 }
 

@@ -288,7 +288,10 @@ pub enum Icon {
     CursorLogo,
     GooseLogo,
     NLD,
-    Oz,
+    /// Hermon brand mark (the variant formerly named `Hermon`). Renders the same
+    /// `bundled/svg/hermon-logo.svg` asset; the rename is purely the Rust
+    /// identifier.
+    Hermon,
     HermonCloud,
     Conversation,
     Prompt,
@@ -617,7 +620,7 @@ impl From<Icon> for &'static str {
             Icon::CursorLogo => "bundled/svg/cursor.svg",
             Icon::GooseLogo => "bundled/svg/goose.svg",
             Icon::NLD => "bundled/svg/nld.svg",
-            Icon::Oz => "bundled/svg/hermon-logo.svg",
+            Icon::Hermon => "bundled/svg/hermon-logo.svg",
             Icon::HermonCloud => "bundled/svg/hermon-logo.svg",
             Icon::Conversation => "bundled/svg/conversation.svg",
             Icon::Prompt => "bundled/svg/prompt.svg",

@@ -972,7 +972,7 @@ impl TerminalView {
         let cloud_setup = self.is_in_cloud_agent_setup_phase(ctx);
 
         let Some(conversation) = self.selected_conversation_for_user_facing_chrome(ctx) else {
-            // Ambient agent tabs can show Oz chrome without a filtered "chrome" conversation;
+            // Ambient agent tabs can show Hermon chrome without a filtered "chrome" conversation;
             // still surface busy while a long-running shell command is active or the cloud
             // environment is spinning up.
             if (long_running || cloud_setup) && self.is_ambient_agent_session(ctx) {

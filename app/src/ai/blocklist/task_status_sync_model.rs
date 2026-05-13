@@ -20,7 +20,7 @@ use wishui::{Entity, EntityId, ModelContext, SingletonEntity};
 /// individual call-sites (driver, controller, etc.) no longer need to
 /// call `update_agent_task` for state transitions.
 ///
-/// For Oz harness conversations, status is derived from
+/// For Hermon harness conversations, status is derived from
 /// `BlocklistAIHistoryEvent::UpdatedConversationStatus` and the `task_id`
 /// is read from the `AIConversation`.
 ///

@@ -239,7 +239,7 @@ impl AmbientAgentRunner {
         if !FeatureFlag::AmbientAgentsCommandLine.is_enabled() {
             return Err(anyhow::anyhow!("Unsupported feature"));
         }
-        let skill_enabled = FeatureFlag::OzPlatformSkills.is_enabled();
+        let skill_enabled = FeatureFlag::HermonPlatformSkills.is_enabled();
         if args.skill.is_some() && !skill_enabled {
             return Err(anyhow::anyhow!("unexpected argument '--skill' found"));
         }
@@ -415,7 +415,7 @@ impl AmbientAgentRunner {
                     }
                 };
 
-            let harness_override = (args.harness != Harness::Oz).then_some(HarnessConfig {
+            let harness_override = (args.harness != Harness::Hermon).then_some(HarnessConfig {
                 harness_type: args.harness,
                 model_id: None,
             });
@@ -835,8 +835,8 @@ impl AmbientAgentRunner {
             let header = format!("{} {} ({:?})", state_emoji, task.task_id, task.state);
             table.add_row(vec![header]);
 
-            // Oz webapp link
-            table.add_row(vec![format!("Oz: {hermon_root_url}/runs/{}", task.task_id)]);
+            // Hermon webapp link
+            table.add_row(vec![format!("Hermon: {hermon_root_url}/runs/{}", task.task_id)]);
 
             // Title (wrapped, single cell)
             if !task.title.is_empty() {
@@ -997,12 +997,12 @@ fn task_id_from_run_id(run_id: &str) -> Option<AmbientAgentTaskId> {
 }
 
 fn task_id_from_oz_run_id_env() -> anyhow::Result<Option<AmbientAgentTaskId>> {
-    match std::env::var(wish_cli::OZ_RUN_ID_ENV) {
+    match std::env::var(wish_cli::WISH_RUN_ID_ENV) {
         Ok(run_id) => parse_ambient_task_id(&run_id, "Invalid OZ_RUN_ID").map(Some),
         Err(std::env::VarError::NotPresent) => Ok(None),
         Err(std::env::VarError::NotUnicode(_)) => Err(anyhow!(
             "{} is set but is not valid Unicode",
-            wish_cli::OZ_RUN_ID_ENV
+            wish_cli::WISH_RUN_ID_ENV
         )),
     }
 }

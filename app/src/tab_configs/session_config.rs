@@ -19,20 +19,20 @@ use super::tab_config::{
 /// The type of session the user wants to start.
 ///
 /// Wraps the existing `CLIAgent` for third-party agents and adds
-/// Terminal and Oz as first-class variants.
+/// Terminal and Hermon as first-class variants.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SessionType {
     Terminal,
-    Oz,
+    Hermon,
     CliAgent(CLIAgent),
 }
 
 impl SessionType {
     /// The CLI command to auto-run for this session type, if any.
-    /// Returns `None` for Terminal and Oz (Oz uses agent view, not a CLI command).
+    /// Returns `None` for Terminal and Hermon (Hermon uses agent view, not a CLI command).
     fn command_prefix(&self) -> Option<&'static str> {
         match self {
-            SessionType::Terminal | SessionType::Oz => None,
+            SessionType::Terminal | SessionType::Hermon => None,
             SessionType::CliAgent(agent) => Some(agent.command_prefix()),
         }
     }
@@ -41,7 +41,7 @@ impl SessionType {
     pub(crate) fn icon(&self) -> Icon {
         match self {
             SessionType::Terminal => Icon::Terminal,
-            SessionType::Oz => Icon::Oz,
+            SessionType::Hermon => Icon::Hermon,
             SessionType::CliAgent(agent) => agent.icon().unwrap_or(Icon::Terminal),
         }
     }
@@ -50,7 +50,7 @@ impl SessionType {
     pub(crate) fn pill_label(&self) -> &'static str {
         match self {
             SessionType::Terminal => "Terminal",
-            SessionType::Oz => "Built in agent",
+            SessionType::Hermon => "Built in agent",
             SessionType::CliAgent(CLIAgent::Claude) => "Claude",
             SessionType::CliAgent(CLIAgent::Codex) => "Codex",
             SessionType::CliAgent(CLIAgent::Gemini) => "Gemini",
@@ -145,7 +145,7 @@ pub fn build_tab_config(
     }
 
     let pane_type = match session_type {
-        SessionType::Oz => TabConfigPaneType::Agent,
+        SessionType::Hermon => TabConfigPaneType::Agent,
         SessionType::Terminal | SessionType::CliAgent(_) => TabConfigPaneType::Terminal,
     };
 

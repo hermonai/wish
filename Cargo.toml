@@ -212,6 +212,17 @@ prost = "0.14.3"
 prost-build = "0.14.3"
 prost-reflect = "0.16.3"
 prost-types = "0.14.3"
+# tonic 0.14 pairs with prost 0.14. Used by `crates/wishd_client` to talk to
+# the `wishd` local daemon over Unix-domain socket gRPC. Note wishd's own
+# workspace pins tonic 0.12 / prost 0.13; wire compatibility is independent
+# of generated-code Rust API, so the mismatch is safe.
+tonic = { version = "0.14.0", features = ["transport"] }
+tonic-build = "0.14.0"
+# tonic 0.14 split its prost integration: codegen-time API moved to
+# `tonic-prost-build`, runtime codec to `tonic-prost`. Both required for
+# the wishd_client crate's proto-generated services.
+tonic-prost = "0.14.0"
+tonic-prost-build = "0.14.0"
 rand = "0.8.6"
 rangemap = "1.3.0"
 reqwest = { version = "0.12.28", default-features = false, features = [

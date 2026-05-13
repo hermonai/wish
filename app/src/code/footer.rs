@@ -8,6 +8,9 @@ use lsp::{
 };
 use wish_core::send_telemetry_from_ctx;
 
+use crate::code::diagnostics::{
+    DiagnosticsAggregatorEvent, DiagnosticsAggregatorModel, SeverityCounts,
+};
 use crate::code::lsp_telemetry::{LspControlActionType, LspEnablementSource, LspTelemetryEvent};
 use pathfinder_color::ColorU;
 use pathfinder_geometry::vector::vec2f;
@@ -276,7 +279,7 @@ impl CodeFooterView {
     fn create_tab_config_skill_button(ctx: &mut ViewContext<Self>) -> ViewHandle<ActionButton> {
         ctx.add_typed_action_view(|_ctx| {
             ActionButton::new("/update-tab-config", NakedTheme)
-                .with_icon(Icon::Oz)
+                .with_icon(Icon::Hermon)
                 .with_size(ButtonSize::Small)
                 .with_disabled_theme(PaneHeaderTheme)
                 .on_click(|ctx| {
@@ -438,6 +441,18 @@ impl CodeFooterView {
         #[cfg(not(feature = "local_fs"))]
         let initial_status = LspRepoStatus::CheckingForInstallation;
 
+        // Re-render the badge whenever workspace-wide diagnostics change so
+        // the count the human sees stays in lockstep with the count the
+        // agent injected on its last turn.
+        ctx.subscribe_to_model(
+            &DiagnosticsAggregatorModel::handle(ctx),
+            |_me, _, event, ctx| {
+                if matches!(event, DiagnosticsAggregatorEvent::Changed) {
+                    ctx.notify();
+                }
+            },
+        );
+
         Self {
             mode: FooterMode::SingleFile {
                 path,
@@ -571,6 +586,18 @@ impl CodeFooterView {
                 }
             });
         }
+
+        // Re-render the badge whenever workspace-wide diagnostics change so
+        // the count the human sees stays in lockstep with the count the
+        // agent injected on its last turn.
+        ctx.subscribe_to_model(
+            &DiagnosticsAggregatorModel::handle(ctx),
+            |_me, _, event, ctx| {
+                if matches!(event, DiagnosticsAggregatorEvent::Changed) {
+                    ctx.notify();
+                }
+            },
+        );
 
         let mut view = Self {
             mode: FooterMode::Workspace {
@@ -1408,6 +1435,46 @@ impl CodeFooterView {
             .collect()
     }
 
+    /// Render the workspace-wide diagnostic count as a small text badge next
+    /// to the LSP indicator. Returns `Empty` on clean workspaces so the
+    /// footer doesn't show a `0 errors` placeholder when there's nothing to
+    /// say. Reads from the same `DiagnosticsAggregatorModel` singleton the
+    /// agent context tray injects into prompts, so the number the human sees
+    /// here is the same number the agent already reasoned over on its last
+    /// turn.
+    fn render_diagnostic_badge(
+        &self,
+        appearance: &Appearance,
+        app: &AppContext,
+    ) -> Box<dyn Element> {
+        if self.is_tab_config_footer() {
+            return Empty::new().finish();
+        }
+        let counts: SeverityCounts = DiagnosticsAggregatorModel::as_ref(app).state().counts();
+        // Only errors and warnings warrant a status-bar badge; info/hint are
+        // noise at a glance.
+        if counts.error == 0 && counts.warning == 0 {
+            return Empty::new().finish();
+        }
+        let label = format_diagnostic_badge_label(&counts);
+        let theme = appearance.theme();
+        Container::new(
+            appearance
+                .ui_builder()
+                .span(label)
+                .with_style(UiComponentStyles {
+                    font_family_id: Some(appearance.ui_font_family()),
+                    font_color: Some(internal_colors::text_sub(theme, theme.background())),
+                    font_size: Some(12.0),
+                    ..Default::default()
+                })
+                .build()
+                .finish(),
+        )
+        .with_margin_left(ICON_MARGIN)
+        .finish()
+    }
+
     fn render_lsp_icon(&self, appearance: &Appearance, app: &AppContext) -> Box<dyn Element> {
         if self.is_tab_config_footer() {
             return Empty::new().finish();
@@ -1744,6 +1811,7 @@ impl View for CodeFooterView {
             }
         } else {
             footer_content.add_child(self.render_lsp_icon(appearance, app));
+            footer_content.add_child(self.render_diagnostic_badge(appearance, app));
 
             let (status_message, should_show_enable_button) = self.compute_status_message(app);
 
@@ -1985,5 +2053,95 @@ impl TypedActionView for CodeFooterView {
                 ctx.notify();
             }
         }
+    }
+}
+
+/// Pure label formatter for the status-bar diagnostic badge. Renders as
+/// `"2 errors, 1 warning"` (singular/plural respected), `"3 errors"`,
+/// `"1 warning"`, etc. Callers should not invoke this when both counts are
+/// zero — the caller decides when to render the badge at all.
+pub(crate) fn format_diagnostic_badge_label(counts: &SeverityCounts) -> String {
+    let mut parts: Vec<String> = Vec::new();
+    if counts.error > 0 {
+        parts.push(format!(
+            "{} {}",
+            counts.error,
+            if counts.error == 1 { "error" } else { "errors" }
+        ));
+    }
+    if counts.warning > 0 {
+        parts.push(format!(
+            "{} {}",
+            counts.warning,
+            if counts.warning == 1 {
+                "warning"
+            } else {
+                "warnings"
+            }
+        ));
+    }
+    parts.join(", ")
+}
+
+#[cfg(test)]
+mod badge_label_tests {
+    use super::*;
+
+    fn counts(error: usize, warning: usize) -> SeverityCounts {
+        SeverityCounts {
+            error,
+            warning,
+            info: 0,
+            hint: 0,
+        }
+    }
+
+    #[test]
+    fn errors_only_singular() {
+        assert_eq!(format_diagnostic_badge_label(&counts(1, 0)), "1 error");
+    }
+
+    #[test]
+    fn errors_only_plural() {
+        assert_eq!(format_diagnostic_badge_label(&counts(3, 0)), "3 errors");
+    }
+
+    #[test]
+    fn warnings_only_singular() {
+        assert_eq!(format_diagnostic_badge_label(&counts(0, 1)), "1 warning");
+    }
+
+    #[test]
+    fn warnings_only_plural() {
+        assert_eq!(format_diagnostic_badge_label(&counts(0, 2)), "2 warnings");
+    }
+
+    #[test]
+    fn both_severities_render_with_comma() {
+        assert_eq!(
+            format_diagnostic_badge_label(&counts(2, 1)),
+            "2 errors, 1 warning"
+        );
+    }
+
+    #[test]
+    fn both_severities_singular_and_plural() {
+        assert_eq!(
+            format_diagnostic_badge_label(&counts(1, 5)),
+            "1 error, 5 warnings"
+        );
+    }
+
+    #[test]
+    fn info_and_hint_are_ignored() {
+        let c = SeverityCounts {
+            error: 0,
+            warning: 0,
+            info: 10,
+            hint: 99,
+        };
+        // Caller is expected not to render the badge in this case; the
+        // formatter returns an empty string defensively.
+        assert_eq!(format_diagnostic_badge_label(&c), "");
     }
 }

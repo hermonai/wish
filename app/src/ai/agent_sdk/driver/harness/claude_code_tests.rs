@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use tempfile::TempDir;
 use uuid::Uuid;
-use wish_cli::{OZ_HARNESS_ENV, OZ_PARENT_RUN_ID_ENV, OZ_RUN_ID_ENV};
+use wish_cli::{WISH_HARNESS_ENV, WISH_PARENT_RUN_ID_ENV, WISH_RUN_ID_ENV};
 
 use super::*;
 use crate::ai::agent_events::MessageHydrator;
@@ -738,14 +738,14 @@ fn prepare_local_wake_command_rehydrates_transcript_with_self_managed_listener()
     assert!(command.contains(&session_id.to_string()));
     assert!(command.contains(CLAUDE_WAKE_PROMPT_FILE_NAME));
     assert!(command.contains(&format!(
-        "{OZ_RUN_ID_ENV}={}",
+        "{WISH_RUN_ID_ENV}={}",
         shell_quote(&task_id.to_string())
     )));
     assert!(command.contains(&format!(
-        "{OZ_PARENT_RUN_ID_ENV}={}",
+        "{WISH_PARENT_RUN_ID_ENV}={}",
         shell_quote(&parent_run_id)
     )));
-    assert!(command.contains(&format!("{OZ_HARNESS_ENV}={}", shell_quote("claude"))));
+    assert!(command.contains(&format!("{WISH_HARNESS_ENV}={}", shell_quote("claude"))));
     assert!(!command.contains(OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV));
     assert!(!command.contains("OZ_PARENT_LISTENER_MANAGED_EXTERNALLY"));
     assert_eq!(

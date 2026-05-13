@@ -71,9 +71,9 @@ pub(crate) async fn fetch_and_download_handoff_snapshot_attachments(
     task_id: AmbientAgentTaskId,
     attachments_dir: PathBuf,
 ) -> anyhow::Result<Option<String>> {
-    if !FeatureFlag::OzHandoff.is_enabled() {
+    if !FeatureFlag::HermonHandoff.is_enabled() {
         log::error!(
-            "fetch_and_download_handoff_snapshot_attachments called with OzHandoff disabled; \
+            "fetch_and_download_handoff_snapshot_attachments called with HermonHandoff disabled; \
              call sites should gate on the flag before invoking"
         );
         return Ok(None);

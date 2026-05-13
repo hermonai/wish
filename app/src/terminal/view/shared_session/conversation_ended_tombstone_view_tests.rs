@@ -173,13 +173,13 @@ fn snapshot_without_explicit_harness_defaults_to_oz() {
 
     data.enrich_from_task(task);
 
-    assert_eq!(data.harness, Some(Harness::Oz));
+    assert_eq!(data.harness, Some(Harness::Hermon));
 }
 
 #[test]
 fn snapshot_with_explicit_harness_propagates() {
     for harness in [
-        Harness::Oz,
+        Harness::Hermon,
         Harness::Claude,
         Harness::Gemini,
         Harness::Unknown,

@@ -3,7 +3,7 @@ use std::{collections::HashMap, ffi::OsString, sync::Arc, time::Duration};
 use futures::channel::oneshot;
 use wish_cli::agent::Harness;
 use wish_cli::{
-    OZ_CLI_ENV, OZ_HARNESS_ENV, OZ_PARENT_RUN_ID_ENV, OZ_RUN_ID_ENV, SERVER_ROOT_URL_OVERRIDE_ENV,
+    WISH_CLI_ENV, WISH_HARNESS_ENV, WISH_PARENT_RUN_ID_ENV, WISH_RUN_ID_ENV, SERVER_ROOT_URL_OVERRIDE_ENV,
     SESSION_SHARING_SERVER_URL_OVERRIDE_ENV, WS_SERVER_URL_OVERRIDE_ENV,
 };
 use wish_core::channel::ChannelState;
@@ -185,15 +185,15 @@ fn task_env_vars_include_parent_run_id_when_present() {
     let overrides_allowed = ChannelState::channel().allows_server_url_overrides();
 
     assert_eq!(
-        env_vars.get(&OsString::from(OZ_RUN_ID_ENV)),
+        env_vars.get(&OsString::from(WISH_RUN_ID_ENV)),
         Some(&OsString::from(task_id.to_string()))
     );
     assert_eq!(
-        env_vars.get(&OsString::from(OZ_PARENT_RUN_ID_ENV)),
+        env_vars.get(&OsString::from(WISH_PARENT_RUN_ID_ENV)),
         Some(&OsString::from("parent-run-123"))
     );
     assert_eq!(
-        env_vars.get(&OsString::from(OZ_HARNESS_ENV)),
+        env_vars.get(&OsString::from(WISH_HARNESS_ENV)),
         Some(&OsString::from("claude"))
     );
     assert_eq!(
@@ -207,7 +207,7 @@ fn task_env_vars_include_parent_run_id_when_present() {
         Some(&OsString::from("1"))
     );
     assert!(env_vars
-        .get(&OsString::from(OZ_CLI_ENV))
+        .get(&OsString::from(WISH_CLI_ENV))
         .is_some_and(|value| !value.is_empty()));
 
     let server_root_url = ChannelState::server_root_url().into_owned();
@@ -249,16 +249,16 @@ fn task_env_vars_include_parent_run_id_when_present() {
 #[test]
 fn task_env_vars_omit_parent_run_id_when_absent() {
     let task_id: AmbientAgentTaskId = "550e8400-e29b-41d4-a716-446655440001".parse().unwrap();
-    let env_vars = task_env_vars(Some(&task_id), None, Harness::Oz);
+    let env_vars = task_env_vars(Some(&task_id), None, Harness::Hermon);
     let overrides_allowed = ChannelState::channel().allows_server_url_overrides();
 
     assert_eq!(
-        env_vars.get(&OsString::from(OZ_RUN_ID_ENV)),
+        env_vars.get(&OsString::from(WISH_RUN_ID_ENV)),
         Some(&OsString::from(task_id.to_string()))
     );
-    assert!(!env_vars.contains_key(&OsString::from(OZ_PARENT_RUN_ID_ENV)));
+    assert!(!env_vars.contains_key(&OsString::from(WISH_PARENT_RUN_ID_ENV)));
     assert_eq!(
-        env_vars.get(&OsString::from(OZ_HARNESS_ENV)),
+        env_vars.get(&OsString::from(WISH_HARNESS_ENV)),
         Some(&OsString::from("oz"))
     );
     assert!(!env_vars.contains_key(&OsString::from(OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV)));
@@ -318,7 +318,7 @@ fn task_env_vars_can_use_opencode_harness() {
     let env_vars = task_env_vars(Some(&task_id), Some("parent-run-456"), Harness::OpenCode);
 
     assert_eq!(
-        env_vars.get(&OsString::from(OZ_HARNESS_ENV)),
+        env_vars.get(&OsString::from(WISH_HARNESS_ENV)),
         Some(&OsString::from("opencode"))
     );
 }

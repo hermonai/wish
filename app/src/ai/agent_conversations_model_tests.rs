@@ -1921,7 +1921,7 @@ fn test_harness_filter_matches_only_selected_harness() {
             let gemini_items = items_for(HarnessFilter::Specific(Harness::Gemini));
             assert_eq!(gemini_items, vec![format!("task:{}", task_gemini.task_id)]);
 
-            let oz_items = items_for(HarnessFilter::Specific(Harness::Oz));
+            let oz_items = items_for(HarnessFilter::Specific(Harness::Hermon));
             assert_eq!(
                 oz_items.len(),
                 2,

@@ -25,7 +25,7 @@ use wishui::{
     AppContext, Element, Entity, SingletonEntity, TypedActionView, View, ViewContext, ViewHandle,
 };
 
-const OZ_AGENTS_URL: &str = "https://oz.warp.dev/agents?new=true";
+const HERMON_AGENTS_URL: &str = "https://www.hermon.ai/agents?new=true";
 
 const LABEL_FONT_SIZE: f32 = 14.;
 const INPUT_WIDTH: f32 = 428.; // 460px - (2 * 16px) padding
@@ -155,7 +155,7 @@ impl CreateApiKeyModal {
                 ..Default::default()
             };
             let mut editor = EditorView::single_line(options, ctx);
-            editor.set_placeholder_text("Warp API Key", ctx);
+            editor.set_placeholder_text("Wish API Key", ctx);
             editor
         });
 
@@ -320,7 +320,7 @@ impl CreateApiKeyModal {
         let name = self.name_editor.as_ref(ctx).buffer_text(ctx);
 
         let final_name = if name.trim().is_empty() {
-            "Warp API Key".to_string()
+            "Wish API Key".to_string()
         } else {
             name.trim().to_string()
         };
@@ -825,7 +825,7 @@ impl TypedActionView for CreateApiKeyModal {
                 ctx.notify();
             }
             CreateApiKeyModalAction::CreateNewAgent => {
-                ctx.open_url(OZ_AGENTS_URL);
+                ctx.open_url(HERMON_AGENTS_URL);
             }
         }
     }

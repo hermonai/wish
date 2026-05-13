@@ -1,0 +1,29 @@
+// Health probe service. Exposed both as a unary Check (load-balancer style)
+// and a streaming Watch (future-friendly when the server gains background
+// jobs whose status we want to observe).
+
+syntax = "proto3";
+
+package wishd.health.v1;
+
+service HealthService {
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc Watch(HealthCheckRequest) returns (stream HealthCheckResponse);
+}
+
+message HealthCheckRequest {
+  // Optional component selector, e.g. "fs", "git". Empty string => overall.
+  string component = 1;
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
+  ServingStatus status = 1;
+
+  // Free-form human-readable detail (e.g. "git daemon not yet started").
+  string detail = 2;
+}

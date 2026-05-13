@@ -13,14 +13,14 @@ use wishui::assets::asset_cache::AssetSource;
 use wishui::{AppContext, SingletonEntity};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum OzLaunchSlide {
+pub enum HermonLaunchSlide {
     CloudAgents,
     AgentAutomations,
     AgentManagement,
     LaunchCredits,
 }
 
-impl Slide for OzLaunchSlide {
+impl Slide for HermonLaunchSlide {
     fn modal_title(&self) -> String {
         "Introducing Hermon".to_string()
     }
@@ -34,53 +34,53 @@ impl Slide for OzLaunchSlide {
     }
 
     fn first() -> Self {
-        OzLaunchSlide::CloudAgents
+        HermonLaunchSlide::CloudAgents
     }
 
     fn next(&self) -> Option<Self> {
         match self {
-            OzLaunchSlide::CloudAgents => Some(OzLaunchSlide::AgentAutomations),
-            OzLaunchSlide::AgentAutomations => Some(OzLaunchSlide::AgentManagement),
-            OzLaunchSlide::AgentManagement => Some(OzLaunchSlide::LaunchCredits),
-            OzLaunchSlide::LaunchCredits => None,
+            HermonLaunchSlide::CloudAgents => Some(HermonLaunchSlide::AgentAutomations),
+            HermonLaunchSlide::AgentAutomations => Some(HermonLaunchSlide::AgentManagement),
+            HermonLaunchSlide::AgentManagement => Some(HermonLaunchSlide::LaunchCredits),
+            HermonLaunchSlide::LaunchCredits => None,
         }
     }
 
     fn prev(&self) -> Option<Self> {
         match self {
-            OzLaunchSlide::CloudAgents => None,
-            OzLaunchSlide::AgentAutomations => Some(OzLaunchSlide::CloudAgents),
-            OzLaunchSlide::AgentManagement => Some(OzLaunchSlide::AgentAutomations),
-            OzLaunchSlide::LaunchCredits => Some(OzLaunchSlide::AgentManagement),
+            HermonLaunchSlide::CloudAgents => None,
+            HermonLaunchSlide::AgentAutomations => Some(HermonLaunchSlide::CloudAgents),
+            HermonLaunchSlide::AgentManagement => Some(HermonLaunchSlide::AgentAutomations),
+            HermonLaunchSlide::LaunchCredits => Some(HermonLaunchSlide::AgentManagement),
         }
     }
 
     fn display_text(&self) -> Option<&'static str> {
         Some(match self {
-            OzLaunchSlide::CloudAgents => "Cloud agents",
-            OzLaunchSlide::AgentAutomations => "Agent automations",
-            OzLaunchSlide::AgentManagement => "Agent management",
-            OzLaunchSlide::LaunchCredits => "A little gift",
+            HermonLaunchSlide::CloudAgents => "Cloud agents",
+            HermonLaunchSlide::AgentAutomations => "Agent automations",
+            HermonLaunchSlide::AgentManagement => "Agent management",
+            HermonLaunchSlide::LaunchCredits => "A little gift",
         })
     }
 
     fn short_label(&self) -> &'static str {
         match self {
-            OzLaunchSlide::CloudAgents => "Cloud agents",
-            OzLaunchSlide::AgentAutomations => "Agent automations",
-            OzLaunchSlide::AgentManagement => "Agent management",
-            OzLaunchSlide::LaunchCredits => "Launch credits",
+            HermonLaunchSlide::CloudAgents => "Cloud agents",
+            HermonLaunchSlide::AgentAutomations => "Agent automations",
+            HermonLaunchSlide::AgentManagement => "Agent management",
+            HermonLaunchSlide::LaunchCredits => "Launch credits",
         }
     }
 
     fn title(&self) -> &'static str {
         match self {
-            OzLaunchSlide::CloudAgents => "Break out of your laptop with cloud agents",
-            OzLaunchSlide::AgentAutomations => {
+            HermonLaunchSlide::CloudAgents => "Break out of your laptop with cloud agents",
+            HermonLaunchSlide::AgentAutomations => {
                 "Orchestrate agents, turning Skills into automations"
             }
-            OzLaunchSlide::AgentManagement => "Track local and cloud agents seamlessly",
-            OzLaunchSlide::LaunchCredits => {
+            HermonLaunchSlide::AgentManagement => "Track local and cloud agents seamlessly",
+            HermonLaunchSlide::LaunchCredits => {
                 "1,000 free cloud agent credits when you upgrade to Wish Build"
             }
         }
@@ -92,16 +92,16 @@ impl Slide for OzLaunchSlide {
 
     fn content(&self) -> &'static str {
         match self {
-            OzLaunchSlide::CloudAgents => {
+            HermonLaunchSlide::CloudAgents => {
                 "Use cloud agents to run many agents in parallel, keep agents working when you close your laptop, or start agents programmatically. Plus, you can check on their work through the web."
             }
-            OzLaunchSlide::AgentAutomations => {
+            HermonLaunchSlide::AgentAutomations => {
                 "Hermon agents can be defined using the standard Skills format. You can use the built in scheduler to setup agents to run autonomously at set intervals, or use the Wish SDK or API to programmatically start and manage Hermon agents."
             }
-            OzLaunchSlide::AgentManagement => {
+            HermonLaunchSlide::AgentManagement => {
                 "View all of your agents across local and cloud sessions in the Wish app or at [wish.hermon.ai](https://wish.hermon.ai). Join live agent sessions, continue tasks locally, and steer agents with one click."
             }
-            OzLaunchSlide::LaunchCredits => {
+            HermonLaunchSlide::LaunchCredits => {
                 "Upgrade to Build this month and receive 1,000 extra credits to try using Hermon Agent. Credits are only eligible for Hermon Cloud runs in Wish-hosted cloud environments."
             }
         }
@@ -110,16 +110,16 @@ impl Slide for OzLaunchSlide {
     fn image(&self) -> AssetSource {
         // TODO: Replace with new images once provided.
         match self {
-            OzLaunchSlide::CloudAgents => {
+            HermonLaunchSlide::CloudAgents => {
                 bundled_or_fetched_asset!("png/oz_cloud_agents.png")
             }
-            OzLaunchSlide::AgentAutomations => {
+            HermonLaunchSlide::AgentAutomations => {
                 bundled_or_fetched_asset!("png/oz_agent_automations.png")
             }
-            OzLaunchSlide::AgentManagement => {
+            HermonLaunchSlide::AgentManagement => {
                 bundled_or_fetched_asset!("png/oz_agent_management.png")
             }
-            OzLaunchSlide::LaunchCredits => {
+            HermonLaunchSlide::LaunchCredits => {
                 bundled_or_fetched_asset!("png/oz_launch_credits.png")
             }
         }
@@ -127,25 +127,25 @@ impl Slide for OzLaunchSlide {
 
     fn all() -> Vec<Self> {
         vec![
-            OzLaunchSlide::CloudAgents,
-            OzLaunchSlide::AgentAutomations,
-            OzLaunchSlide::AgentManagement,
-            OzLaunchSlide::LaunchCredits,
+            HermonLaunchSlide::CloudAgents,
+            HermonLaunchSlide::AgentAutomations,
+            HermonLaunchSlide::AgentManagement,
+            HermonLaunchSlide::LaunchCredits,
         ]
     }
 
     fn cta_button(&self) -> CTAButton<Self> {
         match self {
-            OzLaunchSlide::CloudAgents
-            | OzLaunchSlide::AgentAutomations
-            | OzLaunchSlide::AgentManagement => {
+            HermonLaunchSlide::CloudAgents
+            | HermonLaunchSlide::AgentAutomations
+            | HermonLaunchSlide::AgentManagement => {
                 let next = self.next().expect("Non-final slides should have a next");
                 CTAButton::next_slide(next, format!("Next: {}", next.short_label()))
             }
-            OzLaunchSlide::LaunchCredits => CTAButton::custom("Try it out", |ctx| {
+            HermonLaunchSlide::LaunchCredits => CTAButton::custom("Try it out", |ctx| {
                 send_telemetry_from_ctx!(
                     CloudAgentTelemetryEvent::EnteredCloudMode {
-                        entry_point: CloudModeEntryPoint::OzLaunchModal,
+                        entry_point: CloudModeEntryPoint::HermonLaunchModal,
                     },
                     ctx
                 );
@@ -162,10 +162,10 @@ impl Slide for OzLaunchSlide {
 
     fn secondary_cta_button(&self) -> Option<CTAButton<Self>> {
         match self {
-            OzLaunchSlide::LaunchCredits => Some(CTAButton::close("Skip for now")),
-            OzLaunchSlide::CloudAgents
-            | OzLaunchSlide::AgentAutomations
-            | OzLaunchSlide::AgentManagement => None,
+            HermonLaunchSlide::LaunchCredits => Some(CTAButton::close("Skip for now")),
+            HermonLaunchSlide::CloudAgents
+            | HermonLaunchSlide::AgentAutomations
+            | HermonLaunchSlide::AgentManagement => None,
         }
     }
 
@@ -198,5 +198,5 @@ impl Slide for OzLaunchSlide {
 }
 
 pub fn init(app: &mut wishui::AppContext) {
-    super::init::<OzLaunchSlide>(app);
+    super::init::<HermonLaunchSlide>(app);
 }

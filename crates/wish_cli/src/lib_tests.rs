@@ -1551,7 +1551,7 @@ fn agent_run_cloud_accepts_harness_flag() {
 }
 
 #[test]
-fn agent_run_cloud_defaults_harness_to_oz() {
+fn agent_run_cloud_defaults_harness_to_hermon() {
     let args = Args::try_parse_from(["warp", "agent", "run-cloud", "--prompt", "hello"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
@@ -1561,7 +1561,7 @@ fn agent_run_cloud_defaults_harness_to_oz() {
         panic!("Expected `warp agent run-cloud` command");
     };
 
-    assert_eq!(run_args.harness, Harness::Oz);
+    assert_eq!(run_args.harness, Harness::Hermon);
 }
 
 #[test]
@@ -1648,7 +1648,7 @@ fn agent_run_cloud_claude_auth_secret_without_harness_parses() {
         panic!("Expected `warp agent run-cloud` command");
     };
 
-    assert_eq!(run_args.harness, Harness::Oz);
+    assert_eq!(run_args.harness, Harness::Hermon);
     assert_eq!(run_args.claude_auth_secret.as_deref(), Some("my-key"));
 }
 
@@ -1973,4 +1973,197 @@ fn report_shutdown_abnormal_parses() {
         shutdown_args.error_message.as_deref(),
         Some("out of memory")
     );
+}
+
+#[test]
+fn folder_flag_parses_long_form() {
+    let args = Args::try_parse_from(["wish", "--folder", "/tmp/some/project"]).unwrap();
+    let app_args = args.app_args();
+    assert_eq!(
+        app_args.folder.as_ref().and_then(|p| p.to_str()),
+        Some("/tmp/some/project")
+    );
+}
+
+#[test]
+fn folder_flag_parses_short_form() {
+    let args = Args::try_parse_from(["wish", "-d", "/tmp/some/project"]).unwrap();
+    assert_eq!(
+        args.app_args().folder.as_ref().and_then(|p| p.to_str()),
+        Some("/tmp/some/project")
+    );
+}
+
+#[test]
+fn rewrite_keeps_subcommand_untouched() {
+    let argv = rewrite_path_positional(vec![
+        "wish".to_string(),
+        "agent".to_string(),
+        "run".to_string(),
+        "--prompt".to_string(),
+        "hi".to_string(),
+    ]);
+    assert_eq!(argv[1], "agent");
+    assert_eq!(argv.len(), 5);
+}
+
+#[test]
+fn rewrite_promotes_dot_to_folder() {
+    let argv = rewrite_path_positional(vec!["wish".to_string(), ".".to_string()]);
+    assert_eq!(argv, vec!["wish", "--folder", "."]);
+}
+
+#[test]
+fn rewrite_promotes_relative_path_to_folder() {
+    let argv = rewrite_path_positional(vec!["wish".to_string(), "./crates".to_string()]);
+    assert_eq!(argv, vec!["wish", "--folder", "./crates"]);
+}
+
+#[test]
+fn rewrite_promotes_absolute_path_to_folder() {
+    let argv = rewrite_path_positional(vec!["wish".to_string(), "/tmp/proj".to_string()]);
+    assert_eq!(argv, vec!["wish", "--folder", "/tmp/proj"]);
+}
+
+#[test]
+fn rewrite_leaves_url_alone() {
+    let argv = rewrite_path_positional(vec!["wish".to_string(), "wish://launch".to_string()]);
+    assert_eq!(argv, vec!["wish", "wish://launch"]);
+}
+
+#[test]
+fn rewrite_skips_when_folder_already_set() {
+    let argv = rewrite_path_positional(vec![
+        "wish".to_string(),
+        "--folder".to_string(),
+        "/a".to_string(),
+        "/b".to_string(),
+    ]);
+    // The trailing /b should be left alone since --folder was already explicit.
+    assert_eq!(argv[2], "/a");
+    assert_eq!(argv[3], "/b");
+}
+
+#[test]
+fn folder_positional_via_rewrite_then_clap() {
+    // Simulate `wish .` end-to-end: rewrite + clap.
+    let argv = rewrite_path_positional(vec!["wish".to_string(), ".".to_string()]);
+    let args = Args::try_parse_from(argv).unwrap();
+    assert_eq!(
+        args.app_args().folder.as_ref().and_then(|p| p.to_str()),
+        Some(".")
+    );
+}
+
+#[test]
+fn file_flag_parses_long_form() {
+    let args = Args::try_parse_from(["wish", "--file", "src/main.rs:42:5"]).unwrap();
+    assert_eq!(args.app_args().files, vec!["src/main.rs:42:5".to_string()]);
+}
+
+#[test]
+fn file_flag_parses_short_form_repeatable() {
+    let args = Args::try_parse_from(["wish", "-F", "a.rs", "-F", "b.rs"]).unwrap();
+    assert_eq!(
+        args.app_args().files,
+        vec!["a.rs".to_string(), "b.rs".to_string()]
+    );
+}
+
+#[test]
+fn rewrite_existing_file_in_cwd_becomes_file() {
+    // Cargo.toml exists in the wish_cli crate root, where these tests run.
+    let argv = rewrite_path_positional(vec!["wish".to_string(), "Cargo.toml".to_string()]);
+    assert_eq!(argv, vec!["wish", "--file", "Cargo.toml"]);
+}
+
+#[test]
+fn rewrite_file_with_line_column_suffix_becomes_file() {
+    let argv = rewrite_path_positional(vec!["wish".to_string(), "Cargo.toml:10:5".to_string()]);
+    assert_eq!(argv, vec!["wish", "--file", "Cargo.toml:10:5"]);
+}
+
+#[test]
+fn rewrite_file_with_line_only_suffix_becomes_file() {
+    let argv = rewrite_path_positional(vec!["wish".to_string(), "Cargo.toml:10".to_string()]);
+    assert_eq!(argv, vec!["wish", "--file", "Cargo.toml:10"]);
+}
+
+#[test]
+fn rewrite_subcommand_token_left_alone() {
+    // "agent" is a real subcommand, no path metacharacters, not on disk.
+    let argv = rewrite_path_positional(vec![
+        "wish".to_string(),
+        "agent".to_string(),
+        "run".to_string(),
+    ]);
+    assert_eq!(argv, vec!["wish", "agent", "run"]);
+}
+
+#[test]
+fn rewrite_folder_then_file_positionals() {
+    // wish ./src ./src/lib.rs → --folder ./src --file ./src/lib.rs
+    let argv = rewrite_path_positional(vec![
+        "wish".to_string(),
+        "./src".to_string(),
+        "./src/lib.rs".to_string(),
+    ]);
+    assert_eq!(
+        argv,
+        vec!["wish", "--folder", "./src", "--file", "./src/lib.rs"]
+    );
+}
+
+#[test]
+fn rewrite_two_files_no_folder() {
+    // wish src/lib.rs src/lib_tests.rs → --folder src/lib.rs (first treated as
+    // folder per Unknown-classification rule when file doesn't exist), --file …
+    // For *existing* files, the first becomes --file too — verify with files
+    // we know are present in this crate.
+    let argv = rewrite_path_positional(vec![
+        "wish".to_string(),
+        "src/lib.rs".to_string(),
+        "src/lib_tests.rs".to_string(),
+    ]);
+    assert_eq!(
+        argv,
+        vec!["wish", "--file", "src/lib.rs", "--file", "src/lib_tests.rs"]
+    );
+}
+
+#[test]
+fn rewrite_passthrough_flags_after_positional() {
+    let argv = rewrite_path_positional(vec![
+        "wish".to_string(),
+        ".".to_string(),
+        "--debug".to_string(),
+    ]);
+    assert_eq!(argv, vec!["wish", "--folder", ".", "--debug"]);
+}
+
+#[test]
+fn split_line_column_suffix_parses_line_only() {
+    assert_eq!(
+        super::split_line_column_suffix("path/to/file.rs:42"),
+        Some(("path/to/file.rs", ":42"))
+    );
+}
+
+#[test]
+fn split_line_column_suffix_parses_line_and_column() {
+    assert_eq!(
+        super::split_line_column_suffix("path/to/file.rs:42:5"),
+        Some(("path/to/file.rs", ":42:5"))
+    );
+}
+
+#[test]
+fn split_line_column_suffix_rejects_no_digits() {
+    assert_eq!(super::split_line_column_suffix("path/to/file.rs"), None);
+}
+
+#[test]
+fn split_line_column_suffix_rejects_windows_drive_letter() {
+    // "C:\\Users\\foo" — the colon is followed by '\', not digits.
+    assert_eq!(super::split_line_column_suffix(r"C:\Users\foo"), None);
 }

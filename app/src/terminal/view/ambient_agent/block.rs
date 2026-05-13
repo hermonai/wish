@@ -19,9 +19,9 @@ use crate::terminal::view::PADDING_LEFT;
 use super::AmbientAgentViewModel;
 const SETUP_TEXT_BOTTOM_MARGIN: f32 = 8.;
 
-/// Wraps a cloud-mode setup row with spacing appropriate for the run's harness: non-oz
+/// Wraps a cloud-mode setup row with spacing appropriate for the run's harness: non-hermon
 /// runs use terminal `PADDING_LEFT` so the row lines up with the harness CLI's command
-/// block once it takes over; Oz runs use the standard agent-output indent.
+/// block once it takes over; Hermon runs use the standard agent-output indent.
 pub(super) fn cloud_mode_setup_row_spacing(
     element: Box<dyn Element>,
     ambient_agent_view_model: &ModelHandle<AmbientAgentViewModel>,

@@ -1269,7 +1269,7 @@ fn launch_local_no_harness_child(
             parent_pane_id,
             name: request.name,
             parent_conversation_id: request.parent_conversation_id,
-            orchestration_harness: Some(Harness::Oz),
+            orchestration_harness: Some(Harness::Hermon),
             env_vars: HashMap::new(),
             task_context: None,
         },
@@ -1480,7 +1480,7 @@ fn launch_remote_child(
 
     let request_id = request.id;
     let orchestration_harness = if harness_type.trim().is_empty() {
-        Harness::Oz
+        Harness::Hermon
     } else {
         Harness::parse_orchestration_harness(&harness_type).unwrap_or(Harness::Unknown)
     };

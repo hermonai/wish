@@ -1,4 +1,8 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.1265 4H19.5948C20.8037 4 21.7838 5.01272 21.7838 6.26196V15.0437C21.7838 16.2929 20.8037 17.3057 19.5948 17.3057H8.90735L12.1265 4Z" fill="#FAF9F6"/>
-<path d="M10.1866 6.52075H4.17034C2.97169 6.52075 2 7.53347 2 8.78271V17.5644C2 18.8137 2.97169 19.8264 4.17034 19.8264H11.575L11.8719 18.5885H7.29183L10.1866 6.52075Z" fill="#FAF9F6"/>
+<!-- Wish Drive: a four-point sparkle inside a soft-rounded container, signalling
+     "your workspace, but smarter." Replaces the upstream Warp Drive double-page
+     glyph that previously lived in this file. Single-color flat fill matches the
+     other status-bar / panel icons (`#FAF9F6`). -->
+<path d="M4 5.5C4 4.67 4.67 4 5.5 4H18.5C19.33 4 20 4.67 20 5.5V18.5C20 19.33 19.33 20 18.5 20H5.5C4.67 20 4 19.33 4 18.5V5.5Z" stroke="#FAF9F6" stroke-width="1.5" fill="none"/>
+<path d="M12 7.5L13.3 10.7L16.5 12L13.3 13.3L12 16.5L10.7 13.3L7.5 12L10.7 10.7L12 7.5Z" fill="#FAF9F6"/>
 </svg>

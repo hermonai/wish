@@ -5739,7 +5739,7 @@ fn enter_fullscreen_agent_view_for_test(terminal: &ViewHandle<TerminalView>, app
 fn test_cloud_handoff_prefix_remains_text_when_handoff_flag_disabled() {
     App::test((), |mut app| async move {
         let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
-        let _oz_handoff_flag = FeatureFlag::OzHandoff.override_enabled(true);
+        let _oz_handoff_flag = FeatureFlag::HermonHandoff.override_enabled(true);
         let _handoff_local_cloud_flag = FeatureFlag::HandoffLocalCloud.override_enabled(false);
 
         initialize_app(&mut app);
@@ -5763,7 +5763,7 @@ fn test_cloud_handoff_prefix_remains_text_when_handoff_flag_disabled() {
 fn test_cloud_handoff_prefix_activates_when_handoff_flags_enabled() {
     App::test((), |mut app| async move {
         let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
-        let _oz_handoff_flag = FeatureFlag::OzHandoff.override_enabled(true);
+        let _oz_handoff_flag = FeatureFlag::HermonHandoff.override_enabled(true);
         let _handoff_local_cloud_flag = FeatureFlag::HandoffLocalCloud.override_enabled(true);
 
         initialize_app(&mut app);
@@ -5792,7 +5792,7 @@ fn test_cloud_handoff_prefix_activates_when_handoff_flags_enabled() {
 fn test_cloud_handoff_prefix_normal_deletion_does_not_exit() {
     App::test((), |mut app| async move {
         let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
-        let _oz_handoff_flag = FeatureFlag::OzHandoff.override_enabled(true);
+        let _oz_handoff_flag = FeatureFlag::HermonHandoff.override_enabled(true);
         let _handoff_local_cloud_flag = FeatureFlag::HandoffLocalCloud.override_enabled(true);
 
         initialize_app(&mut app);
@@ -5839,7 +5839,7 @@ fn test_cloud_handoff_prefix_normal_deletion_does_not_exit() {
 fn test_cloud_handoff_prefix_exits_on_backspace_at_beginning_of_buffer() {
     App::test((), |mut app| async move {
         let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
-        let _oz_handoff_flag = FeatureFlag::OzHandoff.override_enabled(true);
+        let _oz_handoff_flag = FeatureFlag::HermonHandoff.override_enabled(true);
         let _handoff_local_cloud_flag = FeatureFlag::HandoffLocalCloud.override_enabled(true);
 
         initialize_app(&mut app);
@@ -5879,7 +5879,7 @@ fn test_cloud_handoff_prefix_exits_on_backspace_at_beginning_of_buffer() {
 fn test_cloud_handoff_prefix_keeps_shell_prefix_as_query_text() {
     App::test((), |mut app| async move {
         let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
-        let _oz_handoff_flag = FeatureFlag::OzHandoff.override_enabled(true);
+        let _oz_handoff_flag = FeatureFlag::HermonHandoff.override_enabled(true);
         let _handoff_local_cloud_flag = FeatureFlag::HandoffLocalCloud.override_enabled(true);
 
         initialize_app(&mut app);
@@ -5910,7 +5910,7 @@ fn test_cloud_handoff_prefix_keeps_shell_prefix_as_query_text() {
 fn test_cloud_handoff_prefix_escape_exits_mode_preserving_prompt_text() {
     App::test((), |mut app| async move {
         let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
-        let _oz_handoff_flag = FeatureFlag::OzHandoff.override_enabled(true);
+        let _oz_handoff_flag = FeatureFlag::HermonHandoff.override_enabled(true);
         let _handoff_local_cloud_flag = FeatureFlag::HandoffLocalCloud.override_enabled(true);
 
         initialize_app(&mut app);
@@ -5946,7 +5946,7 @@ fn test_cloud_handoff_prefix_escape_exits_mode_preserving_prompt_text() {
 fn test_cloud_handoff_prefix_ignores_terminal_input_mode_toggle() {
     App::test((), |mut app| async move {
         let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
-        let _oz_handoff_flag = FeatureFlag::OzHandoff.override_enabled(true);
+        let _oz_handoff_flag = FeatureFlag::HermonHandoff.override_enabled(true);
         let _handoff_local_cloud_flag = FeatureFlag::HandoffLocalCloud.override_enabled(true);
 
         initialize_app(&mut app);

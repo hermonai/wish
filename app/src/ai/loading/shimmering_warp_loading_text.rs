@@ -7,8 +7,11 @@ use wishui::elements::shimmering_text::{
 use wishui::elements::Element;
 use wishui::{AppContext, SingletonEntity};
 
-/// Wish/Hermon icon glyph character.
-const WARP_GLYPH: &str = "\u{E500}";
+/// Glyph rendered before the "Wishing..." shimmering text. Was originally the
+/// upstream Warp brand glyph at PUA `U+E500` (only renders inside the bundled
+/// Roboto font); now the universally-rendered sparkles emoji which carries the
+/// "AI / wish / magic" semantic in any font, on any platform.
+const WARP_GLYPH: &str = "\u{2728}";
 
 /// Creates a shimmering text element with the Wish/Hermon glyph.
 pub fn shimmering_warp_loading_text(

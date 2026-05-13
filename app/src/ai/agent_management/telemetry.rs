@@ -9,7 +9,7 @@ use crate::ai::agent_management::cloud_setup_guide_view::SetupGuideDocs;
 #[derive(Clone, Copy, Debug, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SetupGuideStep {
-    /// Quick start banner: Visit Oz
+    /// Quick start banner: Visit Hermon
     VisitOz,
     /// Step 1: Create environment (slash command)
     CreateEnvironment,

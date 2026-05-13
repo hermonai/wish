@@ -1,6 +1,9 @@
 #![cfg_attr(target_family = "wasm", allow(dead_code))]
 
-use std::{env, fmt, path::Path};
+use std::{
+    env, fmt,
+    path::{Path, PathBuf},
+};
 
 use clap::{CommandFactory, Parser, Subcommand, ValueEnum};
 use url::Url;
@@ -32,10 +35,10 @@ pub mod schedule;
 pub mod secret;
 pub mod share;
 pub mod task;
-pub const OZ_RUN_ID_ENV: &str = "WISH_RUN_ID";
-pub const OZ_PARENT_RUN_ID_ENV: &str = "WISH_PARENT_RUN_ID";
-pub const OZ_CLI_ENV: &str = "WISH_CLI";
-pub const OZ_HARNESS_ENV: &str = "WISH_HARNESS";
+pub const WISH_RUN_ID_ENV: &str = "WISH_RUN_ID";
+pub const WISH_PARENT_RUN_ID_ENV: &str = "WISH_PARENT_RUN_ID";
+pub const WISH_CLI_ENV: &str = "WISH_CLI";
+pub const WISH_HARNESS_ENV: &str = "WISH_HARNESS";
 pub const SERVER_ROOT_URL_OVERRIDE_ENV: &str = "WISH_SERVER_ROOT_URL";
 pub const WS_SERVER_URL_OVERRIDE_ENV: &str = "WISH_WS_SERVER_URL";
 pub const SESSION_SHARING_SERVER_URL_OVERRIDE_ENV: &str = "WISH_SESSION_SHARING_SERVER_URL";
@@ -165,6 +168,230 @@ pub struct AppArgs {
     /// URLs to open in Warp.
     #[arg(hide = true)]
     pub urls: Vec<Url>,
+
+    /// Open the given folder as the active workspace project on launch.
+    /// Equivalent to running "Open Folder…" from the command palette after startup.
+    #[arg(
+        long = "folder",
+        short = 'd',
+        value_name = "PATH",
+        value_hint = clap::ValueHint::DirPath,
+    )]
+    pub folder: Option<PathBuf>,
+
+    /// Open the given file in a code pane on launch. Repeatable.
+    /// Accepts an optional line/column suffix: `path/to/file.rs:42:5`.
+    /// When no `--folder` is given, the file's canonical parent directory
+    /// is used as the workspace project root.
+    #[arg(
+        long = "file",
+        short = 'F',
+        value_name = "PATH",
+        value_hint = clap::ValueHint::FilePath,
+    )]
+    pub files: Vec<String>,
+}
+
+/// Rewrite `wish PATH …` into `wish --folder PATH …` or `wish --file PATH …`
+/// so users can launch a workspace with `wish .` (folder) or open a file with
+/// `wish src/main.rs:42:5` the way they do with editors.
+///
+/// The rewrite is deliberately conservative: each candidate positional is only
+/// rewritten when it is unambiguously a filesystem path — `.`, `..`, anything
+/// containing `/` (or `\` on Windows), anything starting with `~`, or an
+/// existing on-disk file/directory (possibly with a `:LINE[:COL]` suffix).
+/// Anything else is left alone so subcommands (`wish agent …`) and URL
+/// positionals (`wish wish://…`) keep working untouched.
+///
+/// Multiple file positionals are accepted: `wish src/a.rs src/b.rs` opens both.
+/// A directory positional must come first if mixed with files.
+fn rewrite_path_positional(argv: Vec<String>) -> Vec<String> {
+    // Find the index of the first non-flag arg after the binary name. Anything
+    // before that (flags) is left untouched; anything from that point on is
+    // considered for rewriting.
+    let Some(first_idx) = argv
+        .iter()
+        .enumerate()
+        .skip(1)
+        .find_map(|(i, a)| if a.starts_with('-') { None } else { Some(i) })
+    else {
+        return argv;
+    };
+
+    let first = &argv[first_idx];
+
+    // If --folder is already explicit, the user is driving clap directly. Don't
+    // reclassify subsequent tokens (the next one may be the *value* of --folder).
+    let folder_already_explicit = argv.iter().any(|a| {
+        a == "--folder" || a == "-d" || a.starts_with("--folder=") || a.starts_with("-d=")
+    });
+    if folder_already_explicit {
+        return argv;
+    }
+
+    // If the first non-flag arg is clearly a URL (contains `://`), leave the
+    // whole tail alone so URL positionals like `wish://launch` still flow
+    // through the urls vector. We deliberately use a strict `://` substring
+    // check instead of `Url::parse`, because Url's grammar accepts things like
+    // `Cargo.toml:10` as scheme=`Cargo.toml`, which would mis-classify files
+    // with `:LINE[:COL]` suffixes.
+    if first.contains("://") {
+        return argv;
+    }
+
+    // Likewise leave subcommands alone: if `first` doesn't look path-shaped and
+    // isn't an existing path, we assume it's a subcommand and bail.
+    if !looks_like_path(first) {
+        return argv;
+    }
+
+    // We're going to rewrite at least the first positional. Preserve everything
+    // before it (binary name + any pre-positional flags) verbatim, then walk the
+    // remaining args splitting flags-passthrough from positionals-to-classify.
+    let mut rewritten: Vec<String> = argv[..first_idx].to_vec();
+    let mut folder_seen = false;
+
+    let mut i = first_idx;
+    while i < argv.len() {
+        let arg = &argv[i];
+
+        // Once we hit a flag, stop reclassifying positionals — everything after
+        // belongs to whatever flag context follows. Forward the rest verbatim.
+        if arg.starts_with('-') {
+            rewritten.extend(argv[i..].iter().cloned());
+            break;
+        }
+
+        let classification = classify_path_positional(arg);
+        match classification {
+            PathPositional::Directory => {
+                if folder_seen {
+                    // Already have a folder — treat extras as files (so
+                    // `wish proj/ extra/` doesn't silently drop the second).
+                    rewritten.push("--file".to_string());
+                    rewritten.push(arg.clone());
+                } else {
+                    rewritten.push("--folder".to_string());
+                    rewritten.push(arg.clone());
+                    folder_seen = true;
+                }
+            }
+            PathPositional::File => {
+                rewritten.push("--file".to_string());
+                rewritten.push(arg.clone());
+            }
+            PathPositional::Unknown => {
+                // Looked path-shaped but doesn't exist on disk. Prefer treating
+                // as a folder for the first such arg (matches `wish ./new-proj`
+                // for a not-yet-created dir); subsequent unknowns are files.
+                if folder_seen {
+                    rewritten.push("--file".to_string());
+                    rewritten.push(arg.clone());
+                } else {
+                    rewritten.push("--folder".to_string());
+                    rewritten.push(arg.clone());
+                    folder_seen = true;
+                }
+            }
+        }
+
+        i += 1;
+    }
+
+    rewritten
+}
+
+enum PathPositional {
+    Directory,
+    File,
+    Unknown,
+}
+
+/// Quick path-shape test. Returns true for anything that clearly names a
+/// filesystem location (existing or not). Subcommands like `agent` or `mcp`
+/// fall through to false because they don't carry path metacharacters.
+fn looks_like_path(s: &str) -> bool {
+    if s == "." || s == ".." {
+        return true;
+    }
+    if s.starts_with("./")
+        || s.starts_with("../")
+        || s.starts_with('~')
+        || s.starts_with('/')
+        || s.contains('/')
+    {
+        return true;
+    }
+    if cfg!(windows) && s.contains('\\') {
+        return true;
+    }
+    let raw = std::path::Path::new(s);
+    if raw.is_dir() || raw.is_file() {
+        return true;
+    }
+    // Allow `wish foo.rs:42:5` for files in cwd: strip a trailing `:N` or `:N:N`
+    // suffix and re-check existence.
+    if let Some((base, _)) = split_line_column_suffix(s) {
+        let p = std::path::Path::new(base);
+        if p.is_file() || p.is_dir() {
+            return true;
+        }
+    }
+    false
+}
+
+fn classify_path_positional(s: &str) -> PathPositional {
+    let raw = std::path::Path::new(s);
+    if raw.is_dir() {
+        return PathPositional::Directory;
+    }
+    if raw.is_file() {
+        return PathPositional::File;
+    }
+    // Try stripping `:LINE[:COL]` for files like `src/main.rs:42:5`.
+    if let Some((base, _)) = split_line_column_suffix(s) {
+        let p = std::path::Path::new(base);
+        if p.is_file() {
+            return PathPositional::File;
+        }
+        if p.is_dir() {
+            return PathPositional::Directory;
+        }
+    }
+    PathPositional::Unknown
+}
+
+/// Split a `path:line` or `path:line:column` suffix off the end of `s`.
+/// Returns `Some((base, suffix))` if a numeric `:line[:col]` is detected.
+/// Conservative — only accepts pure digits to avoid mangling Windows drive
+/// letters like `C:\Users\…` (the colon there is followed by `\`, not digits).
+fn split_line_column_suffix(s: &str) -> Option<(&str, &str)> {
+    let bytes = s.as_bytes();
+    let mut i = bytes.len();
+
+    let mut saw_digit = false;
+    while i > 0 && bytes[i - 1].is_ascii_digit() {
+        i -= 1;
+        saw_digit = true;
+    }
+    if !saw_digit || i == 0 || bytes[i - 1] != b':' {
+        return None;
+    }
+    // First (rightmost) digit run found. Now see if there's another `:NUM`
+    // group before it (the line in `file:line:col`).
+    let mut j = i - 1;
+    let mut saw_inner_digit = false;
+    while j > 0 && bytes[j - 1].is_ascii_digit() {
+        j -= 1;
+        saw_inner_digit = true;
+    }
+    if saw_inner_digit && j > 0 && bytes[j - 1] == b':' {
+        // Form: PATH:LINE:COL
+        Some((&s[..j - 1], &s[j - 1..]))
+    } else {
+        // Form: PATH:LINE
+        Some((&s[..i - 1], &s[i - 1..]))
+    }
 }
 
 impl Args {
@@ -225,7 +452,7 @@ impl Args {
                     }
                 }
 
-                if !FeatureFlag::OzIdentityFederation.is_enabled() {
+                if !FeatureFlag::HermonIdentityFederation.is_enabled() {
                     let args: Vec<String> = env::args().collect();
                     if args.len() > 1 && args[1] == "federate" {
                         eprintln!("error: unrecognized subcommand 'federate'\n");
@@ -245,7 +472,13 @@ impl Args {
 
                 let command = Self::clap_command();
 
-                command.try_get_matches()
+                // Allow `wish [PATH]` (e.g. `wish .`, `wish ./project`, `wish /abs/path`)
+                // by rewriting a bare path positional to `--folder PATH` before clap parses.
+                // We only rewrite when the arg is unambiguously a filesystem path so this
+                // doesn't shadow subcommands like `wish agent` or URL positionals.
+                let argv = rewrite_path_positional(env::args().collect());
+
+                command.try_get_matches_from(argv)
                     .and_then(|matches| Self::from_arg_matches(&matches))
                     .unwrap_or_else(|err| {
                         // We attach a console to ensure help and error messages are printed
@@ -318,7 +551,7 @@ impl Args {
         }
 
         // Hide the federate subcommand from help text.
-        if !FeatureFlag::OzIdentityFederation.is_enabled() {
+        if !FeatureFlag::HermonIdentityFederation.is_enabled() {
             command = command.mut_subcommand("federate", |c| c.hide(true));
         }
 
@@ -550,7 +783,7 @@ pub enum CliCommand {
     #[command(subcommand)]
     Federate(crate::federate::FederateCommand),
 
-    /// Support commands for agent harnesses to integrate with Oz.
+    /// Support commands for agent harnesses to integrate with Hermon.
     #[command(hide = true)]
     HarnessSupport(crate::harness_support::HarnessSupportArgs),
 

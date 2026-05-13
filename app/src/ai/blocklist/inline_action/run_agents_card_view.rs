@@ -279,13 +279,13 @@ impl RunAgentsCardView {
                 state.orch.resolve_from_config(config);
             }
         }
-        // For Oz (or empty harness), default to the conversation's base
+        // For Hermon (or empty harness), default to the conversation's base
         // model so the picker shows e.g. "auto (genius)" instead of the
         // system default.
         if state.orch.model_id.is_empty() {
             let harness =
                 wish_cli::agent::Harness::parse_orchestration_harness(&state.orch.harness_type);
-            if matches!(harness, Some(wish_cli::agent::Harness::Oz) | None) {
+            if matches!(harness, Some(wish_cli::agent::Harness::Hermon) | None) {
                 if let Some(base) = block_model.base_model(ctx).map(|id| id.to_string()) {
                     state.orch.model_id = base;
                 }
@@ -397,7 +397,7 @@ impl RunAgentsCardView {
         });
 
         // Repopulate the model picker when available Warp LLMs change.
-        // Only relevant for Oz harness — non-Oz harnesses get their
+        // Only relevant for Hermon harness — non-Hermon harnesses get their
         // model catalog from HarnessAvailabilityModel, not LLMPreferences.
         ctx.subscribe_to_model(&LLMPreferences::handle(ctx), |me, _, event, ctx| {
             if let LLMPreferencesEvent::UpdatedAvailableLLMs = event {
@@ -471,7 +471,7 @@ impl RunAgentsCardView {
         if new_state.orch.model_id.is_empty() {
             let harness =
                 wish_cli::agent::Harness::parse_orchestration_harness(&new_state.orch.harness_type);
-            if matches!(harness, Some(wish_cli::agent::Harness::Oz) | None) {
+            if matches!(harness, Some(wish_cli::agent::Harness::Hermon) | None) {
                 if let Some(base) = self.block_model.base_model(ctx).map(|id| id.to_string()) {
                     new_state.orch.model_id = base;
                 }

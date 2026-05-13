@@ -160,7 +160,7 @@ fn test_from_task_includes_linked_directory_when_run_id_matches() {
 fn test_from_conversation_metadata_passes_harness_through() {
     for harness in [
         None,
-        Some(Harness::Oz),
+        Some(Harness::Hermon),
         Some(Harness::Claude),
         Some(Harness::Gemini),
         Some(Harness::Unknown),
@@ -204,11 +204,11 @@ fn test_from_task_resolves_harness() {
             let mut task = base_task.clone();
             task.agent_config_snapshot = Some(AgentConfigSnapshot::default());
             let data = ConversationDetailsData::from_task(&task, None, None, ctx);
-            assert_eq!(data.harness, Some(Harness::Oz));
+            assert_eq!(data.harness, Some(Harness::Hermon));
 
             // Snapshot with explicit harness_type.
             for harness in [
-                Harness::Oz,
+                Harness::Hermon,
                 Harness::Claude,
                 Harness::Gemini,
                 Harness::Unknown,

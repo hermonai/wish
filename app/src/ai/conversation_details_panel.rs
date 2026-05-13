@@ -284,7 +284,7 @@ impl ConversationDetailsData {
         let harness = conversation
             .server_metadata()
             .map(|m| Harness::from(m.harness))
-            .or(Some(Harness::Oz));
+            .or(Some(Harness::Hermon));
 
         ConversationDetailsData {
             mode: PanelMode::Conversation {
@@ -344,7 +344,7 @@ impl ConversationDetailsData {
                 .harness
                 .as_ref()
                 .map(|h| h.harness_type)
-                .or(Some(Harness::Oz))
+                .or(Some(Harness::Hermon))
         });
 
         ConversationDetailsData {
@@ -689,9 +689,9 @@ impl ConversationDetailsPanel {
                 if status.is_working() {
                     return None;
                 }
-                // Hide for non-Oz harnesses (e.g. Claude, Gemini): they can't be
+                // Hide for non-Hermon harnesses (e.g. Claude, Gemini): they can't be
                 // forked into a local Warp conversation.
-                if matches!(self.data.harness, Some(h) if h != Harness::Oz) {
+                if matches!(self.data.harness, Some(h) if h != Harness::Hermon) {
                     return None;
                 }
 
@@ -741,7 +741,7 @@ impl ConversationDetailsPanel {
         }
     }
 
-    /// Builds the Oz web UI URL for a task, if a task_id is available.
+    /// Builds the Hermon web UI URL for a task, if a task_id is available.
     fn oz_run_url(data: &ConversationDetailsData) -> Option<String> {
         if let PanelMode::Task {
             task_id: Some(task_id),

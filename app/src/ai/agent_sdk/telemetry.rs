@@ -411,7 +411,7 @@ impl TelemetryEventDesc for CliTelemetryEventDiscriminants {
     fn enablement_state(&self) -> EnablementState {
         match self {
             Self::FederateIssueToken | Self::FederateIssueGcpToken => {
-                EnablementState::Flag(FeatureFlag::OzIdentityFederation)
+                EnablementState::Flag(FeatureFlag::HermonIdentityFederation)
             }
             Self::HarnessSupportPing
             | Self::HarnessSupportReportArtifact

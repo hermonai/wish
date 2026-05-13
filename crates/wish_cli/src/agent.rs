@@ -123,10 +123,14 @@ impl HiddenComputerUseArgs {
 #[derive(Debug, Copy, Clone, ValueEnum, Eq, PartialEq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Harness {
-    /// Use Warp's built-in MAA infrastructure (default).
+    /// Use Hermon's built-in MAA infrastructure (default). Wire format remains
+    /// `"oz"` so existing telemetry, persisted user prefs, and in-flight cloud
+    /// agent sessions continue to round-trip unchanged. Pre-rename CLI
+    /// invocations that pass `--harness hermon` still work via the clap alias.
     #[default]
-    #[value(name = "oz")]
-    Oz,
+    #[serde(rename = "oz", alias = "hermon")]
+    #[value(name = "hermon", alias = "oz")]
+    Hermon,
     /// Delegate to the `claude` CLI.
     #[value(name = "claude", alias = "claude-code")]
     Claude,
@@ -157,13 +161,13 @@ impl Harness {
     pub fn parse_local_child_harness(value: &str) -> Option<Self> {
         match Self::parse_orchestration_harness(value) {
             Some(harness @ (Self::Claude | Self::OpenCode | Self::Codex)) => Some(harness),
-            Some(Self::Oz) | Some(Self::Gemini) | Some(Self::Unknown) | None => None,
+            Some(Self::Hermon) | Some(Self::Gemini) | Some(Self::Unknown) | None => None,
         }
     }
 
     pub fn display_name(self) -> &'static str {
         match self {
-            Self::Oz => "Oz",
+            Self::Hermon => "Hermon",
             Self::Claude => "Claude Code",
             Self::OpenCode => "OpenCode",
             Self::Gemini => "Gemini CLI",
@@ -178,10 +182,13 @@ impl Harness {
     /// unrecognized names so callers can distinguish a future-server harness from a
     /// round-tripped [`Harness::Unknown`]; callers that want to fall back to `Unknown`
     /// should `.unwrap_or(Harness::Unknown)`. UI surfaces should treat `Unknown` as a
-    /// non-Oz, non-runnable harness.
+    /// non-Hermon, non-runnable harness.
     pub fn from_config_name(name: &str) -> Option<Self> {
         match name {
-            "oz" => Some(Harness::Oz),
+            // "oz" stays as the canonical wire string so existing
+            // `HarnessConfig::harness_type` values keep round-tripping. "hermon"
+            // is accepted as the forward-looking alias.
+            "oz" | "hermon" => Some(Harness::Hermon),
             "claude" => Some(Harness::Claude),
             "opencode" => Some(Harness::OpenCode),
             "gemini" => Some(Harness::Gemini),
@@ -196,9 +203,16 @@ impl Harness {
     /// The exhaustive match here forces every new [`Harness`] variant to declare a
     /// canonical name, which prevents `from_config_name` from silently falling back to
     /// `Unknown` when a new variant is added.
+    ///
+    /// We deliberately keep `"oz"` as the canonical wire string even though the
+    /// Rust identifier is now `Hermon`. Renaming the wire format would break:
+    /// (a) telemetry analytics filtering on `harness="oz"`, (b) persisted user
+    /// preferences, (c) in-flight cloud agent sessions whose `harness_type`
+    /// field has already been written. The forward-looking `"hermon"` value is
+    /// accepted via `from_config_name`'s alias.
     pub fn config_name(self) -> &'static str {
         match self {
-            Harness::Oz => "oz",
+            Harness::Hermon => "oz",
             Harness::Claude => "claude",
             Harness::OpenCode => "opencode",
             Harness::Gemini => "gemini",
@@ -228,9 +242,9 @@ pub enum AgentProfileCommand {
 /// Agent-related subcommands.
 #[derive(Debug, Clone, Subcommand)]
 pub enum AgentCommand {
-    /// Run a new Oz agent.
+    /// Run a new Hermon agent.
     Run(RunAgentArgs),
-    /// Dispatch an Oz agent that runs remotely.
+    /// Dispatch an Hermon agent that runs remotely.
     RunCloud(RunCloudArgs),
     /// Manage agent profiles.
     #[command(subcommand)]
@@ -269,7 +283,7 @@ pub struct RunAgentArgs {
     ///
     /// When used with --prompt, the skill provides the base context and the prompt is the task.
     ///
-    /// To automate a skill on a schedule, use `oz schedule create --skill <SPEC>`.
+    /// To automate a skill on a schedule, use `hermon schedule create --skill <SPEC>`.
     #[arg(long = "skill", value_name = "SPEC")]
     pub skill: Option<SkillSpec>,
 
@@ -346,7 +360,7 @@ pub struct RunAgentArgs {
     ///
     /// "oz" (default) uses Warp's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
-    #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Oz, hide = true)]
+    #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Hermon, hide = true)]
     pub harness: Harness,
 }
 
@@ -406,7 +420,7 @@ pub struct RunCloudArgs {
     ///
     /// When used with --prompt, the skill provides the base context and the prompt is the task.
     ///
-    /// To automate a skill on a schedule, use `oz schedule create --skill <SPEC>`.
+    /// To automate a skill on a schedule, use `hermon schedule create --skill <SPEC>`.
     #[arg(long = "skill", value_name = "SPEC")]
     pub skill: Option<SkillSpec>,
 
@@ -475,7 +489,7 @@ pub struct RunCloudArgs {
     ///
     /// "oz" (default) uses Warp's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
-    #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Oz, hide = true)]
+    #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Hermon, hide = true)]
     pub harness: Harness,
 
     /// Name of a managed secret for Claude Code harness authentication.

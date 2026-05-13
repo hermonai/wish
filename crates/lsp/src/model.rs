@@ -722,6 +722,16 @@ impl LspServerModel {
         Ok(self.diagnostics_by_path.get(path))
     }
 
+    /// Iterate over every file the server has published diagnostics for.
+    /// Used by the workspace-wide `DiagnosticsAggregator` to refresh its
+    /// state when this server first becomes available, so an aggregator
+    /// that registers after diagnostics have already arrived doesn't miss them.
+    pub fn iter_diagnostics(&self) -> impl Iterator<Item = (&Path, &DocumentDiagnostics)> {
+        self.diagnostics_by_path
+            .iter()
+            .map(|(path, diags)| (path.as_path(), diags))
+    }
+
     pub fn find_references(
         &self,
         path: PathBuf,
