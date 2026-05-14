@@ -598,7 +598,9 @@ impl Input {
                 .ambient_agent_view_model()
                 .map(|m| m.as_ref(app).selected_harness())
                 .unwrap_or(wish_cli::agent::Harness::Hermon);
-            if harness != wish_cli::agent::Harness::Hermon && !self.should_show_auth_secret_ftux(app) {
+            if harness != wish_cli::agent::Harness::Hermon
+                && !self.should_show_auth_secret_ftux(app)
+            {
                 row.add_child(ChildView::new(auth_secret_selector).finish());
             }
         }

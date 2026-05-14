@@ -106,7 +106,7 @@ impl ProjectButtons {
 
         Hoverable::new(mouse_state, move |state| {
             let icon_el = Container::new(
-                ConstrainedBox::new(icon.to_warpui_icon(icon_color).finish())
+                ConstrainedBox::new(icon.to_wishui_icon(icon_color).finish())
                     .with_height(20.)
                     .with_width(20.)
                     .finish(),

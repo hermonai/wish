@@ -50,8 +50,13 @@ impl NotificationFilter {
 pub enum NotificationSourceAgent {
     /// Hermon's first-party harness (the variant formerly named `Hermon`). Wire-format
     /// is not affected — this enum is in-process only.
-    Hermon { is_ambient: bool },
-    CLI { agent: CLIAgent, is_ambient: bool },
+    Hermon {
+        is_ambient: bool,
+    },
+    CLI {
+        agent: CLIAgent,
+        is_ambient: bool,
+    },
 }
 
 impl NotificationSourceAgent {

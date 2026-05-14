@@ -955,7 +955,7 @@ impl LoginSlideView {
             AI_FEATURES
         };
         for &item in feature_items {
-            let icon_el = ConstrainedBox::new(Icon::X.to_warpui_icon(feature_x_fill).finish())
+            let icon_el = ConstrainedBox::new(Icon::X.to_wishui_icon(feature_x_fill).finish())
                 .with_width(16.)
                 .with_height(16.)
                 .finish();

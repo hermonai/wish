@@ -75,7 +75,7 @@ impl SearchItem for WarpAISearchItem {
 
         let icon = if FeatureFlag::AgentMode.is_enabled() {
             UIIcon::Hermon
-                .to_warpui_icon(
+                .to_wishui_icon(
                     appearance
                         .theme()
                         .main_text_color(appearance.theme().accent()),
@@ -86,7 +86,7 @@ impl SearchItem for WarpAISearchItem {
                 item_background_color.into_solid(),
                 MinimumAllowedContrast::NonText,
             );
-            UIIcon::AiAssistant.to_warpui_icon(color.into()).finish()
+            UIIcon::AiAssistant.to_wishui_icon(color.into()).finish()
         };
 
         Container::new(

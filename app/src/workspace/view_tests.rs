@@ -278,6 +278,24 @@ fn transferred_tab_workspace(
     workspace
 }
 
+#[test]
+fn test_tab_bar_traffic_light_space_regression_for_resource_center_overlap() {
+    // Regression for #10139: the Resource Center/right panel can be open on
+    // Windows/Linux, but vertical-tabs and right-panel state should not decide
+    // whether the tab bar reserves space for titlebar controls.
+    let cases = [
+        (TrafficLightSide::Left, false),
+        (TrafficLightSide::Right, true),
+    ];
+
+    for (side, should_reserve_space) in cases {
+        assert_eq!(
+            should_reserve_traffic_light_space_in_tab_bar(side),
+            should_reserve_space
+        );
+    }
+}
+
 #[cfg(feature = "local_fs")]
 fn open_worktree_sidecar(workspace: &ViewHandle<Workspace>, app: &mut App) {
     workspace.update(app, |workspace, ctx| {
@@ -1821,7 +1839,7 @@ fn test_view_only_session() {
 
 #[test]
 // This tests the end-to-end behavior to correctly switch focus among panels.
-// (The only panels that can be focused currently are WD, workspace, & AI assistant.)
+// (The only panels that can be focused currently are WD, workspace, & the agent panel.)
 fn test_switch_focus_panels() {
     App::test((), |mut app| async move {
         initialize_app(&mut app);
@@ -1872,7 +1890,7 @@ fn test_switch_focus_panels() {
             );
         });
 
-        // Shift focus from workspace to right panel when AI assistant is open
+        // Shift focus from workspace to right panel when the agent panel is open
         workspace.update(&mut app, |view, ctx| {
             view.current_workspace_state.is_ai_assistant_panel_open = true;
             view.focus_right_panel(ctx);
@@ -2395,6 +2413,41 @@ fn test_vertical_tabs_panel_restored_open_when_show_in_restored_windows_enabled(
 }
 
 #[test]
+fn test_vertical_tabs_panel_closed_when_disabled_even_if_persisted_open() {
+    // Regression for #9505: when `vertical_tabs_panel_open=true` is persisted
+    // and the user then disables vertical tabs, restoring the workspace must
+    // not honor the stale snapshot — otherwise a dismiss underlay paints over
+    // the window and silently swallows every click.
+    let _vertical_tabs_guard = FeatureFlag::VerticalTabs.override_enabled(true);
+    App::test((), |mut app| async move {
+        initialize_app(&mut app);
+
+        // Snapshot the workspace with the panel open while vertical tabs are enabled.
+        app.update(|ctx| {
+            TabSettings::handle(ctx).update(ctx, |settings, ctx| {
+                report_if_error!(settings.use_vertical_tabs.set_value(true, ctx));
+            });
+        });
+        let workspace = mock_workspace(&mut app);
+        let open_snapshot = workspace.update(&mut app, |workspace, ctx| {
+            workspace.vertical_tabs_panel_open = true;
+            workspace.snapshot(ctx.window_id(), false, ctx)
+        });
+
+        // Disable vertical tabs, then restore. The panel must stay closed.
+        app.update(|ctx| {
+            TabSettings::handle(ctx).update(ctx, |settings, ctx| {
+                report_if_error!(settings.use_vertical_tabs.set_value(false, ctx));
+            });
+        });
+        let restored = restored_workspace(&mut app, open_snapshot);
+        restored.read(&app, |workspace, _| {
+            assert!(!workspace.vertical_tabs_panel_open);
+        });
+    });
+}
+
+#[test]
 fn test_vertical_tabs_panel_defaults_open_for_new_window_when_vertical_tabs_enabled() {
     let _vertical_tabs_guard = FeatureFlag::VerticalTabs.override_enabled(true);
 
@@ -2535,7 +2588,7 @@ fn test_pointer_opened_tab_configs_menu_does_not_select_top_item() {
         let workspace = mock_workspace(&mut app);
 
         workspace.update(&mut app, |workspace, ctx| {
-            workspace.toggle_new_session_dropdown_menu(Vector2F::zero(), false, ctx);
+            workspace.toggle_new_session_dropdown_menu(Vector2F::zero(), ctx);
 
             assert!(workspace.show_new_session_dropdown_menu.is_some());
             assert_eq!(

@@ -610,7 +610,7 @@ impl WorkflowArgSelector {
     fn render_search_icon(&self, appearance: &Appearance) -> Box<dyn Element> {
         ConstrainedBox::new(
             icons::Icon::SearchSmall
-                .to_warpui_icon(appearance.theme().active_ui_text_color())
+                .to_wishui_icon(appearance.theme().active_ui_text_color())
                 .finish(),
         )
         .with_width(12.)

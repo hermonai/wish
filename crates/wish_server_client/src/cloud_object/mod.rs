@@ -711,17 +711,17 @@ impl CloudObjectStatuses {
 
         let icon_and_tooltip_text = if should_show_local_only_indicator {
             Some((
-                Icon::Laptop.to_warpui_icon(theme.main_text_color(theme.surface_1())),
+                Icon::Laptop.to_wishui_icon(theme.main_text_color(theme.surface_1())),
                 SYNC_STATUS_TOOLTIP_LOCAL_ONLY,
             ))
         } else if should_show_syncing_indicator {
             Some((
-                Icon::Refresh.to_warpui_icon(theme.sub_text_color(theme.surface_2())),
+                Icon::Refresh.to_wishui_icon(theme.sub_text_color(theme.surface_2())),
                 SYNC_STATUS_TOOLTIP_INFLIGHT,
             ))
         } else if should_show_error_indicator {
             Some((
-                Icon::AlertTriangle.to_warpui_icon(Fill::Solid(theme.ui_error_color())),
+                Icon::AlertTriangle.to_wishui_icon(Fill::Solid(theme.ui_error_color())),
                 SYNC_STATUS_TOOLTIP_ERROR,
             ))
         } else {

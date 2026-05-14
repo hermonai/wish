@@ -385,7 +385,7 @@ impl PromptAlertView {
                         };
                     text_fragments.push(FormattedTextFragment::hyperlink(label, upgrade_url));
                 }
-                if UserWorkspaces::as_ref(app).is_byo_api_key_enabled() {
+                if UserWorkspaces::as_ref(app).is_byo_api_key_enabled(app) {
                     text_fragments.push(FormattedTextFragment::plain_text(" or "));
                     text_fragments.push(FormattedTextFragment::hyperlink_action(
                         "use your own API keys",
@@ -499,7 +499,7 @@ impl View for PromptAlertView {
             chip_row.add_child(
                 ConstrainedBox::new(
                     Icon::AlertTriangle
-                        .to_warpui_icon(error_color(appearance.theme()).into())
+                        .to_wishui_icon(error_color(appearance.theme()).into())
                         .finish(),
                 )
                 .with_width(icon_size)

@@ -7,9 +7,10 @@ use std::collections::HashMap;
 
 use ai::agent::action::{RunAgentsAgentRunConfig, RunAgentsExecutionMode, RunAgentsRequest};
 use ai::agent::action_result::{RunAgentsAgentOutcomeKind, RunAgentsResult};
-use ai::agent::orchestration_config::{
-    matches_active_config, OrchestrationConfig, OrchestrationConfigStatus,
-};
+use ai::agent::orchestration_config::{OrchestrationConfig, OrchestrationConfigStatus};
+
+use crate::ai::agent::conversation::AIConversationId;
+use crate::BlocklistAIHistoryModel;
 use ai::skills::SkillReference;
 use pathfinder_geometry::vector::vec2f;
 use std::rc::Rc;
@@ -90,20 +91,27 @@ pub struct RunAgentsEditState {
     pub summary: String,
     /// Run-wide skills propagated to each child at dispatch.
     pub skills: Vec<SkillReference>,
+    /// The plan that this RunAgents call is executing for.
+    pub plan_id: String,
 }
 
 impl RunAgentsEditState {
     pub fn from_request(req: &RunAgentsRequest) -> Self {
+        let mut orch = oc::OrchestrationEditState::from_run_agents_fields(
+            &req.model_id,
+            &req.harness_type,
+            &req.execution_mode,
+        );
+        // Carry the request's auth secret onto the edit state so an
+        // explicit value from a previous dispatch survives the round trip.
+        orch.auth_secret_name = req.harness_auth_secret_name.clone();
         Self {
-            orch: oc::OrchestrationEditState::from_run_agents_fields(
-                &req.model_id,
-                &req.harness_type,
-                &req.execution_mode,
-            ),
+            orch,
             agent_run_configs: req.agent_run_configs.clone(),
             base_prompt: req.base_prompt.clone(),
             summary: req.summary.clone(),
             skills: req.skills.clone(),
+            plan_id: req.plan_id.clone(),
         }
     }
 
@@ -116,6 +124,8 @@ impl RunAgentsEditState {
             harness_type: self.orch.harness_type.clone(),
             execution_mode: self.orch.execution_mode.clone(),
             agent_run_configs: self.agent_run_configs.clone(),
+            plan_id: self.plan_id.clone(),
+            harness_auth_secret_name: self.orch.auth_secret_name.clone(),
         }
     }
 }
@@ -135,6 +145,9 @@ impl OrchestrationControlAction for RunAgentsCardViewAction {
     }
     fn worker_host_changed(worker_host: String) -> Self {
         Self::WorkerHostChanged { worker_host }
+    }
+    fn auth_secret_changed(auth_secret_name: Option<String>) -> Self {
+        Self::AuthSecretChanged { auth_secret_name }
     }
 }
 
@@ -157,6 +170,7 @@ pub enum RunAgentsCardViewAction {
     HarnessChanged { harness_type: String },
     EnvironmentChanged { environment_id: String },
     WorkerHostChanged { worker_host: String },
+    AuthSecretChanged { auth_secret_name: Option<String> },
 }
 
 #[derive(Clone, Debug)]
@@ -169,8 +183,8 @@ pub struct RunAgentsCardView {
     state: RunAgentsEditState,
     handles: RunAgentsCardHandles,
     spawning: Option<RunAgentsSpawningSnapshot>,
-    /// Set when the active config was approved and matched the request,
-    /// causing immediate dispatch without user confirmation.
+    /// Set when an approved plan config triggered immediate dispatch
+    /// without user confirmation.
     auto_launched: bool,
     /// Set when the action has a `RunAgentsResult::Denied` result in
     /// history (e.g. orchestration was disabled at dispatch time).
@@ -190,30 +204,6 @@ pub struct RunAgentsCardView {
     /// UI-only per-harness model memory so switching harnesses preserves
     /// the user's previous model selection for each harness.
     saved_model_per_harness: HashMap<String, String>,
-}
-
-/// Returns `true` when the conditions for auto-launching are met.
-///
-/// Extracted from `try_auto_launch_on_stream_complete` so the
-/// decision logic can be unit-tested without constructing a full
-/// `RunAgentsCardView`.
-pub(crate) fn should_auto_launch(
-    auto_launched: bool,
-    is_denied: bool,
-    is_spawning: bool,
-    state: &RunAgentsEditState,
-    active_config: &Option<(OrchestrationConfig, OrchestrationConfigStatus)>,
-) -> bool {
-    if auto_launched || is_denied || is_spawning || state.agent_run_configs.is_empty() {
-        return false;
-    }
-    match active_config {
-        Some((config, status)) => {
-            let request = state.to_request();
-            status.is_approved() && matches_active_config(&request, config)
-        }
-        None => false,
-    }
 }
 
 /// Computes the `is_denied` flag at construction time.
@@ -236,6 +226,49 @@ fn is_opencode_on_remote(request: &RunAgentsRequest) -> bool {
         request.execution_mode,
         RunAgentsExecutionMode::Remote { .. }
     ) && request.harness_type.eq_ignore_ascii_case("opencode")
+}
+
+/// Resolves UI-only interactive defaults on edit state that has
+/// already had config-inherited fields resolved. These defaults are
+/// for the picker display and should NOT run before auto-launch
+/// matching.
+///
+/// 1. Defaults the Oz model to the conversation's base model.
+/// 2. Defaults Remote worker_host to "warp".
+/// 3. Defaults a Remote environment from settings / recency.
+fn resolve_interactive_defaults(
+    state: &mut RunAgentsEditState,
+    block_model: &dyn AIBlockModel<View = AIBlock>,
+    ctx: &AppContext,
+) {
+    if state.orch.model_id.is_empty() {
+        let harness =
+            wish_cli::agent::Harness::parse_orchestration_harness(&state.orch.harness_type);
+        if matches!(harness, Some(wish_cli::agent::Harness::Hermon) | None) {
+            if let Some(base) = block_model.base_model(ctx).map(|id| id.to_string()) {
+                state.orch.model_id = base;
+            }
+        }
+    }
+    if let RunAgentsExecutionMode::Remote {
+        environment_id,
+        worker_host,
+        ..
+    } = &state.orch.execution_mode
+    {
+        let needs_host = worker_host.is_empty();
+        let needs_env = environment_id.is_empty();
+        if needs_host {
+            state
+                .orch
+                .set_worker_host(oc::ORCHESTRATION_WARP_WORKER_HOST.to_string());
+        }
+        if needs_env {
+            if let Some(default_env) = oc::resolve_default_environment_id(ctx) {
+                state.orch.set_environment_id(default_env);
+            }
+        }
+    }
 }
 
 impl RunAgentsCardView {
@@ -261,37 +294,15 @@ impl RunAgentsCardView {
             false
         };
 
-        // Auto-launch when the active config is approved and matches
-        // the request — skip the confirmation card entirely.
-        // The active_config is now conversation-scoped so cross-conversation
-        // leakage is no longer possible.
-        // Also treat the action as denied when the config is explicitly
+        // Treat the action as denied when the config is explicitly
         // disapproved — the card will auto-deny via the subscription
         // once the action becomes blocked.
         let is_denied = compute_is_denied(is_denied, &active_config);
 
-        let mut state = RunAgentsEditState::from_request(request);
-        // When the LLM omits harness/model to inherit from the active
-        // config, resolve empty fields so the card shows the intended
-        // settings rather than defaults.
-        if let Some((config, status)) = &active_config {
-            if status.is_approved() {
-                state.orch.resolve_from_config(config);
-            }
-        }
-        // For Hermon (or empty harness), default to the conversation's base
-        // model so the picker shows e.g. "auto (genius)" instead of the
-        // system default.
-        if state.orch.model_id.is_empty() {
-            let harness =
-                wish_cli::agent::Harness::parse_orchestration_harness(&state.orch.harness_type);
-            if matches!(harness, Some(wish_cli::agent::Harness::Hermon) | None) {
-                if let Some(base) = block_model.base_model(ctx).map(|id| id.to_string()) {
-                    state.orch.model_id = base;
-                }
-            }
-        }
-        let auto_launched = should_auto_launch(false, is_denied, false, &state, &active_config);
+        // Auto-launch is deferred to try_auto_launch_on_stream_complete
+        // (called after streaming finishes and agent_run_configs is populated).
+        let state = RunAgentsEditState::from_request(request);
+        let auto_launched = false;
 
         let reject_keystroke = CTRL_C_KEYSTROKE.clone();
         let accept_keystroke = ENTER_KEYSTROKE.clone();
@@ -397,7 +408,7 @@ impl RunAgentsCardView {
         });
 
         // Repopulate the model picker when available Warp LLMs change.
-        // Only relevant for Hermon harness — non-Hermon harnesses get their
+        // Only relevant for Oz harness — non-Oz harnesses get their
         // model catalog from HarnessAvailabilityModel, not LLMPreferences.
         ctx.subscribe_to_model(&LLMPreferences::handle(ctx), |me, _, event, ctx| {
             if let LLMPreferencesEvent::UpdatedAvailableLLMs = event {
@@ -414,15 +425,24 @@ impl RunAgentsCardView {
             }
         });
 
-        // Repopulate harness and model pickers when the server-provided
-        // harness list or harness model catalogs change.
+        // Repopulate pickers when the server-provided harness list,
+        // harness model catalogs, or per-harness auth secrets change.
+        // Without an `AuthSecretsLoaded` handler the picker stays on
+        // "Loading…" forever after the lazy fetch completes.
         ctx.subscribe_to_model(
             &HarnessAvailabilityModel::handle(ctx),
-            |me, _, event, ctx| {
-                if let HarnessAvailabilityEvent::Changed = event {
+            |me, _, event, ctx| match event {
+                HarnessAvailabilityEvent::Changed
+                | HarnessAvailabilityEvent::AuthSecretsLoaded
+                | HarnessAvailabilityEvent::AuthSecretCreated { .. }
+                | HarnessAvailabilityEvent::AuthSecretsFetchFailed => {
+                    // Repopulate on fetch failure too, otherwise the picker
+                    // would stay on the "Loading…" placeholder we wrote
+                    // when the fetch started.
                     oc::repopulate_all_pickers(&mut me.state.orch, &me.handles.pickers, ctx);
                     ctx.notify();
                 }
+                HarnessAvailabilityEvent::AuthSecretCreationFailed { .. } => {}
             },
         );
 
@@ -477,6 +497,14 @@ impl RunAgentsCardView {
                 }
             }
         }
+        // The proto-derived state never has an auth secret. Re-seed from
+        // the persisted per-harness setting so a plan-card selection (or
+        // a previous confirmation-card pick) is honored at dispatch time,
+        // even if the user never touches the picker on this card.
+        if new_state.orch.auth_secret_name.is_none() {
+            new_state.orch.auth_secret_name =
+                oc::resolve_default_auth_secret_for_harness(&new_state.orch.harness_type, ctx);
+        }
         if self.state != new_state {
             let harness_or_model_changed = self.state.orch.harness_type
                 != new_state.orch.harness_type
@@ -497,21 +525,65 @@ impl RunAgentsCardView {
     /// the request is fully populated.  Called from
     /// `AIBlock::handle_complete_output` so we don't act on partial
     /// streaming chunks that arrive with an empty `agent_run_configs`.
-    pub fn try_auto_launch_on_stream_complete(&mut self, ctx: &mut ViewContext<Self>) {
-        if should_auto_launch(
-            self.auto_launched,
-            self.is_denied,
-            self.spawning.is_some(),
-            &self.state,
-            &self.active_config,
-        ) {
-            self.auto_launched = true;
-            // Don't call execute_run_agents here — the action
-            // hasn't been queued as Blocked yet. The subscription
-            // on ActionBlockedOnUserConfirmation will dispatch it
-            // once the action model is ready.
-            ctx.notify();
+    pub fn try_auto_launch_on_stream_complete(
+        &mut self,
+        conversation_id: AIConversationId,
+        ctx: &mut ViewContext<Self>,
+    ) {
+        // Always refresh active_config from the conversation on stream
+        // complete. At card construction time plan_id may have been empty
+        // (not yet streamed), and even if it was present the user may have
+        // toggled approval mid-stream. Re-reading ensures we have the
+        // latest snapshot.
+        if !self.state.plan_id.is_empty() {
+            self.active_config = BlocklistAIHistoryModel::as_ref(ctx)
+                .conversation(&conversation_id)
+                .and_then(|conv| {
+                    conv.orchestration_config_for_plan(&self.state.plan_id)
+                        .map(|(c, s)| (c.clone(), s))
+                });
+            // Re-evaluate denied status with the refreshed config.
+            self.is_denied = compute_is_denied(self.is_denied, &self.active_config);
         }
+        // If there's an approved config for this plan, the user has
+        // already approved these settings — auto-launch without
+        // needing to match individual fields.
+        if let Some((config, status)) = &self.active_config {
+            if status.is_approved()
+                && !self.auto_launched
+                && !self.is_denied
+                && self.spawning.is_none()
+                && !self.state.agent_run_configs.is_empty()
+            {
+                self.state.orch.override_from_approved_config(config);
+
+                // Always re-resolve the auth secret from settings keyed by
+                // the (now authoritative) harness from the approved config.
+                // Unconditional — not gated on `is_none()` — because if
+                // streaming had set `auth_secret_name` based on a different
+                // (proto-suggested) harness, the value belongs to that
+                // harness and must not be carried forward; otherwise we'd
+                // route e.g. a Codex secret name into Claude's auth field
+                // in `launch_remote_child`.
+                self.state.orch.auth_secret_name =
+                    oc::resolve_default_auth_secret_for_harness(&self.state.orch.harness_type, ctx);
+
+                self.auto_launched = true;
+                ctx.notify();
+                return;
+            }
+        }
+
+        // No approved config — the confirmation card will be shown.
+        // Resolve from config (if any) then apply interactive defaults
+        // so the pickers display sensible values.
+        if let Some((config, status)) = &self.active_config {
+            if status.is_approved() {
+                self.state.orch.resolve_from_config(config);
+            }
+        }
+        resolve_interactive_defaults(&mut self.state, &*self.block_model, ctx);
+        oc::repopulate_all_pickers(&mut self.state.orch, &self.handles.pickers, ctx);
     }
 
     /// Validates and dispatches the resolved request.
@@ -603,6 +675,28 @@ impl RunAgentsCardView {
             oc::populate_host_picker(&handle, initial_host, ctx);
             Self::subscribe_picker_close(&handle, ctx);
             self.handles.pickers.host_picker = Some(handle);
+        }
+
+        if self.handles.pickers.auth_secret_picker.is_none() {
+            // Seed from the request's secret name first; otherwise fall
+            // back to the persisted per-harness selection so the picker
+            // matches what cloud-mode would show.
+            if self.state.orch.auth_secret_name.is_none() {
+                self.state.orch.auth_secret_name =
+                    oc::resolve_default_auth_secret_for_harness(&self.state.orch.harness_type, ctx);
+            }
+            let initial_secret = self.state.orch.auth_secret_name.clone();
+            let harness_type = self.state.orch.harness_type.clone();
+            let handle = oc::new_standard_picker_dropdown(&colors, ctx);
+            Self::set_upward_menu_position(&handle, ctx);
+            oc::populate_auth_secret_picker_for_harness(
+                &handle,
+                initial_secret.as_deref(),
+                &harness_type,
+                ctx,
+            );
+            Self::subscribe_picker_close(&handle, ctx);
+            self.handles.pickers.auth_secret_picker = Some(handle);
         }
 
         self.sync_picker_selections(ctx);
@@ -823,10 +917,20 @@ impl TypedActionView for RunAgentsCardView {
             }
             RunAgentsCardViewAction::EnvironmentChanged { environment_id } => {
                 self.state.orch.set_environment_id(environment_id.clone());
+                oc::persist_environment_selection(environment_id, ctx);
                 ctx.notify();
             }
             RunAgentsCardViewAction::WorkerHostChanged { worker_host } => {
                 self.state.orch.set_worker_host(worker_host.clone());
+                ctx.notify();
+            }
+            RunAgentsCardViewAction::AuthSecretChanged { auth_secret_name } => {
+                oc::apply_auth_secret_change(
+                    &mut self.state.orch,
+                    &self.handles.pickers,
+                    auth_secret_name.clone(),
+                    ctx,
+                );
                 ctx.notify();
             }
         }

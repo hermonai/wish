@@ -168,7 +168,7 @@ impl NodeVersionPopupView {
             Container::new(
                 ConstrainedBox::new(
                     icons::Icon::NodeJS
-                        .to_warpui_icon(styles.tertiary_text_color.into())
+                        .to_wishui_icon(styles.tertiary_text_color.into())
                         .finish(),
                 )
                 .with_width(24.)
@@ -228,7 +228,7 @@ impl NodeVersionPopupView {
             Container::new(
                 ConstrainedBox::new(
                     icons::Icon::NodeJS
-                        .to_warpui_icon(styles.tertiary_text_color.into())
+                        .to_wishui_icon(styles.tertiary_text_color.into())
                         .finish(),
                 )
                 .with_width(24.)

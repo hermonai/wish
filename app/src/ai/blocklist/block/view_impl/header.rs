@@ -163,7 +163,7 @@ fn render_attached_context_chip(
                         Container::new(
                             ConstrainedBox::new(
                                 Icon::Paperclip
-                                    .to_warpui_icon(block_count_color.into())
+                                    .to_wishui_icon(block_count_color.into())
                                     .finish(),
                             )
                             .with_height(font_size)

@@ -108,7 +108,7 @@ impl FreeTierLimitHitModal {
                 Container::new(
                     ConstrainedBox::new(
                         Icon::CheckCircleBroken
-                            .to_warpui_icon(Fill::Solid(theme.ansi_fg_green()))
+                            .to_wishui_icon(Fill::Solid(theme.ansi_fg_green()))
                             .finish(),
                     )
                     .with_width(14.)
@@ -240,7 +240,7 @@ impl FreeTierLimitHitModal {
                                         Container::new(
                                             ConstrainedBox::new(
                                                 Icon::CheckCircleBroken
-                                                    .to_warpui_icon(Fill::Solid(theme.ansi_fg_green()))
+                                                    .to_wishui_icon(Fill::Solid(theme.ansi_fg_green()))
                                                     .finish(),
                                             )
                                             .with_width(14.)
@@ -283,7 +283,7 @@ impl FreeTierLimitHitModal {
                                         Container::new(
                                             ConstrainedBox::new(
                                                 Icon::CheckCircleBroken
-                                                    .to_warpui_icon(Fill::Solid(theme.ansi_fg_green()))
+                                                    .to_wishui_icon(Fill::Solid(theme.ansi_fg_green()))
                                                     .finish(),
                                             )
                                             .with_width(14.)

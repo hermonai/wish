@@ -79,8 +79,8 @@ use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
-use warp_multi_agent_api::{message, Task, ToolType};
 use wish_core::assertions::safe_assert;
+use wish_multi_agent_api::{message, Task, ToolType};
 use wishui::r#async::{SpawnedFutureHandle, Timer};
 
 use super::orchestration_event_streamer::{
@@ -136,6 +136,15 @@ impl SessionContext {
     pub fn new_for_test() -> Self {
         SessionContext {
             session_type: None,
+            shell: None,
+            current_working_directory: None,
+        }
+    }
+
+    #[cfg(test)]
+    pub fn new_with_session_type_for_test(session_type: Option<SessionType>) -> Self {
+        SessionContext {
+            session_type,
             shell: None,
             current_working_directory: None,
         }
@@ -743,11 +752,11 @@ impl BlocklistAIController {
         };
         inputs.push(ai_input);
 
-        // Piggyback any pending orchestration config update for this conversation.
-        let taken_dirty_event = AIDocumentModel::handle(ctx).update(ctx, |model, _| {
-            model.take_dirty_orchestration_event(&conversation_id)
+        // Piggyback any pending orchestration config updates for this conversation.
+        let taken_dirty_events = AIDocumentModel::handle(ctx).update(ctx, |model, _| {
+            model.take_dirty_orchestration_events(&conversation_id)
         });
-        if let Some(ref dirty_event) = taken_dirty_event {
+        for dirty_event in &taken_dirty_events {
             inputs.push(AIAgentInput::OrchestrationConfigUpdate {
                 plan_id: dirty_event.plan_id.clone(),
                 config: dirty_event.config.clone(),
@@ -776,13 +785,13 @@ impl BlocklistAIController {
             ctx,
         );
 
-        // If the request failed, re-insert the dirty event so it isn't
+        // If the request failed, re-insert the dirty events so they aren't
         // silently lost.
         if let Err(e) = &send_result {
             log::error!("Failed to send agent request: {e:?}");
-            if let Some(dirty_event) = taken_dirty_event {
+            if !taken_dirty_events.is_empty() {
                 AIDocumentModel::handle(ctx).update(ctx, |model, _| {
-                    model.set_dirty_orchestration_event(conversation_id, dirty_event);
+                    model.set_dirty_orchestration_events(conversation_id, taken_dirty_events);
                 });
             }
         }
@@ -2107,6 +2116,7 @@ impl BlocklistAIController {
                 self.terminal_view_id,
                 is_autoexecute_override,
                 false,
+                false,
                 ctx,
             )
         });
@@ -2392,6 +2402,15 @@ impl BlocklistAIController {
             .try_cancel_stream(stream_id, reason, ctx)
     }
 
+    pub fn has_active_stream_for_conversation(
+        &self,
+        conversation_id: AIConversationId,
+        app: &AppContext,
+    ) -> bool {
+        self.in_flight_response_streams
+            .has_active_stream_for_conversation(conversation_id, app)
+    }
+
     /// Cancels 'progress' for the active conversation if there is one:
     ///  * If there is an in-flight request, cancels it.
     ///  * Else, if the request finished, but actions from the response are pending or mid-execution, cancels all of them.
@@ -2508,7 +2527,7 @@ impl BlocklistAIController {
                             return;
                         };
                         match event {
-                            warp_multi_agent_api::response_event::Type::Init(init_event) => {
+                            wish_multi_agent_api::response_event::Type::Init(init_event) => {
                                 history_model.update(ctx, |history_model, ctx| {
                                     history_model.initialize_output_for_response_stream(
                                         &stream_id,
@@ -2529,7 +2548,7 @@ impl BlocklistAIController {
                                     }
                                 });
                             }
-                            warp_multi_agent_api::response_event::Type::Finished(
+                            wish_multi_agent_api::response_event::Type::Finished(
                                 finished_event,
                             ) => {
                                 self.handle_response_stream_finished(
@@ -2540,7 +2559,7 @@ impl BlocklistAIController {
                                     ctx,
                                 );
                             }
-                            warp_multi_agent_api::response_event::Type::ClientActions(actions) => {
+                            wish_multi_agent_api::response_event::Type::ClientActions(actions) => {
                                 let client_actions = actions.actions;
                                 let apply_result =
                                     history_model.update(ctx, |history_model, ctx| {
@@ -2818,7 +2837,7 @@ impl BlocklistAIController {
     pub(super) fn handle_response_stream_finished(
         &mut self,
         stream_id: &ResponseStreamId,
-        mut finished_event: warp_multi_agent_api::response_event::StreamFinished,
+        mut finished_event: wish_multi_agent_api::response_event::StreamFinished,
         conversation_id: AIConversationId,
         did_request_contain_user_query: bool,
         ctx: &mut ModelContext<Self>,
@@ -2841,7 +2860,7 @@ impl BlocklistAIController {
 
         let history_model = BlocklistAIHistoryModel::handle(ctx);
         match finished_event.reason {
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::Done(_)) | None => {
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::Done(_)) | None => {
                 history_model.update(ctx, |history_model, ctx| {
                     history_model.mark_response_stream_completed_successfully(
                         stream_id,
@@ -2851,7 +2870,7 @@ impl BlocklistAIController {
                     );
                 });
             }
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::Other(_)) => {
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::Other(_)) => {
                 let error_message = "Response stream finished unexpectedly (with finish reason `Other`).";
                 history_model.update(ctx, |history_model, ctx| {
                     history_model.mark_response_stream_completed_with_error(
@@ -2867,7 +2886,7 @@ impl BlocklistAIController {
                     );
                 });
             }
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::ContextWindowExceeded(_)) => {
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::ContextWindowExceeded(_)) => {
                 let error_message = "Input exceeded context window limit.";
                 history_model.update(ctx, |history_model, ctx| {
                     history_model.mark_response_stream_completed_with_error(
@@ -2879,7 +2898,7 @@ impl BlocklistAIController {
                     );
                 });
             }
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::QuotaLimit(_)) => {
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::QuotaLimit(_)) => {
                 history_model.update(ctx, |history_model, ctx| {
                     history_model.mark_response_stream_completed_with_error(
                         RenderableAIError::QuotaLimit,
@@ -2890,7 +2909,7 @@ impl BlocklistAIController {
                     );
                 });
             }
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::LlmUnavailable(_)) => {
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::LlmUnavailable(_)) => {
                 let error_message = "The LLM is currently unavailable.";
                 history_model.update(ctx, |history_model, ctx| {
                     history_model.mark_response_stream_completed_with_error(
@@ -2906,8 +2925,8 @@ impl BlocklistAIController {
                     );
                 });
             }
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::InvalidApiKey(details)) => {
-                use warp_multi_agent_api::LlmProvider;
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::InvalidApiKey(details)) => {
+                use wish_multi_agent_api::LlmProvider;
                 let is_aws_bedrock = details
                     .provider
                     .try_into()
@@ -2943,8 +2962,8 @@ impl BlocklistAIController {
                     );
                 });
             }
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::InternalError(
-                warp_multi_agent_api::response_event::stream_finished::InternalError{ message})) => {
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::InternalError(
+                wish_multi_agent_api::response_event::stream_finished::InternalError{ message})) => {
                 let error_message = format!(
                     "Response stream finished unexpectedly with internal error: {message}",
                 );
@@ -2962,7 +2981,7 @@ impl BlocklistAIController {
                     );
                 });
             }
-            Some(warp_multi_agent_api::response_event::stream_finished::Reason::MaxTokenLimit(_)) => {
+            Some(wish_multi_agent_api::response_event::stream_finished::Reason::MaxTokenLimit(_)) => {
                 let error_message = "Input exceeded context window limit.";
                 history_model.update(ctx, |history_model, ctx| {
                     history_model.mark_response_stream_completed_with_error(
@@ -3023,9 +3042,9 @@ fn input_for_query(
         .and_then(|c| c.get_task(task_id))
         .and_then(|task| {
             if task.is_root_task() {
-                Some(warp_multi_agent_api::AgentType::Primary)
+                Some(wish_multi_agent_api::AgentType::Primary)
             } else if task.is_cli_subagent() {
-                Some(warp_multi_agent_api::AgentType::Cli)
+                Some(wish_multi_agent_api::AgentType::Cli)
             } else {
                 None
             }

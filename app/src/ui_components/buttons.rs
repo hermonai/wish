@@ -130,7 +130,7 @@ pub fn combo_inner_button(
         Some(combo_inner_button_styles(theme, ButtonState::Pressed)),
         Some(combo_inner_button_styles(theme, ButtonState::Disabled)),
     )
-    .with_icon_label(icon.to_warpui_icon(theme.foreground()));
+    .with_icon_label(icon.to_wishui_icon(theme.foreground()));
 
     if active {
         return button.active();
@@ -163,7 +163,7 @@ fn icon_button_internal(
         button_styles.clicked_styles,
         button_styles.disabled_styles,
     )
-    .with_icon_label(icon.to_warpui_icon(color.unwrap_or(icon_color(theme, mode))));
+    .with_icon_label(icon.to_wishui_icon(color.unwrap_or(icon_color(theme, mode))));
 
     if let Some(color) = color.take() {
         // We also need to set the font color here to get the button to be colored correctly.

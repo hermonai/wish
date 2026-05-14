@@ -130,7 +130,7 @@ impl<A: Action + Clone> CompactDropdown<A> {
                     .override_icon_color()
                     .unwrap_or_else(|| appearance.theme().active_ui_text_color());
                 button_label
-                    .add_child(self.render_sized_icon(appearance, icon.to_warpui_icon(icon_color)));
+                    .add_child(self.render_sized_icon(appearance, icon.to_wishui_icon(icon_color)));
             }
         }
 

@@ -1995,7 +1995,7 @@ impl UpdateEnvironmentForm {
                         .with_child(
                             ConstrainedBox::new(
                                 Icon::Github
-                                    .to_warpui_icon(theme.active_ui_text_color())
+                                    .to_wishui_icon(theme.active_ui_text_color())
                                     .finish(),
                             )
                             .with_width(icon_size)
@@ -2112,7 +2112,7 @@ impl UpdateEnvironmentForm {
                             .with_child(
                                 ConstrainedBox::new(
                                     Icon::Refresh
-                                        .to_warpui_icon(theme.active_ui_text_color())
+                                        .to_wishui_icon(theme.active_ui_text_color())
                                         .finish(),
                                 )
                                 .with_width(icon_size)
@@ -3093,7 +3093,7 @@ impl UpdateEnvironmentForm {
                 };
 
                 let icon_size = appearance.ui_font_size();
-                let icon = ConstrainedBox::new(Icon::Lightbulb.to_warpui_icon(text_fill).finish())
+                let icon = ConstrainedBox::new(Icon::Lightbulb.to_wishui_icon(text_fill).finish())
                     .with_width(icon_size)
                     .with_height(icon_size)
                     .finish();
@@ -3600,16 +3600,11 @@ mod friendly_error_tests {
         let err = anyhow!("Connection refused (os error 61)")
             .context("tcp connect error")
             .context("client error (Connect)")
-            .context(
-                "error sending request for url (http://localhost:8080/proxy/token?key=foo)",
-            )
+            .context("error sending request for url (http://localhost:8080/proxy/token?key=foo)")
             .context("unexpected error occurred when fetching an ID token")
             .context("Failed to get access token for GraphQL request");
         let msg = friendly_github_load_error(&err);
-        assert!(
-            msg.contains("Hermon backend isn't reachable"),
-            "got: {msg}"
-        );
+        assert!(msg.contains("Hermon backend isn't reachable"), "got: {msg}");
         assert!(msg.contains("Retry"));
         // Should NOT include the raw URL, the os error number, or any of the
         // 4-level-deep firebase plumbing.

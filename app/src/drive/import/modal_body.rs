@@ -394,7 +394,7 @@ impl ImportModalBody {
                 TextAndIcon::new(
                     TextAndIconAlignment::TextFirst,
                     "Choose files...".to_string(),
-                    Icon::Import.to_warpui_icon(
+                    Icon::Import.to_wishui_icon(
                         appearance
                             .theme()
                             .main_text_color(appearance.theme().accent_button_color()),

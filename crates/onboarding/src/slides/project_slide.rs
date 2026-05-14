@@ -174,7 +174,7 @@ impl ProjectSlide {
                 TextAndIcon::new(
                     TextAndIconAlignment::IconFirst,
                     selected_local_folder.to_owned(),
-                    Icon::Folder.to_warpui_icon(theme.foreground()),
+                    Icon::Folder.to_wishui_icon(theme.foreground()),
                     MainAxisSize::Max,
                     MainAxisAlignment::Center,
                     Vector2F::new(16., 16.),
@@ -204,7 +204,7 @@ impl ProjectSlide {
                 );
 
                 let folder_icon =
-                    ConstrainedBox::new(Icon::Folder.to_warpui_icon(theme.foreground()).finish())
+                    ConstrainedBox::new(Icon::Folder.to_wishui_icon(theme.foreground()).finish())
                         .with_width(16.)
                         .with_height(16.)
                         .finish();

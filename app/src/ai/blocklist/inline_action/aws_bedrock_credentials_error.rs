@@ -131,7 +131,7 @@ impl View for AwsBedrockCredentialsErrorView {
         let make_alert_icon = || {
             ConstrainedBox::new(
                 Icon::AlertTriangle
-                    .to_warpui_icon(error_color(theme).into())
+                    .to_wishui_icon(error_color(theme).into())
                     .finish(),
             )
             .with_width(icon_size(app))

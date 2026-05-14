@@ -359,7 +359,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> Find<T> {
             };
             let icon = Container::new(
                 ConstrainedBox::new(
-                    icon.to_warpui_icon(appearance.theme().active_ui_text_color())
+                    icon.to_wishui_icon(appearance.theme().active_ui_text_color())
                         .finish(),
                 )
                 .with_height(size)
@@ -423,7 +423,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> Find<T> {
             appearance.theme().active_ui_text_color()
         };
         Container::new(
-            ConstrainedBox::new(match_icon.to_warpui_icon(icon_color).finish())
+            ConstrainedBox::new(match_icon.to_wishui_icon(icon_color).finish())
                 .with_height(height)
                 .with_width(height)
                 .finish(),
@@ -450,7 +450,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> Find<T> {
         Container::new(
             ConstrainedBox::new(
                 Icon::X
-                    .to_warpui_icon(appearance.theme().active_ui_text_color())
+                    .to_wishui_icon(appearance.theme().active_ui_text_color())
                     .finish(),
             )
             .with_height(height)

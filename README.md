@@ -37,7 +37,14 @@ Wish is maintained as an advanced Hermon edition of the Warp codebase. Current i
 - Wish Drive and local workspace persistence aligned with Hermon identity
 - Configurable Hermon backend URLs for local and hosted environments
 - Local model discovery so Ollama-backed models can be used without cloud dependency
+- Custom inference endpoints and provider API keys for Wish Agent without forcing cloud login
+- Cloud handoff and CLI-agent orchestration adapted to the Hermon harness boundary
+- Upstream remote-development, code-review, common-skills, and agent-management improvements carried forward under the Wish brand
 - Ongoing upstream sync from `hermonai/warp:master` while preserving Wish rebranding and Hermon-specific features
+
+As of the latest sync, Wish has merged upstream Warp through `b9ec4f39`
+(`Use tombstone for failure UX for cloud mode (#10895)`) and keeps its
+additional Wish/Hermon changes on top.
 
 ## Local Development
 
@@ -110,9 +117,10 @@ git fetch warp-upstream master
 git merge --no-ff warp-upstream/master
 cargo fmt --all
 cargo check --workspace
+git rev-list --left-right --count HEAD...warp-upstream/master
 ```
 
-During conflicts, accept upstream functional changes where possible, then preserve Wish product identity, Hermon backend boundaries, WishUI crate names, local-first behavior, and upstream legal attribution.
+During conflicts, accept upstream functional changes where possible, then preserve Wish product identity, Hermon backend boundaries, WishUI crate names, local-first behavior, and upstream legal attribution. The final ahead/behind check should report `0` behind upstream for the pushed Wish branch.
 
 ## Licensing and Attribution
 

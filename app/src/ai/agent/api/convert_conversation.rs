@@ -42,9 +42,9 @@ use chrono::{DateTime, Local, TimeZone};
 use persistence::model::AgentConversationData;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
-use warp_multi_agent_api as api;
-use warp_multi_agent_api::ask_user_question_result::answer_item::Answer as AskUserQuestionAnswer;
 use wish_core::command::ExitCode;
+use wish_multi_agent_api as api;
+use wish_multi_agent_api::ask_user_question_result::answer_item::Answer as AskUserQuestionAnswer;
 
 use crate::ai::agent::conversation::ServerAIConversationMetadata;
 use crate::ai::agent::UserQueryMode;
@@ -101,11 +101,9 @@ pub fn convert_conversation_data_to_ai_conversation(
             orchestration_harness_type: None,
             parent_conversation_id: None,
             is_remote_child: false,
-            // TODO: Populate run_id from server metadata once it is exposed
-            // in ServerAIConversationMetadata. For cloud conversations that
-            // were spawned via the server API, the run_id is created at task
-            // dispatch time; adding it here would avoid a round-trip to StreamInit.
-            run_id: None,
+            run_id: metadata
+                .ambient_agent_task_id
+                .map(|task_id| task_id.to_string()),
             autoexecute_override: None,
             last_event_sequence: None,
         },
@@ -570,7 +568,7 @@ pub(crate) fn convert_tool_call_result_to_input(
     tool_call_map: &HashMap<String, &api::message::ToolCall>,
     document_versions: &mut HashMap<AIDocumentId, AIDocumentVersion>,
 ) -> Option<AIAgentInput> {
-    use warp_multi_agent_api::message::tool_call_result::Result as ToolCallResultType;
+    use wish_multi_agent_api::message::tool_call_result::Result as ToolCallResultType;
 
     let tool_call_id = tool_call_result.tool_call_id.clone();
     let context = convert_input_context(tool_call_result.context.as_ref());
@@ -585,6 +583,14 @@ pub(crate) fn convert_tool_call_result_to_input(
                         command: result.command.clone(),
                         output: finished.output.clone(),
                         exit_code: ExitCode::from(finished.exit_code),
+                        start_ts: finished
+                            .start_ts
+                            .as_ref()
+                            .map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
+                        completed_ts: finished
+                            .finish_ts
+                            .as_ref()
+                            .map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
                     }
                 }
                 Some(api::run_shell_command_result::Result::LongRunningCommandSnapshot(
@@ -631,6 +637,8 @@ pub(crate) fn convert_tool_call_result_to_input(
                         block_id: finished.command_id.clone().into(),
                         output: finished.output.clone(),
                         exit_code: ExitCode::from(finished.exit_code),
+                        start_ts: finished.start_ts.as_ref().map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
+                        completed_ts: finished.finish_ts.as_ref().map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
                     },
                     Some(api::write_to_long_running_shell_command_result::Result::Error(api::ShellCommandError{
                         r#type: Some(api::shell_command_error::Type::CommandNotFound(()))
@@ -1221,6 +1229,14 @@ pub(crate) fn convert_tool_call_result_to_input(
                         block_id: finished.command_id.clone().into(),
                         output: finished.output.clone(),
                         exit_code: ExitCode::from(finished.exit_code),
+                        start_ts: finished
+                            .start_ts
+                            .as_ref()
+                            .map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
+                        completed_ts: finished
+                            .finish_ts
+                            .as_ref()
+                            .map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
                     }
                 }
                 Some(
@@ -1271,6 +1287,8 @@ pub(crate) fn convert_tool_call_result_to_input(
                     block_id: finished.command_id.clone().into(),
                     output: finished.output.clone(),
                     exit_code: ExitCode::from(finished.exit_code),
+                    start_ts: finished.start_ts.as_ref().map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
+                    completed_ts: finished.finish_ts.as_ref().map(|ts| proto_timestamp_to_local_datetime(ts.seconds, ts.nanos)),
                 },
                 Some(api::transfer_shell_command_control_to_user_result::Result::Error(
                     api::ShellCommandError {
@@ -1489,7 +1507,7 @@ pub(crate) fn convert_tool_call_result_to_input(
         }
         Some(ToolCallResultType::AskUserQuestion(result)) => {
             let ask_result = match &result.result {
-                Some(warp_multi_agent_api::ask_user_question_result::Result::Success(success)) => {
+                Some(wish_multi_agent_api::ask_user_question_result::Result::Success(success)) => {
                     AskUserQuestionResult::Success {
                         answers: success
                             .answers
@@ -1511,7 +1529,7 @@ pub(crate) fn convert_tool_call_result_to_input(
                             .collect(),
                     }
                 }
-                Some(warp_multi_agent_api::ask_user_question_result::Result::Error(err)) => {
+                Some(wish_multi_agent_api::ask_user_question_result::Result::Error(err)) => {
                     AskUserQuestionResult::Error(err.message.clone())
                 }
                 None => AskUserQuestionResult::Cancelled,
@@ -2063,7 +2081,7 @@ fn convert_passive_suggestion_result_to_input(
         context,
     })
 }
-fn proto_timestamp_to_local_datetime(seconds: i64, nanos: i32) -> DateTime<Local> {
+pub(crate) fn proto_timestamp_to_local_datetime(seconds: i64, nanos: i32) -> DateTime<Local> {
     let nanos = if nanos < 0 { 0 } else { nanos as u32 };
 
     Local

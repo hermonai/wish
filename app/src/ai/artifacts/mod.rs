@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 use anyhow::anyhow;
 use ui_components::lightbox::{LightboxImage, LightboxImageSource};
-use warp_multi_agent_api as api;
 use wish_core::report_error;
+use wish_multi_agent_api as api;
 #[cfg(feature = "local_fs")]
 use wishui::platform::SaveFilePickerConfiguration;
 use wishui::SingletonEntity;

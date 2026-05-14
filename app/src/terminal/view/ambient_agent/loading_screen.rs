@@ -193,7 +193,7 @@ fn render_tier_limits_footer(
     let icon_size = footer_font_size;
     let info_icon = ConstrainedBox::new(
         Icon::Info
-            .to_warpui_icon(blended_colors::text_sub(theme, theme.surface_1()).into())
+            .to_wishui_icon(blended_colors::text_sub(theme, theme.surface_1()).into())
             .finish(),
     )
     .with_width(icon_size)
@@ -225,7 +225,7 @@ pub fn render_cloud_mode_error_screen(
     // Error icon with fixed size constraints - using AlertTriangle icon
     let error_icon = ConstrainedBox::new(
         Icon::AlertTriangle
-            .to_warpui_icon(error_color.into())
+            .to_wishui_icon(error_color.into())
             .finish(),
     )
     .with_width(ERROR_ICON_SIZE)
@@ -317,7 +317,7 @@ pub fn render_cloud_mode_github_auth_required_screen(
     let border_color = blended_colors::neutral_4(theme);
 
     // Info icon with fixed size constraints
-    let auth_icon = ConstrainedBox::new(Icon::Info.to_warpui_icon(accent_color).finish())
+    let auth_icon = ConstrainedBox::new(Icon::Info.to_wishui_icon(accent_color).finish())
         .with_width(ERROR_ICON_SIZE)
         .with_height(ERROR_ICON_SIZE)
         .finish();
@@ -402,7 +402,7 @@ pub fn render_cloud_mode_cancelled_screen(appearance: &Appearance) -> Box<dyn El
     // SlashCircle icon with fixed size constraints
     let cancelled_icon = ConstrainedBox::new(
         Icon::SlashCircle
-            .to_warpui_icon(title_color.into())
+            .to_wishui_icon(title_color.into())
             .finish(),
     )
     .with_width(ERROR_ICON_SIZE)

@@ -422,7 +422,7 @@ impl WorkflowsMoreInfoView {
                 Container::new(
                     ConstrainedBox::new(
                         icons::Icon::AlertCircle
-                            .to_warpui_icon(
+                            .to_wishui_icon(
                                 appearance
                                     .theme()
                                     .sub_text_color(appearance.theme().surface_2()),

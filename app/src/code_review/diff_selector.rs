@@ -180,7 +180,7 @@ impl View for DiffSelector {
         // for short labels.
         let icon = ConstrainedBox::new(
             Icon::SwitchHorizontal01
-                .to_warpui_icon(Fill::Solid(text_color))
+                .to_wishui_icon(Fill::Solid(text_color))
                 .finish(),
         )
         .with_width(15.)

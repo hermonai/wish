@@ -365,7 +365,7 @@ impl AccountWidget {
                         TextAndIcon::new(
                             TextAndIconAlignment::IconFirst,
                             "Compare plans",
-                            Icon::CoinsStacked.to_warpui_icon(appearance.theme().accent()),
+                            Icon::CoinsStacked.to_wishui_icon(appearance.theme().accent()),
                             MainAxisSize::Min,
                             MainAxisAlignment::Center,
                             vec2f(14., 14.),

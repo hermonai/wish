@@ -42,7 +42,7 @@ wish = { workspace = true, features = ["integration_tests"] }
 wish_cli = { workspace = true, features = ["integration_tests"] }
 wish_core.workspace = true
 warp-command-signatures.workspace = true
-warp_multi_agent_api.workspace = true
+wish_multi_agent_api.workspace = true
 warp-workflows.workspace = true
 wishui.workspace = true
 wishui_extras = { workspace = true, features = [

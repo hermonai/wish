@@ -213,7 +213,7 @@ impl PlanAndTodoListView {
         let icon_element = Container::new(
             ConstrainedBox::new(
                 Icon::Compass
-                    .to_warpui_icon(if self.is_in_agent_view {
+                    .to_wishui_icon(if self.is_in_agent_view {
                         theme.sub_text_color(blended_colors::neutral_1(theme).into())
                     } else {
                         internal_colors::fg_overlay_7(appearance.theme())

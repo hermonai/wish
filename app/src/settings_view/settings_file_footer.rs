@@ -107,7 +107,7 @@ pub fn render_open_settings_file_button(
     let ui_font_family = appearance.ui_font_family();
 
     Hoverable::new(mouse_state, move |state| {
-        let icon = ConstrainedBox::new(Icon::Code2.to_warpui_icon(text_fill).finish())
+        let icon = ConstrainedBox::new(Icon::Code2.to_wishui_icon(text_fill).finish())
             .with_width(FOOTER_ICON_SIZE)
             .with_height(FOOTER_ICON_SIZE)
             .finish();
@@ -186,7 +186,7 @@ pub fn render_settings_error_alert(
 
     let alert_icon = ConstrainedBox::new(
         Icon::AlertCircle
-            .to_warpui_icon(Fill::Solid(text_color))
+            .to_wishui_icon(Fill::Solid(text_color))
             .finish(),
     )
     .with_width(FOOTER_ICON_SIZE)
@@ -332,7 +332,7 @@ fn render_alert_action_button(
         if let Some(icon) = icon {
             row.add_child(
                 Container::new(
-                    ConstrainedBox::new(icon.to_warpui_icon(Fill::Solid(text_color)).finish())
+                    ConstrainedBox::new(icon.to_wishui_icon(Fill::Solid(text_color)).finish())
                         .with_width(ALERT_OZ_ICON_SIZE)
                         .with_height(ALERT_OZ_ICON_SIZE)
                         .finish(),

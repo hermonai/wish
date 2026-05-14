@@ -76,7 +76,7 @@ impl SearchItem for ConversationSearchItem {
                     .theme()
                     .sub_text_color(appearance.theme().background());
                 Container::new(
-                    ConstrainedBox::new(Icon::History.to_warpui_icon(icon_color).finish())
+                    ConstrainedBox::new(Icon::History.to_wishui_icon(icon_color).finish())
                         .with_width(icon_size)
                         .with_height(icon_size)
                         .finish(),

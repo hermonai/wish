@@ -117,7 +117,7 @@ impl SearchItem for WorkflowSearchItem {
                 } else {
                     Icon::Workflow
                 }
-                .to_warpui_icon(highlight_state.icon_fill(appearance))
+                .to_wishui_icon(highlight_state.icon_fill(appearance))
                 .finish(),
             )
             .with_width(appearance.monospace_font_size())

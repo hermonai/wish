@@ -197,7 +197,7 @@ impl View for CloudModeSetupTextBlock {
                 .with_child(
                     Container::new(
                         ConstrainedBox::new(
-                            chevron_icon.to_warpui_icon(text_color.into()).finish(),
+                            chevron_icon.to_wishui_icon(text_color.into()).finish(),
                         )
                         .with_width(icon_size)
                         .with_height(icon_size)

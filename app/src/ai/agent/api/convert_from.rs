@@ -27,8 +27,8 @@ use ai::agent::convert::ToolToAIAgentActionError;
 use ai::agent::UnknownCitationTypeError;
 use ai::skills::SkillReference;
 use api::ask_user_question::question::QuestionType;
-use warp_multi_agent_api as api;
 use wish_core::channel::ChannelState;
+use wish_multi_agent_api as api;
 
 use crate::ai::agent::{AIAgentAttachment, UserQueryMode};
 
@@ -133,6 +133,7 @@ fn convert_run_agents(run_agents: api::RunAgents) -> AIAgentActionType {
         harness,
         agent_run_configs,
         execution_mode,
+        plan_id,
     } = run_agents;
     AIAgentActionType::RunAgents(RunAgentsRequest {
         summary,
@@ -152,6 +153,11 @@ fn convert_run_agents(run_agents: api::RunAgents) -> AIAgentActionType {
                 title: config.title,
             })
             .collect(),
+        plan_id,
+        // Auth secret is a client-side dispatch concern populated by the
+        // confirmation card from `CloudAgentSettings.last_selected_auth_secret`
+        // before Accept. The proto does not carry it.
+        harness_auth_secret_name: None,
     })
 }
 
@@ -173,6 +179,9 @@ fn convert_start_agent_v2_execution_mode(
                 harness_type: convert_start_agent_v2_harness_type(remote.harness)
                     .unwrap_or_default(),
                 title: remote.title,
+                // Auth secret is plumbed client-side via `RunAgentsRequest`;
+                // StartAgentV2 from the server never carries it.
+                auth_secret_name: None,
             }
         }
         Some(api::start_agent_v2::execution_mode::Mode::Local(local)) => {

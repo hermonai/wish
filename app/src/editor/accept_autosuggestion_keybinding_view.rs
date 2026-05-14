@@ -310,7 +310,7 @@ impl View for AcceptAutosuggestionKeybinding {
             let chevron_down = Container::new(
                 ConstrainedBox::new(
                     Icon::ArrowDropDown
-                        .to_warpui_icon(Fill::Solid(font_color))
+                        .to_wishui_icon(Fill::Solid(font_color))
                         .finish(),
                 )
                 .with_height(height_without_border)

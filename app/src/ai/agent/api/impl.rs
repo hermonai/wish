@@ -2,8 +2,8 @@ use std::{collections::HashMap, sync::Arc};
 
 use crate::{ai::agent::redaction, terminal::model::session::SessionType};
 use futures_util::StreamExt;
-use warp_multi_agent_api as api;
 use wish_core::features::FeatureFlag;
+use wish_multi_agent_api as api;
 
 use crate::server::server_api::ServerApi;
 
@@ -111,6 +111,7 @@ pub async fn generate_multi_agent_output(
             supports_bundled_skills: FeatureFlag::BundledSkills.is_enabled(),
             supports_research_agent: params.research_agent_enabled,
             supports_orchestration_v2: FeatureFlag::OrchestrationV2.is_enabled(),
+            custom_model_providers: None,
         }),
         metadata: Some(api::request::Metadata {
             logging: logging_metadata,
@@ -197,8 +198,12 @@ fn get_supported_tools(params: &RequestParams) -> Vec<api::ToolType> {
             // through RemoteServerClient. The host_id is only populated
             // after a successful connection handshake, so its presence is a
             // sufficient proxy for client availability.
-            // SearchCodebase remains disabled (follow-up work).
             supported_tools.extend(&[api::ToolType::ReadFiles, api::ToolType::ApplyFileDiffs]);
+            if FeatureFlag::RemoteCodebaseIndexing.is_enabled()
+                && params.remote_codebase_search_available
+            {
+                supported_tools.push(api::ToolType::SearchCodebase);
+            }
         }
         Some(SessionType::WishifiedRemote { host_id: None }) => {
             // Feature flag off or not yet connected — no remote tools.
@@ -260,6 +265,11 @@ fn get_supported_cli_agent_tools(params: &RequestParams) -> Vec<api::ToolType> {
         }
         Some(SessionType::WishifiedRemote { host_id: Some(_) }) => {
             supported_cli_agent_tools.push(api::ToolType::ReadFiles);
+            if FeatureFlag::RemoteCodebaseIndexing.is_enabled()
+                && params.remote_codebase_search_available
+            {
+                supported_cli_agent_tools.push(api::ToolType::SearchCodebase);
+            }
         }
         Some(SessionType::WishifiedRemote { host_id: None }) => {}
     }
@@ -272,7 +282,7 @@ fn get_supported_cli_agent_tools(params: &RequestParams) -> Vec<api::ToolType> {
 /// Drive an agent-mode request against a local Ollama endpoint instead
 /// of the remote Hermon server. Builds a minimal OpenAI-compatible
 /// chat-completion request, sends it to Ollama, and wraps the response
-/// in the `warp_multi_agent_api::ResponseEvent` stream format that the
+/// in the `wish_multi_agent_api::ResponseEvent` stream format that the
 /// rest of the agent-mode UI expects.
 async fn generate_local_ollama_output(
     params: RequestParams,

@@ -591,7 +591,7 @@ fn render_title_and_description(props: HeaderProps, app: &AppContext) -> Vec<Box
         .with_child(
             Container::new(
                 ConstrainedBox::new(
-                    icon.to_warpui_icon(
+                    icon.to_wishui_icon(
                         theme
                             .main_text_color(theme.background())
                             .into_solid()
@@ -1042,7 +1042,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
                                     } else {
                                         Icon::ChevronRight
                                     }
-                                    .to_warpui_icon(theme.sub_text_color(theme.background()))
+                                    .to_wishui_icon(theme.sub_text_color(theme.background()))
                                     .finish(),
                                 )
                                 .with_height(appearance.monospace_font_size())
@@ -1128,7 +1128,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
                                 .with_child(
                                     ConstrainedBox::new(
                                         Icon::Share3
-                                            .to_warpui_icon(
+                                            .to_wishui_icon(
                                                 theme.sub_text_color(theme.background()),
                                             )
                                             .finish(),

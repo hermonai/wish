@@ -12,7 +12,7 @@ fn test_data_dir_path() {
         } else if #[cfg(any(target_os = "linux", target_os = "freebsd"))] {
             assert_eq!(data_dir(), home_dir.join(".local/share/wish-oss"));
         } else if #[cfg(windows)] {
-            assert_eq!(data_dir(), home_dir.join("AppData\\Roaming\\warp\\WarpOss\\data"));
+            assert_eq!(data_dir(), home_dir.join("AppData\\Roaming\\warp\\WishOss\\data"));
         } else {
             unimplemented!("Need to update tests for current platform!");
         }
@@ -29,7 +29,7 @@ fn test_config_local_dir_path() {
         } else if #[cfg(any(target_os = "linux", target_os = "freebsd"))] {
             assert_eq!(config_local_dir(), home_dir.join(".config/wish-oss"));
         } else if #[cfg(windows)] {
-            assert_eq!(config_local_dir(), home_dir.join("AppData\\Local\\warp\\WarpOss\\config"));
+            assert_eq!(config_local_dir(), home_dir.join("AppData\\Local\\warp\\WishOss\\config"));
         } else {
             unimplemented!("Need to update tests for current platform!");
         }
@@ -72,7 +72,7 @@ fn test_cache_dir_path() {
         } else if #[cfg(any(target_os = "linux", target_os = "freebsd"))] {
             assert_eq!(cache_dir(), home_dir.join(".cache/wish-oss"));
         } else if #[cfg(windows)] {
-            assert_eq!(cache_dir(), home_dir.join("AppData\\Local\\warp\\WarpOss\\cache"));
+            assert_eq!(cache_dir(), home_dir.join("AppData\\Local\\warp\\WishOss\\cache"));
         } else {
             unimplemented!("Need to update tests for current platform!");
         }
@@ -89,7 +89,7 @@ fn test_state_dir_path() {
         } else if #[cfg(any(target_os = "linux", target_os = "freebsd"))] {
             assert_eq!(state_dir(), home_dir.join(".local/state/wish-oss"));
         } else if #[cfg(windows)] {
-            assert_eq!(state_dir(), home_dir.join("AppData\\Local\\warp\\WarpOss\\data"));
+            assert_eq!(state_dir(), home_dir.join("AppData\\Local\\warp\\WishOss\\data"));
         } else {
             unimplemented!("Need to update tests for current platform!");
         }

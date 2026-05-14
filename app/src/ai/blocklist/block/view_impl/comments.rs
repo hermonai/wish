@@ -162,7 +162,7 @@ fn comment_icon(is_addressed: bool, appearance: &Appearance) -> Box<dyn Element>
         addressed_comment_icon(appearance).finish()
     } else {
         Icon::MessageText
-            .to_warpui_icon(
+            .to_wishui_icon(
                 appearance
                     .theme()
                     .sub_text_color(appearance.theme().background()),

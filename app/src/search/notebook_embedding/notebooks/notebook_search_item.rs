@@ -52,7 +52,7 @@ impl SearchItem for NotebookSearchItem {
         Container::new(
             ConstrainedBox::new(
                 Icon::Notebook
-                    .to_warpui_icon(
+                    .to_wishui_icon(
                         warp_drive_icon_color(
                             appearance,
                             DriveObjectType::Notebook {
@@ -117,7 +117,7 @@ impl SearchItem for NotebookSearchItem {
                 .finish();
             let warning_icon = ConstrainedBox::new(
                 Icon::Warning
-                    .to_warpui_icon(appearance.theme().ui_warning_color().into())
+                    .to_wishui_icon(appearance.theme().ui_warning_color().into())
                     .finish(),
             )
             .with_width(warning_font_size)

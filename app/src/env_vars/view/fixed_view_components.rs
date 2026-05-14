@@ -73,7 +73,7 @@ impl EnvVarCollectionView {
                     .with_children([
                         ConstrainedBox::new(
                             Icon::Trash
-                                .to_warpui_icon(appearance.theme().foreground())
+                                .to_wishui_icon(appearance.theme().foreground())
                                 .finish(),
                         )
                         .with_width(16.)
@@ -247,7 +247,7 @@ impl EnvVarCollectionView {
                 TextAndIcon::new(
                     TextAndIconAlignment::TextFirst,
                     "Load",
-                    Icon::TerminalInput.to_warpui_icon(appearance.theme().active_ui_text_color()),
+                    Icon::TerminalInput.to_wishui_icon(appearance.theme().active_ui_text_color()),
                     MainAxisSize::Min,
                     MainAxisAlignment::SpaceBetween,
                     Vector2F::new(10., 10.),

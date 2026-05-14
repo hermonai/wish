@@ -326,7 +326,7 @@ impl CommentEditor {
         let theme = appearance.theme();
         let sub_text_color = theme.sub_text_color(Fill::Solid(background)).into_solid();
         let icon = Icon::Github
-            .to_warpui_icon(Fill::Solid(sub_text_color))
+            .to_wishui_icon(Fill::Solid(sub_text_color))
             .finish();
 
         let label = Text::new(

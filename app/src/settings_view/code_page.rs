@@ -1456,7 +1456,7 @@ impl CodePageWidget {
                         Container::new(
                             ConstrainedBox::new(
                                 Icon::SlashCircle
-                                    .to_warpui_icon(ThemeFill::Solid(status_color))
+                                    .to_wishui_icon(ThemeFill::Solid(status_color))
                                     .finish(),
                             )
                             .with_width(STATUS_ICON_SIZE)
@@ -1541,7 +1541,7 @@ impl CodePageWidget {
             label_row.add_child(
                 Container::new(
                     ConstrainedBox::new(
-                        status_icon.to_warpui_icon(ThemeFill::Solid(color)).finish(),
+                        status_icon.to_wishui_icon(ThemeFill::Solid(color)).finish(),
                     )
                     .with_width(STATUS_ICON_SIZE)
                     .with_height(STATUS_ICON_SIZE)

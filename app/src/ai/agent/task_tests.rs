@@ -10,7 +10,7 @@ use crate::test_util::ai_agent_tasks::{
 };
 use chrono::Local;
 use prost_types::FieldMask;
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 
 use super::{ExtractMessagesError, Task};
 

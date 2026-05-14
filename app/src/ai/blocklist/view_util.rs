@@ -118,7 +118,7 @@ fn render_input_icon(icon: Icon, color: Fill, app: &AppContext) -> Box<dyn Eleme
     // height.
     let icon_size = ai_indicator_height(app);
     ConstrainedBox::new(
-        Container::new(icon.to_warpui_icon(color).finish())
+        Container::new(icon.to_wishui_icon(color).finish())
             .with_uniform_padding(icon_size / 8.)
             .finish(),
     )
@@ -182,7 +182,7 @@ where
 {
     let theme = appearance.theme();
     let font_color = theme.foreground().into_solid();
-    let mut label_children = vec![ConstrainedBox::new(icon.to_warpui_icon(color).finish())
+    let mut label_children = vec![ConstrainedBox::new(icon.to_wishui_icon(color).finish())
         .with_width(PROVIDER_BUTTON_ICON_SIZE)
         .with_height(PROVIDER_BUTTON_ICON_SIZE)
         .finish()];

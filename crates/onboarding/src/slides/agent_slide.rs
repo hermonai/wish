@@ -541,7 +541,7 @@ impl AgentSlide {
             let title_row: Box<dyn Element> = if let Some(icon) = icon {
                 const ICON_SIZE: f32 = 14.;
                 let icon_el =
-                    ConstrainedBox::new(Box::new(icon.to_warpui_icon(title_color.into())))
+                    ConstrainedBox::new(Box::new(icon.to_wishui_icon(title_color.into())))
                         .with_width(ICON_SIZE)
                         .with_height(ICON_SIZE)
                         .finish();
@@ -720,7 +720,7 @@ impl AgentSlide {
                 .finish();
 
             const ICON_SIZE: f32 = 14.;
-            let icon_el = ConstrainedBox::new(Box::new(icon.to_warpui_icon(title_color.into())))
+            let icon_el = ConstrainedBox::new(Box::new(icon.to_wishui_icon(title_color.into())))
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish();
@@ -1165,7 +1165,7 @@ impl AgentSlide {
         };
 
         let icon = ConstrainedBox::new(Box::new(
-            Icon::AlertCircle.to_warpui_icon(Fill::Solid(text_color)),
+            Icon::AlertCircle.to_wishui_icon(Fill::Solid(text_color)),
         ))
         .with_width(ICON_SIZE)
         .with_height(ICON_SIZE)
@@ -1263,7 +1263,7 @@ impl AgentSlide {
         let ui_builder = appearance.ui_builder();
 
         let check_icon = ConstrainedBox::new(Box::new(
-            Icon::CheckSkinny.to_warpui_icon(Fill::Solid(text_color)),
+            Icon::CheckSkinny.to_wishui_icon(Fill::Solid(text_color)),
         ))
         .with_width(ICON_SIZE)
         .with_height(ICON_SIZE)

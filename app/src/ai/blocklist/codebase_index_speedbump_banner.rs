@@ -150,7 +150,7 @@ impl CodebaseIndexSpeedbumpBannerState {
         let info_icon = Container::new(
             ConstrainedBox::new(
                 Icon::Info
-                    .to_warpui_icon(theme.active_ui_text_color())
+                    .to_wishui_icon(theme.active_ui_text_color())
                     .finish(),
             )
             .with_width(appearance.ui_font_size() * 1.2)

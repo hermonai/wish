@@ -6,13 +6,13 @@ use chrono::{DateTime, Local, NaiveDateTime};
 use itertools::Itertools as _;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use warp_multi_agent_api::response_event::stream_finished::ConversationUsageMetadata;
-use warp_multi_agent_api::{
+use wish_cli::agent::Harness;
+use wish_core::features::FeatureFlag;
+use wish_multi_agent_api::response_event::stream_finished::ConversationUsageMetadata;
+use wish_multi_agent_api::{
     client_action::{Action, StartNewConversation},
     response_event::stream_finished::TokenUsage,
 };
-use wish_cli::agent::Harness;
-use wish_core::features::FeatureFlag;
 use wishui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};
 
 #[cfg(feature = "local_fs")]
@@ -415,7 +415,7 @@ impl BlocklistAIHistoryModel {
 
         let auto_execute = true; // Child auto-executes by default.
         let conversation_id =
-            self.start_new_conversation(terminal_view_id, auto_execute, false, ctx);
+            self.start_new_conversation(terminal_view_id, auto_execute, false, false, ctx);
         {
             let conversation = self
                 .conversation_mut(&conversation_id)
@@ -830,9 +830,11 @@ impl BlocklistAIHistoryModel {
         terminal_view_id: EntityId,
         is_autoexecute_override: bool,
         is_viewing_shared_session: bool,
+        is_cli_agent_transcript: bool,
         ctx: &mut ModelContext<Self>,
     ) -> AIConversationId {
-        let mut new_conversation = AIConversation::new(is_viewing_shared_session);
+        let mut new_conversation =
+            AIConversation::new(is_viewing_shared_session, is_cli_agent_transcript);
         if is_autoexecute_override {
             new_conversation.toggle_autoexecute_override();
         }
@@ -927,7 +929,7 @@ impl BlocklistAIHistoryModel {
         stream_id: &ResponseStreamId,
         conversation_id: AIConversationId,
         terminal_view_id: EntityId,
-        init_event: warp_multi_agent_api::response_event::StreamInit,
+        init_event: wish_multi_agent_api::response_event::StreamInit,
         ctx: &mut ModelContext<Self>,
     ) {
         if let Some(conversation) = self.conversations_by_id.get_mut(&conversation_id) {
@@ -1039,7 +1041,8 @@ impl BlocklistAIHistoryModel {
             exchange_ids_to_transfer.len()
         );
 
-        let new_conversation_id = self.start_new_conversation(terminal_view_id, false, false, ctx);
+        let new_conversation_id =
+            self.start_new_conversation(terminal_view_id, false, false, false, ctx);
         for exchange_id in exchange_ids_to_transfer {
             let old_conversation = self
                 .conversations_by_id
@@ -1103,15 +1106,16 @@ impl BlocklistAIHistoryModel {
         source_conversation: &AIConversation,
         prefix: &str,
         preserve_task_ids: bool,
+        title_override: Option<&str>,
         app: &AppContext,
     ) -> Result<AIConversation, anyhow::Error> {
-        let tasks: Vec<warp_multi_agent_api::Task> = source_conversation
+        let tasks: Vec<wish_multi_agent_api::Task> = source_conversation
             .all_tasks()
             .filter_map(|t| t.source().cloned())
             .collect();
 
         let updated_tasks_with_new_ids =
-            update_forked_task_properties(tasks, prefix, preserve_task_ids);
+            update_forked_task_properties(tasks, prefix, preserve_task_ids, title_override);
         let Some(sqlite_sender) = GlobalResourceHandlesProvider::as_ref(app)
             .get()
             .model_event_sender
@@ -1199,6 +1203,7 @@ impl BlocklistAIHistoryModel {
         from_exchange_id: AIAgentExchangeId,
         fork_from_exact_exchange: bool,
         prefix: &str,
+        title_override: Option<&str>,
         app: &AppContext,
     ) -> Result<AIConversation, anyhow::Error> {
         let conversation = source_conversation;
@@ -1241,7 +1246,7 @@ impl BlocklistAIHistoryModel {
         // Build truncated tasks by retaining only messages whose IDs are in
         // `allowed_message_ids`. Tasks whose message list becomes empty and
         // which are non-root tasks are dropped.
-        let truncated_tasks: Vec<warp_multi_agent_api::Task> = conversation
+        let truncated_tasks: Vec<wish_multi_agent_api::Task> = conversation
             .all_tasks()
             .filter_map(|t| {
                 if let Some(message_ids_to_retain) = message_ids_to_retain_by_task.get(t.id()) {
@@ -1264,7 +1269,7 @@ impl BlocklistAIHistoryModel {
         }
 
         let updated_tasks_with_new_ids =
-            update_forked_task_properties(truncated_tasks, prefix, false);
+            update_forked_task_properties(truncated_tasks, prefix, false, title_override);
 
         let Some(sqlite_sender) = GlobalResourceHandlesProvider::as_ref(app)
             .get()
@@ -1346,7 +1351,7 @@ impl BlocklistAIHistoryModel {
     pub fn apply_client_actions(
         &mut self,
         response_stream_id: &ResponseStreamId,
-        client_actions: Vec<warp_multi_agent_api::ClientAction>,
+        client_actions: Vec<wish_multi_agent_api::ClientAction>,
         conversation_id: AIConversationId,
         terminal_view_id: EntityId,
         ctx: &mut ModelContext<Self>,
@@ -2044,6 +2049,38 @@ impl BlocklistAIHistoryModel {
         None
     }
 
+    /// Returns the canonical local conversation ID for a server token, creating
+    /// and caching one if this client has not seen the token before.
+    pub fn get_or_set_canonical_conversation_id_for_server_token(
+        &mut self,
+        server_token: &ServerConversationToken,
+    ) -> AIConversationId {
+        if let Some(conversation_id) = self.server_token_to_conversation_id.get(server_token) {
+            return *conversation_id;
+        }
+
+        let conversation_id = self
+            .conversations_by_id
+            .iter()
+            .find_map(|(conversation_id, conversation)| {
+                (conversation.server_conversation_token() == Some(server_token))
+                    .then_some(*conversation_id)
+            })
+            .or_else(|| {
+                self.all_conversations_metadata
+                    .iter()
+                    .find_map(|(conversation_id, metadata)| {
+                        (metadata.server_conversation_token.as_ref() == Some(server_token))
+                            .then_some(*conversation_id)
+                    })
+            })
+            .unwrap_or_else(AIConversationId::new);
+
+        self.server_token_to_conversation_id
+            .insert(server_token.clone(), conversation_id);
+        conversation_id
+    }
+
     /// Mark conversations as historical
     /// Historical conversations consist of non-live conversations that were read from the disk or server on startup,
     /// and conversations (recorded here) that were live this session but have now been cleared.
@@ -2089,7 +2126,7 @@ impl BlocklistAIHistoryModel {
     pub fn insert_forked_conversation_from_tasks(
         &mut self,
         conversation_id: AIConversationId,
-        tasks: Vec<warp_multi_agent_api::Task>,
+        tasks: Vec<wish_multi_agent_api::Task>,
         conversation_data: AgentConversationData,
     ) -> anyhow::Result<AIConversation> {
         let mut conversation =
@@ -2553,10 +2590,16 @@ impl From<&AIAgentOutputStatus> for AIQueryHistoryOutputStatus {
 ///
 /// Always prepends the given prefix to the root task's description.
 fn update_forked_task_properties(
-    tasks: Vec<warp_multi_agent_api::Task>,
+    tasks: Vec<wish_multi_agent_api::Task>,
     prefix: &str,
     preserve_task_ids: bool,
-) -> Vec<warp_multi_agent_api::Task> {
+    title_override: Option<&str>,
+) -> Vec<wish_multi_agent_api::Task> {
+    let root_description = |current: &str| match title_override {
+        Some(title) => title.to_owned(),
+        None => format!("{prefix}{current}"),
+    };
+
     if preserve_task_ids {
         return tasks
             .into_iter()
@@ -2567,7 +2610,7 @@ fn update_forked_task_properties(
                     .map(|deps| deps.parent_task_id.is_empty())
                     .unwrap_or(true);
                 if is_root {
-                    t.description = format!("{}{}", prefix, t.description);
+                    t.description = root_description(&t.description);
                 }
                 t
             })
@@ -2604,7 +2647,7 @@ fn update_forked_task_properties(
                 deps.parent_task_id =
                     get_new_task_id(&mut old_to_new_task_ids, &deps.parent_task_id).clone();
             } else {
-                t.description = format!("{}{}", prefix, t.description);
+                t.description = root_description(&t.description);
             }
             t
         })

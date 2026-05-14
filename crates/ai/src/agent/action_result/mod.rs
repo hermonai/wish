@@ -2,10 +2,11 @@ mod convert;
 
 use std::{fmt::Display, ops::Range, time::SystemTime};
 
+use chrono::{DateTime, Local};
 use itertools::Itertools as _;
 use serde::{Deserialize, Serialize};
-use warp_multi_agent_api::apply_file_diffs_result::success::UpdatedFileContent;
 use wish_core::command::ExitCode;
+use wish_multi_agent_api::apply_file_diffs_result::success::UpdatedFileContent;
 use wish_terminal::model::BlockId;
 
 use crate::{
@@ -180,6 +181,8 @@ pub enum RequestCommandOutputResult {
         command: String,
         output: String,
         exit_code: ExitCode,
+        start_ts: Option<DateTime<Local>>,
+        completed_ts: Option<DateTime<Local>>,
     },
     LongRunningCommandSnapshot {
         block_id: BlockId,
@@ -261,6 +264,8 @@ pub enum WriteToLongRunningShellCommandResult {
         block_id: BlockId,
         output: String,
         exit_code: ExitCode,
+        start_ts: Option<DateTime<Local>>,
+        completed_ts: Option<DateTime<Local>>,
     },
     Cancelled,
     Error(ShellCommandError),
@@ -550,6 +555,8 @@ pub enum ReadShellCommandOutputResult {
         block_id: BlockId,
         output: String,
         exit_code: ExitCode,
+        start_ts: Option<DateTime<Local>>,
+        completed_ts: Option<DateTime<Local>>,
     },
     LongRunningCommandSnapshot {
         command: String,
@@ -661,7 +668,7 @@ impl From<UpdatedFileContext> for Vec<UpdatedFileContent> {
     fn from(value: UpdatedFileContext) -> Self {
         // Note: This method only makes sense for FileContexts that have a string content.
         // TODO: How do we gracefully fail binary files here?
-        let file_content: Vec<warp_multi_agent_api::FileContent> = value.file_context.into();
+        let file_content: Vec<wish_multi_agent_api::FileContent> = value.file_context.into();
 
         file_content
             .into_iter()
@@ -1351,6 +1358,8 @@ pub enum TransferShellCommandControlToUserResult {
         block_id: BlockId,
         output: String,
         exit_code: ExitCode,
+        start_ts: Option<DateTime<Local>>,
+        completed_ts: Option<DateTime<Local>>,
     },
     Cancelled,
     Error(ShellCommandError),

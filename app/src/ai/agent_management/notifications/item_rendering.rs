@@ -256,7 +256,7 @@ fn render_branch_label(branch: &str, appearance: &Appearance) -> Box<dyn Element
             .with_cross_axis_alignment(CrossAxisAlignment::Center)
             .with_spacing(2.)
             .with_child(
-                ConstrainedBox::new(Icon::GitBranch.to_warpui_icon(color).finish())
+                ConstrainedBox::new(Icon::GitBranch.to_wishui_icon(color).finish())
                     .with_width(10.)
                     .with_height(10.)
                     .finish(),
@@ -337,7 +337,7 @@ fn render_expand_chevron(
         Icon::ChevronRight
     };
     let chevron = ConstrainedBox::new(
-        icon.to_warpui_icon(theme.disabled_text_color(theme.surface_1()))
+        icon.to_wishui_icon(theme.disabled_text_color(theme.surface_1()))
             .finish(),
     )
     .with_width(12.)

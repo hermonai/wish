@@ -5,8 +5,8 @@ use super::{
 };
 use crate::ai::artifacts::Artifact;
 use crate::persistence::model::AgentConversationData;
-use warp_multi_agent_api as api;
 use wish_core::features::FeatureFlag;
+use wish_multi_agent_api as api;
 
 fn restored_conversation(conversation_data: Option<AgentConversationData>) -> AIConversation {
     AIConversation::new_restored(
@@ -154,6 +154,13 @@ fn child_conversation_detection_uses_parent_agent_id() {
 
     assert!(conversation.is_child_agent_conversation());
     assert_eq!(conversation.parent_conversation_id(), None);
+}
+
+#[test]
+fn cli_agent_transcript_vehicle_is_excluded_from_navigation() {
+    let conversation = AIConversation::new(false, true);
+
+    assert!(conversation.should_exclude_from_navigation());
 }
 
 #[test]

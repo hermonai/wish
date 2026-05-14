@@ -1222,7 +1222,7 @@ impl TerminalModel {
         is_inverted: bool,
         obfuscate_secrets: ObfuscateSecrets,
     ) -> Self {
-        let mut me = Self::new_internal(
+        Self::new_internal(
             None,
             sizes,
             colors,
@@ -1244,12 +1244,7 @@ impl TerminalModel {
             },
             SharedSessionStatus::ViewPending,
             true,
-        );
-        if FeatureFlag::CloudModeSetupV2.is_enabled() {
-            me.block_list_mut()
-                .set_is_executing_oz_environment_startup_commands(true);
-        }
-        me
+        )
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1362,7 +1357,7 @@ impl TerminalModel {
     /// link the new server-assigned token to an existing conversation from historical replay.
     pub fn send_agent_response_for_shared_session(
         &mut self,
-        response: &warp_multi_agent_api::ResponseEvent,
+        response: &wish_multi_agent_api::ResponseEvent,
         response_initiator: Option<ParticipantId>,
         forked_from_conversation_token: Option<String>,
     ) {

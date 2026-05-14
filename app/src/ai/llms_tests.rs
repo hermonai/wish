@@ -123,50 +123,183 @@ fn llm_info_round_trip_serializes_and_deserializes() {
     assert_eq!(info, round_tripped);
 }
 
-#[test]
-fn normalizes_ollama_base_url() {
-    assert_eq!(
-        normalized_ollama_base_url("127.0.0.1:11434/"),
-        "http://127.0.0.1:11434"
-    );
-    assert_eq!(
-        normalized_ollama_base_url("http://localhost:11434/"),
-        "http://localhost:11434"
-    );
-    assert_eq!(normalized_ollama_base_url("   "), DEFAULT_OLLAMA_BASE_URL);
+// -- build_custom_llm_infos / display label tests --
+
+fn endpoint(
+    name: &str,
+    url: &str,
+    api_key: &str,
+    models: Vec<CustomEndpointModel>,
+) -> CustomEndpoint {
+    CustomEndpoint {
+        name: name.into(),
+        url: url.into(),
+        api_key: api_key.into(),
+        models,
+    }
+}
+
+fn model(name: &str, alias: Option<&str>, config_key: &str) -> CustomEndpointModel {
+    CustomEndpointModel {
+        name: name.into(),
+        alias: alias.map(|s| s.into()),
+        config_key: config_key.into(),
+    }
 }
 
 #[test]
-fn builds_local_ollama_models_from_names() {
-    let models = local_ollama_models_from_names([
-        "llama3.2:latest".to_owned(),
-        "qwen2.5-coder:7b".to_owned(),
-        "llama3.2:latest".to_owned(),
-    ])
-    .expect("local Ollama models should be built");
-
-    let choices: Vec<_> = models.agent_mode.choices.iter().collect();
-    assert_eq!(choices.len(), 2);
-    assert_eq!(choices[0].id, LLMId::from("ollama:llama3.2:latest"));
-    assert_eq!(choices[0].provider, LLMProvider::Ollama);
-    assert!(choices[0]
-        .host_configs
-        .contains_key(&LLMModelHost::LocalOllama));
+fn custom_llm_infos_built_from_endpoints() {
+    let keys = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![endpoint(
+            "My Endpoint",
+            "https://x.io",
+            "k",
+            vec![
+                model("gpt-4", Some("fast"), "uuid-1"),
+                model("llama", None, "uuid-2"),
+            ],
+        )],
+        ..Default::default()
+    };
+    let infos = build_custom_llm_infos(&keys);
+    assert_eq!(infos.len(), 2);
+    assert_eq!(infos[0].display_name, "fast");
+    assert_eq!(infos[0].id.as_str(), "uuid-1");
+    assert_eq!(
+        infos[0].description.as_deref(),
+        Some("Custom · My Endpoint")
+    );
+    assert_eq!(infos[1].display_name, "llama");
+    assert_eq!(infos[1].id.as_str(), "uuid-2");
 }
 
 #[test]
-fn marks_ollama_cloud_tags_as_non_local() {
-    let local = OllamaModel {
-        name: "llama3.2:3b".to_owned(),
-        remote_model: None,
-        remote_host: None,
+fn custom_llm_display_name_uses_alias_when_present() {
+    let keys = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![endpoint(
+            "ep",
+            "https://a.io",
+            "k",
+            vec![model("raw-name", Some("My Alias"), "uuid-a")],
+        )],
+        ..Default::default()
     };
-    let remote = OllamaModel {
-        name: "qwen3.5:cloud".to_owned(),
-        remote_model: Some("qwen3.5:397b".to_owned()),
-        remote_host: Some("https://ollama.com:443".to_owned()),
-    };
+    let infos = build_custom_llm_infos(&keys);
+    assert_eq!(infos[0].display_name, "My Alias");
+}
 
-    assert!(local.is_local());
-    assert!(!remote.is_local());
+#[test]
+fn custom_llm_display_name_falls_back_to_name_when_alias_missing() {
+    let keys = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![endpoint(
+            "ep",
+            "https://a.io",
+            "k",
+            vec![model("raw-name", None, "uuid-a")],
+        )],
+        ..Default::default()
+    };
+    let infos = build_custom_llm_infos(&keys);
+    assert_eq!(infos[0].display_name, "raw-name");
+}
+
+#[test]
+fn custom_llm_infos_skip_endpoints_with_empty_api_key() {
+    let keys = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![
+            endpoint("bad", "https://a.io", "", vec![model("m", None, "uuid-x")]),
+            endpoint(
+                "good",
+                "https://b.io",
+                "k",
+                vec![model("m", None, "uuid-y")],
+            ),
+        ],
+        ..Default::default()
+    };
+    let infos = build_custom_llm_infos(&keys);
+    assert_eq!(infos.len(), 1);
+    assert_eq!(infos[0].id.as_str(), "uuid-y");
+}
+
+#[test]
+fn custom_llm_infos_skip_models_without_config_key() {
+    let keys = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![endpoint(
+            "ep",
+            "https://a.io",
+            "k",
+            vec![
+                model("unconfigured", None, ""),
+                model("ready", None, "uuid-a"),
+            ],
+        )],
+        ..Default::default()
+    };
+    let infos = build_custom_llm_infos(&keys);
+    assert_eq!(infos.len(), 1);
+    assert_eq!(infos[0].display_name, "ready");
+}
+
+#[test]
+fn removing_model_row_purges_from_custom_llms() {
+    let before = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![endpoint(
+            "ep",
+            "https://a.io",
+            "k",
+            vec![model("a", None, "uuid-a"), model("b", None, "uuid-b")],
+        )],
+        ..Default::default()
+    };
+    assert_eq!(build_custom_llm_infos(&before).len(), 2);
+
+    let after = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![endpoint(
+            "ep",
+            "https://a.io",
+            "k",
+            vec![model("b", None, "uuid-b")],
+        )],
+        ..Default::default()
+    };
+    let infos = build_custom_llm_infos(&after);
+    assert_eq!(infos.len(), 1);
+    assert_eq!(infos[0].id.as_str(), "uuid-b");
+    assert!(infos.iter().all(|i| i.id.as_str() != "uuid-a"));
+}
+
+#[test]
+fn removing_endpoint_purges_all_its_models_from_custom_llms() {
+    let before = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![
+            endpoint(
+                "keep",
+                "https://a.io",
+                "k",
+                vec![model("k1", None, "uuid-k1")],
+            ),
+            endpoint(
+                "goner",
+                "https://b.io",
+                "k",
+                vec![model("g1", None, "uuid-g1"), model("g2", None, "uuid-g2")],
+            ),
+        ],
+        ..Default::default()
+    };
+    assert_eq!(build_custom_llm_infos(&before).len(), 3);
+
+    let after = ai::api_keys::ApiKeys {
+        custom_endpoints: vec![endpoint(
+            "keep",
+            "https://a.io",
+            "k",
+            vec![model("k1", None, "uuid-k1")],
+        )],
+        ..Default::default()
+    };
+    let infos = build_custom_llm_infos(&after);
+    assert_eq!(infos.len(), 1);
+    assert_eq!(infos[0].id.as_str(), "uuid-k1");
 }

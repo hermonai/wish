@@ -259,7 +259,7 @@ impl FindBar {
             .ui_builder()
             .button(ButtonVariant::Text, mouse_state_handle)
             // The fill here doesn't matter, since it's overridden by the button text color.
-            .with_icon_label(icon.to_warpui_icon(crate::themes::theme::Fill::white()))
+            .with_icon_label(icon.to_wishui_icon(crate::themes::theme::Fill::white()))
             .with_style(base_styles)
             .with_hovered_styles(UiComponentStyles {
                 background: Some(appearance.theme().foreground_button_color().into()),
@@ -364,7 +364,7 @@ impl View for FindBar {
         let has_matches = searcher.match_count() > 0;
 
         let find_icon = Container::new(
-            ConstrainedBox::new(Icon::Find.to_warpui_icon(theme.active_ui_detail()).finish())
+            ConstrainedBox::new(Icon::Find.to_wishui_icon(theme.active_ui_detail()).finish())
                 .with_height(editor_height)
                 .with_width(editor_height)
                 .finish(),

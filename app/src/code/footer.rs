@@ -292,7 +292,7 @@ impl CodeFooterView {
         Container::new(
             ConstrainedBox::new(
                 Icon::Info
-                    .to_warpui_icon(theme.active_ui_text_color())
+                    .to_wishui_icon(theme.active_ui_text_color())
                     .finish(),
             )
             .with_width(12.)
@@ -1197,7 +1197,7 @@ impl CodeFooterView {
             mouse_states.open_logs.clone(),
             move || {
                 Icon::Code1
-                    .to_warpui_icon(ThemeFill::Solid(text_color))
+                    .to_wishui_icon(ThemeFill::Solid(text_color))
                     .finish()
             },
             "Open logs",
@@ -1219,7 +1219,7 @@ impl CodeFooterView {
             mouse_states.restart_server.clone(),
             move || {
                 Icon::RefreshCcw
-                    .to_warpui_icon(ThemeFill::Solid(text_color))
+                    .to_wishui_icon(ThemeFill::Solid(text_color))
                     .finish()
             },
             "Restart server",
@@ -1264,7 +1264,7 @@ impl CodeFooterView {
             mouse_states.start_server.clone(),
             move || {
                 Icon::Play
-                    .to_warpui_icon(ThemeFill::Solid(text_color))
+                    .to_wishui_icon(ThemeFill::Solid(text_color))
                     .finish()
             },
             "Start server",
@@ -1286,7 +1286,7 @@ impl CodeFooterView {
             mouse_states.remove_server.clone(),
             move || {
                 Icon::Trash
-                    .to_warpui_icon(ThemeFill::Solid(text_color))
+                    .to_wishui_icon(ThemeFill::Solid(text_color))
                     .finish()
             },
             "Remove server",
@@ -1309,7 +1309,7 @@ impl CodeFooterView {
             mouse_states.restart_all.clone(),
             move || {
                 Icon::RefreshCcw
-                    .to_warpui_icon(ThemeFill::Solid(text_color))
+                    .to_wishui_icon(ThemeFill::Solid(text_color))
                     .finish()
             },
             if is_plural {
@@ -1365,7 +1365,7 @@ impl CodeFooterView {
             mouse_states.start_all.clone(),
             move || {
                 Icon::Play
-                    .to_warpui_icon(ThemeFill::Solid(text_color))
+                    .to_wishui_icon(ThemeFill::Solid(text_color))
                     .finish()
             },
             if !is_plural {
@@ -1393,7 +1393,7 @@ impl CodeFooterView {
             mouse_states.manage_servers.clone(),
             move || {
                 Icon::Gear
-                    .to_warpui_icon(ThemeFill::Solid(text_color))
+                    .to_wishui_icon(ThemeFill::Solid(text_color))
                     .finish()
             },
             "Manage servers",

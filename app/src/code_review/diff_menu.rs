@@ -334,7 +334,7 @@ impl CodeReviewDiffMenu {
 
                         let check_slot: Box<dyn Element> = if target.is_selected {
                             ConstrainedBox::new(
-                                Icon::Check.to_warpui_icon(Fill::Solid(text_color)).finish(),
+                                Icon::Check.to_wishui_icon(Fill::Solid(text_color)).finish(),
                             )
                             .with_width(CHECK_SLOT_SIZE)
                             .with_height(CHECK_SLOT_SIZE)

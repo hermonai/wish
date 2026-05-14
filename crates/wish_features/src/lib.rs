@@ -129,10 +129,6 @@ pub enum FeatureFlag {
     /// Enables the settings file feature.
     SettingsFile,
 
-    /// Enables the settings import onboarding block and pre-parsing
-    /// configs on app startup.
-    SettingsImport,
-
     /// Enables rect selection.
     RectSelection,
 
@@ -157,19 +153,12 @@ pub enum FeatureFlag {
     /// Routes SSH sessions through the tmux-backed SSH wrapper.
     SSHTmuxWrapper,
 
-    /// Reduces the amount of horizontal padding in the blocklist
-    /// from 20px to 16px.
-    LessHorizontalTerminalPadding,
-
     /// Enables the shell selector, allowing us to open a new tab in
     /// a shell other than the default shell.
     ShellSelector,
 
     /// Enables writing to long-running commands in shared sessions.
     SharedSessionWriteToLongRunningCommands,
-
-    /// Replaces the bookmark button with a "save as workflow" button.
-    BlockToolbeltSaveAsWorkflow,
 
     /// Lazily builds scenes at render time instead of eagerly when a view
     /// changes.
@@ -179,12 +168,6 @@ pub enum FeatureFlag {
     /// corresponding `use_acls` flag in the session sharing server is disabled.
     /// https://github.com/warpdotdev/session-sharing-server/blob/b6590ebd0b0e7f6847d6b2228b4e77d63939ce22/server/Cargo.toml#L13
     SessionSharingAcls,
-
-    /// Removes the extraneous padding from the alt-screen that we previously had
-    /// to keep consistent size between blocklist and alt-screen.
-    ///
-    /// See plan here: https://docs.google.com/document/d/1TBPSWNfh4KylkEgL5o5xyYgK_KQzUQk1oxjuIx2ipXw
-    RemoveAltScreenPadding,
 
     /// Enables the full-screen "zen mode" setting, where we hide the tab bar if there's only one
     /// tab.
@@ -284,6 +267,9 @@ pub enum FeatureFlag {
     /// Enables full source code embedding of repos when using codebase context.
     FullSourceCodeEmbedding,
 
+    /// Enables codebase indexing inside remote server daemon processes.
+    RemoteCodebaseIndexing,
+
     /// If enabled, command palette searches will use Tantivy search instead of the default fuzzy search.
     UseTantivySearch,
 
@@ -339,9 +325,6 @@ pub enum FeatureFlag {
 
     /// Enables inline review comments on specific lines of code.
     ContextLineReviewComments,
-
-    /// Enables the natural language classification model.
-    NLDClassifierModelEnabled,
 
     /// Enables the fast-forward autoexecute button
     FastForwardAutoexecuteButton,
@@ -436,9 +419,6 @@ pub enum FeatureFlag {
 
     /// Allows opening file links using the $EDITOR environment variable.
     AllowOpeningFileLinksUsingEditorEnv,
-
-    /// Enables improvements to our natural language detection functionality.
-    NldImprovements,
 
     /// Enables the ability to undo closed panes.
     UndoClosedPanes,
@@ -694,6 +674,9 @@ pub enum FeatureFlag {
     /// When enabled, the HOA onboarding flow is suppressed.
     OpenWarpLaunchModal,
 
+    /// Enables the orchestration launch modal announcing multi-agent orchestration features.
+    OrchestrationLaunchModal,
+
     /// Updated tab styling (background colors, border, close button positioning, margins).
     NewTabStyling,
 
@@ -827,6 +810,11 @@ pub enum FeatureFlag {
     /// When enabled, solo users (not on a team) can use BYO API keys.
     SoloUserByok,
 
+    /// Enables the Custom Inference settings UI for adding user-provided third-party / OpenAI-compatible inference endpoints.
+    CustomInferenceEndpoints,
+    /// Enables Custom Inference endpoints for enterprise users.
+    CustomInferenceEndpointsEnterprise,
+
     /// Replaces the in-block warpification banner with a warpify footer.
     WishifyFooter,
 
@@ -885,6 +873,9 @@ pub enum FeatureFlag {
     /// background refresh loop that keeps them fresh during a task run.
     GitCredentialRefresh,
 
+    /// Gates the v2 billing and usage page redesign.
+    BillingAndUsagePageV2,
+
     /// Replaces the raw harness CLI command with a styled header showing CLI name + status icon.
     HarnessSessionHeader,
 }
@@ -928,7 +919,6 @@ pub const DOGFOOD_FLAGS: &[FeatureFlag] = &[
     FeatureFlag::RetryTruncatedCodeResponses,
     FeatureFlag::ContextLineReviewComments,
     FeatureFlag::RunGeneratorsWithCmdExe,
-    FeatureFlag::NLDClassifierModelEnabled,
     FeatureFlag::Projects,
     FeatureFlag::ProviderCommand,
     FeatureFlag::ArtifactCommand,
@@ -957,31 +947,33 @@ pub const DOGFOOD_FLAGS: &[FeatureFlag] = &[
     FeatureFlag::ConversationApi,
     FeatureFlag::RememberFastForwardState,
     FeatureFlag::HOANotifications,
-    FeatureFlag::OrchestrationV2,
-    FeatureFlag::OrchestrationPillBar,
-    FeatureFlag::RunAgentsTool,
     FeatureFlag::GeminiNotifications,
     FeatureFlag::LocalDockerSandbox,
-    FeatureFlag::VerticalTabsSummaryMode,
     FeatureFlag::CloudModeSetupV2,
     #[cfg(not(windows))]
     FeatureFlag::SshRemoteServer,
     FeatureFlag::CloudModeInputV2,
     FeatureFlag::HandoffLocalCloud,
     FeatureFlag::DragTabsToWindows,
+    FeatureFlag::OrchestrationLaunchModal,
     FeatureFlag::NamedAgents,
-    FeatureFlag::GitCredentialRefresh,
     FeatureFlag::HandoffCloudCloud,
-    FeatureFlag::HarnessSessionHeader,
+    FeatureFlag::SoloUserByok,
+    FeatureFlag::CustomInferenceEndpoints,
+    FeatureFlag::RemoteCodebaseIndexing,
 ];
 
 /// Features enabled for feature preview build users (e.g.: Friends of Warp).
 /// All PREVIEW_FLAGS are also automatically added to dogfood builds (WarpDev).
 pub const PREVIEW_FLAGS: &[FeatureFlag] = &[
     FeatureFlag::Orchestration,
+    FeatureFlag::OrchestrationV2,
+    FeatureFlag::OrchestrationPillBar,
+    FeatureFlag::RunAgentsTool,
     FeatureFlag::BlocklistMarkdownTableRendering,
     FeatureFlag::MarkdownTables,
     FeatureFlag::GitOperationsInCodeReview,
+    FeatureFlag::GitCredentialRefresh,
 ];
 
 /// Features enabled for all release builds (i.e.: everything but WarpLocal).
@@ -1076,6 +1068,7 @@ impl FeatureFlag {
             MarkdownTables => Some("Enables rendering and interaction support for markdown tables in notebooks."),
             SettingsFile => Some("Enables configuring Warp via a user-editable `settings.toml` file, with hot reload and error reporting for invalid values."),
             GitOperationsInCodeReview => Some("Enables commit, push, and create-PR actions directly from the code review panel."),
+            OrchestrationV2 => Some("Enables orchestration of teams of agents with dedicated UI, lifecycle events and inter-agent messaging."),
             _ => None,
         }
     }

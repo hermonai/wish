@@ -711,7 +711,7 @@ impl DisplayChipMenu {
         let image_key = format!("env-sidecar:{}:image", data.id);
 
         let icon = |icon: Icon| {
-            ConstrainedBox::new(icon.to_warpui_icon(Fill::Solid(label_text_color)).finish())
+            ConstrainedBox::new(icon.to_wishui_icon(Fill::Solid(label_text_color)).finish())
                 .with_width(ENV_SIDE_CAR_ICON_SIZE)
                 .with_height(ENV_SIDE_CAR_ICON_SIZE)
                 .finish()
@@ -928,7 +928,7 @@ impl DisplayChipMenu {
                     updated_text.add_child(
                         Container::new(
                             ConstrainedBox::new(
-                                icon.to_warpui_icon(Fill::Solid(text_color)).finish(),
+                                icon.to_wishui_icon(Fill::Solid(text_color)).finish(),
                             )
                             .with_height(icon_size)
                             .with_width(icon_size)
@@ -1099,7 +1099,7 @@ impl DisplayChipMenu {
                                 let glyph_size = ENV_MENU_ICON_SIZE;
 
                                 let icon_glyph = ConstrainedBox::new(
-                                    icon.to_warpui_icon(Fill::Solid(main_text)).finish(),
+                                    icon.to_wishui_icon(Fill::Solid(main_text)).finish(),
                                 )
                                 .with_width(glyph_size)
                                 .with_height(glyph_size)
@@ -1126,7 +1126,7 @@ impl DisplayChipMenu {
                             left_side.add_child(
                                 Container::new(
                                     ConstrainedBox::new(
-                                        icon.to_warpui_icon(Fill::Solid(main_text)).finish(),
+                                        icon.to_wishui_icon(Fill::Solid(main_text)).finish(),
                                     )
                                     .with_height(icon_size)
                                     .with_width(icon_size)

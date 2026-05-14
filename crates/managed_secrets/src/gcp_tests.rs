@@ -95,9 +95,13 @@ fn service_account_impersonation() {
         token_lifetime: Some(Duration::from_secs(1800)),
     };
 
-    let result =
-        generate_gcp_credential_config("t-1", &config, Path::new("/bin/wish"), Path::new("/tmp/out"))
-            .unwrap();
+    let result = generate_gcp_credential_config(
+        "t-1",
+        &config,
+        Path::new("/bin/wish"),
+        Path::new("/tmp/out"),
+    )
+    .unwrap();
 
     assert_eq!(
         result,
@@ -131,9 +135,13 @@ fn no_duration_flag_when_lifetime_absent() {
         token_lifetime: None,
     };
 
-    let result =
-        generate_gcp_credential_config("t-3", &config, Path::new("/bin/wish"), Path::new("/tmp/out"))
-            .unwrap();
+    let result = generate_gcp_credential_config(
+        "t-3",
+        &config,
+        Path::new("/bin/wish"),
+        Path::new("/tmp/out"),
+    )
+    .unwrap();
     assert_eq!(
         result,
         json!({

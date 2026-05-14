@@ -524,7 +524,7 @@ impl ServerCardView {
                 .with_child(
                     Container::new(
                         ConstrainedBox::new(
-                            chevron_icon.to_warpui_icon(text_color.into()).finish(),
+                            chevron_icon.to_wishui_icon(text_color.into()).finish(),
                         )
                         .with_width(chevron_dimensions)
                         .with_height(chevron_dimensions)
@@ -561,7 +561,7 @@ impl ServerCardView {
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
                 .with_spacing(2.)
                 .with_child(
-                    ConstrainedBox::new(icon.to_warpui_icon(chip_color.into()).finish())
+                    ConstrainedBox::new(icon.to_wishui_icon(chip_color.into()).finish())
                         .with_width(style::TITLE_CHIP_FONT_SIZE)
                         .with_height(style::TITLE_CHIP_FONT_SIZE)
                         .finish(),

@@ -161,7 +161,7 @@ pub fn render_input_row<A: Action + Clone>(
     } else {
         ConstrainedBox::new(
             Icon::Check
-                .to_warpui_icon(Fill::Solid(ColorU::new(11, 142, 71, 255)))
+                .to_wishui_icon(Fill::Solid(ColorU::new(11, 142, 71, 255)))
                 .finish(),
         )
         .with_width(24.)

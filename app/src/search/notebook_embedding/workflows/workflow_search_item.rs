@@ -62,7 +62,7 @@ impl SearchItem for WorkflowSearchItem {
         };
 
         Container::new(
-            ConstrainedBox::new(icon.to_warpui_icon(icon_color.into()).finish())
+            ConstrainedBox::new(icon.to_wishui_icon(icon_color.into()).finish())
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish(),
@@ -118,7 +118,7 @@ impl SearchItem for WorkflowSearchItem {
                 .finish();
             let warning_icon = ConstrainedBox::new(
                 Icon::Warning
-                    .to_warpui_icon(appearance.theme().ui_warning_color().into())
+                    .to_wishui_icon(appearance.theme().ui_warning_color().into())
                     .finish(),
             )
             .with_width(warning_font_size)

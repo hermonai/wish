@@ -36,11 +36,11 @@ impl SearchItem for SkillSearchItem {
         let icon_color = highlight_state.icon_fill(appearance).into_solid();
 
         let icon_element = if let Some(override_icon) = self.icon_override {
-            override_icon.to_warpui_icon(icon_color.into()).finish()
+            override_icon.to_wishui_icon(icon_color.into()).finish()
         } else {
             self.provider
                 .icon()
-                .to_warpui_icon(self.provider.icon_fill(icon_color.into()))
+                .to_wishui_icon(self.provider.icon_fill(icon_color.into()))
                 .finish()
         };
 

@@ -412,7 +412,7 @@ impl TrafficLightData {
     fn render_windows_close_button_icon(icon_color: ColorU) -> Box<dyn Element> {
         ConstrainedBox::new(
             IconComponent::X
-                .to_warpui_icon(theme::Fill::Solid(icon_color))
+                .to_wishui_icon(theme::Fill::Solid(icon_color))
                 .finish(),
         )
         .with_height(16.)

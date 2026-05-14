@@ -132,7 +132,7 @@ pub fn render_warning_box(config: WarningBoxConfig, appearance: &Appearance) -> 
             .with_cross_axis_alignment(CrossAxisAlignment::Start)
             .with_spacing(12.)
             .with_child(
-                ConstrainedBox::new(config.icon.to_warpui_icon(icon_fill).finish())
+                ConstrainedBox::new(config.icon.to_wishui_icon(icon_fill).finish())
                     .with_width(icon_size)
                     .with_height(icon_size)
                     .finish(),
@@ -144,7 +144,7 @@ pub fn render_warning_box(config: WarningBoxConfig, appearance: &Appearance) -> 
             .with_cross_axis_alignment(CrossAxisAlignment::Start)
             .with_spacing(12.)
             .with_child(
-                ConstrainedBox::new(config.icon.to_warpui_icon(icon_fill).finish())
+                ConstrainedBox::new(config.icon.to_wishui_icon(icon_fill).finish())
                     .with_width(icon_size)
                     .with_height(icon_size)
                     .finish(),

@@ -670,7 +670,7 @@ impl ShareBlockModal {
             } else {
                 text_label.to_string()
             },
-            icon.to_warpui_icon(appearance.theme().active_ui_text_color()),
+            icon.to_wishui_icon(appearance.theme().active_ui_text_color()),
             MainAxisSize::Max,
             MainAxisAlignment::Center,
             vec2f(16., 16.),
@@ -797,7 +797,7 @@ impl ShareBlockModal {
         let text_and_icon = TextAndIcon::new(
             TextAndIconAlignment::TextFirst,
             "Copy".to_string(),
-            Icon::Copy.to_warpui_icon(appearance.theme().active_ui_text_color()),
+            Icon::Copy.to_wishui_icon(appearance.theme().active_ui_text_color()),
             MainAxisSize::Max,
             MainAxisAlignment::Center,
             vec2f(16., 16.),

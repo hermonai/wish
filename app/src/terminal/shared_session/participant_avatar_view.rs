@@ -208,7 +208,7 @@ impl ParticipantAvatarView {
         Container::new(
             ConstrainedBox::new(
                 Icon::Edit
-                    .to_warpui_icon(appearance.theme().foreground())
+                    .to_wishui_icon(appearance.theme().foreground())
                     .finish(),
             )
             .with_height(8.)
@@ -489,10 +489,10 @@ pub fn render_revoke_all_button(
     appearance: &Appearance,
 ) -> Box<dyn Element> {
     let edit = Icon::Edit
-        .to_warpui_icon(appearance.theme().foreground())
+        .to_wishui_icon(appearance.theme().foreground())
         .finish();
     let slash = Icon::Slash
-        .to_warpui_icon(appearance.theme().terminal_colors().normal.red.into())
+        .to_wishui_icon(appearance.theme().terminal_colors().normal.red.into())
         .finish();
     let mut stack = Stack::new().with_constrain_absolute_children();
 

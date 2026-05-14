@@ -192,7 +192,7 @@ impl AIFactView {
                 .with_child(
                     ConstrainedBox::new(
                         Icon::CloudOffline
-                            .to_warpui_icon(
+                            .to_wishui_icon(
                                 appearance
                                     .theme()
                                     .sub_text_color(appearance.theme().surface_2()),

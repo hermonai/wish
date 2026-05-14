@@ -296,7 +296,7 @@ fn project_dirs_for_app_id(
             // match our Linux package name.
             let base_app_name = match app_id.application_name() {
                 "Warp" => "Wish-Terminal".to_owned(),
-                "WarpOss" => "Wish-Oss".to_owned(),
+                "WishOss" => "Wish-Oss".to_owned(),
                 other if other.starts_with("Warp") => other.replace("Warp", "Wish-Terminal-"),
                 _ => app_id.application_name().to_owned(),
             };

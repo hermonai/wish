@@ -38,8 +38,11 @@ use crate::server::server_api::ai::{
 use crate::server::server_api::{
     AIApiError, ClientError, CloudAgentCapacityError, ServerApiProvider,
 };
+use crate::settings::PrivacySettings;
 use crate::terminal::view::ambient_agent::{SetupCommandGroupId, SetupCommandState};
 use crate::terminal::CLIAgent;
+use crate::workspaces::user_workspaces::UserWorkspaces;
+use crate::workspaces::workspace::AdminEnablementSetting;
 
 use super::AmbientAgentProgressUIState;
 
@@ -129,7 +132,10 @@ impl SnapshotUploadStatus {
 pub(crate) struct PendingHandoff {
     /// Forked conversation id minted by `POST /agent/conversations/{conversation_id}/fork`.
     /// Sent under `conversation_id` on the subsequent `POST /agent/runs` request.
-    pub(crate) forked_conversation_id: String,
+    /// `None` for fresh cloud launches that have no source conversation to fork.
+    pub(crate) forked_conversation_id: Option<String>,
+    /// Title override for the cloud run (e.g. "<title> (Moved to cloud)").
+    pub(crate) title: Option<String>,
     /// `None` until `derive_touched_workspace` completes.
     pub(crate) touched_workspace: Option<TouchedWorkspace>,
     /// Outcome of the async snapshot upload.
@@ -140,8 +146,6 @@ pub(crate) struct PendingHandoff {
     /// stashed here so `maybe_auto_submit_handoff` can consume it once
     /// the touched workspace and snapshot upload have settled.
     pub(crate) auto_submit: Option<PendingCloudLaunch>,
-    /// Explicit source environment selection. When set, touched-repo overlap must not override it.
-    pub(crate) explicit_environment_id: Option<SyncId>,
 }
 
 /// Status of the ambient agent run.
@@ -545,17 +549,7 @@ impl AmbientAgentViewModel {
         ctx.emit(AmbientAgentViewModelEvent::PendingHandoffChanged);
     }
 
-    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
-    pub(crate) fn pending_handoff_has_explicit_environment(&self) -> bool {
-        self.pending_handoff
-            .as_ref()
-            .is_some_and(|handoff| handoff.explicit_environment_id.is_some())
-    }
-
-    /// Records the outcome of the async snapshot upload. The standard success
-    /// case is `Uploaded(token)`; `SkippedEmptyWorkspace` when the workspace
-    /// had nothing to upload; `Failed` is set by `record_handoff_snapshot_upload_failed`.
-    /// No-op when no handoff context is set.
+    /// Records the outcome of the async snapshot upload.
     #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
     pub(crate) fn set_pending_handoff_snapshot_upload(
         &mut self,
@@ -590,7 +584,7 @@ impl AmbientAgentViewModel {
         &self,
         prompt: String,
         attachments: Vec<AttachmentInput>,
-        forked_conversation_id: String,
+        forked_conversation_id: Option<String>,
         initial_snapshot_token: Option<InitialSnapshotToken>,
         ctx: &AppContext,
     ) -> SpawnAgentRequest {
@@ -600,7 +594,7 @@ impl AmbientAgentViewModel {
             prompt,
             mode,
             config,
-            title: None,
+            title: self.pending_handoff.as_ref().and_then(|h| h.title.clone()),
             team: None,
             skill: None,
             attachments,
@@ -608,9 +602,10 @@ impl AmbientAgentViewModel {
             parent_run_id: None,
             runtime_skills: vec![],
             referenced_attachments: vec![],
-            conversation_id: Some(forked_conversation_id),
+            conversation_id: forked_conversation_id,
             initial_snapshot_token,
             agent_identity_uid: None,
+            snapshot_disabled: should_disable_snapshot(ctx).then_some(true),
         }
     }
 
@@ -969,12 +964,15 @@ impl AmbientAgentViewModel {
     /// and harness. Shared by `spawn_agent` and the local-to-cloud handoff path so
     /// both flows route to the same worker host and inherit the same defaults.
     pub(crate) fn build_default_spawn_config(&self, ctx: &AppContext) -> AgentConfigSnapshot {
-        // Determine computer_use_enabled based on workspace AI autonomy settings
-        let CloudAgentComputerUseState { enabled, .. } =
-            ComputerUsePermission::resolve_cloud_agent_state(ctx);
-        let computer_use_enabled = Some(enabled);
-
         let selected_harness = self.selected_harness();
+        let computer_use_enabled = if selected_harness == Harness::Hermon {
+            // If the harness is Oz, determine computer use based on workspace AI autonomy settings.
+            let CloudAgentComputerUseState { enabled, .. } =
+                ComputerUsePermission::resolve_cloud_agent_state(ctx);
+            Some(enabled)
+        } else {
+            None
+        };
 
         let oz_model = (selected_harness == Harness::Hermon).then(|| {
             LLMPreferences::as_ref(ctx)
@@ -993,6 +991,11 @@ impl AmbientAgentViewModel {
                 .and_then(|name| match selected_harness {
                     Harness::Claude => Some(HarnessAuthSecretsConfig {
                         claude_auth_secret_name: Some(name.clone()),
+                        codex_auth_secret_name: None,
+                    }),
+                    Harness::Codex => Some(HarnessAuthSecretsConfig {
+                        claude_auth_secret_name: None,
+                        codex_auth_secret_name: Some(name.clone()),
                     }),
                     _ => None,
                 });
@@ -1033,6 +1036,7 @@ impl AmbientAgentViewModel {
             referenced_attachments: vec![],
             conversation_id: None,
             initial_snapshot_token: None,
+            snapshot_disabled: should_disable_snapshot(ctx).then_some(true),
         };
 
         self.spawn_internal(request, ctx);
@@ -1572,6 +1576,17 @@ pub enum AmbientAgentViewModelEvent {
     UpdatedSetupCommandVisibility,
     /// The selected harness auth secret changed.
     AuthSecretSelected,
+}
+
+pub(crate) fn should_disable_snapshot(ctx: &AppContext) -> bool {
+    let privacy = PrivacySettings::as_ref(ctx);
+    if !privacy.is_cloud_conversation_storage_enabled {
+        return true;
+    }
+    matches!(
+        UserWorkspaces::as_ref(ctx).get_cloud_conversation_storage_enablement_setting(),
+        AdminEnablementSetting::Disable
+    )
 }
 
 impl Entity for AmbientAgentViewModel {

@@ -10,6 +10,7 @@ use super::{
     ai_page::{AISettingsPageAction, AISettingsPageView},
     appearance_page::AppearanceSettingsPageView,
     billing_and_usage_page::BillingAndUsagePageView,
+    billing_and_usage_page_v2::BillingAndUsagePageV2View,
     code_page::CodeSettingsPageView,
     environments_page::EnvironmentsPageView,
     features_page::FeaturesPageView,
@@ -70,6 +71,7 @@ const ALTERNATING_LIST_ITEM_PADDING: f32 = 8.0;
 const GREY_TEXT_OPACITY: u8 = 60;
 const MIN_PAGE_WIDTH: f32 = 520.;
 const MAX_PAGE_WIDTH: f32 = 800.;
+const INFO_TOOLTIP_MAX_WIDTH: f32 = 320.;
 
 /// Left margin for top-level sidebar nav items (pages and umbrella labels).
 pub(super) const NAV_ITEM_LEFT_MARGIN: f32 = 12.;
@@ -120,6 +122,7 @@ pub enum SettingsPageViewHandle {
     AI(ViewHandle<AISettingsPageView>),
     CloudEnvironments(ViewHandle<EnvironmentsPageView>),
     BillingAndUsage(ViewHandle<BillingAndUsagePageView>),
+    BillingAndUsageV2(ViewHandle<BillingAndUsagePageV2View>),
     MCPServers(ViewHandle<MCPServersSettingsPageView>),
     WarpDrive(ViewHandle<WarpDriveSettingsPageView>),
     BuiltInAgents(ViewHandle<super::builtin_agents_page::BuiltInAgentsPageView>),
@@ -145,6 +148,7 @@ impl SettingsPageViewHandle {
             AI(view_handle) => ChildView::new(view_handle).finish(),
             CloudEnvironments(view_handle) => ChildView::new(view_handle).finish(),
             BillingAndUsage(view_handle) => ChildView::new(view_handle).finish(),
+            BillingAndUsageV2(view_handle) => ChildView::new(view_handle).finish(),
             MCPServers(view_handle) => ChildView::new(view_handle).finish(),
             WarpDrive(view_handle) => ChildView::new(view_handle).finish(),
             BuiltInAgents(view_handle) => ChildView::new(view_handle).finish(),
@@ -440,7 +444,7 @@ pub fn render_full_pane_width_ai_button(
                 .with_child(
                     ConstrainedBox::new(
                         Icon::ChevronRight
-                            .to_warpui_icon(appearance.theme().main_text_color(icon_bg))
+                            .to_wishui_icon(appearance.theme().main_text_color(icon_bg))
                             .finish(),
                     )
                     .with_width(16.)
@@ -555,26 +559,54 @@ pub fn render_info_icon<T: Clone + Action>(
     appearance: &Appearance,
     additional_info: AdditionalInfo<T>,
 ) -> Box<dyn Element> {
-    let info_button = appearance
-        .ui_builder()
-        .info_button_with_tooltip(
-            13.,
-            additional_info
-                .tooltip_override_text
-                .unwrap_or("Click to learn more in docs".to_owned()),
-            additional_info.mouse_state.clone(),
+    let tooltip_text = additional_info
+        .tooltip_override_text
+        .unwrap_or("Click to learn more in docs".to_owned());
+    let icon = Container::new(
+        ConstrainedBox::new(
+            Icon::Info
+                .to_wishui_icon(appearance.theme().active_ui_text_color())
+                .finish(),
         )
-        .on_click(move |ctx, _, _| {
-            if let Some(on_click_action) = &additional_info.on_click_action {
-                ctx.dispatch_typed_action(on_click_action.clone());
-            }
-        })
-        .finish();
+        .with_width(13.)
+        .with_height(13.)
+        .finish(),
+    )
+    .finish();
 
-    Container::new(info_button)
+    let mut info_button = Hoverable::new(additional_info.mouse_state.clone(), move |state| {
+        let mut stack = Stack::new().with_child(icon);
+        if state.is_hovered() {
+            let tool_tip = ConstrainedBox::new(
+                appearance
+                    .ui_builder()
+                    .tool_tip(tooltip_text)
+                    .build()
+                    .finish(),
+            )
+            .with_max_width(INFO_TOOLTIP_MAX_WIDTH)
+            .finish();
+            stack.add_positioned_child(
+                tool_tip,
+                OffsetPositioning::offset_from_parent(
+                    vec2f(0., -3.),
+                    ParentOffsetBounds::WindowByPosition,
+                    ParentAnchor::TopMiddle,
+                    ChildAnchor::BottomMiddle,
+                ),
+            );
+        }
+        stack.finish()
+    })
+    .with_cursor(Cursor::PointingHand);
+
+    if let Some(on_click_action) = additional_info.on_click_action {
+        info_button = info_button
+            .on_click(move |ctx, _, _| ctx.dispatch_typed_action(on_click_action.clone()));
+    }
+
+    Container::new(Box::new(info_button))
         .with_margin_left(4.)
-        // Since the icon is smaller than the font, we need some margin to be in alignment.
-        .with_margin_top(1.5)
         .finish()
 }
 
@@ -592,11 +624,7 @@ pub fn render_local_only_icon(
         )
         .finish();
 
-    Container::new(info_button)
-        .with_margin_left(4.)
-        // Since the icon is smaller than the font, we need some margin to be in alignment.
-        .with_margin_top(1.5)
-        .finish()
+    Container::new(info_button).with_margin_left(4.).finish()
 }
 
 pub fn render_body_item_label<T: Clone + Action>(
@@ -660,7 +688,7 @@ pub fn render_body_item_label_internal<T: Clone + Action>(
     if let Some(icon) = label_icon {
         label.add_child(
             Container::new(
-                ConstrainedBox::new(icon.to_warpui_icon(label_color).finish())
+                ConstrainedBox::new(icon.to_wishui_icon(label_color).finish())
                     .with_width(16.)
                     .with_height(16.)
                     .finish(),
@@ -948,7 +976,7 @@ pub(crate) fn render_settings_info_banner(
     let icon = Container::new(
         ConstrainedBox::new(
             Icon::AlertCircle
-                .to_warpui_icon(appearance.theme().active_ui_text_color())
+                .to_wishui_icon(appearance.theme().active_ui_text_color())
                 .finish(),
         )
         .with_width(16.)

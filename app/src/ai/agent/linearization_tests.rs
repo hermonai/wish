@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::*;
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 
 // Helper function to create a basic message
 fn create_message(id: &str, task_id: &str) -> api::Message {

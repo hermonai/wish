@@ -232,7 +232,7 @@ impl FreeUserNoAiSlide {
         );
 
         Hoverable::new(mouse_state, move |_| {
-            let icon_el = ConstrainedBox::new(icon.to_warpui_icon(text_fill).finish())
+            let icon_el = ConstrainedBox::new(icon.to_wishui_icon(text_fill).finish())
                 .with_width(20.)
                 .with_height(20.)
                 .finish();

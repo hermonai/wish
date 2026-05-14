@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 
 use crate::test_util::ai_agent_tasks::{
     create_api_subtask, create_api_task, create_message, create_subagent_tool_call_message,

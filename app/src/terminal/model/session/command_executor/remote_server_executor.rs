@@ -9,7 +9,7 @@ use wish_completer::completer::{CommandExitStatus, CommandOutput};
 use wish_core::command::ExitCode;
 use wish_core::SessionId;
 
-use crate::remote_server::proto::run_command_response;
+use crate::remote_server::proto::{run_command_response, RunCommandErrorCode};
 use crate::terminal::model::session::command_executor::{CommandExecutor, ExecuteCommandOptions};
 use crate::terminal::shell::Shell;
 
@@ -85,16 +85,30 @@ impl CommandExecutor for RemoteServerCommandExecutor {
                     exit_code: success.exit_code.map(ExitCode::from),
                 })
             }
-            Some(run_command_response::Result::Error(err)) => Err(anyhow!(
-                "Remote command error (session={:?}, code={:?}): {}",
-                self.session_id,
-                err.code(),
-                err.message,
-            )),
-            None => Err(anyhow!(
-                "Remote command returned empty response (session={:?})",
-                self.session_id,
-            )),
+            Some(run_command_response::Result::Error(err)) => {
+                if err.code() == RunCommandErrorCode::SessionNotFound {
+                    wish_core::safe_error!(
+                        safe: ("Remote command SESSION_NOT_FOUND — SessionBootstrapped notification likely lost"),
+                        full: ("Remote command SESSION_NOT_FOUND (session={:?}): {} — the SessionBootstrapped notification was likely lost", self.session_id, err.message)
+                    );
+                }
+                Err(anyhow!(
+                    "Remote command error (session={:?}, code={:?}): {}",
+                    self.session_id,
+                    err.code(),
+                    err.message,
+                ))
+            }
+            None => {
+                wish_core::safe_error!(
+                    safe: ("Remote command returned empty response — proto-level bug"),
+                    full: ("Remote command returned empty response (session={:?}) — proto-level bug", self.session_id)
+                );
+                Err(anyhow!(
+                    "Remote command returned empty response (session={:?})",
+                    self.session_id,
+                ))
+            }
         }
     }
 

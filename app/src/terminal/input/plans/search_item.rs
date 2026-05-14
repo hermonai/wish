@@ -68,7 +68,7 @@ impl SearchItem for PlanSearchItem {
             .sub_text_color(appearance.theme().background());
 
         let icon = Container::new(
-            ConstrainedBox::new(Icon::Compass.to_warpui_icon(icon_color).finish())
+            ConstrainedBox::new(Icon::Compass.to_wishui_icon(icon_color).finish())
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish(),

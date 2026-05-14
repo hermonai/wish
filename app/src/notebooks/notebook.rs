@@ -1943,7 +1943,7 @@ impl NotebookView {
                     .with_children([
                         ConstrainedBox::new(
                             icons::Icon::Trash
-                                .to_warpui_icon(appearance.theme().foreground())
+                                .to_wishui_icon(appearance.theme().foreground())
                                 .finish(),
                         )
                         .with_width(16.)

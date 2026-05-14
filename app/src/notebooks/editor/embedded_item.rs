@@ -467,7 +467,7 @@ impl RenderableEmbeddedWorkflow {
             )
         };
         let workflow_icon = ConstrainedBox::new(
-            icon.to_warpui_icon(icon_color.into())
+            icon.to_wishui_icon(icon_color.into())
                 .with_opacity(1.0)
                 .finish(),
         )

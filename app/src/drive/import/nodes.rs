@@ -331,7 +331,7 @@ impl FolderNode {
             override_color.unwrap_or(warp_drive_icon_color(appearance, DriveObjectType::Folder));
         let icon = ConstrainedBox::new(
             Icon::Folder
-                .to_warpui_icon(Fill::Solid(icon_color))
+                .to_wishui_icon(Fill::Solid(icon_color))
                 .finish(),
         )
         .with_height(IMPORT_FONT_SIZE)
@@ -459,24 +459,24 @@ impl UploadStatus {
     ) -> Box<dyn Element> {
         let status_icon_element = match &self {
             UploadStatus::SavedLocally if !sync_queue_dequeueing => Icon::Laptop
-                .to_warpui_icon(
+                .to_wishui_icon(
                     appearance
                         .theme()
                         .sub_text_color(appearance.theme().surface_1()),
                 )
                 .finish(),
             UploadStatus::Loading | UploadStatus::SavedLocally => Icon::Refresh
-                .to_warpui_icon(
+                .to_wishui_icon(
                     appearance
                         .theme()
                         .sub_text_color(appearance.theme().surface_1()),
                 )
                 .finish(),
             UploadStatus::Loaded(_) => Icon::Check
-                .to_warpui_icon(Fill::Solid(ColorU::new(11, 142, 71, 255)))
+                .to_wishui_icon(Fill::Solid(ColorU::new(11, 142, 71, 255)))
                 .finish(),
             UploadStatus::Error(_) => Icon::AlertTriangle
-                .to_warpui_icon(Fill::Solid(appearance.theme().ui_error_color()))
+                .to_wishui_icon(Fill::Solid(appearance.theme().ui_error_color()))
                 .finish(),
         };
 
@@ -553,12 +553,12 @@ impl FileNode {
 
         let icon_element = match &self.file_type {
             FileType::Workflow => Icon::Workflow
-                .to_warpui_icon(Fill::Solid(override_color.unwrap_or(
+                .to_wishui_icon(Fill::Solid(override_color.unwrap_or(
                     warp_drive_icon_color(appearance, DriveObjectType::Workflow),
                 )))
                 .finish(),
             FileType::Notebook => Icon::Notebook
-                .to_warpui_icon(Fill::Solid(override_color.unwrap_or(
+                .to_wishui_icon(Fill::Solid(override_color.unwrap_or(
                     warp_drive_icon_color(
                         appearance,
                         DriveObjectType::Notebook {

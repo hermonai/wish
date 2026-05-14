@@ -153,7 +153,7 @@ fn render_attachments(
                 ..Default::default()
             },
         )
-        .with_icon(icon.to_warpui_icon(
+        .with_icon(icon.to_wishui_icon(
             blended_colors::text_sub(appearance.theme(), appearance.theme().background()).into(),
         ))
         .build()

@@ -673,13 +673,13 @@ pub fn render_citation(
             )
         }
         AIAgentCitation::WarpDocumentation { .. } => {
-            let icon = Icon::Warp.to_warpui_icon(theme.foreground()).finish();
+            let icon = Icon::Warp.to_wishui_icon(theme.foreground()).finish();
             let name = String::from("Wish Docs");
             (Some(icon), name)
         }
         AIAgentCitation::WebPage { url } => {
             let icon = Icon::LinkExternal
-                .to_warpui_icon(theme.foreground())
+                .to_wishui_icon(theme.foreground())
                 .finish();
             let name = url.clone();
             (Some(icon), name)
@@ -725,6 +725,69 @@ pub fn render_citation(
             .with_cursor(Cursor::PointingHand)
             .finish(),
     )
+}
+
+/// Renders the Ask-User-Question speedbump footer: a short description label, a
+/// dropdown for the `ask_user_question` permission, and a right-aligned
+/// "Manage AI Autonomy permissions" link. Matches the visual rhythm of
+/// [`render_autonomy_checkbox_setting_speedbump_footer`].
+pub fn render_autonomy_dropdown_setting_speedbump_footer<A>(
+    description: &'static str,
+    dropdown: &wishui::ViewHandle<crate::view_components::dropdown::Dropdown<A>>,
+    settings_link_handle: MouseStateHandle,
+    app: &AppContext,
+) -> Box<dyn Element>
+where
+    A: wishui::Action + Clone,
+{
+    let appearance = Appearance::as_ref(app);
+    let theme = appearance.theme();
+    Flex::row()
+        .with_cross_axis_alignment(CrossAxisAlignment::Center)
+        .with_main_axis_size(MainAxisSize::Max)
+        .with_child(
+            Container::new(
+                Text::new(
+                    description,
+                    appearance.ui_font_family(),
+                    appearance.monospace_font_size() - 1.,
+                )
+                .with_color(blended_colors::text_sub(theme, theme.surface_1()))
+                .with_selectable(false)
+                .finish(),
+            )
+            .with_margin_right(8.)
+            .finish(),
+        )
+        .with_child(wishui::elements::ChildView::new(dropdown).finish())
+        .with_child(
+            Expanded::new(
+                1.,
+                Align::new(
+                    appearance
+                        .ui_builder()
+                        .link(
+                            "Manage AI Autonomy permissions".into(),
+                            None,
+                            Some(Box::new(move |ctx| {
+                                ctx.dispatch_typed_action(
+                                    WorkspaceAction::ShowSettingsPageWithSearch {
+                                        search_query: "Autonomy".to_string(),
+                                        section: Some(SettingsSection::AI),
+                                    },
+                                );
+                            })),
+                            settings_link_handle,
+                        )
+                        .build()
+                        .finish(),
+                )
+                .right()
+                .finish(),
+            )
+            .finish(),
+        )
+        .finish()
 }
 
 /// TODO: All AIBlock footer-related rendering logic should probably be put into its own View.
@@ -1061,7 +1124,7 @@ impl View for AIBlock {
                 thinking_display_mode: AISettings::as_ref(app).thinking_display_mode,
                 conversation_has_imported_comments: self
                     .model
-                    .is_latest_non_passive_exchange_in_root_task(app)
+                    .is_latest_visible_exchange_in_root_task(app)
                     && self.has_imported_comments_in_current_thread(app),
                 ask_user_question_view: self.ask_user_question_view.as_ref(),
                 is_cloud_agent_pre_first_exchange,

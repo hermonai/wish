@@ -93,7 +93,7 @@ impl SearchItem for RewindSearchItem {
         let color = icon_color(appearance);
 
         let icon = Container::new(
-            ConstrainedBox::new(Icon::ClockRewind.to_warpui_icon(color).finish())
+            ConstrainedBox::new(Icon::ClockRewind.to_wishui_icon(color).finish())
                 .with_width(appearance.monospace_font_size())
                 .with_height(appearance.monospace_font_size())
                 .finish(),

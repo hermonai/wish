@@ -737,13 +737,24 @@ enum VerticalTabsResolvedMode {
 enum SummaryPaneKind {
     Terminal,
     /// Hermon's first-party agent (the variant formerly named `OzAgent`).
-    HermonAgent { is_ambient: bool },
-    CLIAgent { agent: CLIAgent, is_ambient: bool },
-    Code { title: String },
+    HermonAgent {
+        is_ambient: bool,
+    },
+    CLIAgent {
+        agent: CLIAgent,
+        is_ambient: bool,
+    },
+    Code {
+        title: String,
+    },
     CodeDiff,
     File,
-    Notebook { is_plan: bool },
-    Workflow { is_ai_prompt: bool },
+    Notebook {
+        is_plan: bool,
+    },
+    Workflow {
+        is_ai_prompt: bool,
+    },
     Settings,
     EnvVarCollection,
     EnvironmentManagement,
@@ -1433,10 +1444,7 @@ fn render_new_tab_button(
         )
         .build()
         .on_click(|ctx, _, position| {
-            ctx.dispatch_typed_action(WorkspaceAction::ToggleNewSessionMenu {
-                position,
-                is_vertical_tabs: true,
-            });
+            ctx.dispatch_typed_action(WorkspaceAction::ToggleNewSessionMenu { position });
         })
         .finish();
 
@@ -3873,7 +3881,9 @@ fn render_summary_pane_kind_icon_circle(
     let padding = total_size * SUMMARY_INLINE_PADDING_RATIO;
     let (icon_element, background): (Box<dyn Element>, ElementFill) = match kind {
         SummaryPaneKind::HermonAgent { .. } => (
-            WarpIcon::Hermon.to_wishui_icon(oz_icon_fill(theme)).finish(),
+            WarpIcon::Hermon
+                .to_wishui_icon(oz_icon_fill(theme))
+                .finish(),
             theme.background().into(),
         ),
         SummaryPaneKind::CLIAgent { agent, .. } => {
@@ -3945,10 +3955,12 @@ fn render_summary_pane_kind_icon_circle(
 /// other pane kinds) return `None` so the caller falls back to its inline rendering.
 fn ambient_agent_variant(kind: &SummaryPaneKind) -> Option<IconWithStatusVariant> {
     match kind {
-        SummaryPaneKind::HermonAgent { is_ambient: true } => Some(IconWithStatusVariant::HermonAgent {
-            status: None,
-            is_ambient: true,
-        }),
+        SummaryPaneKind::HermonAgent { is_ambient: true } => {
+            Some(IconWithStatusVariant::HermonAgent {
+                status: None,
+                is_ambient: true,
+            })
+        }
         SummaryPaneKind::CLIAgent {
             agent,
             is_ambient: true,

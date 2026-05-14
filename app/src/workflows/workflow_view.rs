@@ -2064,7 +2064,7 @@ impl WorkflowView {
                 } else {
                     Icon::Workflow
                 }
-                .to_warpui_icon(
+                .to_wishui_icon(
                     warp_drive_icon_color(
                         appearance,
                         if self.is_for_agent_mode {
@@ -2219,7 +2219,7 @@ impl WorkflowView {
                 let mut stack = Stack::new().with_child(
                     ConstrainedBox::new(
                         Icon::HelpCircle
-                            .to_warpui_icon(
+                            .to_wishui_icon(
                                 appearance
                                     .theme()
                                     .sub_text_color(appearance.theme().background()),
@@ -2370,7 +2370,7 @@ impl WorkflowView {
                 let text_and_icon = TextAndIcon::new(
                     alignment,
                     label,
-                    icon.to_warpui_icon(appearance.theme().active_ui_text_color()),
+                    icon.to_wishui_icon(appearance.theme().active_ui_text_color()),
                     MainAxisSize::Min,
                     MainAxisAlignment::Center,
                     vec2f(10., 10.),
@@ -2843,7 +2843,7 @@ impl WorkflowView {
                     .with_children([
                         ConstrainedBox::new(
                             Icon::Trash
-                                .to_warpui_icon(appearance.theme().foreground())
+                                .to_wishui_icon(appearance.theme().foreground())
                                 .finish(),
                         )
                         .with_width(16.)
@@ -3270,7 +3270,12 @@ impl BackingView for WorkflowView {
         _ctx: &view::HeaderRenderContext<'_>,
         app: &AppContext,
     ) -> view::HeaderContent {
-        view::HeaderContent::simple(self.pane_configuration().as_ref(app).title())
+        let mut content =
+            view::HeaderContent::simple(self.pane_configuration().as_ref(app).title());
+        if let view::HeaderContent::Standard(header) = &mut content {
+            header.options.always_show_icons = true;
+        }
+        content
     }
 
     fn set_focus_handle(&mut self, focus_handle: PaneFocusHandle, _ctx: &mut ViewContext<Self>) {

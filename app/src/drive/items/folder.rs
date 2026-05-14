@@ -52,7 +52,7 @@ impl WarpDriveItem for WarpDriveFolder {
             Icon::from(DriveObjectType::Folder)
         };
 
-        Some(icon.to_warpui_icon(icon_fill).finish())
+        Some(icon.to_wishui_icon(icon_fill).finish())
     }
 
     fn secondary_icon(&self, _color: Option<Fill>) -> Option<Box<dyn Element>> {

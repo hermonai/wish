@@ -195,7 +195,7 @@ fn build_rich_navigation_label(
     let right_element: Box<dyn Element> = if show_enter_indicator {
         let enter_icon = ConstrainedBox::new(
             Icon::CornerDownLeft
-                .to_warpui_icon(theme.foreground())
+                .to_wishui_icon(theme.foreground())
                 .finish(),
         )
         .with_width(font_size)

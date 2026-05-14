@@ -177,7 +177,7 @@ fn render_info_section(
     let alert_icon = Container::new(
         ConstrainedBox::new(
             Icon::AlertCircle
-                .to_warpui_icon(
+                .to_wishui_icon(
                     appearance
                         .theme()
                         .sub_text_color(appearance.theme().surface_2()),
@@ -214,7 +214,7 @@ fn render_permission_row<T: Clone + 'static + std::fmt::Debug + Send + Sync>(
 ) -> Box<dyn Element> {
     let icon_elem = Container::new(
         ConstrainedBox::new(
-            icon.to_warpui_icon(appearance.theme().active_ui_text_color())
+            icon.to_wishui_icon(appearance.theme().active_ui_text_color())
                 .finish(),
         )
         .with_width(16.)
@@ -872,7 +872,7 @@ pub fn render_plan_auto_sync_toggle(
     let icon_elem = Container::new(
         ConstrainedBox::new(
             Icon::Compass
-                .to_warpui_icon(appearance.theme().active_ui_text_color())
+                .to_wishui_icon(appearance.theme().active_ui_text_color())
                 .finish(),
         )
         .with_width(icon_size)
@@ -946,7 +946,7 @@ pub fn render_web_search_toggle(
     let icon_elem = Container::new(
         ConstrainedBox::new(
             Icon::Globe
-                .to_warpui_icon(appearance.theme().active_ui_text_color())
+                .to_wishui_icon(appearance.theme().active_ui_text_color())
                 .finish(),
         )
         .with_width(icon_size)

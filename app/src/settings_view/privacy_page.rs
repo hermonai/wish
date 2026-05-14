@@ -1087,7 +1087,7 @@ impl SecretRedactionWidget {
         let info_icon = Container::new(
             ConstrainedBox::new(
                 Icon::Info
-                    .to_warpui_icon(
+                    .to_wishui_icon(
                         appearance
                             .theme()
                             .hint_text_color(appearance.theme().background()),
@@ -1127,7 +1127,7 @@ impl SecretRedactionWidget {
         TextAndIcon::new(
             TextAndIconAlignment::IconFirst,
             text,
-            Icon::Plus.to_warpui_icon(appearance.theme().active_ui_text_color()),
+            Icon::Plus.to_wishui_icon(appearance.theme().active_ui_text_color()),
             MainAxisSize::Min,
             MainAxisAlignment::SpaceBetween,
             vec2f(16., 16.),

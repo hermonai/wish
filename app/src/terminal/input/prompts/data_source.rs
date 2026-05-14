@@ -164,7 +164,7 @@ impl SearchItem for PromptSearchItem {
         let icon_color = inline_styles::icon_color(appearance);
         let icon_size = inline_styles::font_size(appearance);
 
-        let icon = Icon::Prompt.to_warpui_icon(icon_color).finish();
+        let icon = Icon::Prompt.to_wishui_icon(icon_color).finish();
 
         Container::new(
             ConstrainedBox::new(icon)

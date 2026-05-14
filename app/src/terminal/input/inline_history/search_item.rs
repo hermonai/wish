@@ -123,7 +123,7 @@ impl SearchItem for InlineHistoryItem {
             HistoryItemType::Command { .. } => {
                 let icon_color = inline_styles::icon_color(appearance);
                 Container::new(
-                    ConstrainedBox::new(Icon::Terminal.to_warpui_icon(icon_color).finish())
+                    ConstrainedBox::new(Icon::Terminal.to_wishui_icon(icon_color).finish())
                         .with_width(icon_size)
                         .with_height(icon_size)
                         .finish(),
@@ -138,7 +138,7 @@ impl SearchItem for InlineHistoryItem {
             HistoryItemType::AIPrompt { .. } => {
                 let icon_color = inline_styles::icon_color(appearance);
                 Container::new(
-                    ConstrainedBox::new(Icon::Prompt.to_warpui_icon(icon_color).finish())
+                    ConstrainedBox::new(Icon::Prompt.to_wishui_icon(icon_color).finish())
                         .with_width(icon_size)
                         .with_height(icon_size)
                         .finish(),

@@ -174,7 +174,7 @@ fn render_indicator(state: ProgressStepState, appearance: &Appearance) -> Box<dy
         ProgressStepState::Completed => {
             let check_icon = ConstrainedBox::new(
                 Icon::Check
-                    .to_warpui_icon(theme.main_text_color(background))
+                    .to_wishui_icon(theme.main_text_color(background))
                     .finish(),
             )
             .with_width(ICON_SIZE)

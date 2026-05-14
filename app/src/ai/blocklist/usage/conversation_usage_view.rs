@@ -232,7 +232,7 @@ impl ConversationUsageView {
 
                 if *is_byok {
                     model_elements.push(
-                        ConstrainedBox::new(Icon::Key.to_warpui_icon(text_color.into()).finish())
+                        ConstrainedBox::new(Icon::Key.to_wishui_icon(text_color.into()).finish())
                             .with_width(font_size)
                             .with_height(font_size)
                             .finish(),

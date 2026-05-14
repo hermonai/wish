@@ -64,7 +64,7 @@ impl View for TelemetryBanner {
                 Container::new(
                     ConstrainedBox::new(
                         Icon::Info
-                            .to_warpui_icon(theme.active_ui_text_color())
+                            .to_wishui_icon(theme.active_ui_text_color())
                             .finish(),
                     )
                     .with_height(20.)

@@ -109,7 +109,7 @@ where
         let icon = ConstrainedBox::new(
             session_type
                 .icon()
-                .to_warpui_icon(item_color.into())
+                .to_wishui_icon(item_color.into())
                 .finish(),
         )
         .with_width(14.)

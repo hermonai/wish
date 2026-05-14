@@ -129,7 +129,7 @@ impl UsageHistoryEntry {
         };
         let chevron = ConstrainedBox::new(
             chevron_icon
-                .to_warpui_icon(appearance.theme().foreground())
+                .to_wishui_icon(appearance.theme().foreground())
                 .finish(),
         )
         .with_width(16.)

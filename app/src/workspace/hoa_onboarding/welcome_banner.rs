@@ -92,15 +92,23 @@ pub fn render_welcome_banner(
     );
 
     // "New" badge
-    let badge = Container::new(
-        Text::new_inline("New".to_string(), appearance.ui_font_family(), 14.)
-            .with_color(PhenomenonStyle::modal_badge_text())
-            .finish(),
+    let text = Text::new_inline("New".to_string(), appearance.ui_font_family(), 14.)
+        .with_color(PhenomenonStyle::modal_badge_text())
+        .finish();
+    let badge = ConstrainedBox::new(
+        Container::new(
+            Flex::row()
+                .with_cross_axis_alignment(CrossAxisAlignment::Center)
+                .with_main_axis_size(MainAxisSize::Min)
+                .with_child(text)
+                .finish(),
+        )
+        .with_horizontal_padding(8.)
+        .with_background(Fill::Solid(PhenomenonStyle::modal_badge_background()))
+        .with_corner_radius(CornerRadius::with_all(Radius::Percentage(50.)))
+        .finish(),
     )
-    .with_horizontal_padding(8.)
-    .with_vertical_padding(2.)
-    .with_corner_radius(CornerRadius::with_all(Radius::Pixels(4.)))
-    .with_background(Fill::Solid(PhenomenonStyle::modal_badge_background()))
+    .with_height(24.)
     .finish();
 
     // Title
@@ -121,7 +129,7 @@ pub fn render_welcome_banner(
     for item in FEATURE_ITEMS {
         let icon_el = ConstrainedBox::new(
             item.icon
-                .to_warpui_icon(Fill::Solid(PhenomenonStyle::modal_feature_title_text()))
+                .to_wishui_icon(Fill::Solid(PhenomenonStyle::modal_feature_title_text()))
                 .finish(),
         )
         .with_width(16.)

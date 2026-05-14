@@ -9,7 +9,7 @@ use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 
 use api::message::tool_call::Tool;
 use api::message::tool_call_result::Result as ToolCallResultType;

@@ -97,7 +97,7 @@ pub(super) fn render_two_line_button(
         // Build title row with optional icon
         let title_el: Box<dyn Element> = if let Some(icon) = icon {
             const ICON_SIZE: f32 = 14.;
-            let icon_el = ConstrainedBox::new(Box::new(icon.to_warpui_icon(title_fill)))
+            let icon_el = ConstrainedBox::new(Box::new(icon.to_wishui_icon(title_fill)))
                 .with_width(ICON_SIZE)
                 .with_height(ICON_SIZE)
                 .finish();

@@ -30,7 +30,7 @@ use crate::{
         HandoffComposeState,
     },
 };
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 
 use crate::{
     ai::{
@@ -941,19 +941,6 @@ impl BlocklistAIStatusBar {
                     auth_url.to_owned(),
                     self.state_handles.github_auth_link.clone(),
                 ),
-            ]));
-        }
-
-        if let Some(error_message) = ambient_agent_model.error_message() {
-            return Some(Message::new(vec![
-                MessageItem::Icon {
-                    icon: CoreIcon::Triangle,
-                    color: Some(error_color),
-                },
-                MessageItem::Text {
-                    content: error_message.to_owned().into(),
-                    color: Some(error_color),
-                },
             ]));
         }
 

@@ -431,11 +431,10 @@ impl LaunchMode {
             LaunchMode::App { .. } => ExecutionMode::App,
             LaunchMode::CommandLine { .. } => ExecutionMode::Sdk,
             LaunchMode::Test { .. } => ExecutionMode::App,
-            // RemoteServerProxy and RemoteServerDaemon don't use execution
-            // mode, but Sdk is the closest match (headless, no GUI).
-            LaunchMode::RemoteServerProxy | LaunchMode::RemoteServerDaemon { .. } => {
-                ExecutionMode::Sdk
-            }
+            // RemoteServerProxy is a thin byte bridge; Sdk is the closest match.
+            LaunchMode::RemoteServerProxy => ExecutionMode::Sdk,
+            // RemoteServerDaemon gets its own mode for distinct Sentry tagging.
+            LaunchMode::RemoteServerDaemon { .. } => ExecutionMode::RemoteServerDaemon,
         }
     }
 
@@ -461,14 +460,17 @@ impl LaunchMode {
         }
     }
 
-    /// Returns `true` if running in app mode or via `agent run` to permit codebase indexing.
+    /// Returns `true` if this process can build and sync codebase indices.
     fn supports_indexing(&self) -> bool {
         match self {
             LaunchMode::CommandLine { command, .. } => {
                 matches!(command, CliCommand::Agent(AgentCommand::Run { .. }))
             }
+            LaunchMode::RemoteServerDaemon { .. } => {
+                FeatureFlag::RemoteCodebaseIndexing.is_enabled()
+            }
             LaunchMode::App { .. } | LaunchMode::Test { .. } => true,
-            LaunchMode::RemoteServerProxy | LaunchMode::RemoteServerDaemon { .. } => false,
+            LaunchMode::RemoteServerProxy => false,
         }
     }
 
@@ -1483,6 +1485,8 @@ pub(crate) fn initialize_app(
 
     ctx.add_singleton_model(remote_server::manager::RemoteServerManager::new);
     #[cfg(not(target_family = "wasm"))]
+    ctx.add_singleton_model(remote_server::codebase_index_model::RemoteCodebaseIndexModel::new);
+    #[cfg(not(target_family = "wasm"))]
     remote_server::wire_auth_token_rotation(ctx);
 
     log::info!(
@@ -1594,7 +1598,7 @@ pub(crate) fn initialize_app(
     {
         let imported_config_model = ctx.add_singleton_model(ImportedConfigModel::new);
 
-        if FeatureFlag::SettingsImport.is_enabled()
+        if FeatureFlag::AlacrittySettingsImport.is_enabled()
             && ChannelState::channel() != wish_core::channel::Channel::Integration
         {
             imported_config_model.update(ctx, |model, ctx| {
@@ -2001,6 +2005,11 @@ pub(crate) fn initialize_app(
     ctx.add_singleton_model(|ctx| {
         ProjectContextModel::new_from_persisted(persisted_project_rules, ctx)
     });
+
+    // Index global rules (e.g. ~/.agents/AGENTS.md) on a background task so
+    // they are available to subsequent agent queries.
+    ProjectContextModel::handle(ctx).update(ctx, |me, ctx| me.index_global_rules(ctx));
+
     ctx.add_singleton_model(|ctx| {
         PersistedWorkspace::new(
             persisted_workspaces,
@@ -2679,8 +2688,6 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::DefaultWaterfallMode,
         #[cfg(feature = "settings_file")]
         FeatureFlag::SettingsFile,
-        #[cfg(feature = "settings_import")]
-        FeatureFlag::SettingsImport,
         #[cfg(feature = "rect_selection")]
         FeatureFlag::RectSelection,
         #[cfg(feature = "alacritty_settings_import")]
@@ -2695,12 +2702,8 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::AIRules,
         #[cfg(feature = "ssh_tmux_wrapper")]
         FeatureFlag::SSHTmuxWrapper,
-        #[cfg(feature = "less_horizontal_terminal_padding")]
-        FeatureFlag::LessHorizontalTerminalPadding,
         #[cfg(feature = "shell_selector")]
         FeatureFlag::ShellSelector,
-        #[cfg(feature = "block_toolbelt_save_as_workflow")]
-        FeatureFlag::BlockToolbeltSaveAsWorkflow,
         #[cfg(feature = "integration_command")]
         FeatureFlag::IntegrationCommand,
         #[cfg(feature = "artifact_command")]
@@ -2715,8 +2718,6 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::FullScreenZenMode,
         #[cfg(feature = "minimalist_ui")]
         FeatureFlag::MinimalistUI,
-        #[cfg(feature = "remove_alt_screen_padding")]
-        FeatureFlag::RemoveAltScreenPadding,
         #[cfg(feature = "avatar_in_tab_bar")]
         FeatureFlag::AvatarInTabBar,
         #[cfg(feature = "workflow_aliases")]
@@ -2771,6 +2772,8 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::PredictAMQueries,
         #[cfg(feature = "full_source_code_embedding")]
         FeatureFlag::FullSourceCodeEmbedding,
+        #[cfg(feature = "remote_codebase_indexing")]
+        FeatureFlag::RemoteCodebaseIndexing,
         #[cfg(feature = "use_tantivy_search")]
         FeatureFlag::UseTantivySearch,
         #[cfg(feature = "grep_tool")]
@@ -2823,8 +2826,6 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::CodebaseIndexSpeedbump,
         #[cfg(feature = "context_line_review_comments")]
         FeatureFlag::ContextLineReviewComments,
-        #[cfg(feature = "nld_fasttext_model")]
-        FeatureFlag::NLDClassifierModelEnabled,
         #[cfg(feature = "fast_forward_autoexecute_button")]
         FeatureFlag::FastForwardAutoexecuteButton,
         #[cfg(feature = "code_find_replace")]
@@ -2887,8 +2888,6 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::VimCodeEditor,
         #[cfg(feature = "allow_opening_file_links_using_editor_env")]
         FeatureFlag::AllowOpeningFileLinksUsingEditorEnv,
-        #[cfg(feature = "nld_improvements")]
-        FeatureFlag::NldImprovements,
         #[cfg(feature = "revert_diff_hunk")]
         FeatureFlag::RevertDiffHunk,
         #[cfg(feature = "code_review_save_changes")]

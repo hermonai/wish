@@ -4,7 +4,7 @@ use crate::{
     agent::action_result::{AnyFileContent, FileContext},
     skills::{ParsedSkill, SkillProvider, SkillScope},
 };
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 
 use thiserror::Error;
 

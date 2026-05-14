@@ -1241,7 +1241,7 @@ impl EnvironmentsPageWidget {
 
         let search_icon = ConstrainedBox::new(
             Icon::Search
-                .to_warpui_icon(blended_colors::text_sub(theme, theme.surface_2()).into())
+                .to_wishui_icon(blended_colors::text_sub(theme, theme.surface_2()).into())
                 .finish(),
         )
         .with_width(icon_size)
@@ -1543,7 +1543,7 @@ impl EnvironmentsPageWidget {
         let theme = appearance.theme();
         let build_icon = || {
             Container::new(
-                ConstrainedBox::new(icon.to_warpui_icon(theme.active_ui_text_color()).finish())
+                ConstrainedBox::new(icon.to_wishui_icon(theme.active_ui_text_color()).finish())
                     .with_width(icon_size)
                     .with_height(icon_size)
                     .finish(),

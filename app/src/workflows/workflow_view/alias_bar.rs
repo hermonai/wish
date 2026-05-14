@@ -472,7 +472,7 @@ impl View for AliasBar {
                 TextAndIcon::new(
                     TextAndIconAlignment::IconFirst,
                     "Add alias",
-                    Icon::Plus.to_warpui_icon(
+                    Icon::Plus.to_wishui_icon(
                         appearance
                             .theme()
                             .main_text_color(appearance.theme().background()),

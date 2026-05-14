@@ -470,7 +470,7 @@ fn render_allowlist_denylist_row(
             .with_child(
                 Container::new(
                     ConstrainedBox::new(
-                        icon.to_warpui_icon(if is_ai_enabled {
+                        icon.to_wishui_icon(if is_ai_enabled {
                             appearance
                                 .theme()
                                 .sub_text_color(appearance.theme().surface_1())
@@ -573,7 +573,7 @@ fn render_model_line_with_icon(
             .with_child(
                 Container::new(
                     ConstrainedBox::new(
-                        icon.to_warpui_icon(if is_ai_enabled {
+                        icon.to_wishui_icon(if is_ai_enabled {
                             appearance
                                 .theme()
                                 .sub_text_color(appearance.theme().surface_1())
@@ -634,7 +634,7 @@ fn render_permission_line_with_icon(
         .with_child(
             Container::new(
                 ConstrainedBox::new(
-                    icon.to_warpui_icon(if is_ai_enabled {
+                    icon.to_wishui_icon(if is_ai_enabled {
                         appearance
                             .theme()
                             .sub_text_color(appearance.theme().surface_1())

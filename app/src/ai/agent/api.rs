@@ -33,6 +33,8 @@ use crate::ai::blocklist::{BlocklistAIPermissions, RequestInput};
 use crate::ai::execution_profiles::profiles::AIExecutionProfilesModel;
 use crate::ai::mcp::templatable_manager::TemplatableMCPServerInfo;
 use crate::ai::mcp::TemplatableMCPServerManager;
+#[cfg(not(target_family = "wasm"))]
+use crate::remote_server::codebase_index_model::RemoteCodebaseIndexModel;
 use crate::settings::AISettings;
 use crate::terminal::safe_mode_settings::get_secret_obfuscation_mode;
 use crate::workspaces::user_workspaces::UserWorkspaces;
@@ -99,7 +101,7 @@ pub struct RequestParams {
     pub conversation_token: Option<ServerConversationToken>,
     pub forked_from_conversation_token: Option<ServerConversationToken>,
     pub ambient_agent_task_id: Option<AmbientAgentTaskId>,
-    pub tasks: Vec<warp_multi_agent_api::Task>,
+    pub tasks: Vec<wish_multi_agent_api::Task>,
     pub existing_suggestions: Option<Suggestions>,
     pub metadata: Option<RequestMetadata>,
     pub session_context: SessionContext,
@@ -116,23 +118,27 @@ pub struct RequestParams {
     should_redact_secrets: bool,
 
     /// User-provided API keys for AI providers (BYO API Key).
-    pub api_keys: Option<warp_multi_agent_api::request::settings::ApiKeys>,
+    pub api_keys: Option<wish_multi_agent_api::request::settings::ApiKeys>,
+    /// User-provided custom model providers (BYOK endpoints).
+    pub custom_model_providers:
+        Option<wish_multi_agent_api::request::settings::CustomModelProviders>,
     pub allow_use_of_warp_credits_with_byok: bool,
-    pub autonomy_level: warp_multi_agent_api::AutonomyLevel,
-    pub isolation_level: warp_multi_agent_api::IsolationLevel,
+    pub autonomy_level: wish_multi_agent_api::AutonomyLevel,
+    pub isolation_level: wish_multi_agent_api::IsolationLevel,
     pub web_search_enabled: bool,
     pub computer_use_enabled: bool,
     pub ask_user_question_enabled: bool,
+    pub remote_codebase_search_available: bool,
     pub research_agent_enabled: bool,
     pub orchestration_enabled: bool,
-    pub supported_tools_override: Option<Vec<warp_multi_agent_api::ToolType>>,
+    pub supported_tools_override: Option<Vec<wish_multi_agent_api::ToolType>>,
     /// The conversation ID of the parent agent that spawned this child agent, if any.
     pub parent_agent_id: Option<String>,
     /// The display name for this agent (e.g. "Agent 1"), assigned by the orchestrator.
     pub agent_name: Option<String>,
 }
 
-pub type Event = Result<warp_multi_agent_api::ResponseEvent, Arc<AIApiError>>;
+pub type Event = Result<wish_multi_agent_api::ResponseEvent, Arc<AIApiError>>;
 
 #[cfg(not(target_family = "wasm"))]
 pub type ResponseStream = Pin<Box<dyn Stream<Item = Event> + Send + 'static>>;
@@ -146,7 +152,7 @@ pub type ResponseStream = Pin<Box<dyn Stream<Item = Event>>>;
 #[derive(Debug, Clone)]
 pub struct ConversationData {
     pub id: AIConversationId,
-    pub tasks: Vec<warp_multi_agent_api::Task>,
+    pub tasks: Vec<wish_multi_agent_api::Task>,
     pub server_conversation_token: Option<ServerConversationToken>,
     pub forked_from_conversation_token: Option<ServerConversationToken>,
     pub ambient_agent_task_id: Option<AmbientAgentTaskId>,
@@ -235,24 +241,33 @@ impl RequestParams {
         let should_redact_secrets = get_secret_obfuscation_mode(app).should_redact_secret();
 
         let user_workspaces = UserWorkspaces::as_ref(app);
-        let api_keys = ApiKeyManager::as_ref(app).api_keys_for_request(
-            user_workspaces.is_byo_api_key_enabled(),
+        let api_key_manager = ApiKeyManager::as_ref(app);
+        let is_byo_enabled = user_workspaces.is_byo_api_key_enabled(app);
+        let api_keys = api_key_manager.api_keys_for_request(
+            is_byo_enabled,
             user_workspaces.is_aws_bedrock_credentials_enabled(app),
         );
+        let is_custom_inference_enabled = user_workspaces.is_custom_inference_enabled(app);
+        let custom_model_providers = FeatureFlag::CustomInferenceEndpoints
+            .is_enabled()
+            .then(|| {
+                api_key_manager.custom_model_providers_for_request(is_custom_inference_enabled)
+            })
+            .flatten();
         let allow_use_of_warp_credits_with_byok =
             *AISettings::as_ref(app).can_use_warp_credits_with_byok;
 
         let app_execution_mode = AppExecutionMode::as_ref(app);
         let autonomy_level = if app_execution_mode.is_autonomous() {
-            warp_multi_agent_api::AutonomyLevel::Unsupervised
+            wish_multi_agent_api::AutonomyLevel::Unsupervised
         } else {
-            warp_multi_agent_api::AutonomyLevel::Supervised
+            wish_multi_agent_api::AutonomyLevel::Supervised
         };
 
         let isolation_level = if app_execution_mode.is_sandboxed() {
-            warp_multi_agent_api::IsolationLevel::Sandbox
+            wish_multi_agent_api::IsolationLevel::Sandbox
         } else {
-            warp_multi_agent_api::IsolationLevel::None
+            wish_multi_agent_api::IsolationLevel::None
         };
 
         let web_search_enabled =
@@ -274,6 +289,13 @@ impl RequestParams {
         let ask_user_question_enabled = BlocklistAIPermissions::as_ref(app)
             .get_ask_user_question_setting(app, terminal_view_id)
             != crate::ai::execution_profiles::AskUserQuestionPermission::Never;
+        #[cfg(not(target_family = "wasm"))]
+        let remote_codebase_search_available = FeatureFlag::RemoteCodebaseIndexing.is_enabled()
+            && RemoteCodebaseIndexModel::as_ref(app)
+                .active_repo_availability(&session_context, None)
+                .is_ready();
+        #[cfg(target_family = "wasm")]
+        let remote_codebase_search_available = false;
 
         let orchestration_enabled = ai_settings.is_orchestration_enabled(app)
             && session_context
@@ -321,12 +343,14 @@ impl RequestParams {
             planning_enabled: true,
             should_redact_secrets,
             api_keys,
+            custom_model_providers,
             allow_use_of_warp_credits_with_byok,
             autonomy_level,
             isolation_level,
             web_search_enabled,
             computer_use_enabled,
             ask_user_question_enabled,
+            remote_codebase_search_available,
             research_agent_enabled,
             orchestration_enabled,
             supported_tools_override: request_input.supported_tools_override.clone(),

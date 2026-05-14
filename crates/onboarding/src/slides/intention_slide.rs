@@ -224,7 +224,7 @@ impl IntentionSlide {
                 .iter()
                 .enumerate()
             {
-                let el = ConstrainedBox::new(icon.to_warpui_icon(icon_fill).finish())
+                let el = ConstrainedBox::new(icon.to_wishui_icon(icon_fill).finish())
                     .with_width(16.)
                     .with_height(16.)
                     .finish();
@@ -268,7 +268,7 @@ impl IntentionSlide {
                 .with_main_axis_size(MainAxisSize::Min)
                 .with_cross_axis_alignment(CrossAxisAlignment::Start);
             for &item in items {
-                let icon_el = ConstrainedBox::new(Icon::Check.to_warpui_icon(check_fill).finish())
+                let icon_el = ConstrainedBox::new(Icon::Check.to_wishui_icon(check_fill).finish())
                     .with_width(16.)
                     .with_height(16.)
                     .finish();

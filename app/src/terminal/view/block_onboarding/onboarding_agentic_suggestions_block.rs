@@ -444,7 +444,7 @@ impl OnboardingAgenticSuggestionsBlock {
                 self.agent_suggestions[index]
                     .0
                     .icon
-                    .to_warpui_icon(main_text_color)
+                    .to_wishui_icon(main_text_color)
                     .finish(),
             )
             .with_height(KEYBOARD_ICON_SIZE)
@@ -638,7 +638,7 @@ impl OnboardingAgenticSuggestionsBlock {
                         Container::new(
                             ConstrainedBox::new(
                                 UIIcon::Icon::Loading
-                                    .to_warpui_icon(ai_brand_color(appearance.theme()).into())
+                                    .to_wishui_icon(ai_brand_color(appearance.theme()).into())
                                     .finish(),
                             )
                             .with_height(icon_size)

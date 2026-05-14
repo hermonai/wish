@@ -35,7 +35,7 @@ impl ExternalProductIcon {
         }
     }
 
-    pub fn to_warpui_icon(&self, color: Fill) -> WarpUiIcon {
+    pub fn to_wishui_icon(&self, color: Fill) -> WarpUiIcon {
         let path = self.get_path();
         WarpUiIcon::new(path, color.into_solid())
     }

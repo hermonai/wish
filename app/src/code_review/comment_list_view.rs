@@ -683,7 +683,7 @@ impl CommentListView {
                 };
 
                 let icon_element = icon
-                    .to_warpui_icon(wish_core::ui::theme::Fill::Solid(text_sub(
+                    .to_wishui_icon(wish_core::ui::theme::Fill::Solid(text_sub(
                         theme,
                         neutral_1(theme),
                     )))
@@ -827,7 +827,7 @@ impl CommentListView {
                 };
 
                 let icon_element = icon
-                    .to_warpui_icon(wish_core::ui::theme::Fill::Solid(text_sub(
+                    .to_wishui_icon(wish_core::ui::theme::Fill::Solid(text_sub(
                         theme,
                         neutral_3(theme),
                     )))

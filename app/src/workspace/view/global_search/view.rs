@@ -1105,7 +1105,7 @@ impl GlobalSearchView {
             let icon_size = 16.0;
             let chevron_color = item_highlight_state.text_and_icon_color(appearance);
             let chevron_icon = chevron_icon_enum
-                .to_warpui_icon(ThemeFill::from(chevron_color))
+                .to_wishui_icon(ThemeFill::from(chevron_color))
                 .finish();
             let chevron_icon = ConstrainedBox::new(chevron_icon)
                 .with_width(icon_size)
@@ -1157,7 +1157,7 @@ impl GlobalSearchView {
             let icon_color = list_highlight_state.text_and_icon_color(appearance);
             let file_icon = match icon_from_file_path {
                 ImageOrIcon::Icon(icon) => {
-                    icon.to_warpui_icon(ThemeFill::from(icon_color)).finish()
+                    icon.to_wishui_icon(ThemeFill::from(icon_color)).finish()
                 }
                 ImageOrIcon::Image(image) => image,
             };
@@ -1883,7 +1883,7 @@ impl GlobalSearchView {
             let icon_size = 16.0;
             let chevron_color = list_highlight_state.text_and_icon_color(appearance);
             let chevron_icon = chevron_icon_enum
-                .to_warpui_icon(ThemeFill::from(chevron_color))
+                .to_wishui_icon(ThemeFill::from(chevron_color))
                 .finish();
             let chevron_icon = ConstrainedBox::new(chevron_icon)
                 .with_width(icon_size)
@@ -1894,7 +1894,7 @@ impl GlobalSearchView {
             // Folder icon
             let icon_color = list_highlight_state.text_and_icon_color(appearance);
             let folder_icon = Icon::Folder
-                .to_warpui_icon(ThemeFill::from(icon_color))
+                .to_wishui_icon(ThemeFill::from(icon_color))
                 .finish();
             let folder_icon_element = Container::new(
                 ConstrainedBox::new(folder_icon)
@@ -2109,7 +2109,7 @@ impl View for GlobalSearchView {
         if self.capped_matches {
             let alert_icon = ConstrainedBox::new(
                 Icon::AlertTriangle
-                    .to_warpui_icon(ThemeFill::Solid(
+                    .to_wishui_icon(ThemeFill::Solid(
                         theme.terminal_colors().normal.yellow.into(),
                     ))
                     .finish(),
@@ -2185,7 +2185,7 @@ impl GlobalSearchView {
             .with_child(
                 Container::new(
                     ConstrainedBox::new(
-                        icon.to_warpui_icon(ThemeFill::Solid(internal_colors::neutral_6(theme)))
+                        icon.to_wishui_icon(ThemeFill::Solid(internal_colors::neutral_6(theme)))
                             .finish(),
                     )
                     .with_width(24.)

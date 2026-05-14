@@ -432,7 +432,7 @@ where
                     TextAndIconAlignment::TextFirst,
                     selected_item_text,
                     icons::Icon::ChevronDown
-                        .to_warpui_icon(appearance.theme().active_ui_text_color()),
+                        .to_wishui_icon(appearance.theme().active_ui_text_color()),
                     self.main_axis_size,
                     MainAxisAlignment::SpaceBetween,
                     vec2f(15., 15.),
@@ -480,7 +480,7 @@ where
 
         let search_icon = ConstrainedBox::new(
             icons::Icon::SearchSmall
-                .to_warpui_icon(appearance.theme().active_ui_text_color())
+                .to_wishui_icon(appearance.theme().active_ui_text_color())
                 .finish(),
         )
         .with_width(12.)
@@ -554,7 +554,7 @@ where
                 .with_corner_radius(CornerRadius::with_all(Radius::Pixels(4.)))
                 .finish(),
         )
-        .with_max_width(self.top_bar_max_width)
+        .with_max_width(self.menu_width.unwrap_or(self.top_bar_max_width))
         .with_height(EMPTY_DROPDOWN_HEIGHT)
         .finish();
 

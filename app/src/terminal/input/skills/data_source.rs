@@ -266,11 +266,11 @@ impl SearchItem for SkillSearchItem {
 
         // Use icon_override if set (e.g. Figma skills), otherwise derive from provider.
         let icon = if let Some(override_icon) = self.icon_override {
-            override_icon.to_warpui_icon(icon_color).finish()
+            override_icon.to_wishui_icon(icon_color).finish()
         } else {
             self.provider
                 .icon()
-                .to_warpui_icon(self.provider.icon_fill(icon_color))
+                .to_wishui_icon(self.provider.icon_fill(icon_color))
                 .finish()
         };
 

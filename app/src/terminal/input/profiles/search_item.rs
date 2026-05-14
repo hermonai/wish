@@ -81,7 +81,7 @@ impl SearchItem for ProfileSearchItem {
             ProfileSearchItemKind::Profile { .. } => Icon::Psychology,
             ProfileSearchItemKind::ManageProfiles => Icon::Gear,
         }
-        .to_warpui_icon(inline_styles::icon_color(appearance));
+        .to_wishui_icon(inline_styles::icon_color(appearance));
 
         Container::new(
             ConstrainedBox::new(icon.finish())

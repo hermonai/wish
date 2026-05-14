@@ -227,7 +227,7 @@ impl EnvironmentSetupModeSelector {
                 (base_background, base_border)
             };
 
-            let avatar_icon = ConstrainedBox::new(icon.to_warpui_icon(icon_color).finish())
+            let avatar_icon = ConstrainedBox::new(icon.to_wishui_icon(icon_color).finish())
                 .with_width(AVATAR_ICON_SIZE)
                 .with_height(AVATAR_ICON_SIZE)
                 .finish();

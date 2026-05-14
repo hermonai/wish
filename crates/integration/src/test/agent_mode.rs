@@ -8,7 +8,6 @@ use crate::{util::skip_if_powershell_core_2303, Builder};
 use lazy_static::lazy_static;
 use pathfinder_geometry::vector::{vec2f, Vector2F};
 use settings::ToggleableSetting;
-use warp_multi_agent_api as api;
 use wish::{
     cmd_or_ctrl_shift,
     features::FeatureFlag,
@@ -23,6 +22,7 @@ use wish::{
     },
     settings::SelectionSettings,
 };
+use wish_multi_agent_api as api;
 use wishui::{async_assert, integration::TestStep, text::SelectionType, Event, SingletonEntity};
 
 cfg_if::cfg_if! {

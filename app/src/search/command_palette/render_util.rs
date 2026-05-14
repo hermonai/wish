@@ -25,7 +25,7 @@ pub fn render_search_item_icon(
         background_color.into_solid(),
         MinimumAllowedContrast::NonText,
     );
-    let icon_element = icon.to_warpui_icon(Fill::Solid(icon_color)).finish();
+    let icon_element = icon.to_wishui_icon(Fill::Solid(icon_color)).finish();
     render_search_item_icon_inner(appearance, icon_element)
 }
 

@@ -38,7 +38,7 @@ impl SearchItem for ExternalSecretSearchItem {
             ConstrainedBox::new(
                 self.external_secret
                     .icon()
-                    .to_warpui_icon(appearance.theme().active_ui_text_color())
+                    .to_wishui_icon(appearance.theme().active_ui_text_color())
                     .finish(),
             )
             .with_width(ICON_SIZE)

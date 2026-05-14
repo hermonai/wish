@@ -178,7 +178,7 @@ impl View for RewindConfirmationDialog {
             .with_cross_axis_alignment(CrossAxisAlignment::Center)
             .with_child(
                 Container::new(
-                    ConstrainedBox::new(Icon::Info.to_warpui_icon(info_color).finish())
+                    ConstrainedBox::new(Icon::Info.to_wishui_icon(info_color).finish())
                         .with_height(14.)
                         .with_width(14.)
                         .finish(),

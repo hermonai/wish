@@ -1,7 +1,7 @@
 use std::ops::Range;
 use std::sync::Arc;
 
-use warp_multi_agent_api::{FileContent, FileContentLineRange};
+use wish_multi_agent_api::{FileContent, FileContentLineRange};
 
 use crate::ai::agent::{
     AIAgentOutput, AIAgentOutputMessage, AIAgentOutputMessageType, AIAgentText, AIAgentTextSection,

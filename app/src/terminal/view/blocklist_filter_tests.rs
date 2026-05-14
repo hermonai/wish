@@ -1,4 +1,4 @@
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 
 use crate::ai::agent::{
     conversation::{AIConversation, AIConversationId},

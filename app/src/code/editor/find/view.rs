@@ -490,7 +490,7 @@ impl CodeEditorFind {
             };
             let icon = Container::new(
                 ConstrainedBox::new(
-                    icon.to_warpui_icon(appearance.theme().active_ui_text_color())
+                    icon.to_wishui_icon(appearance.theme().active_ui_text_color())
                         .finish(),
                 )
                 .with_height(size)
@@ -554,7 +554,7 @@ impl CodeEditorFind {
             appearance.theme().active_ui_text_color()
         };
         Container::new(
-            ConstrainedBox::new(match_icon.to_warpui_icon(icon_color).finish())
+            ConstrainedBox::new(match_icon.to_wishui_icon(icon_color).finish())
                 .with_height(height)
                 .with_width(height)
                 .finish(),
@@ -581,7 +581,7 @@ impl CodeEditorFind {
             appearance.theme().active_ui_text_color()
         };
         Container::new(
-            ConstrainedBox::new(Icon::Search.to_warpui_icon(icon_color).finish())
+            ConstrainedBox::new(Icon::Search.to_wishui_icon(icon_color).finish())
                 .with_height(height)
                 .with_width(height)
                 .finish(),
@@ -608,7 +608,7 @@ impl CodeEditorFind {
         };
         Container::new(
             ConstrainedBox::new(
-                icon.to_warpui_icon(appearance.theme().active_ui_text_color())
+                icon.to_wishui_icon(appearance.theme().active_ui_text_color())
                     .finish(),
             )
             .with_height(height)

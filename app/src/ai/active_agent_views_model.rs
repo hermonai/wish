@@ -5,7 +5,9 @@ use chrono::{DateTime, Utc};
 use crate::ai::agent::conversation::AIConversationId;
 use crate::ai::agent_conversations_model::AgentConversationEntryId;
 use crate::ai::ambient_agents::AmbientAgentTaskId;
-use crate::ai::blocklist::agent_view::{AgentViewController, AgentViewControllerEvent};
+use crate::ai::blocklist::agent_view::{
+    AgentViewController, AgentViewControllerEvent, AgentViewEntryOrigin,
+};
 use crate::ai::blocklist::orchestration_event_streamer::{
     register_agent_event_consumer, unregister_agent_event_consumer,
 };
@@ -349,6 +351,8 @@ impl ActiveAgentViewsModel {
         task_id: AmbientAgentTaskId,
         ctx: &mut ModelContext<Self>,
     ) {
+        self.ambient_sessions
+            .retain(|view_id, id| *view_id == terminal_view_id || *id != task_id);
         let existing = self.ambient_sessions.insert(terminal_view_id, task_id);
         if existing != Some(task_id) {
             self.last_opened_times
@@ -365,9 +369,11 @@ impl ActiveAgentViewsModel {
         ctx: &mut ModelContext<Self>,
     ) {
         if let Some(task_id) = self.ambient_sessions.remove(&terminal_view_id) {
-            self.last_opened_times
-                .remove(&ConversationOrTaskId::TaskId(task_id));
-            ctx.emit(ActiveAgentViewsEvent::AmbientSessionClosed { task_id });
+            if !self.ambient_sessions.values().any(|id| *id == task_id) {
+                self.last_opened_times
+                    .remove(&ConversationOrTaskId::TaskId(task_id));
+                ctx.emit(ActiveAgentViewsEvent::AmbientSessionClosed { task_id });
+            }
         }
     }
 
@@ -483,6 +489,20 @@ impl ActiveAgentViewsModel {
         }
 
         None
+    }
+
+    /// Returns the active agent-view entry origin for a terminal view.
+    pub fn agent_view_origin_for_terminal_view(
+        &self,
+        terminal_view_id: EntityId,
+        ctx: &AppContext,
+    ) -> Option<AgentViewEntryOrigin> {
+        let controller = self
+            .agent_view_handles
+            .get(&terminal_view_id)?
+            .controller
+            .upgrade(ctx)?;
+        controller.as_ref(ctx).agent_view_state().origin()
     }
 
     /// Get all currently active conversation IDs.

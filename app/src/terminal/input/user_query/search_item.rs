@@ -65,7 +65,7 @@ impl SearchItem for UserQuerySearchItem {
         // Once this search item is used by multiple sources,
         // we'll want to set this icon based on which source is generating this item.
         let icon = Container::new(
-            ConstrainedBox::new(Icon::ArrowSplit.to_warpui_icon(color).finish())
+            ConstrainedBox::new(Icon::ArrowSplit.to_wishui_icon(color).finish())
                 .with_width(appearance.monospace_font_size())
                 .with_height(appearance.monospace_font_size())
                 .finish(),

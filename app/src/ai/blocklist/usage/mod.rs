@@ -44,5 +44,5 @@ pub fn render_context_window_usage_icon(
         color_override.unwrap_or_else(|| theme.main_text_color(theme.background()))
     };
 
-    icon.to_warpui_icon(fill).finish()
+    icon.to_wishui_icon(fill).finish()
 }

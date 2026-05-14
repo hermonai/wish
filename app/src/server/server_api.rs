@@ -1188,8 +1188,8 @@ impl ServerApi {
 
     pub async fn generate_multi_agent_output(
         &self,
-        request: &warp_multi_agent_api::Request,
-    ) -> std::result::Result<AIOutputStream<warp_multi_agent_api::ResponseEvent>, Arc<AIApiError>>
+        request: &wish_multi_agent_api::Request,
+    ) -> std::result::Result<AIOutputStream<wish_multi_agent_api::ResponseEvent>, Arc<AIApiError>>
     {
         let auth_token = self
             .get_or_refresh_access_token()
@@ -1200,7 +1200,7 @@ impl ServerApi {
         let is_passive = request.input.as_ref().is_some_and(|input| {
             matches!(
                 input.r#type,
-                Some(warp_multi_agent_api::request::input::Type::GeneratePassiveSuggestions(_))
+                Some(wish_multi_agent_api::request::input::Type::GeneratePassiveSuggestions(_))
             )
         });
         let is_evals = cfg!(feature = "agent_mode_evals");
@@ -1250,7 +1250,7 @@ impl ServerApi {
                 Ok(reqwest_eventsource::Event::Message(message_event)) => {
                     match BASE64_URL_SAFE.decode(message_event.data.trim_matches('"')) {
                         Ok(decoded_data) => {
-                            let action = warp_multi_agent_api::ResponseEvent::decode(
+                            let action = wish_multi_agent_api::ResponseEvent::decode(
                                 decoded_data.as_slice(),
                             );
                             Some(action.map_err(|e| AIApiError::Other(anyhow::Error::from(e))))

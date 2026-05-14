@@ -109,15 +109,25 @@ use crate::persistence::{database_file_path_for_scope, establish_ro_connection, 
 
 use crate::ai::attachment_utils::MAX_ATTACHMENT_SIZE_BYTES;
 use crate::ai::block_context::BlockContext;
+#[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+use crate::ai::blocklist::agent_view::agent_input_footer::sort_environments_by_recency;
 use crate::ai::blocklist::agent_view::{
     AgentInputFooter, AgentInputFooterEvent, AgentViewController,
 };
 #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+use crate::ai::blocklist::handoff::touched_repos::{
+    pick_handoff_overlap_env, resolve_repo_for_path, TouchedWorkspace,
+};
+#[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
 use crate::ai::blocklist::handoff::{HandoffLaunchAttachments, PendingCloudLaunch};
+#[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+use crate::ai::blocklist::is_local_to_cloud_handoff_available;
 use crate::ai::blocklist::AttachmentType;
 #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
 use crate::ai::blocklist::PendingAttachment;
+use crate::ai::cloud_environments::CloudAmbientAgentEnvironment;
 use crate::ai::mcp::TemplatableMCPServerManager;
+use crate::cloud_object::model::generic_string_model::StringModel;
 use crate::server::server_api::ai::AttachmentFileInfo;
 #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
 use crate::server::server_api::ai::AttachmentInput;
@@ -129,7 +139,6 @@ use crate::{
     ai::{
         agent::{AIAgentContext, EntrypointType},
         blocklist::{
-            is_local_to_cloud_handoff_available,
             prompt::prompt_alert::{PromptAlertEvent, PromptAlertView},
             render_ai_agent_mode_icon, render_ai_follow_up_icon,
             telemetry_banner::should_collect_ai_ugc_telemetry,
@@ -273,6 +282,8 @@ use string_offset::CharOffset;
 use vec1::Vec1;
 use vim::vim::{VimHandler, VimMode};
 use wish_completer::util::parse_current_commands_and_tokens;
+#[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+use wishui::r#async::FutureExt as _;
 
 use wish_completer::{
     completer::{
@@ -404,7 +415,6 @@ pub(super) const CLI_AGENT_RICH_INPUT_EDITOR_BOTTOM_PADDING: f32 = 8.;
 pub(super) const CLI_AGENT_RICH_INPUT_HINT_TEXT: &str = "Tell the agent what to build...";
 
 const CLOUD_MODE_V2_HINT_TEXT: &str = "Kick off a cloud agent";
-const CLOUD_HANDOFF_HINT_TEXT: &str = "Start a cloud run";
 const SHORT_CIRCUIT_HIGHLIGHTING_ACTIONS: [Option<PlainTextEditorViewAction>; 7] = [
     Some(PlainTextEditorViewAction::Space),
     Some(PlainTextEditorViewAction::NonExpandingSpace),
@@ -434,26 +444,26 @@ const AGENT_MODE_AI_DISABLED_AUTODETECTION_DISABLED_HINT_TEXT: &str = "Run comma
 
 // Rotating hint text options for new Agent Mode conversations
 const AGENT_MODE_HINT_OPTIONS: &[&str] = &[
-    "Wish anything e.g. Deploy my React app to Vercel and set up environment variables",
-    "Wish anything e.g. Help me debug why my Python tests are failing in CI",
-    "Wish anything e.g. Set up a new microservice with Docker and create the deployment pipeline",
-    "Wish anything e.g. Find and fix the memory leak in my Node.js application",
-    "Wish anything e.g. Create a backup script for my PostgreSQL database and schedule it",
-    "Wish anything e.g. Help me migrate my data from MySQL to PostgreSQL",
-    "Wish anything e.g. Set up monitoring and alerts for my AWS infrastructure",
-    "Wish anything e.g. Build a REST API for my mobile app using FastAPI",
-    "Wish anything e.g. Help me optimize my SQL queries that are running slowly",
-    "Wish anything e.g. Create a GitHub Actions workflow to automatically deploy on merge",
-    "Wish anything e.g. Set up Redis caching for my web application",
-    "Wish anything e.g. Help me troubleshoot why my Kubernetes pods keep crashing",
-    "Wish anything e.g. Build a data pipeline to process CSV files and load them into BigQuery",
-    "Wish anything e.g. Set up SSL certificates and configure HTTPS for my domain",
-    "Wish anything e.g. Help me refactor this legacy code to use modern design patterns",
-    "Wish anything e.g. Create unit tests for my authentication service",
-    "Wish anything e.g. Set up log aggregation with ELK stack for my distributed system",
-    "Wish anything e.g. Help me implement OAuth2 authentication in my Express.js app",
-    "Wish anything e.g. Optimize my Docker images to reduce build times and size",
-    "Wish anything e.g. Set up A/B testing infrastructure for my web application",
+    "Warp anything e.g. Deploy my React app to Vercel and set up environment variables",
+    "Warp anything e.g. Help me debug why my Python tests are failing in CI",
+    "Warp anything e.g. Set up a new microservice with Docker and create the deployment pipeline",
+    "Warp anything e.g. Find and fix the memory leak in my Node.js application",
+    "Warp anything e.g. Create a backup script for my PostgreSQL database and schedule it",
+    "Warp anything e.g. Help me migrate my data from MySQL to PostgreSQL",
+    "Warp anything e.g. Set up monitoring and alerts for my AWS infrastructure",
+    "Warp anything e.g. Build a REST API for my mobile app using FastAPI",
+    "Warp anything e.g. Help me optimize my SQL queries that are running slowly",
+    "Warp anything e.g. Create a GitHub Actions workflow to automatically deploy on merge",
+    "Warp anything e.g. Set up Redis caching for my web application",
+    "Warp anything e.g. Help me troubleshoot why my Kubernetes pods keep crashing",
+    "Warp anything e.g. Build a data pipeline to process CSV files and load them into BigQuery",
+    "Warp anything e.g. Set up SSL certificates and configure HTTPS for my domain",
+    "Warp anything e.g. Help me refactor this legacy code to use modern design patterns",
+    "Warp anything e.g. Create unit tests for my authentication service",
+    "Warp anything e.g. Set up log aggregation with ELK stack for my distributed system",
+    "Warp anything e.g. Help me implement OAuth2 authentication in my Express.js app",
+    "Warp anything e.g. Optimize my Docker images to reduce build times and size",
+    "Warp anything e.g. Set up A/B testing infrastructure for my web application",
 ];
 
 fn get_agent_mode_new_conversation_hint_text() -> &'static str {
@@ -883,7 +893,7 @@ struct ViewerCommandExecutionRequest {
 /// Where a command execution request originates from.
 #[derive(Clone)]
 pub enum CommandExecutionSource {
-    /// A non-shared command execution request from Wish AI++.
+    /// A non-shared command execution request from Warp AI++.
     /// Shared commands use the SharedSession variant instead.
     AI {
         /// Metadata associated with the execution.
@@ -1093,6 +1103,7 @@ pub enum Event {
     OpenPluginInstructionsPane(CLIAgent, PluginModalKind),
     OpenShareSessionModal,
     StartRemoteControl,
+    OpenHandoffEnvironmentCreationModal,
 }
 
 pub enum InputState {
@@ -1817,7 +1828,7 @@ pub fn init(app: &mut AppContext) {
 
     app.register_editable_bindings([EditableBinding::new(
         "input:insert_network_logging_workflow",
-        "Show Wish network log",
+        "Show Warp network log",
         WorkspaceAction::OpenNetworkLogPane,
     )
     .with_enabled(|| ContextFlag::NetworkLogConsole.is_enabled())]);
@@ -2216,6 +2227,7 @@ impl Input {
                         );
                     });
                 }
+
                 // Re-render on status-footer transitions and on status-affecting events that
                 // decide whether the input is in its composing shape.
                 let should_notify = handle.as_ref(ctx).should_show_status_footer()
@@ -2229,9 +2241,12 @@ impl Input {
                             | AmbientAgentViewModelEvent::Cancelled
                             | AmbientAgentViewModelEvent::NeedsGithubAuth
                             | AmbientAgentViewModelEvent::HarnessSelected
+                            | AmbientAgentViewModelEvent::PendingHandoffChanged
                             | AmbientAgentViewModelEvent::HandoffSnapshotUploadFailed { .. }
                     );
+
                 if should_notify {
+                    me.set_zero_state_hint_text(ctx);
                     ctx.notify();
                 }
             });
@@ -3690,7 +3705,7 @@ impl Input {
     pub(crate) fn restore_cloud_handoff_draft(
         &mut self,
         launch: PendingCloudLaunch,
-        explicit_environment_id: Option<SyncId>,
+        environment_id: Option<SyncId>,
         ctx: &mut ViewContext<Self>,
     ) {
         self.activate_cloud_handoff_compose(ctx);
@@ -3702,7 +3717,7 @@ impl Input {
                 model.append_pending_attachments(vec![attachment], ctx);
             }
         });
-        if let Some(env_id) = explicit_environment_id {
+        if let Some(env_id) = environment_id {
             self.handoff_compose_state.update(ctx, |state, ctx| {
                 state.set_environment_id(Some(env_id), true, ctx);
             });
@@ -3746,7 +3761,61 @@ impl Input {
         self.handoff_compose_state
             .update(ctx, |state, ctx| state.activate(ctx));
         self.is_editor_empty_on_last_edit = is_input_buffer_empty;
+
+        #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+        self.auto_select_environment_from_pwd(ctx);
+
         ctx.notify();
+    }
+
+    /// Spawns an async task to resolve the pwd's git repo and pick the best
+    /// environment overlap, updating the handoff compose state when done.
+    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+    fn auto_select_environment_from_pwd(&mut self, ctx: &mut ViewContext<Self>) {
+        let Some(pwd) = self
+            .active_session_path_if_local(ctx)
+            .map(Path::to_path_buf)
+        else {
+            return;
+        };
+
+        let handoff_compose_state = self.handoff_compose_state.clone();
+        ctx.spawn(
+            async move {
+                resolve_repo_for_path(&pwd)
+                    .with_timeout(Duration::from_secs(5))
+                    .await
+                    .ok()
+                    .flatten()
+            },
+            move |_input, touched_repo, ctx| {
+                let Some(touched_repo) = touched_repo else {
+                    return;
+                };
+                let workspace = TouchedWorkspace {
+                    repos: vec![touched_repo],
+                    orphan_files: vec![],
+                };
+                let mut envs = CloudAmbientAgentEnvironment::get_all(ctx);
+                sort_environments_by_recency(&mut envs);
+                if let Some(overlap_env) = pick_handoff_overlap_env(&workspace, envs) {
+                    handoff_compose_state.update(ctx, |state, ctx| {
+                        state.set_environment_id(Some(overlap_env), false, ctx);
+                    });
+                }
+            },
+        );
+    }
+
+    #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+    pub(crate) fn exit_cloud_handoff_compose_and_clear(&mut self, ctx: &mut ViewContext<Self>) {
+        self.exit_cloud_handoff_compose(ctx);
+        self.editor.update(ctx, |editor, ctx| {
+            editor.clear_buffer(ctx);
+        });
+        self.ai_context_model.update(ctx, |context_model, ctx| {
+            context_model.clear_pending_attachments(ctx);
+        });
     }
 
     fn exit_cloud_handoff_compose(&mut self, ctx: &mut ViewContext<Self>) {
@@ -3777,8 +3846,12 @@ impl Input {
         edit_origin: &EditOrigin,
         ctx: &AppContext,
     ) -> bool {
+        let is_powershell_with_nld_enabled = self.editor.as_ref(ctx).shell_family()
+            == Some(ShellFamily::PowerShell)
+            && AISettings::as_ref(ctx).is_ai_autodetection_enabled(ctx);
         *edit_origin == EditOrigin::UserTyped
-            && is_local_to_cloud_handoff_available()
+            && AISettings::as_ref(ctx).is_ampersand_handoff_enabled(ctx)
+            && !is_powershell_with_nld_enabled
             && FeatureFlag::AgentView.is_enabled()
             && self.agent_view_controller.as_ref(ctx).is_fullscreen()
             && self.ambient_agent_view_model().is_none()
@@ -3827,12 +3900,16 @@ impl Input {
         self.handoff_compose_state
             .update(ctx, |state, ctx| state.activate(ctx));
         self.is_editor_empty_on_last_edit = is_input_buffer_empty;
+
+        #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
+        self.auto_select_environment_from_pwd(ctx);
+
         ctx.notify();
         true
     }
 
     #[cfg(all(feature = "local_fs", not(target_family = "wasm")))]
-    fn collect_cloud_launch_attachments(
+    pub(crate) fn collect_cloud_launch_attachments(
         &self,
         ctx: &mut ViewContext<Self>,
     ) -> HandoffLaunchAttachments {
@@ -3915,27 +3992,27 @@ impl Input {
             return true;
         }
 
+        if CloudAmbientAgentEnvironment::get_all(ctx).is_empty() {
+            ctx.emit(Event::OpenHandoffEnvironmentCreationModal);
+            return true;
+        }
+
         let attachments = self.collect_cloud_launch_attachments(ctx);
-        let explicit_environment_id = self
+        let environment_id = self
             .handoff_compose_state
             .as_ref(ctx)
-            .explicit_environment_id();
+            .selected_environment_id()
+            .cloned();
         let launch = PendingCloudLaunch {
             prompt,
             attachments,
         };
 
-        self.exit_cloud_handoff_compose(ctx);
-        self.editor.update(ctx, |editor, ctx| {
-            editor.clear_buffer(ctx);
-        });
-        self.ai_context_model.update(ctx, |context_model, ctx| {
-            context_model.clear_pending_attachments(ctx);
-        });
+        self.exit_cloud_handoff_compose_and_clear(ctx);
 
         ctx.dispatch_typed_action_deferred(WorkspaceAction::OpenLocalToCloudHandoffPane {
             launch: Some(launch),
-            explicit_environment_id,
+            environment_id,
         });
         true
     }
@@ -5744,7 +5821,7 @@ impl Input {
             }
             (InputType::AI, _) => {
                 // Follow the `agent_indicator` pattern (see `app/src/tab.rs`):
-                //  * `None` (no conversation, empty, passive, or untitled) => new conversation => "Wish anything"
+                //  * `None` (no conversation, empty, passive, or untitled) => new conversation => "Warp anything"
                 //  * `InProgress`                                           => agent running    => "Steer"
                 //  * Any other status                                       => finished         => "Ask a follow up"
                 match self
@@ -6113,7 +6190,7 @@ impl Input {
         });
     }
 
-    /// Predicts the next action using an AI model and past context on blocks within Wish.
+    /// Predicts the next action using an AI model and past context on blocks within Warp.
     /// Populates the autosuggestion with the predicted action, if any. Otherwise, falls back to
     /// existing autosuggestion logic.
     #[cfg_attr(target_family = "wasm", allow(unused_variables))]
@@ -6198,18 +6275,19 @@ impl Input {
             return;
         }
         if self.prefix_mode(ctx) == InputPrefixMode::CloudHandoff {
-            let hint = self
-                .handoff_compose_state
-                .as_ref(ctx)
-                .selected_environment_id()
-                .and_then(|id| {
-                    crate::ai::cloud_environments::CloudAmbientAgentEnvironment::get_by_id(id, ctx)
-                })
-                .map(|env| {
-                    use crate::cloud_object::model::generic_string_model::StringModel;
-                    format!("Hand off to {}", env.model().string_model.display_name())
-                })
-                .unwrap_or_else(|| CLOUD_HANDOFF_HINT_TEXT.to_owned());
+            let conversation_is_empty = BlocklistAIHistoryModel::as_ref(ctx)
+                .active_conversation(self.terminal_view_id)
+                .is_none_or(|c| c.is_empty());
+            let hint = if conversation_is_empty {
+                CLOUD_MODE_V2_HINT_TEXT.to_owned()
+            } else {
+                self.handoff_compose_state
+                    .as_ref(ctx)
+                    .selected_environment_id()
+                    .and_then(|id| CloudAmbientAgentEnvironment::get_by_id(id, ctx))
+                    .map(|env| format!("Hand off to {}", env.model().string_model.display_name()))
+                    .unwrap_or_else(|| "Handoff to cloud".to_owned())
+            };
             self.editor.update(ctx, |editor, ctx| {
                 editor.set_placeholder_text(&hint, ctx);
             });
@@ -6359,6 +6437,10 @@ impl Input {
             }
             AISettingsChangedEvent::AIAutoDetectionEnabled { .. }
             | AISettingsChangedEvent::NLDInTerminalEnabled { .. } => {
+                // NLD is irrelevant in cloud mode v2 — the input is always AI.
+                if self.is_cloud_mode_input_v2_composing(ctx) {
+                    return;
+                }
                 // The input model handles updating the lock state via its own subscription.
                 // If NLD is now enabled for the current context and the buffer is non-empty,
                 // trigger autodetection on the current buffer contents.
@@ -9413,31 +9495,36 @@ impl Input {
                     .as_ref(ctx)
                     .is_inline_menu_open();
 
-                let should_run_ai_input_detection = match edit_origin {
-                    // Edits made by the local user should trigger autodetection, if
-                    // it is enabled.
-                    EditOrigin::UserInitiated
-                    | EditOrigin::UserTyped
-                    | EditOrigin::SyncedTerminalInput => {
-                        !is_inline_menu_open
-                            && self
-                                .ai_input_model
-                                .as_ref(ctx)
-                                .should_run_input_autodetection(ctx)
+                // NLD autodetection is irrelevant in cloud mode v2 — the input is always AI.
+                let should_run_ai_input_detection = if self.is_cloud_mode_input_v2_composing(ctx) {
+                    false
+                } else {
+                    match edit_origin {
+                        // Edits made by the local user should trigger autodetection, if
+                        // it is enabled.
+                        EditOrigin::UserInitiated
+                        | EditOrigin::UserTyped
+                        | EditOrigin::SyncedTerminalInput => {
+                            !is_inline_menu_open
+                                && self
+                                    .ai_input_model
+                                    .as_ref(ctx)
+                                    .should_run_input_autodetection(ctx)
+                        }
+                        // Remote edits from shared session viewers should trigger autodetection
+                        // on the sharer's side, so that the sharer's input mode adjusts as viewers type.
+                        EditOrigin::RemoteEdit => {
+                            let is_sharer = self.model.lock().shared_session_status().is_sharer();
+                            !is_inline_menu_open
+                                && is_sharer
+                                && self
+                                    .ai_input_model
+                                    .as_ref(ctx)
+                                    .should_run_input_autodetection(ctx)
+                        }
+                        // System edits should never trigger autodetection.
+                        EditOrigin::SystemEdit => false,
                     }
-                    // Remote edits from shared session viewers should trigger autodetection
-                    // on the sharer's side, so that the sharer's input mode adjusts as viewers type.
-                    EditOrigin::RemoteEdit => {
-                        let is_sharer = self.model.lock().shared_session_status().is_sharer();
-                        !is_inline_menu_open
-                            && is_sharer
-                            && self
-                                .ai_input_model
-                                .as_ref(ctx)
-                                .should_run_input_autodetection(ctx)
-                    }
-                    // System edits should never trigger autodetection.
-                    EditOrigin::SystemEdit => false,
                 };
 
                 // Abort any autodetection work on the old buffer state.
@@ -12505,20 +12592,18 @@ impl Input {
                 || self.is_cloud_mode_input_v2_composing(ctx))
         {
             // If we're submitting an AI query, we want to send telemetry for the input type.
-            if FeatureFlag::NldImprovements.is_enabled() {
-                let input_model = self.ai_input_model.as_ref(ctx);
-                let input_type = input_model.input_type();
-                let is_locked = input_model.is_input_type_locked();
-                let was_lock_set_with_empty_buffer = input_model.was_lock_set_with_empty_buffer();
-                send_telemetry_from_ctx!(
-                    TelemetryEvent::InputBufferSubmitted {
-                        input_type,
-                        is_locked,
-                        was_lock_set_with_empty_buffer,
-                    },
-                    ctx
-                );
-            }
+            let input_model = self.ai_input_model.as_ref(ctx);
+            let input_type = input_model.input_type();
+            let is_locked = input_model.is_input_type_locked();
+            let was_lock_set_with_empty_buffer = input_model.was_lock_set_with_empty_buffer();
+            send_telemetry_from_ctx!(
+                TelemetryEvent::InputBufferSubmitted {
+                    input_type,
+                    is_locked,
+                    was_lock_set_with_empty_buffer,
+                },
+                ctx
+            );
 
             // Check if we're configuring an ambient agent and spawn it instead of submitting a regular AI query.
             if self
@@ -12611,20 +12696,18 @@ impl Input {
             self.submit_ai_query(None, ctx);
         } else {
             // If we're submitting a shell command, we want to send telemetry for the input type.
-            if FeatureFlag::NldImprovements.is_enabled() {
-                let input_model = self.ai_input_model.as_ref(ctx);
-                let input_type = input_model.input_type();
-                let is_locked = input_model.is_input_type_locked();
-                let was_lock_set_with_empty_buffer = input_model.was_lock_set_with_empty_buffer();
-                send_telemetry_from_ctx!(
-                    TelemetryEvent::InputBufferSubmitted {
-                        input_type,
-                        is_locked,
-                        was_lock_set_with_empty_buffer,
-                    },
-                    ctx
-                );
-            }
+            let input_model = self.ai_input_model.as_ref(ctx);
+            let input_type = input_model.input_type();
+            let is_locked = input_model.is_input_type_locked();
+            let was_lock_set_with_empty_buffer = input_model.was_lock_set_with_empty_buffer();
+            send_telemetry_from_ctx!(
+                TelemetryEvent::InputBufferSubmitted {
+                    input_type,
+                    is_locked,
+                    was_lock_set_with_empty_buffer,
+                },
+                ctx
+            );
 
             if FeatureFlag::WorkflowAliases.is_enabled() {
                 let mut command_string = self.editor.as_ref(ctx).buffer_text(ctx);
@@ -13114,35 +13197,6 @@ impl Input {
                         ctx,
                     );
                 });
-                return;
-            }
-        }
-
-        // Guest mode: route through the local wish_conversation system
-        // instead of the server-backed orchestration pipeline. Check this
-        // early so guest users bypass rate-limit checks, agent view
-        // toggles, and other server-dependent guards.
-        {
-            let auth_state = crate::auth::auth_state::AuthStateProvider::as_ref(ctx).get();
-            if auth_state.is_guest() {
-                use crate::ai::wish_conversation::ConversationManagerModel;
-                let ai_query = self.editor.as_ref(ctx).buffer_text(ctx);
-                if ai_query.is_empty() {
-                    return;
-                }
-                self.ai_input_model.update(ctx, |model, ctx| {
-                    model.handle_input_buffer_submitted(ctx);
-                });
-                let query = ai_query;
-                ConversationManagerModel::handle(ctx).update(ctx, |mgr, ctx| {
-                    // Re-use the active conversation or create a new one.
-                    let convo_id = match mgr.active_id().cloned() {
-                        Some(id) => id,
-                        None => mgr.create("wish-local".into(), ctx),
-                    };
-                    mgr.send_user_message(&convo_id, query, ctx);
-                });
-                ctx.emit(Event::ExecuteAIQuery);
                 return;
             }
         }

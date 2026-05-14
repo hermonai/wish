@@ -15,7 +15,7 @@ use crate::{
     integration_testing::view_getters::terminal_view,
     BlocklistAIHistoryModel,
 };
-use warp_multi_agent_api as api;
+use wish_multi_agent_api as api;
 use wishui::{integration::AssertionCallback, integration_assert, EntityId};
 use wishui::{integration::AssertionOutcome, SingletonEntity};
 

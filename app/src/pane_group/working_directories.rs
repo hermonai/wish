@@ -1,6 +1,8 @@
 #[cfg(feature = "local_fs")]
 use indexmap::IndexSet;
 #[cfg(feature = "local_fs")]
+use remote_server::manager::RemoteServerManager;
+#[cfg(feature = "local_fs")]
 use repo_metadata::repositories::DetectedRepositories;
 use std::collections::HashMap;
 #[cfg(feature = "local_fs")]
@@ -13,35 +15,33 @@ use wishui::{AppContext, SingletonEntity as _};
 use wishui::{Entity, EntityId, ModelContext};
 use wishui::{ModelHandle, ViewHandle};
 
-use crate::code::buffer_location::BufferLocation;
+use crate::code::buffer_location::FileLocation;
 #[cfg(feature = "local_fs")]
 use crate::code::file_tree::FileTreeView;
+use crate::code_review::code_review_view::CodeReviewView;
 use crate::code_review::comments::{
     AttachedReviewComment, PendingImportedReviewComment, ReviewCommentBatch,
 };
-use crate::code_review::{
-    code_review_view::CodeReviewView,
-    diff_state::{DiffMode, DiffStateModel},
-};
+use crate::code_review::diff_state::{DiffMode, DiffStateModel};
 use crate::workspace::view::global_search::view::GlobalSearchView;
 
-/// Type-safe wrapper around the map of `BufferLocation` → `DiffStateModel`.
+/// Type-safe wrapper around the map of `FileLocation` → `DiffStateModel`.
 ///
 /// Enforces that local keys are always paired with local-backend models and
 /// remote keys with remote-backend models via dedicated insertion methods.
 #[cfg(feature = "local_fs")]
 #[derive(Default)]
 struct DiffStateModelMap {
-    models: HashMap<BufferLocation, ModelHandle<DiffStateModel>>,
+    models: HashMap<FileLocation, ModelHandle<DiffStateModel>>,
 }
 
 #[cfg(feature = "local_fs")]
 impl DiffStateModelMap {
-    fn get(&self, key: &BufferLocation) -> Option<&ModelHandle<DiffStateModel>> {
+    fn get(&self, key: &FileLocation) -> Option<&ModelHandle<DiffStateModel>> {
         self.models.get(key)
     }
 
-    /// Insert a model that was created from a `BufferLocation::Local` key.
+    /// Insert a model that was created from a `FileLocation::Local` key.
     fn insert_local(
         &mut self,
         path: PathBuf,
@@ -52,10 +52,10 @@ impl DiffStateModelMap {
             matches!(model.as_ref(ctx), DiffStateModel::Local(_)),
             "insert_local called with a remote-backend DiffStateModel",
         );
-        self.models.insert(BufferLocation::Local(path), model);
+        self.models.insert(FileLocation::Local(path), model);
     }
 
-    /// Insert a model that was created from a `BufferLocation::Remote` key.
+    /// Insert a model that was created from a `FileLocation::Remote` key.
     fn insert_remote(
         &mut self,
         remote_id: RemotePath,
@@ -66,10 +66,10 @@ impl DiffStateModelMap {
             matches!(model.as_ref(ctx), DiffStateModel::Remote(_)),
             "insert_remote called with a local-backend DiffStateModel",
         );
-        self.models.insert(BufferLocation::Remote(remote_id), model);
+        self.models.insert(FileLocation::Remote(remote_id), model);
     }
 
-    fn remove(&mut self, key: &BufferLocation) -> Option<ModelHandle<DiffStateModel>> {
+    fn remove(&mut self, key: &FileLocation) -> Option<ModelHandle<DiffStateModel>> {
         self.models.remove(key)
     }
 }
@@ -146,6 +146,11 @@ pub struct WorkingDirectoriesModel {
     code_review_views: HashMap<EntityId, HashMap<PathBuf, ViewHandle<CodeReviewView>>>,
     /// Per-pane-group tracking of the focused repository root path.
     focused_repo: HashMap<EntityId, Option<PathBuf>>,
+    /// Per-pane-group tracking of the repository the user has manually selected for the
+    /// code review (right) panel. This is the repo that should be restored when the user
+    /// leaves the pane group's session and returns to it later, even if the auto-selection
+    /// logic would otherwise pick a different default.
+    selected_review_repo: HashMap<EntityId, PathBuf>,
     global_search_views: HashMap<EntityId, ViewHandle<GlobalSearchView>>,
     file_tree_views: HashMap<EntityId, ViewHandle<FileTreeView>>,
 }
@@ -225,24 +230,40 @@ impl WorkingDirectoriesModel {
     }
 
     /// Get or create a DiffStateModel for a specific repository.
+    ///
     /// If the model doesn't exist, it will be created.
+    /// For remote file locations we require a connected session for the host.
+    /// If none exists, returns `None` and callers should retry once a session is established.
     pub fn get_or_create_diff_state_model(
         &mut self,
-        key: BufferLocation,
+        key: FileLocation,
         ctx: &mut ModelContext<Self>,
     ) -> Option<ModelHandle<DiffStateModel>> {
         if let Some(model) = self.diff_state_models.get(&key) {
             return Some(model.clone());
         }
 
-        let diff_state_model = ctx.add_model(|ctx| DiffStateModel::new(key.clone(), ctx));
+        let diff_state_model = match &key {
+            FileLocation::Local(path) => {
+                let path = path.clone();
+                ctx.add_model(|ctx| DiffStateModel::new_local(path, ctx))
+            }
+            FileLocation::Remote(remote_path) => {
+                let mgr_handle = RemoteServerManager::handle(ctx);
+                let session_id = mgr_handle
+                    .as_ref(ctx)
+                    .find_connected_session(&remote_path.host_id)?;
+                let remote_path = remote_path.clone();
+                ctx.add_model(|ctx| DiffStateModel::new_remote(remote_path, session_id, ctx))
+            }
+        };
 
         match key {
-            BufferLocation::Local(path) => {
+            FileLocation::Local(path) => {
                 self.diff_state_models
                     .insert_local(path, diff_state_model.clone(), ctx);
             }
-            BufferLocation::Remote(remote_id) => {
+            FileLocation::Remote(remote_id) => {
                 self.diff_state_models
                     .insert_remote(remote_id, diff_state_model.clone(), ctx);
             }
@@ -264,7 +285,7 @@ impl WorkingDirectoriesModel {
                 .values()
                 .all(|tab| !tab.contains(&repo_path))
             {
-                let key = BufferLocation::Local(repo_path);
+                let key = FileLocation::Local(repo_path);
                 if let Some(model) = self.diff_state_models.remove(&key) {
                     model.update(ctx, |model, ctx| {
                         model.stop_active_watcher(ctx);
@@ -330,6 +351,27 @@ impl WorkingDirectoriesModel {
             .cloned()
     }
 
+    /// Get the repository path the user has manually selected for the code review
+    /// panel in a given pane group, if any. Used to restore the selection when the
+    /// user navigates back to the pane group's session.
+    pub fn get_selected_review_repo(&self, pane_group_id: EntityId) -> Option<&Path> {
+        self.selected_review_repo
+            .get(&pane_group_id)
+            .map(PathBuf::as_path)
+    }
+
+    /// Persist the repository the user manually selected for the code review panel
+    /// in a given pane group. This is only called for explicit user-driven
+    /// selections (e.g. via the dropdown), not for auto-selected defaults.
+    pub fn set_selected_review_repo(&mut self, pane_group_id: EntityId, repo_path: PathBuf) {
+        self.selected_review_repo.insert(pane_group_id, repo_path);
+    }
+
+    /// Clear the saved code review panel selection for a pane group.
+    pub fn clear_selected_review_repo(&mut self, pane_group_id: EntityId) {
+        self.selected_review_repo.remove(&pane_group_id);
+    }
+
     pub fn store_global_search_view(
         &mut self,
         pane_group_id: EntityId,
@@ -371,6 +413,7 @@ impl WorkingDirectoriesModel {
         self.file_tree_views.remove(&pane_group_id);
         self.code_review_views.remove(&pane_group_id);
         self.focused_repo.remove(&pane_group_id);
+        self.selected_review_repo.remove(&pane_group_id);
     }
 
     fn handle_empty_pane_group(&mut self, pane_group_id: EntityId, ctx: &mut ModelContext<Self>) {
@@ -702,7 +745,7 @@ impl WorkingDirectoriesModel {
 
     pub fn get_or_create_diff_state_model(
         &mut self,
-        _key: BufferLocation,
+        _key: FileLocation,
         _ctx: &mut ModelContext<Self>,
     ) -> Option<ModelHandle<DiffStateModel>> {
         None
@@ -731,6 +774,14 @@ impl WorkingDirectoriesModel {
     ) -> Option<ViewHandle<CodeReviewView>> {
         None
     }
+
+    pub fn get_selected_review_repo(&self, _pane_group_id: EntityId) -> Option<&Path> {
+        None
+    }
+
+    pub fn set_selected_review_repo(&mut self, _pane_group_id: EntityId, _repo_path: PathBuf) {}
+
+    pub fn clear_selected_review_repo(&mut self, _pane_group_id: EntityId) {}
 
     pub fn store_global_search_view(
         &mut self,

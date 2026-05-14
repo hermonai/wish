@@ -2425,7 +2425,7 @@ impl SharingDialog {
                 TextAndIcon::new(
                     TextAndIconAlignment::IconFirst,
                     "Copy link",
-                    Icon::Link.to_warpui_icon(copy_button_foreground),
+                    Icon::Link.to_wishui_icon(copy_button_foreground),
                     MainAxisSize::Min,
                     MainAxisAlignment::SpaceBetween,
                     vec2f(12., 12.),

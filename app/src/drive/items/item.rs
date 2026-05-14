@@ -461,7 +461,7 @@ impl<'a> WarpDriveRow<'a> {
         let text_color = appearance.theme().sub_text_color(background);
 
         let icon = Container::new(
-            ConstrainedBox::new(Icon::Users.to_warpui_icon(text_color).finish())
+            ConstrainedBox::new(Icon::Users.to_wishui_icon(text_color).finish())
                 .with_height(15.)
                 .with_width(15.)
                 .finish(),
@@ -509,7 +509,7 @@ impl<'a> WarpDriveRow<'a> {
                             Container::new(
                                 ConstrainedBox::new(
                                     Icon::Clock
-                                        .to_warpui_icon(
+                                        .to_wishui_icon(
                                             appearance
                                                 .theme()
                                                 .sub_text_color(appearance.theme().surface_2()),
@@ -587,7 +587,7 @@ impl<'a> WarpDriveRow<'a> {
             });
 
             Container::new(
-                ConstrainedBox::new(chevron_icon.to_warpui_icon(icon_color.into()).finish())
+                ConstrainedBox::new(chevron_icon.to_wishui_icon(icon_color.into()).finish())
                     .with_width(16.)
                     .with_height(16.)
                     .finish(),
