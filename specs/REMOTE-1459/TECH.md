@@ -22,7 +22,7 @@ Out of scope:
 
 ## Design
 
-A 3p cloud run has no materialized `AIConversation` on the client — the server API returns only a `SerializedBlock` snapshot for claude/gemini runs. To wrap the harness's content in agent-view chrome, we mint a fresh empty Oz-style `AIConversation` as the agent-view-state *vehicle* and retag the run's blocks and rich content onto that vehicle so they pass `should_hide_block`'s agent view filter.
+A 3p cloud run has no materialized `AIConversation` on the client — the server API returns only a `SerializedBlock` snapshot for claude/gemini runs. To wrap the harness's content in agent-view chrome, we mint a fresh empty Hermon-style `AIConversation` as the agent-view-state *vehicle* and retag the run's blocks and rich content onto that vehicle so they pass `should_hide_block`'s agent view filter.
 
 The two entry paths are structurally different and call the entry directly from their respective setup sites:
 
@@ -77,7 +77,7 @@ After entering agent view, it retags non-startup blocks via `attach_non_startup_
 
 `app/src/terminal/model/blocks.rs`
 
-Walks the blocks and calls `Block::add_attached_conversation_id(conversation_id)` on every block that isn't flagged `is_oz_environment_startup_command` (REMOTE-1454's setup command rows, which are hidden by their own mechanism). Skips blocks already tagged with this conversation as `origin_conversation_id`. Shares AI / agent-view rich content dirty bookkeeping with `set_agent_view_state` via the private `mark_agent_view_rich_content_dirty` helper.
+Walks the blocks and calls `Block::add_attached_conversation_id(conversation_id)` on every block that isn't flagged `is_hermon_environment_startup_command` (REMOTE-1454's setup command rows, which are hidden by their own mechanism). Skips blocks already tagged with this conversation as `origin_conversation_id`. Shares AI / agent-view rich content dirty bookkeeping with `set_agent_view_state` via the private `mark_agent_view_rich_content_dirty` helper.
 
 ### 7. Rich content retag — `TerminalView::set_rich_content_agent_view_conversation_id`
 
@@ -93,7 +93,7 @@ Manual:
 - **Claude / Gemini, live, management view and conversation list** — same via `OpenAmbientAgentSession`.
 - **Claude / Gemini, completed, transcript viewer** — open a completed task from management view / conversation list. Confirm the transcript viewer opens in agent view with the block snapshot as the content.
 - **Claude / Gemini, completed, conversation link** — same via `warp://conversation/{id}`.
-- **Oz** — repeat the live and completed cases; confirm no regression on any branch we didn't touch.
+- **Hermon** — repeat the live and completed cases; confirm no regression on any branch we didn't touch.
 - **`AgentHarness` disabled** — confirm `is_third_party_harness()` returns false and both new paths no-op.
 - **Idempotency** — a run that spams `HarnessSelected` only enters agent view once.
 

@@ -316,11 +316,11 @@ impl TerminalView {
                     let mut model = self.model.lock();
                     if model
                         .block_list()
-                        .is_executing_oz_environment_startup_commands()
+                        .is_executing_hermon_environment_startup_commands()
                     {
                         model
                             .block_list_mut()
-                            .finish_oz_environment_startup_commands_at_block(
+                            .finish_hermon_environment_startup_commands_at_block(
                                 block_id,
                                 conversation_id,
                             );
@@ -407,7 +407,7 @@ impl TerminalView {
             .model
             .lock()
             .block_list()
-            .is_executing_oz_environment_startup_commands()
+            .is_executing_hermon_environment_startup_commands()
         {
             return;
         }

@@ -81,7 +81,7 @@ impl SelectedSettings {
         use wish_core::features::FeatureFlag;
         match self {
             SelectedSettings::AgentDrivenDevelopment { agent_settings, .. } => {
-                !agent_settings.disable_oz
+                !agent_settings.disable_hermon
             }
             SelectedSettings::Terminal { .. } => {
                 // With old onboarding (no OpenWarpNewSettingsModes), Terminal
@@ -221,7 +221,7 @@ impl OnboardingStateModel {
                         },
                         cli_agent_toolbar_enabled: self.agent_settings.cli_agent_toolbar_enabled,
                         session_default: self.agent_settings.session_default,
-                        disable_oz: self.agent_settings.disable_oz,
+                        disable_hermon: self.agent_settings.disable_hermon,
                         // Agent intention always has notifications enabled (no toggle shown).
                         show_agent_notifications: true,
                     },
@@ -433,18 +433,18 @@ impl OnboardingStateModel {
         ctx.notify();
     }
 
-    pub(crate) fn set_disable_oz(&mut self, value: bool, ctx: &mut ModelContext<Self>) {
-        if self.agent_settings.disable_oz == value {
+    pub(crate) fn set_disable_hermon(&mut self, value: bool, ctx: &mut ModelContext<Self>) {
+        if self.agent_settings.disable_hermon == value {
             return;
         }
         send_telemetry_from_ctx!(
             OnboardingEvent::SettingChanged {
-                setting: "disable_oz".to_string(),
+                setting: "disable_hermon".to_string(),
                 value: value.to_string(),
             },
             ctx
         );
-        self.agent_settings.disable_oz = value;
+        self.agent_settings.disable_hermon = value;
         ctx.notify();
     }
 

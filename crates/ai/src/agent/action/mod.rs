@@ -241,7 +241,7 @@ pub enum StartAgentExecutionMode {
         harness_type: String,
         title: String,
         /// Name of a managed secret to forward as the authentication
-        /// credential for the remote child when running a non-Oz harness.
+        /// credential for the remote child when running a non-Hermon harness.
         /// `None` means no client-side secret was selected — the remote
         /// environment falls back to its own ambient credentials.
         auth_secret_name: Option<String>,

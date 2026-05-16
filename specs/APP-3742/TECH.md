@@ -20,7 +20,7 @@ The vertical tabs panel currently renders each pane row with a small 12px inline
 - `PaneProps::new()` (line 1123) — constructs props from `PaneConfiguration` title/secondary
 - `TerminalPrimaryLineData` enum (line 219) — determines the terminal title content and font
 - `terminal_primary_line_data()` (line 1284) — priority logic for terminal title resolution
-- `TerminalKindBadgeState` struct (line 245) — tracks whether terminal is Oz, ambient, or CLI agent
+- `TerminalKindBadgeState` struct (line 245) — tracks whether terminal is Hermon, ambient, or CLI agent
 
 **Rendering entry points:**
 - `render_pane_row()` (line 981) — expanded mode row
@@ -94,8 +94,8 @@ Add a new function `render_pane_circle_icon()` in `vertical_tabs.rs` that return
 enum CircleIconVariant<'a> {
     /// Neutral circle: fg_overlay_2 background, 16px type icon
     Neutral { icon: WarpIcon },
-    /// Hermon agent: dark background, 10px Oz icon, status badge
-    OzAgent { status: Option<&'a ConversationStatus>, is_ambient: bool },
+    /// Hermon agent: dark background, 10px Hermon icon, status badge
+    HermonAgent { status: Option<&'a ConversationStatus>, is_ambient: bool },
     /// CLI agent: brand-colored background, 10px agent icon, status badge
     CLIAgent { agent: CLIAgent, status: Option<&'a ConversationStatus> },
     /// Language-specific file icon in neutral circle
@@ -216,7 +216,7 @@ In `render_settings_popup()`, rename the "Show first" header text to "Pane title
 3. `resolve_pane_row_slots()` is called:
    - Detects `TypedPane::Terminal(terminal_pane)`.
    - Reads `TerminalView` from pane → gets working directory, git branch, conversation status, CLI agent session.
-   - Builds `CircleIconVariant::OzAgent { status, is_ambient: false }` (or CLI/Neutral depending on session type).
+   - Builds `CircleIconVariant::HermonAgent { status, is_ambient: false }` (or CLI/Neutral depending on session type).
    - Calls `render_pane_circle_icon()` → circle icon element with status badge.
    - Calls `terminal_primary_line_data()` → title text.
    - Checks `has_unread_for_terminal_view()` → sets `title_indicator` if unread.

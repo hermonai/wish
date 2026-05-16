@@ -34,7 +34,7 @@ The production install script (`crates/remote_server/src/install_remote_server.s
 
 Add `script/deploy_remote_server_to_test_vm` that:
 
-1. Cross-compiles the Oz CLI for the test VM target:
+1. Cross-compiles the Hermon CLI for the test VM target:
    ```
    cargo build -p warp --bin warp --target x86_64-unknown-linux-musl \
      --profile dev-remote \

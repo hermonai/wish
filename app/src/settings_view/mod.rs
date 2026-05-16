@@ -381,7 +381,7 @@ impl FromStr for SettingsSection {
             "Wishify" => Ok(Self::Wishify),
             "WarpDrive" | "Wish Drive" => Ok(Self::WarpDrive),
             // This page was called "Hermon" at one point, keep for backward compatibility.
-            "Hermon" | "Oz" | "Wish Agent" => Ok(Self::WarpAgent),
+            "Hermon" | "Hermon" | "Wish Agent" => Ok(Self::WarpAgent),
             "Profiles" | "AgentProfiles" => Ok(Self::AgentProfiles),
             "MCP servers" | "AgentMCPServers" => Ok(Self::AgentMCPServers),
             "Knowledge" => Ok(Self::Knowledge),
@@ -391,8 +391,8 @@ impl FromStr for SettingsSection {
             "CloudEnvironments" => Ok(Self::CloudEnvironments),
             "Hermon Cloud API Keys" | "HermonCloudAPIKeys" => Ok(Self::HermonCloudAPIKeys),
             legacy
-                if legacy == concat!("Oz ", "Cloud API Keys")
-                    || legacy == concat!("Oz", "CloudAPIKeys") =>
+                if legacy == concat!("Hermon ", "Cloud API Keys")
+                    || legacy == concat!("Hermon", "CloudAPIKeys") =>
             {
                 Ok(Self::HermonCloudAPIKeys)
             }
@@ -478,7 +478,7 @@ pub mod flags {
     pub const USE_AUDIBLE_BELL_CONTEXT_FLAG: &str = "Use_Audible_Terminal_Bell";
     pub const SHOW_INPUT_HINT_TEXT_CONTEXT_FLAG: &str = "Show_Input_Hint_text";
     pub const SHOW_AGENT_TIPS_FLAG: &str = "Show_Agent_Tips";
-    pub const SHOW_OZ_UPDATES_IN_ZERO_STATE_FLAG: &str = "Show_Oz_Updates_In_Zero_State";
+    pub const SHOW_OZ_UPDATES_IN_ZERO_STATE_FLAG: &str = "Show_Hermon_Updates_In_Zero_State";
     pub const USE_AGENT_FOOTER_FLAG: &str = "Use_Agent_Footer";
     pub const THINKING_DISPLAY_SHOW_AND_COLLAPSE: &str = "Thinking_Display_ShowAndCollapse";
     pub const THINKING_DISPLAY_ALWAYS_SHOW: &str = "Thinking_Display_AlwaysShow";

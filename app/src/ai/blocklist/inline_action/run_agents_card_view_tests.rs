@@ -37,7 +37,7 @@ fn make_request_with_skills(
 #[test]
 fn local_to_cloud_initializes_remote_with_empty_environment() {
     let mut state =
-        RunAgentsEditState::from_request(&make_request("oz", RunAgentsExecutionMode::Local));
+        RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
     assert!(matches!(
         state.orch.execution_mode,
         RunAgentsExecutionMode::Local
@@ -60,7 +60,7 @@ fn local_to_cloud_initializes_remote_with_empty_environment() {
 #[test]
 fn cloud_to_local_drops_environment() {
     let mut state = RunAgentsEditState::from_request(&make_request(
-        "oz",
+        "hermon",
         RunAgentsExecutionMode::Remote {
             environment_id: "env-1".to_string(),
             worker_host: "warp".to_string(),
@@ -75,17 +75,17 @@ fn cloud_to_local_drops_environment() {
 }
 
 #[test]
-fn local_to_cloud_resets_opencode_to_oz() {
+fn local_to_cloud_resets_opencode_to_hermon() {
     let mut state =
         RunAgentsEditState::from_request(&make_request("opencode", RunAgentsExecutionMode::Local));
     state.orch.toggle_execution_mode_to_remote(true);
-    assert_eq!(state.orch.harness_type, "oz");
+    assert_eq!(state.orch.harness_type, "hermon");
 }
 
 #[test]
 fn cloud_without_env_no_longer_disables_accept() {
     let state = RunAgentsEditState::from_request(&make_request(
-        "oz",
+        "hermon",
         RunAgentsExecutionMode::Remote {
             environment_id: String::new(),
             worker_host: "warp".to_string(),
@@ -116,7 +116,7 @@ fn cloud_with_opencode_disables_accept() {
 
 #[test]
 fn local_with_any_harness_does_not_disable_accept() {
-    for harness in ["oz", "claude", "gemini", "opencode"] {
+    for harness in ["hermon", "claude", "gemini", "opencode"] {
         let state =
             RunAgentsEditState::from_request(&make_request(harness, RunAgentsExecutionMode::Local));
         assert!(
@@ -128,7 +128,7 @@ fn local_with_any_harness_does_not_disable_accept() {
 
 #[test]
 fn cloud_with_env_and_non_opencode_harness_allows_accept() {
-    for harness in ["oz", "claude", "gemini"] {
+    for harness in ["hermon", "claude", "gemini"] {
         let state = RunAgentsEditState::from_request(&make_request(
             harness,
             RunAgentsExecutionMode::Remote {
@@ -147,7 +147,7 @@ fn cloud_with_env_and_non_opencode_harness_allows_accept() {
 #[test]
 fn set_environment_id_no_op_in_local_mode() {
     let mut state =
-        RunAgentsEditState::from_request(&make_request("oz", RunAgentsExecutionMode::Local));
+        RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
     state.orch.set_environment_id("env-1".to_string());
     assert!(matches!(
         state.orch.execution_mode,
@@ -158,7 +158,7 @@ fn set_environment_id_no_op_in_local_mode() {
 #[test]
 fn set_environment_id_updates_remote() {
     let mut state = RunAgentsEditState::from_request(&make_request(
-        "oz",
+        "hermon",
         RunAgentsExecutionMode::Remote {
             environment_id: "old".to_string(),
             worker_host: "warp".to_string(),
@@ -222,7 +222,7 @@ mod format_terminal_state_tests {
     fn launched_result(agents: Vec<RunAgentsAgentOutcome>) -> RunAgentsResult {
         RunAgentsResult::Launched {
             model_id: "auto".to_string(),
-            harness_type: "oz".to_string(),
+            harness_type: "hermon".to_string(),
             execution_mode: RunAgentsLaunchedExecutionMode::Local,
             agents,
         }
@@ -334,9 +334,9 @@ mod override_from_approved_config_tests {
     #[test]
     fn overrides_model_and_harness_unconditionally() {
         let mut state =
-            RunAgentsEditState::from_request(&make_request("oz", RunAgentsExecutionMode::Local));
+            RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
         assert_eq!(state.orch.model_id, "auto");
-        assert_eq!(state.orch.harness_type, "oz");
+        assert_eq!(state.orch.harness_type, "hermon");
 
         state
             .orch
@@ -361,10 +361,10 @@ mod override_from_approved_config_tests {
     #[test]
     fn overrides_local_to_remote() {
         let mut state =
-            RunAgentsEditState::from_request(&make_request("oz", RunAgentsExecutionMode::Local));
+            RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
         state
             .orch
-            .override_from_approved_config(&remote_config("auto", "oz", "env-1"));
+            .override_from_approved_config(&remote_config("auto", "hermon", "env-1"));
         let RunAgentsExecutionMode::Remote {
             environment_id,
             worker_host,
@@ -380,7 +380,7 @@ mod override_from_approved_config_tests {
     #[test]
     fn overrides_remote_to_local() {
         let mut state = RunAgentsEditState::from_request(&make_request(
-            "oz",
+            "hermon",
             RunAgentsExecutionMode::Remote {
                 environment_id: "env-1".to_string(),
                 worker_host: "warp".to_string(),
@@ -389,7 +389,7 @@ mod override_from_approved_config_tests {
         ));
         state
             .orch
-            .override_from_approved_config(&local_config("auto", "oz"));
+            .override_from_approved_config(&local_config("auto", "hermon"));
         assert!(
             matches!(state.orch.execution_mode, RunAgentsExecutionMode::Local),
             "should be Local after override"
@@ -399,7 +399,7 @@ mod override_from_approved_config_tests {
     #[test]
     fn preserves_computer_use_when_both_remote() {
         let mut state = RunAgentsEditState::from_request(&make_request(
-            "oz",
+            "hermon",
             RunAgentsExecutionMode::Remote {
                 environment_id: "old-env".to_string(),
                 worker_host: "warp".to_string(),
@@ -408,7 +408,7 @@ mod override_from_approved_config_tests {
         ));
         state
             .orch
-            .override_from_approved_config(&remote_config("auto", "oz", "new-env"));
+            .override_from_approved_config(&remote_config("auto", "hermon", "new-env"));
         let RunAgentsExecutionMode::Remote {
             environment_id,
             computer_use_enabled,
@@ -427,10 +427,10 @@ mod override_from_approved_config_tests {
     #[test]
     fn does_not_carry_computer_use_from_local_to_remote() {
         let mut state =
-            RunAgentsEditState::from_request(&make_request("oz", RunAgentsExecutionMode::Local));
+            RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
         state
             .orch
-            .override_from_approved_config(&remote_config("auto", "oz", "env-1"));
+            .override_from_approved_config(&remote_config("auto", "hermon", "env-1"));
         let RunAgentsExecutionMode::Remote {
             computer_use_enabled,
             ..
@@ -457,7 +457,7 @@ mod compute_is_denied_tests {
         Some((
             OrchestrationConfig {
                 model_id: "auto".to_string(),
-                harness_type: "oz".to_string(),
+                harness_type: "hermon".to_string(),
                 execution_mode: OrchestrationExecutionMode::Local,
             },
             status,
@@ -511,7 +511,7 @@ mod compute_is_denied_tests {
 #[test]
 fn local_to_cloud_idempotent_when_already_remote() {
     let mut state = RunAgentsEditState::from_request(&make_request(
-        "oz",
+        "hermon",
         RunAgentsExecutionMode::Remote {
             environment_id: "env-1".to_string(),
             worker_host: "warp".to_string(),

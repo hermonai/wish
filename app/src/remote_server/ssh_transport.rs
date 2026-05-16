@@ -399,7 +399,7 @@ async fn scp_install_fallback(socket_path: &Path) -> anyhow::Result<()> {
 
     let url = remote_server::setup::download_tarball_url(&platform);
     let remote_tarball_path = format!(
-        "{}/oz-upload.tar.gz",
+        "{}/hermon-upload.tar.gz",
         remote_server::setup::remote_server_dir()
     );
     let timeout = remote_server::setup::SCP_INSTALL_TIMEOUT;
@@ -407,7 +407,7 @@ async fn scp_install_fallback(socket_path: &Path) -> anyhow::Result<()> {
     // 1. Download the tarball locally into a temp directory.
     let tmp_dir =
         tempfile::tempdir().map_err(|e| anyhow::anyhow!("Failed to create local temp dir: {e}"))?;
-    let temp_client_tarball_path = tmp_dir.path().join("oz.tar.gz");
+    let temp_client_tarball_path = tmp_dir.path().join("hermon.tar.gz");
 
     log::info!("Downloading tarball locally from {url}");
     let output = command::r#async::Command::new("curl")

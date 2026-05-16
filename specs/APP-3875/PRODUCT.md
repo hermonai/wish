@@ -135,7 +135,7 @@ The absence of a later region does not insert placeholder text or empty rows.
 Summary mode renders the pane circle icon as a tab-level pane-kind summary instead of using only the focused pane's icon.
 
 - If all visible panes in the tab are the same pane kind, render one icon for that kind.
-- Terminal panes are distinguished by their semantic terminal icon treatment, so plain terminals, Oz/ambient-agent terminals, and CLI-agent terminals do not all collapse to the generic terminal icon.
+- Terminal panes are distinguished by their semantic terminal icon treatment, so plain terminals, Hermon/ambient-agent terminals, and CLI-agent terminals do not all collapse to the generic terminal icon.
 - If the tab has two or more pane kinds, render two icons using the same stacked arrangement as the current agent/status icon treatment:
   - the oldest pane kind is the main icon
   - the second-oldest distinct pane kind is the smaller secondary icon in the bottom-right
@@ -185,7 +185,7 @@ Summary mode must not:
 - The line is single-line and truncates visually when it does not fit.
 
 Examples:
-- `Claude • Oz • cargo • code review`
+- `Claude • Hermon • cargo • code review`
 - `Claude • cargo • code review + 2 more`
 
 ### Working-directory line

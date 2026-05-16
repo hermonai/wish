@@ -13,7 +13,7 @@ pub(super) enum CliTelemetryEvent {
         has_environment: bool,
         /// Optional task ID when running against an ambient agent task.
         task_id: Option<String>,
-        /// Which execution harness was selected (e.g. "oz", "claude").
+        /// Which execution harness was selected (e.g. "hermon", "claude").
         harness: String,
     },
     /// Executing `wish agent run-ambient`

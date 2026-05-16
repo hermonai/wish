@@ -372,7 +372,7 @@ pub(crate) fn task_env_vars(
 }
 
 /// Returns environment variables that configure the model for a third-party harness.
-/// Returns an empty map for Oz or when no model is specified.
+/// Returns an empty map for Hermon or when no model is specified.
 ///
 /// We use the `ANTHROPIC_MODEL` env var rather than the `--model` CLI flag because
 /// the env var is the most reliable mechanism and avoids precedence conflicts with

@@ -4,7 +4,7 @@ Linear: [APP-3805](https://linear.app/warpdotdev/issue/APP-3805/client-server-ve
 
 ## 1. Problem
 
-The Warp remote server binary is installed at a single, unversioned path per channel (e.g. `~/.warp/remote-server/oz`). The existence check is `test -x {bin}` and we never inspect the binary's version before talking to it. When the client auto-updates to a new version, it happily reuses the old remote server binary, which can drift arbitrarily far from the protocol/behaviour the client expects. The `InitializeResponse` already carries `server_version`, but the client ignores it.
+The Warp remote server binary is installed at a single, unversioned path per channel (e.g. `~/.warp/remote-server/hermon`). The existence check is `test -x {bin}` and we never inspect the binary's version before talking to it. When the client auto-updates to a new version, it happily reuses the old remote server binary, which can drift arbitrarily far from the protocol/behaviour the client expects. The `InitializeResponse` already carries `server_version`, but the client ignores it.
 
 We need a version-gated install flow: connecting from a client at version *V* always ends up talking to a server binary also at *V*. Any local `cargo run` workflow (where the client has no `GIT_RELEASE_TAG`) keeps working with `script/deploy_remote_server`: a deployed binary at the unversioned path always wins, and when one is missing the client falls back to installing latest-for-channel at the same unversioned path so the dev loop self-heals.
 
@@ -34,7 +34,7 @@ sequenceDiagram
     participant Mgr as RemoteServerManager
     participant Tx as SshTransport
     participant Remote as Remote host
-    participant Daemon as oz daemon
+    participant Daemon as hermon daemon
 
     UI->>Mgr: connect_session
     Mgr->>Tx: setup(session_id)
@@ -58,7 +58,7 @@ Key pieces of today's behaviour the diagram elides:
 - `setup::remote_server_binary()` resolves the path purely from the channel; there is no version in the filename.
 - `install_remote_server.sh` pulls from `{server_root_url}/download/cli?package=tar&os=...&arch=...&channel={channel}` with no version pin. The `warp-server` `/download/cli` endpoint already accepts a `version=` query parameter that pins the artifact to an exact release (and falls back to latest-for-channel when omitted), so this spec only needs client-side changes.
 - `ChannelState::app_version()` returns `option_env!("GIT_RELEASE_TAG")` — `Some("v0.…")` on release builds, `None` on `cargo run`. This is the signal we'll thread through in §4.
-- `script/deploy_remote_server` is the developer escape hatch: it `rsync`s a locally-built binary into `~/.warp-local/remote-server/oz-local` and assumes the client won't try to download on top of it.
+- `script/deploy_remote_server` is the developer escape hatch: it `rsync`s a locally-built binary into `~/.warp-local/remote-server/hermon-local` and assumes the client won't try to download on top of it.
 
 ## 4. Proposed solution
 
@@ -98,7 +98,7 @@ Factor the comparison into a pure helper (`fn version_is_compatible(client: Opti
 - If `script/deploy_remote_server` has put a binary at the unversioned path, `binary_check_command` succeeds and we connect without touching the CDN.
 - If the unversioned binary is missing but the install directory exists (e.g. a previous install ran here), the controller's auto-update branch fires and `install_script` runs with empty `version_query`/`version_suffix` — i.e. it pulls latest-for-channel and installs at the same unversioned path. Future `deploy_remote_server` runs simply overwrite this in place.
 - If the install directory is also missing (truly fresh host), we fall through to the normal install-mode path (`AlwaysAsk` → user modal, etc.).
-`script/deploy_remote_server` is not touched; its target path (`~/.warp-local/remote-server/oz-local` on the local channel) is exactly what the `Channel::Local` branch of `remote_server_binary()` returns.
+`script/deploy_remote_server` is not touched; its target path (`~/.warp-local/remote-server/hermon-local` on the local channel) is exactly what the `Channel::Local` branch of `remote_server_binary()` returns.
 Versioned-channel builds without a release tag (e.g. `cargo run --bin dev`, `--bin preview`) are deliberately unsupported for SSH remote-server installs. The `CARGO_PKG_VERSION` fallback (§4.1) keeps the path deterministic but the resulting `&version=CARGO_PKG_VERSION` query 404s against `/download/cli`, surfacing a clean `BinaryInstallComplete::Err(_)` and the existing failed-banner path. Developers who need to test against a real channel should either build with `GIT_RELEASE_TAG` set or use `cargo run` (Local) + `script/deploy_remote_server`.
 
 ### 4.5 Rollout / backwards compatibility

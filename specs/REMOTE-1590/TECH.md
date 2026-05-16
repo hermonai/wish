@@ -15,7 +15,7 @@ Condition 2 was historically never met for cloud agent sessions because the work
 ### What changed
 The CLI agent rich input feature introduced lifecycle events (`InputSessionChanged::Open` / `Closed`) that call `clear_buffer_and_reset_undo_stack` on the worker's input (`input.rs:2477`, `2492`). Unlike `reinitialize_buffer` (which creates a fresh buffer without emitting CRDT operations), `clear_buffer_and_reset_undo_stack` goes through the full `edit()` → `end_batch()` → `UpdatePeers` path, emitting CRDT selection operations. These operations are transmitted to the viewer via session sharing (`local_tty/terminal_manager.rs:2312-2326`), satisfying condition 2.
 
-This does not affect the Oz harness because it does not use the CLI agent rich input — its buffer clears go through `reinitialize_buffer` during block completion (`input.rs:13448-13449`), which creates a fresh buffer without emitting CRDT operations.
+This does not affect the Hermon harness because it does not use the CLI agent rich input — its buffer clears go through `reinitialize_buffer` during block completion (`input.rs:13448-13449`), which creates a fresh buffer without emitting CRDT operations.
 
 ### Why the cursor draws
 `input_data_for_participant` (`presence_manager.rs:726`) sets `should_draw_cursors: true` when the participant has `Selection::None` in its presence data. The cloud agent worker — running a CLI agent in the alt screen with no block or text selected — satisfies this.

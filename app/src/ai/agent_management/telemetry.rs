@@ -10,7 +10,7 @@ use crate::ai::agent_management::cloud_setup_guide_view::SetupGuideDocs;
 #[serde(rename_all = "snake_case")]
 pub enum SetupGuideStep {
     /// Quick start banner: Visit Hermon
-    VisitOz,
+    VisitHermon,
     /// Step 1: Create environment (slash command)
     CreateEnvironment,
     /// Step 1: Create environment (CLI command)

@@ -1,4 +1,4 @@
-# Oz File-Edit Hooks for Snapshotting Non-Git-Tracked Files — Product Spec
+# Hermon File-Edit Hooks for Snapshotting Non-Git-Tracked Files — Product Spec
 Linear: [REMOTE-1465](https://linear.app/warpdotdev/issue/REMOTE-1465)
 Figma: none provided
 
@@ -14,7 +14,7 @@ After a cloud → cloud handoff, the next execution never sees those files, so a
 
 ## Behavior
 
-1. During a cloud Oz run, every time the agent successfully completes a file-edit tool call that creates or modifies a file, the file's absolute path is recorded in the snapshot declarations file as a `file` entry. The entry lands in the declarations file before the end-of-run upload reads it.
+1. During a cloud Hermon run, every time the agent successfully completes a file-edit tool call that creates or modifies a file, the file's absolute path is recorded in the snapshot declarations file as a `file` entry. The entry lands in the declarations file before the end-of-run upload reads it.
 
 2. Each entry uses the existing REMOTE-1332 schema: `{"version":1,"kind":"file","path":"<absolute path>"}`. The declarations file is the same per-run file the existing pipeline reads (resolved via `$OZ_SNAPSHOT_DECLARATIONS_FILE`, otherwise `/tmp/oz/<task-id>/snapshot-declarations.jsonl`).
 
@@ -31,7 +31,7 @@ After a cloud → cloud handoff, the next execution never sees those files, so a
 8. A `file` entry whose path is not under any declared repo is uploaded in full, exactly like an operator-authored `file` entry already would be today per REMOTE-1332.
 
 9. The feature is inert when any of the following are true, matching the existing REMOTE-1332 gating:
-   - `FeatureFlag::OzHandoff` is disabled.
+   - `FeatureFlag::HermonHandoff` is disabled.
    - The run has no associated task ID (purely local runs).
    - The run was started with `--no-snapshot`.
    In these cases, no declarations are written and no file-edit observations have any user-visible effect.

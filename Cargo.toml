@@ -485,7 +485,7 @@ debug-assertions = true
 [profile.rltoda]
 inherits = "release-lto-debug_assertions"
 
-# A profile tuned for the `oz` CLI tarball. The CLI is shipped over the network
+# A profile tuned for the `hermon` CLI tarball. The CLI is shipped over the network
 # and run headlessly, so we trade some compile time and a small amount of
 # runtime perf for a smaller binary by mirroring the size-leaning settings used
 # by `release-wasm`.

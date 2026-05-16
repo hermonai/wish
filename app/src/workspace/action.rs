@@ -707,7 +707,7 @@ pub enum WorkspaceAction {
     /// Opens the settings.toml file in a code editor pane.
     OpenSettingsFile,
     /// Opens a new agent session to fix settings.toml errors using the modify-settings skill.
-    FixSettingsWithOz {
+    FixSettingsWithHermon {
         error_description: String,
     },
     /// Opens (or focuses) the in-app network log pane as a right-split of the
@@ -993,7 +993,7 @@ impl WorkspaceAction {
             | TabConfigSidecarEditConfig { .. }
             | TabConfigSidecarRemoveConfig { .. }
             | OpenSettingsFile
-            | FixSettingsWithOz { .. }
+            | FixSettingsWithHermon { .. }
             | OpenLocalToCloudHandoffPane { .. }
             | ShowHandoffEnvironmentCreationModal
             | OpenNetworkLogPane => false,

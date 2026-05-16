@@ -44,57 +44,57 @@ fn make_request(model: &str, harness: &str, remote: bool) -> RunAgentsRequest {
 
 #[test]
 fn exact_match_local() {
-    let config = make_config("auto", "oz", false);
-    let request = make_request("auto", "oz", false);
+    let config = make_config("auto", "hermon", false);
+    let request = make_request("auto", "hermon", false);
     assert!(matches_active_config(&request, &config));
 }
 
 #[test]
 fn exact_match_remote() {
-    let config = make_config("auto", "oz", true);
-    let request = make_request("auto", "oz", true);
+    let config = make_config("auto", "hermon", true);
+    let request = make_request("auto", "hermon", true);
     assert!(matches_active_config(&request, &config));
 }
 
 #[test]
 fn empty_model_inherits_and_matches() {
-    let config = make_config("auto", "oz", false);
-    let request = make_request("", "oz", false);
+    let config = make_config("auto", "hermon", false);
+    let request = make_request("", "hermon", false);
     assert!(matches_active_config(&request, &config));
 }
 
 #[test]
 fn empty_harness_inherits_and_matches() {
-    let config = make_config("auto", "oz", false);
+    let config = make_config("auto", "hermon", false);
     let request = make_request("auto", "", false);
     assert!(matches_active_config(&request, &config));
 }
 
 #[test]
 fn different_model_mismatches() {
-    let config = make_config("auto", "oz", false);
-    let request = make_request("claude-4-6-opus-high", "oz", false);
+    let config = make_config("auto", "hermon", false);
+    let request = make_request("claude-4-6-opus-high", "hermon", false);
     assert!(!matches_active_config(&request, &config));
 }
 
 #[test]
 fn different_harness_mismatches() {
-    let config = make_config("auto", "oz", false);
+    let config = make_config("auto", "hermon", false);
     let request = make_request("auto", "claude", false);
     assert!(!matches_active_config(&request, &config));
 }
 
 #[test]
 fn execution_mode_variant_mismatch() {
-    let config = make_config("auto", "oz", false);
-    let request = make_request("auto", "oz", true);
+    let config = make_config("auto", "hermon", false);
+    let request = make_request("auto", "hermon", true);
     assert!(!matches_active_config(&request, &config));
 }
 
 #[test]
 fn remote_different_environment_mismatches() {
-    let config = make_config("auto", "oz", true);
-    let mut request = make_request("auto", "oz", true);
+    let config = make_config("auto", "hermon", true);
+    let mut request = make_request("auto", "hermon", true);
     if let RunAgentsExecutionMode::Remote {
         ref mut environment_id,
         ..
@@ -107,8 +107,8 @@ fn remote_different_environment_mismatches() {
 
 #[test]
 fn remote_empty_env_inherits_and_matches() {
-    let config = make_config("auto", "oz", true);
-    let mut request = make_request("auto", "oz", true);
+    let config = make_config("auto", "hermon", true);
+    let mut request = make_request("auto", "hermon", true);
     if let RunAgentsExecutionMode::Remote {
         ref mut environment_id,
         ..
@@ -121,8 +121,8 @@ fn remote_empty_env_inherits_and_matches() {
 
 #[test]
 fn computer_use_not_in_match_check() {
-    let config = make_config("auto", "oz", true);
-    let mut request = make_request("auto", "oz", true);
+    let config = make_config("auto", "hermon", true);
+    let mut request = make_request("auto", "hermon", true);
     if let RunAgentsExecutionMode::Remote {
         ref mut computer_use_enabled,
         ..
@@ -152,7 +152,7 @@ fn status_predicates() {
 
 #[test]
 fn proto_round_trip_config_local() {
-    let config = make_config("auto", "oz", false);
+    let config = make_config("auto", "hermon", false);
     let proto = config.to_proto();
     let round_tripped = OrchestrationConfig::from_proto(&proto);
     assert_eq!(config, round_tripped);

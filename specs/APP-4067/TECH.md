@@ -202,7 +202,7 @@ Since `can_auto_install() == true` and `is_installed()` does a filesystem check,
 ## 8. Follow-Ups
 
 - **Publish `warpdotdev/gemini-warp` to GitHub** — must happen before shipping to external users.
-- **Platform plugin / Oz harness support** — future work.
+- **Platform plugin / Hermon harness support** — future work.
 - **Promote `GeminiNotifications` from dogfood** — after validation.
 
 ## 9. Files Changed

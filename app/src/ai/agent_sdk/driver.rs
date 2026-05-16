@@ -402,7 +402,7 @@ pub enum AgentDriverError {
     #[error("Agent profile \"{0}\" not found")]
     ProfileError(String),
     #[error(
-        "Failed to authenticate with server - please log in via 'oz login', provide an API key via '--api-key <key>', or set the WARP_API_KEY environment variable"
+        "Failed to authenticate with server - please log in via 'hermon login', provide an API key via '--api-key <key>', or set the WARP_API_KEY environment variable"
     )]
     NotLoggedIn,
     #[error("Saved prompt not found for id {0}")]
@@ -525,7 +525,7 @@ impl AgentDriver {
         } = options;
 
         // Split the unified resume option into the two internal slots that the rest of
-        // the driver consumes: terminal-driven Oz transcript restoration vs. third-party
+        // the driver consumes: terminal-driven Hermon transcript restoration vs. third-party
         // harness payload rehydration.
         let (conversation_restoration, resume_payload) = match resume {
             Some(ResumeOptions::Hermon(restoration)) => (Some(*restoration), None),
@@ -1560,7 +1560,7 @@ impl AgentDriver {
         // MCP servers *may* rely on cloud provider credentials.
         Self::setup_cloud_providers(&foreground).await?;
 
-        // For the Oz harness only: set up MCP servers, model overrides, and profile information.
+        // For the Hermon harness only: set up MCP servers, model overrides, and profile information.
         if matches!(&task.harness, HarnessKind::Hermon) {
             // Resolve MCP specs into existing server UUIDs and ephemeral installations.
             let mcp_specs = task.mcp_specs.clone();
@@ -1634,7 +1634,7 @@ impl AgentDriver {
             // Subscribe to file-based MCP discovery BEFORE prepare_environment triggers the
             // pipeline so no CloudEnvMcpScanComplete events are missed.
             //
-            // File-based MCP discovery is Oz-only.
+            // File-based MCP discovery is Hermon-only.
             // TODO(REMOTE-1345): handle MCP setup for third-party harnesses.
             let file_based_discovery_rx = match &task.harness {
                 HarnessKind::Hermon => {
@@ -1709,7 +1709,7 @@ impl AgentDriver {
             }
         }
 
-        // Skill loading is Oz-only; third-party harnesses have their own skill systems.
+        // Skill loading is Hermon-only; third-party harnesses have their own skill systems.
         if matches!(&task.harness, HarnessKind::Hermon) {
             // Load skills from repos synchronously so the initial message includes them.
             // File trees are ready after prepare_environment and global skill repo cloning above.

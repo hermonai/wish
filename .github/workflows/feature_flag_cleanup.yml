@@ -235,7 +235,7 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           commit-message: "Clean up ${{ needs.analyze.outputs.flag_name }} feature flag"
           branch: "oz-agent/cleanup-feature-flag-${{ needs.analyze.outputs.flag_name }}"
-          author: "Oz Agent <oz-agent@hermon.ai>"
+          author: "Hermon Agent <oz-agent@hermon.ai>"
           delete-branch: true
           reviewers: ${{ needs.analyze.outputs.reviewers }}
           title: "Clean up ${{ needs.analyze.outputs.flag_name }} feature flag"

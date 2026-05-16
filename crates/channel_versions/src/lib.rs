@@ -175,13 +175,13 @@ pub struct Changelog {
     pub markdown_sections: Vec<MarkdownSection>,
     #[serde(default)]
     pub image_url: Option<String>,
-    /// Renamed from `oz_updates` to `hermon_updates` internally as part of
-    /// the v0.5.x Oz→Hermon agent-backend rename. The JSON wire format
-    /// preserves `oz_updates` so shipped changelog data continues to
+    /// Renamed from `hermon_updates` to `hermon_updates` internally as part of
+    /// the v0.5.x Oz → Hermon agent-backend rename. The JSON wire format
+    /// preserves `hermon_updates` so shipped changelog data continues to
     /// deserialize unchanged; both names are accepted on input.
     #[serde(
         default,
-        rename = "oz_updates",
+        rename = "hermon_updates",
         alias = "hermon_updates",
         skip_serializing_if = "Vec::is_empty"
     )]

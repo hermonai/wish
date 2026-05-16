@@ -2,15 +2,15 @@
 
 ## Summary
 
-When a user selects a non-Oz harness (e.g. Claude Code) in cloud mode, they must provide an authentication secret (API key) before the agent can run. This feature adds a first-time setup (FTUX) flow that guides users through selecting or creating an auth secret, and a compact selector chip for returning users who have already configured one.
+When a user selects a non-Hermon harness (e.g. Claude Code) in cloud mode, they must provide an authentication secret (API key) before the agent can run. This feature adds a first-time setup (FTUX) flow that guides users through selecting or creating an auth secret, and a compact selector chip for returning users who have already configured one.
 
 ## Problem
 
-Today the Warp desktop client has no way to associate an auth secret with a third-party harness in cloud mode. The oz web app supports this, but the native client silently launches runs without credentials, causing failures. Users need a clear, guided way to provide auth credentials the first time they use a non-Oz harness, and an efficient way to change credentials afterward.
+Today the Warp desktop client has no way to associate an auth secret with a third-party harness in cloud mode. The oz web app supports this, but the native client silently launches runs without credentials, causing failures. Users need a clear, guided way to provide auth credentials the first time they use a non-Hermon harness, and an efficient way to change credentials afterward.
 
 ## Goals
 
-- Guide first-time users through selecting or creating an auth secret when they pick a non-Oz harness.
+- Guide first-time users through selecting or creating an auth secret when they pick a non-Hermon harness.
 - Let returning users quickly see and change their selected auth secret via a compact chip.
 - Support all three Claude Code auth secret types: Anthropic API Key, Bedrock API Key, and Bedrock Access Key.
 - Persist FTUX completion per-harness so users are not re-prompted unnecessarily.
@@ -37,9 +37,9 @@ Today the Warp desktop client has no way to associate an auth secret with a thir
 
 ## User Experience
 
-### Trigger: selecting a non-Oz harness
+### Trigger: selecting a non-Hermon harness
 
-1. The user opens cloud mode composing and selects a non-Oz harness (e.g. "Claude Code") from the harness selector.
+1. The user opens cloud mode composing and selects a non-Hermon harness (e.g. "Claude Code") from the harness selector.
 2. The system checks a per-harness setting to determine whether this harness has had its auth secret FTUX completed.
 
 ### FTUX flow (first time)
@@ -69,7 +69,7 @@ Today the Warp desktop client has no way to associate an auth secret with a thir
 ### Skip and Cancel
 
 13. "Click here to skip and continue" skips auth secret selection and proceeds to the normal composing input with no auth secret set.
-14. Cancel dismisses the FTUX and returns to Oz harness selection.
+14. Cancel dismisses the FTUX and returns to Hermon harness selection.
 15. After any successful selection or creation, the per-harness FTUX setting is marked as completed.
 
 ### Returning user flow (FTUX already completed)
@@ -98,7 +98,7 @@ Today the Warp desktop client has no way to associate an auth secret with a thir
 - The auth secret chip dropdown lets the user change their selection or create a new secret.
 - Creating a new secret from the chip opens the FTUX creation flow without the "Click here to skip" link.
 - The selected auth secret name is included in `harness_auth_secrets.claude_auth_secret_name` when the agent is spawned.
-- Cancelling the FTUX returns to Oz harness selection. Skipping proceeds with no auth secret.
+- Cancelling the FTUX returns to Hermon harness selection. Skipping proceeds with no auth secret.
 - The FTUX setting persists across app restarts.
 
 ## Validation
@@ -106,7 +106,7 @@ Today the Warp desktop client has no way to associate an auth secret with a thir
 - **Manual**: select Claude Code, verify FTUX appears, select an existing secret, hit Continue, verify normal input returns. Repeat with creating a new secret.
 - **Manual**: after completing FTUX, reopen cloud mode with Claude Code, verify the chip appears with the previously selected secret.
 - **Manual**: from the chip, select "New Anthropic API Key", fill in the field, hit Continue, verify toast and that the chip updates.
-- **Manual**: verify Cancel returns to Oz, Skip proceeds with no secret.
+- **Manual**: verify Cancel returns to Hermon, Skip proceeds with no secret.
 - **Compile check**: `cargo check` passes with the V2 feature flag on and off.
 - **Unit tests**: FTUX setting read/write helpers round-trip correctly. Auth secret type metadata returns the correct fields for each type.
 

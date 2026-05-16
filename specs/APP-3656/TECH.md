@@ -204,7 +204,7 @@ let (icon, title) = if let Some(view_handle) = terminal_view_handle.as_ref() {
         } else if is_ambient {
             WarpIcon::HermonCloud icon element
         } else {
-            WarpIcon::Oz icon element
+            WarpIcon::Hermon icon element
         };
         (icon_element, conv_title)
     } else {

@@ -14,7 +14,7 @@ This spec implements the behavior described in `specs/REMOTE-1573/PRODUCT.md`. T
 The effective value is `false` when any of these is true (PRODUCT.md invariant 9):
 - `AISettings::is_any_ai_enabled()` returns `false`
 - Cloud conversation storage is effectively disabled (user-level `is_cloud_conversation_storage_enabled == false` on `PrivacySettings`, or org-level `cloud_conversation_storage_settings == Disable` on `WorkspaceSettings`)
-- Feature flags `OzHandoff` or `HandoffLocalCloud` are off (existing gate in `is_local_to_cloud_handoff_available()` at `app/src/ai/blocklist/mod.rs:11-16`)
+- Feature flags `HermonHandoff` or `HandoffLocalCloud` are off (existing gate in `is_local_to_cloud_handoff_available()` at `app/src/ai/blocklist/mod.rs:11-16`)
 - The user has toggled the setting off
 
 This should be computed as a single helper function so all four gating sites share the same logic.
@@ -66,7 +66,7 @@ All four sites switch from the current `is_local_to_cloud_handoff_available()` c
 
 **`app/src/settings_view/ai_page.rs`**: Add a new `CloudHandoffWidget` struct implementing `SettingsWidget`, placed in the "Experimental" section near `CloudAgentComputerUseWidget`. Pattern:
 
-- `should_render`: return `true` when `OzHandoff` and `HandoffLocalCloud` flags are on. The widget handles the disabled state internally.
+- `should_render`: return `true` when `HermonHandoff` and `HandoffLocalCloud` flags are on. The widget handles the disabled state internally.
 - `render`: Compute force-disabled state from cloud-conversation-storage. When force-disabled, render the toggle as disabled with a tooltip. Beneath the parent toggle, conditionally render the `&` sub-toggle only when the effective handoff value is true (hidden when parent is off).
 
 Follow the exact pattern of `AgentAttributionWidget` (line 6093) for org-forced-disabled toggles with tooltips, and `CloudAgentComputerUseWidget` (line 6191) for the overall section layout.

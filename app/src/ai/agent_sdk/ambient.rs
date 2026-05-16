@@ -751,7 +751,7 @@ impl AmbientAgentRunner {
         let provider = ServerApiProvider::as_ref(ctx);
         let ai_client = provider.get_ai_client();
         let server_api = provider.get();
-        let scoped_task_id = task_id_from_oz_run_id_env()?;
+        let scoped_task_id = task_id_from_hermon_run_id_env()?;
 
         let future = async move {
             let message = match scoped_task_id {
@@ -779,7 +779,7 @@ impl AmbientAgentRunner {
         let provider = ServerApiProvider::as_ref(ctx);
         let ai_client = provider.get_ai_client();
         let server_api = provider.get();
-        let scoped_task_id = task_id_from_oz_run_id_env()?;
+        let scoped_task_id = task_id_from_hermon_run_id_env()?;
 
         let future = async move {
             match scoped_task_id {
@@ -1005,7 +1005,7 @@ fn task_id_from_run_id(run_id: &str) -> Option<AmbientAgentTaskId> {
     run_id.parse().ok()
 }
 
-fn task_id_from_oz_run_id_env() -> anyhow::Result<Option<AmbientAgentTaskId>> {
+fn task_id_from_hermon_run_id_env() -> anyhow::Result<Option<AmbientAgentTaskId>> {
     match std::env::var(wish_cli::WISH_RUN_ID_ENV) {
         Ok(run_id) => parse_ambient_task_id(&run_id, "Invalid HERMON_RUN_ID").map(Some),
         Err(std::env::VarError::NotPresent) => Ok(None),
@@ -1019,7 +1019,7 @@ fn task_id_from_oz_run_id_env() -> anyhow::Result<Option<AmbientAgentTaskId>> {
 fn task_id_for_message_send(sender_run_id: &str) -> anyhow::Result<Option<AmbientAgentTaskId>> {
     match task_id_from_run_id(sender_run_id) {
         Some(task_id) => Ok(Some(task_id)),
-        None => task_id_from_oz_run_id_env(),
+        None => task_id_from_hermon_run_id_env(),
     }
 }
 

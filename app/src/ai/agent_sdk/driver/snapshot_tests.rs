@@ -459,7 +459,7 @@ fn upload_skipped_when_declarations_file_has_no_valid_jsonl_entries() {
 
 #[test]
 fn resolve_declarations_path_respects_override() {
-    let override_path = std::ffi::OsString::from("/tmp/test-oz-declarations-override.txt");
+    let override_path = std::ffi::OsString::from("/tmp/test-hermon-declarations-override.txt");
     // Even with a task_id, the override wins.
     let resolved =
         resolve_declarations_path_with_override(Some(&fake_task_id()), Some(override_path.clone()));

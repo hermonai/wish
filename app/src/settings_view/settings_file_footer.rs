@@ -86,7 +86,7 @@ impl SettingsFooterKind {
 pub struct SettingsFooterMouseStates {
     pub open_settings_file_button: MouseStateHandle,
     pub alert_open_file_button: MouseStateHandle,
-    pub alert_fix_with_oz_button: MouseStateHandle,
+    pub alert_fix_with_hermon_button: MouseStateHandle,
     /// Scroll state for the error alert's text region (heading +
     /// description), so scroll position survives renders.
     pub alert_text_scroll_state: ClippedScrollStateHandle,
@@ -245,16 +245,16 @@ pub fn render_settings_error_alert(
 
     if ai_enabled {
         let error_description = error.to_string();
-        let fix_with_oz_button = render_alert_action_button(
+        let fix_with_hermon_button = render_alert_action_button(
             ui_font_family,
             text_color,
-            mouse_states.alert_fix_with_oz_button.clone(),
+            mouse_states.alert_fix_with_hermon_button.clone(),
             "Fix with Hermon Agent",
             Some(Icon::Hermon),
             /*bordered=*/ false,
-            WorkspaceAction::FixSettingsWithOz { error_description },
+            WorkspaceAction::FixSettingsWithHermon { error_description },
         );
-        buttons_row.add_child(fix_with_oz_button);
+        buttons_row.add_child(fix_with_hermon_button);
     }
 
     // ── Assemble ─────────────────────────────────────────────────────────

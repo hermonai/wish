@@ -350,7 +350,7 @@ pub struct BlockList {
     /// of the blocklist. After any other insertion, this item is automatically
     /// removed and re-appended so it stays last.
     pinned_to_bottom: Option<EntityId>,
-    is_executing_oz_environment_startup_commands: bool,
+    is_executing_hermon_environment_startup_commands: bool,
 }
 
 #[cfg(debug_assertions)]
@@ -665,7 +665,7 @@ impl BlockList {
             is_inverted,
             agent_view_state: AgentViewState::Inactive,
             pinned_to_bottom: None,
-            is_executing_oz_environment_startup_commands: false,
+            is_executing_hermon_environment_startup_commands: false,
         }
     }
 
@@ -1351,39 +1351,39 @@ impl BlockList {
         }
     }
 
-    pub fn is_executing_oz_environment_startup_commands(&self) -> bool {
-        self.is_executing_oz_environment_startup_commands
+    pub fn is_executing_hermon_environment_startup_commands(&self) -> bool {
+        self.is_executing_hermon_environment_startup_commands
     }
 
-    pub fn set_is_executing_oz_environment_startup_commands(
+    pub fn set_is_executing_hermon_environment_startup_commands(
         &mut self,
         is_executing_startup_commands: bool,
     ) {
-        self.is_executing_oz_environment_startup_commands = is_executing_startup_commands;
+        self.is_executing_hermon_environment_startup_commands = is_executing_startup_commands;
         if is_executing_startup_commands {
             self.active_block_mut().hide();
             self.active_block_mut()
-                .set_is_oz_environment_startup_command(true);
+                .set_is_hermon_environment_startup_command(true);
         } else {
             self.active_block_mut().unhide();
             self.active_block_mut()
-                .set_is_oz_environment_startup_command(false);
+                .set_is_hermon_environment_startup_command(false);
         }
     }
 
-    pub fn finish_oz_environment_startup_commands_at_block(
+    pub fn finish_hermon_environment_startup_commands_at_block(
         &mut self,
         block_id: &BlockId,
         conversation_id: Option<AIConversationId>,
     ) {
-        self.is_executing_oz_environment_startup_commands = false;
+        self.is_executing_hermon_environment_startup_commands = false;
         if let Some(block_index) = self.block_index_for_id(block_id) {
             for block in self.blocks.iter_mut().skip(block_index.0) {
                 if block.is_background() || block.is_static() {
                     continue;
                 }
                 block.unhide();
-                block.set_is_oz_environment_startup_command(false);
+                block.set_is_hermon_environment_startup_command(false);
                 if let Some(conversation_id) = conversation_id {
                     block.add_attached_conversation_id(conversation_id);
                 }
@@ -1685,10 +1685,10 @@ impl BlockList {
 
     /// Attaches every non-hermon-startup block in the list to `conversation_id` so each block is
     /// visible while that conversation is the active one in agent view. Skips blocks flagged
-    /// as `is_oz_environment_startup_command` since those are hidden by their own mechanism.
+    /// as `is_hermon_environment_startup_command` since those are hidden by their own mechanism.
     pub fn attach_non_startup_blocks_to_conversation(&mut self, conversation_id: AIConversationId) {
         for block in &mut self.blocks {
-            if block.is_oz_environment_startup_command() {
+            if block.is_hermon_environment_startup_command() {
                 continue;
             }
             if let AgentViewVisibility::Agent {
@@ -2603,8 +2603,8 @@ impl BlockList {
             }
         }
 
-        if self.is_executing_oz_environment_startup_commands {
-            block.set_is_oz_environment_startup_command(true);
+        if self.is_executing_hermon_environment_startup_commands {
+            block.set_is_hermon_environment_startup_command(true);
             block.hide();
         }
 

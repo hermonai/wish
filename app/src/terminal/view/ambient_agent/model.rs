@@ -676,7 +676,7 @@ impl AmbientAgentViewModel {
     ) {
         debug_assert!(
             self.harness != Harness::Hermon,
-            "harness_command_started is only meaningful for non-oz runs"
+            "harness_command_started is only meaningful for non-hermon runs"
         );
         if self.harness_command_started {
             return;

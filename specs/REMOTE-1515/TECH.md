@@ -5,13 +5,13 @@ Pairs with `PRODUCT.md`.
 ## Context
 The cloud-to-local fork pipeline already exists. `WorkspaceAction::ForkAIConversation` (`app/src/workspace/action.rs:462-475`) — and its narrower sibling `WorkspaceAction::ContinueConversationLocally` (`app/src/workspace/action.rs:478-481`) — both land in `Workspace::fork_ai_conversation` (`app/src/workspace/view.rs:11460-11668`), which loads the source conversation, calls `BlocklistAIHistoryModel::fork_conversation`, opens the fork in the chosen `ForkedConversationDestination`, and ends with `Self::show_fork_toast` (`app/src/workspace/view.rs:11744-11772`) producing the `Forked "<title>"` toast referenced by PRODUCT.md invariant 7.
 
-The two existing button entrypoints, both gated to Oz harness only, dispatch the narrower action:
+The two existing button entrypoints, both gated to Hermon harness only, dispatch the narrower action:
 - Conversation details panel: `app/src/ai/conversation_details_panel.rs:512-520, 1981-1992`, with the harness gate at `continue_locally_conversation_id` (`app/src/ai/conversation_details_panel.rs:564-602`).
 - Conversation-ended tombstone: `app/src/terminal/view/shared_session/conversation_ended_tombstone_view.rs:485-520`, with the harness gate at `render_action_buttons` (`app/src/terminal/view/shared_session/conversation_ended_tombstone_view.rs:464-511`).
 
-Slash commands: definitions in `app/src/search/slash_command_menu/static_commands/commands.rs`, dynamic per-session filtering in `app/src/terminal/input/slash_commands/data_source/mod.rs:146-235`, and execution dispatch in `app/src/terminal/input/slash_commands/mod.rs:296-847`. `Availability` is a `u8` bitfield with all 8 bits already in use (`app/src/search/slash_command_menu/static_commands/mod.rs:18-37`), so the cloud-Oz availability constraint must be expressed as a runtime filter — `/orchestrate` and `/feedback` already use this pattern at lines 211-225 of the data source. `/fork`'s handler (`app/src/terminal/input/slash_commands/mod.rs:718-742`) is the closest template: it pulls `conversation_id` via `ai_context_model.selected_conversation_id`, picks the destination from `trigger.is_cmd_or_ctrl_enter()`, and dispatches `ForkAIConversation`.
+Slash commands: definitions in `app/src/search/slash_command_menu/static_commands/commands.rs`, dynamic per-session filtering in `app/src/terminal/input/slash_commands/data_source/mod.rs:146-235`, and execution dispatch in `app/src/terminal/input/slash_commands/mod.rs:296-847`. `Availability` is a `u8` bitfield with all 8 bits already in use (`app/src/search/slash_command_menu/static_commands/mod.rs:18-37`), so the cloud-Hermon availability constraint must be expressed as a runtime filter — `/orchestrate` and `/feedback` already use this pattern at lines 211-225 of the data source. `/fork`'s handler (`app/src/terminal/input/slash_commands/mod.rs:718-742`) is the closest template: it pulls `conversation_id` via `ai_context_model.selected_conversation_id`, picks the destination from `trigger.is_cmd_or_ctrl_enter()`, and dispatches `ForkAIConversation`.
 
-`AIConversation::task_id()` (`app/src/ai/agent/conversation.rs:718`) returns `Option<AmbientAgentTaskId>` for cloud-backed conversations. `AgentConversationsModel::get_task_data()` (`app/src/ai/agent_conversations_model.rs:1546-1548`) returns the in-memory `AmbientAgentTask`; the harness lives at `task.agent_config_snapshot.harness.harness_type` and defaults to `Harness::Oz` when the snapshot is present but no explicit harness is set (matching `enrich_from_task` in `conversation_ended_tombstone_view.rs:131-141`).
+`AIConversation::task_id()` (`app/src/ai/agent/conversation.rs:718`) returns `Option<AmbientAgentTaskId>` for cloud-backed conversations. `AgentConversationsModel::get_task_data()` (`app/src/ai/agent_conversations_model.rs:1546-1548`) returns the in-memory `AmbientAgentTask`; the harness lives at `task.agent_config_snapshot.harness.harness_type` and defaults to `Harness::Hermon` when the snapshot is present but no explicit harness is set (matching `enrich_from_task` in `conversation_ended_tombstone_view.rs:131-141`).
 
 ## Proposed changes
 
@@ -29,7 +29,7 @@ Add a `CONTINUE_LOCALLY` `LazyLock<StaticCommand>` next to the rest of the fork 
 
 Push it onto `all_commands()` inside the existing `if !cfg!(target_family = "wasm")` block (`commands.rs:572-578`) alongside `FORK` / `FORK_AND_COMPACT`. No feature flag — the underlying action and all gating are stable.
 
-### 2. Cloud-Oz runtime filter in the data source
+### 2. Cloud-Hermon runtime filter in the data source
 `app/src/terminal/input/slash_commands/data_source/mod.rs`
 
 Express PRODUCT.md invariant 2 as a runtime filter, mirroring `/orchestrate` and `/feedback`:
@@ -46,7 +46,7 @@ Add a private helper `fn active_conversation_is_cloud_oz(&self, ctx: &AppContext
 1. Reads the active conversation id from `agent_view_controller.agent_view_state().active_conversation_id()` (returns false if `None`).
 2. Looks up the `AIConversation` in `BlocklistAIHistoryModel`. Reads `conversation.task_id()`; returns false if `None` (local conversation).
 3. Reads the task via `AgentConversationsModel::get_task_data(task_id)`.
-4. Returns true iff the task's `agent_config_snapshot.harness.harness_type` is `Harness::Oz`, or the snapshot is absent / harness is unset (the same permissive default the tombstone uses, so we don't hide the command while the task fetch is still pending — `Some(Harness::Claude)` / `Some(Harness::Gemini)` are the only states that hide the command).
+4. Returns true iff the task's `agent_config_snapshot.harness.harness_type` is `Harness::Hermon`, or the snapshot is absent / harness is unset (the same permissive default the tombstone uses, so we don't hide the command while the task fetch is still pending — `Some(Harness::Claude)` / `Some(Harness::Gemini)` are the only states that hide the command).
 
 Subscribe `recompute_active_commands` to:
 - `AgentConversationsModelEvent::TasksUpdated` — so the menu updates as the task fetch resolves and as task harness becomes known.
@@ -128,7 +128,7 @@ References below are to PRODUCT.md numbered invariants.
 Unit tests, colocated with the modules being changed:
 
 - `app/src/search/slash_command_menu/static_commands/mod_test.rs`: add a registration test for `/continue-locally` covering name, icon, optional argument with hint text, `auto_enter_ai_mode: true`, and the static availability set. (Inv. 1)
-- `app/src/terminal/input/slash_commands/data_source/` tests (matching the existing layout): cover the four cloud-Oz filter outcomes — local conversation (no `task_id`) hides the command (Inv. 2); cloud Oz task shows it (Inv. 2, 3); cloud Claude/Gemini task hides it (Inv. 2); cloud task whose data hasn't been fetched yet shows it permissively and recomputes on `TasksUpdated` (Inv. 2). Plus AI-disabled hides it via the static `AI_ENABLED` requirement (Inv. 3).
+- `app/src/terminal/input/slash_commands/data_source/` tests (matching the existing layout): cover the four cloud-Hermon filter outcomes — local conversation (no `task_id`) hides the command (Inv. 2); cloud Hermon task shows it (Inv. 2, 3); cloud Claude/Gemini task hides it (Inv. 2); cloud task whose data hasn't been fetched yet shows it permissively and recomputes on `TasksUpdated` (Inv. 2). Plus AI-disabled hides it via the static `AI_ENABLED` requirement (Inv. 3).
 - `app/src/ai/agent_management/telemetry.rs` discriminant tests: assert the new variant maps to the expected name and description, mirroring the existing test pattern for `DetailsPanelContinueLocally`. (Inv. 9)
 
 Manual:

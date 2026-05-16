@@ -153,13 +153,13 @@ fn remote_arm_propagates_skills_into_skill_references() {
             worker_host: "warp".to_string(),
             computer_use_enabled: true,
         },
-        "oz",
+        "hermon",
         "auto",
         &skills,
         None,
         &agent_cfg(),
     )
-    .expect("Remote+oz must convert");
+    .expect("Remote+hermon must convert");
     let StartAgentExecutionMode::Remote {
         skill_references,
         environment_id,
@@ -176,7 +176,7 @@ fn remote_arm_propagates_skills_into_skill_references() {
     assert_eq!(skill_references, skills);
     assert_eq!(environment_id, "env-1");
     assert_eq!(worker_host, "warp");
-    assert_eq!(harness_type, "oz");
+    assert_eq!(harness_type, "hermon");
     assert_eq!(model_id, "auto");
     assert!(computer_use_enabled);
     assert_eq!(title, "Child");

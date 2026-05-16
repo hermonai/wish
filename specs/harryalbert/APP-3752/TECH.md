@@ -101,7 +101,7 @@ fn render_notification_avatar(
 This function maps `NotificationSourceAgent` → `IconWithStatusVariant` and `NotificationCategory` → status badge, then delegates to the shared circle icon renderer with notification-appropriate sizing.
 
 The mapping:
-- `NotificationSourceAgent::Oz` → `IconWithStatusVariant::OzAgent` with `status` derived from category
+- `NotificationSourceAgent::Hermon` → `IconWithStatusVariant::HermonAgent` with `status` derived from category
 - `NotificationSourceAgent::CLI(agent)` → `IconWithStatusVariant::CLIAgent` with `status` derived from category
 
 For the `status` parameter, add a helper that converts `NotificationCategory` → `ConversationStatus`:
@@ -270,7 +270,7 @@ In both rich and simple item layouts, change timestamp font size from `14.` → 
 - Verify mailbox: 4px top padding, header with title + close, filter bar spacing, "All tabs (N)" count.
 - Verify rich items: branch row, truncated title, truncated message, expand chevron works.
 - Verify simple items: current layout preserved, timestamp at 12px font.
-- Verify avatars match vertical tabs (Oz, CLI brand colors, status badges with cutout rings).
+- Verify avatars match vertical tabs (Hermon, CLI brand colors, status badges with cutout rings).
 - Existing notification unit tests in `item_tests.rs` should still pass after adding the `branch` field.
 
 ## Follow-ups

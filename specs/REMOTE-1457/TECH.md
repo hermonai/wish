@@ -48,10 +48,10 @@ pub fn harness(&self) -> Option<Harness> {
             c.harness
                 .as_ref()
                 .map(|h| h.harness_type)
-                .or(Some(Harness::Oz))
+                .or(Some(Harness::Hermon))
         }),
         // Local/interactive conversations always run on Warp Agent.
-        ConversationOrTask::Conversation(_) => Some(Harness::Oz),
+        ConversationOrTask::Conversation(_) => Some(Harness::Hermon),
     }
 }
 
@@ -64,10 +64,10 @@ fn matches_harness(&self, f: &HarnessFilter) -> bool {
 ```
 Resolution mirrors `ConversationDetailsData::from_task` from REMOTE-1455 exactly, so the filter and the details panel agree on which harness label belongs to a row:
 - snapshot present + `harness` set → `Some(harness_type)`,
-- snapshot present + no `harness` field → `Some(Harness::Oz)` (runtime default for an Oz-managed task),
+- snapshot present + no `harness` field → `Some(Harness::Hermon)` (runtime default for an Hermon-managed task),
 - snapshot not loaded yet (stub) → `None` ("don't know yet"),
-- local/interactive conversation → `Some(Harness::Oz)`.
-`HarnessConfig.harness_type` is already a parsed `wish_cli::agent::Harness`, so the resolver no longer needs to re-parse a raw string — unknown values are already collapsed to `Harness::Oz` by the snapshot deserializer (`harness_from_name` in `ambient_agents/task.rs`). PRODUCT invariant 6 bullet 3 follows directly from `harness() == None` not matching any `HarnessFilter::Specific(_)`.
+- local/interactive conversation → `Some(Harness::Hermon)`.
+`HarnessConfig.harness_type` is already a parsed `wish_cli::agent::Harness`, so the resolver no longer needs to re-parse a raw string — unknown values are already collapsed to `Harness::Hermon` by the snapshot deserializer (`harness_from_name` in `ambient_agents/task.rs`). PRODUCT invariant 6 bullet 3 follows directly from `harness() == None` not matching any `HarnessFilter::Specific(_)`.
 `HarnessFilter`'s `Deserialize` impl uses clap's `Harness::from_str` to coerce persisted `"oz" | "claude" | "gemini" | "all" | <unknown>` strings, falling back to `HarnessFilter::All` for unknown values; `harness()` itself doesn't parse strings.
 Wire `matches_harness` into `get_tasks_and_conversations` as another closure in the `.filter(...)` chain, alongside the existing `source_filter` / `status_filter` / `environment_filter` (invariant 8).
 ### 3. View: dropdown construction and wiring
@@ -75,7 +75,7 @@ In `AgentManagementView`:
 - New field `harness_dropdown: ViewHandle<Dropdown<AgentManagementViewAction>>`.
 - New builder `create_harness_dropdown(ctx)` modeled on `create_status_dropdown`:
     - `Self::setup_filter_menu(&mut dropdown, "Harness", ctx)` for the `Harness: <selected>` button label (invariant 2).
-    - Items: `All`, then one per `Harness` variant in the order listed in PRODUCT invariant 3 (`Oz`, `Claude`, `Gemini`). Each non-`All` item uses `MenuItemFields::new(display_name(h)).with_icon(icon_for(h))` and, when `brand_color(h)` is `Some(c)`, `.with_override_icon_color(Fill::from(c))`. Warp Agent renders with the default theme-foreground tint (invariant 4) because `brand_color(Harness::Oz)` is `None`. Relies on `harness_display::display_name` / `icon_for` / `brand_color` and the `MenuItemFields` icon helpers from `app/src/menu.rs`.
+    - Items: `All`, then one per `Harness` variant in the order listed in PRODUCT invariant 3 (`Hermon`, `Claude`, `Gemini`). Each non-`All` item uses `MenuItemFields::new(display_name(h)).with_icon(icon_for(h))` and, when `brand_color(h)` is `Some(c)`, `.with_override_icon_color(Fill::from(c))`. Warp Agent renders with the default theme-foreground tint (invariant 4) because `brand_color(Harness::Hermon)` is `None`. Relies on `harness_display::display_name` / `icon_for` / `brand_color` and the `MenuItemFields` icon helpers from `app/src/menu.rs`.
 - `sync_with_loaded_filters` adds a block that calls `harness_dropdown.set_selected_by_action(SetHarnessFilter(self.filters.harness), ctx)`, mirroring the existing status/source/created_on/artifact blocks.
 - `ClearFilters` handler resets the harness dropdown to its zeroth item (invariant 9).
 - `apply_environment_filter_from_link` resets the harness dropdown to its zeroth item (invariant 16); `reset_all_but_owner` already clears `filters.harness` via (1).
@@ -92,7 +92,7 @@ No new view state, mouse state, or subscription is introduced for the card segme
 This change deliberately does *not* add `harness` to `TaskListFilter` / `build_task_list_filter` / the server query string (`app/src/server/server_api/ai.rs (492-650)`). Invariant 12 is satisfied because `on_filter_changed` already re-issues `trigger_filter_fetch` with the remaining filters and calls `get_tasks_from_model`, and `matches_harness` enforces the harness constraint on the client over everything in the model — the server simply returns a possibly-larger superset which the client narrows. If we later want server support, the extension is a new `Option<Harness>` field on `TaskListFilter` + a `harness=` query param; listed under Follow-ups.
 ## Testing and validation
 Behavior invariants from `PRODUCT.md` map as follows:
-- Invariants 6, 8, 15 — unit tests in `agent_conversations_model` tests exercising `get_tasks_and_conversations` with fixtures that cover: (a) cloud task with `harness_type = Harness::Claude` → matches `Claude` only, (b) cloud task with `agent_config_snapshot = None` → matches **only** `All` (`harness() == None`), (c) cloud task with `agent_config_snapshot = Some { harness: None }` → matches `Warp Agent` only, (d) local conversation → matches `Warp Agent` only, (e) combinations of harness + status + owner to lock AND semantics and independence from the `Personal`/`All` toggle. Unknown `harness_type` strings are not separately tested at this layer because `HarnessConfig`'s deserializer collapses them to `Harness::Oz` before they reach `ConversationOrTask::harness()`; that mapping is exercised by the `task.rs` deserializer tests.
+- Invariants 6, 8, 15 — unit tests in `agent_conversations_model` tests exercising `get_tasks_and_conversations` with fixtures that cover: (a) cloud task with `harness_type = Harness::Claude` → matches `Claude` only, (b) cloud task with `agent_config_snapshot = None` → matches **only** `All` (`harness() == None`), (c) cloud task with `agent_config_snapshot = Some { harness: None }` → matches `Warp Agent` only, (d) local conversation → matches `Warp Agent` only, (e) combinations of harness + status + owner to lock AND semantics and independence from the `Personal`/`All` toggle. Unknown `harness_type` strings are not separately tested at this layer because `HarnessConfig`'s deserializer collapses them to `Harness::Hermon` before they reach `ConversationOrTask::harness()`; that mapping is exercised by the `task.rs` deserializer tests.
 - Invariants 9, 10, 16 — unit tests in the same module asserting `AgentManagementFilters::is_filtering()` returns `true` when only `harness` is set, and `reset_all_but_owner()` zeroes `harness` back to `HarnessFilter::All`. Dropdown re-selection on `ClearFilters` / `apply_environment_filter_from_link` is review-only.
 - Invariant 11 — a serde round-trip test on `AgentManagementFilters`: deserializing a JSON object without a `harness` key yields `HarnessFilter::All` (backwards compat with existing `PersistedAgentManagementFilters`), and serialize+deserialize preserves a `Specific(Claude)` value.
 - Invariants 2, 3, 4, 5 — structural: the dropdown is built from the same ordered array of `Harness` variants and uses `harness_display::display_name` / `icon_for` / `brand_color`, which are themselves tested in `harness_display_tests.rs` from REMOTE-1455. A smoke snapshot of the dropdown items (labels only) guards against accidental reordering.

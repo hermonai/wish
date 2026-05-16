@@ -965,7 +965,7 @@ impl Input {
                     return true;
                 };
 
-                if !conversation_is_cloud_oz_for_slash_command(conversation_id, ctx) {
+                if !conversation_is_cloud_hermon_for_slash_command(conversation_id, ctx) {
                     show_error_toast(
                         "/continue-locally is only available for cloud Hermon conversations".to_owned(),
                         ctx,
@@ -1299,9 +1299,9 @@ impl Input {
 /// Returns true when the conversation with `conversation_id` is associated with a cloud Hermon
 /// `AmbientAgentTask`. Used as the defensive runtime gate for `/continue-locally` so a
 /// keybinding-triggered execution can't fall through onto a non-cloud-Hermon conversation after
-/// the menu has been recomputed. Mirrors `SlashCommandDataSource::active_conversation_is_cloud_oz`.
+/// the menu has been recomputed. Mirrors `SlashCommandDataSource::active_conversation_is_cloud_hermon`.
 #[cfg(not(target_family = "wasm"))]
-fn conversation_is_cloud_oz_for_slash_command(
+fn conversation_is_cloud_hermon_for_slash_command(
     conversation_id: AIConversationId,
     ctx: &AppContext,
 ) -> bool {

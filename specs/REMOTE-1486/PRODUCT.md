@@ -9,7 +9,7 @@ Today there's no first-class way to delegate "what I'm working on right now" to 
 - The cloud agent receives the local conversation's history (forked into a fresh cloud conversation) and the workspace's uncommitted state (git diffs + modified files the agent has touched).
 - The new pane's env selector defaults to whichever env contains the most touched repos.
 - Handoff does not interrupt the local conversation — the user can keep typing into it.
-- The cloud agent runs an Oz harness in V0; the design leaves room for third-party harnesses as a follow-up.
+- The cloud agent runs an Hermon harness in V0; the design leaves room for third-party harnesses as a follow-up.
 ## Non-goals
 - Third-party harnesses (Claude Code, Gemini, etc.). Extending `/move-to-cloud` to dispatch on the active conversation's harness is a follow-up that reuses most of the plumbing.
 - A symmetric cloud→local handoff. That's REMOTE-1290's existing rehydration target plus future work.
@@ -22,8 +22,8 @@ Today there's no first-class way to delegate "what I'm working on right now" to 
 None provided.
 ## Behavior
 ### Entry points
-1. A "Hand off to cloud" chip is added to the agent input footer's right slot whenever `FeatureFlag::OzHandoff && FeatureFlag::HandoffLocalCloud` are both enabled, in agent-view panes only, and not for session viewers (handoff is host-initiated). The chip uses the existing `bundled/svg/upload-cloud-01.svg` icon (cloud-with-upward-arrow); design may swap this for a bespoke icon as a follow-up.
-2. A slash command `/move-to-cloud [optional prompt]` is registered under the same flag gates plus the existing `AGENT_VIEW | ACTIVE_CONVERSATION | AI_ENABLED` availability rules. The name is harness-agnostic so the same command can dispatch to non-Oz harnesses as a follow-up.
+1. A "Hand off to cloud" chip is added to the agent input footer's right slot whenever `FeatureFlag::HermonHandoff && FeatureFlag::HandoffLocalCloud` are both enabled, in agent-view panes only, and not for session viewers (handoff is host-initiated). The chip uses the existing `bundled/svg/upload-cloud-01.svg` icon (cloud-with-upward-arrow); design may swap this for a bespoke icon as a follow-up.
+2. A slash command `/move-to-cloud [optional prompt]` is registered under the same flag gates plus the existing `AGENT_VIEW | ACTIVE_CONVERSATION | AI_ENABLED` availability rules. The name is harness-agnostic so the same command can dispatch to non-Hermon harnesses as a follow-up.
 3. Both entry points dispatch `WorkspaceAction::OpenLocalToCloudHandoffPane`, which splits a fresh cloud-mode pane to the right of the active pane. The slash command pre-fills the new pane's prompt with whatever followed the command; the chip leaves it empty. The local pane stays in place and remains fully active throughout.
 4. Per-conversation eligibility is enforced by the click handler, not chip visibility. If the active conversation has a synced `server_conversation_token` and is non-empty, the new pane is seeded with handoff context (forked + snapshot uploaded on submit). Otherwise the new pane opens as an ordinary fresh cloud-mode pane (no fork, no snapshot) — the user clearly wanted a cloud-mode pane regardless.
 ### Handoff pane

@@ -128,7 +128,7 @@ fn cli_agent_with_worktree() {
 
 #[test]
 fn hermon_no_worktree_same_as_terminal() {
-    let oz = build_tab_config(
+    let hermon = build_tab_config(
         &SessionType::Hermon,
         Path::new("/home/user/project"),
         false,
@@ -141,9 +141,9 @@ fn hermon_no_worktree_same_as_terminal() {
         true,
     );
 
-    assert_eq!(oz.panes[0].directory, terminal.panes[0].directory);
-    assert_eq!(oz.panes[0].commands, terminal.panes[0].commands);
-    assert_eq!(oz.params.len(), terminal.params.len());
+    assert_eq!(hermon.panes[0].directory, terminal.panes[0].directory);
+    assert_eq!(hermon.panes[0].commands, terminal.panes[0].commands);
+    assert_eq!(hermon.params.len(), terminal.params.len());
 }
 
 #[test]

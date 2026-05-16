@@ -88,7 +88,7 @@ pub struct AgentViewZeroStateBlock {
     should_show_init_callout: bool,
     has_parent_terminal: bool,
     state_handles: StateHandles,
-    is_oz_updates_expanded: bool,
+    is_hermon_updates_expanded: bool,
 }
 
 impl AgentViewZeroStateBlock {
@@ -218,27 +218,27 @@ impl AgentViewZeroStateBlock {
         let changelog_model = ChangelogModel::handle(ctx);
         ctx.subscribe_to_model(&changelog_model, |me, changelog_model, event, ctx| {
             if let changelog_model::Event::ChangelogRequestComplete { .. } = event {
-                let oz_update_count = changelog_model
+                let hermon_mon_update_count = changelog_model
                     .as_ref(ctx)
                     .hermon_updates
                     .len()
                     .min(MAX_OZ_UPDATE_COUNT);
-                if oz_update_count != me.state_handles.update_hyperlinks.len() {
+                if hermon_mon_update_count != me.state_handles.update_hyperlinks.len() {
                     me.state_handles
                         .update_hyperlinks
-                        .resize(oz_update_count, Default::default());
+                        .resize(hermon_mon_update_count, Default::default());
                 }
             }
         });
         ctx.subscribe_to_model(&AISettings::handle(ctx), |me, _, event, ctx| {
-            let should_rerender_for_oz_updates_visibility = !me.origin.is_cloud_agent()
+            let should_rerender_for_hermon_updates_visibility = !me.origin.is_cloud_agent()
                 && matches!(
                     event,
                     AISettingsChangedEvent::ShouldShowHermonUpdatesInZeroState { .. }
                 )
                 && FeatureFlag::HermonChangelogUpdates.is_enabled()
                 && !ChangelogModel::as_ref(ctx).hermon_updates.is_empty();
-            if should_rerender_for_oz_updates_visibility {
+            if should_rerender_for_hermon_updates_visibility {
                 ctx.notify();
             }
         });
@@ -276,8 +276,8 @@ impl AgentViewZeroStateBlock {
             should_show_init_callout,
             has_parent_terminal,
             state_handles,
-            is_oz_updates_expanded: !origin.is_cloud_agent()
-                && *AISettings::handle(ctx).as_ref(ctx).should_expand_oz_updates,
+            is_hermon_updates_expanded: !origin.is_cloud_agent()
+                && *AISettings::handle(ctx).as_ref(ctx).should_expand_hermon_updates,
         }
     }
 
@@ -434,14 +434,14 @@ impl View for AgentViewZeroStateBlock {
             .with_children(render_title_and_description(header_props, app));
 
         if !self.origin.is_cloud_agent() {
-            if let Some(oz_updates_section) = render_oz_updates(
-                OzUpdatesProps {
-                    is_expanded: self.is_oz_updates_expanded,
+            if let Some(hermon_updates_section) = render_hermon_updates(
+                HermonUpdatesProps {
+                    is_expanded: self.is_hermon_updates_expanded,
                     state_handles: &self.state_handles,
                 },
                 app,
             ) {
-                content.add_children([Container::new(oz_updates_section)
+                content.add_children([Container::new(hermon_updates_section)
                     .with_margin_top(8.)
                     .with_margin_bottom(16.)
                     .finish()]);
@@ -503,7 +503,7 @@ impl Entity for AgentViewZeroStateBlock {
 #[derive(Debug, Clone)]
 pub enum AgentViewZeroStateAction {
     ClickedInitCallout,
-    ToggleOzUpdates,
+    ToggleHermonUpdates,
     OpenConversation { conversation_id: AIConversationId },
 }
 
@@ -515,13 +515,13 @@ impl TypedActionView for AgentViewZeroStateBlock {
             AgentViewZeroStateAction::ClickedInitCallout => {
                 ctx.emit(AgentViewZeroStateEvent::ClickedInitCallout);
             }
-            AgentViewZeroStateAction::ToggleOzUpdates => {
-                let is_expanded = self.is_oz_updates_expanded;
-                self.is_oz_updates_expanded = !is_expanded;
+            AgentViewZeroStateAction::ToggleHermonUpdates => {
+                let is_expanded = self.is_hermon_updates_expanded;
+                self.is_hermon_updates_expanded = !is_expanded;
 
                 AISettings::handle(ctx).update(ctx, |settings, ctx| {
                     report_if_error!(settings
-                        .should_expand_oz_updates
+                        .should_expand_hermon_updates
                         .set_value(!is_expanded, ctx));
                 });
             }
@@ -989,32 +989,32 @@ fn render_recent_conversations_section(
     )
 }
 
-struct OzUpdatesProps<'a> {
+struct HermonUpdatesProps<'a> {
     is_expanded: bool,
     state_handles: &'a StateHandles,
 }
-fn should_render_oz_updates_section(
-    is_oz_changelog_updates_enabled: bool,
-    should_show_oz_updates: bool,
-    has_oz_updates: bool,
+fn should_render_hermon_updates_section(
+    is_hermon_changelog_updates_enabled: bool,
+    should_show_hermon_updates: bool,
+    has_hermon_updates: bool,
 ) -> bool {
-    is_oz_changelog_updates_enabled && should_show_oz_updates && has_oz_updates
+    is_hermon_changelog_updates_enabled && should_show_hermon_updates && has_hermon_updates
 }
 
-fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<dyn Element>> {
+fn render_hermon_updates(props: HermonUpdatesProps<'_>, app: &AppContext) -> Option<Box<dyn Element>> {
     let changelog_model = ChangelogModel::as_ref(app);
-    let should_show_oz_updates = *AISettings::as_ref(app)
-        .should_show_oz_updates_in_zero_state
+    let should_show_hermon_updates = *AISettings::as_ref(app)
+        .should_show_hermon_updates_in_zero_state
         .value();
-    if !should_render_oz_updates_section(
+    if !should_render_hermon_updates_section(
         FeatureFlag::HermonChangelogUpdates.is_enabled(),
-        should_show_oz_updates,
+        should_show_hermon_updates,
         !changelog_model.hermon_updates.is_empty(),
     ) {
         return None;
     }
 
-    let OzUpdatesProps {
+    let HermonUpdatesProps {
         is_expanded,
         state_handles,
     } = props;
@@ -1213,7 +1213,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
         .with_reset_cursor_after_click()
         .with_defer_events_to_children()
         .on_click(|ctx, _, _| {
-            ctx.dispatch_typed_action(AgentViewZeroStateAction::ToggleOzUpdates);
+            ctx.dispatch_typed_action(AgentViewZeroStateAction::ToggleHermonUpdates);
         })
         .finish(),
     )

@@ -38,7 +38,7 @@ Figma: https://www.figma.com/design/AsF5uAM6L5tUmc11vm9YSi (nodes `4073-19833`, 
    - Internal padding: 4px left of the avatar, 10px right of the label, 6px between avatar and label.
    - Pills are 22px tall with a half-stadium corner radius (radius = height/2). Adjacent pills are spaced 6px apart.
 
-6. The orchestrator pill uses the Warp `Oz` glyph on a cyan disc and is labelled with the orchestrator conversation's agent name, falling back to `"Orchestrator"` if no name is set.
+6. The orchestrator pill uses the Warp `Hermon` glyph on a cyan disc and is labelled with the orchestrator conversation's agent name, falling back to `"Orchestrator"` if no name is set.
 
 7. Each child pill uses:
    - A colored disc whose color is deterministic from the agent's name (hash → 6-color palette of `ansi_fg_blue/magenta/cyan/green/yellow/red`).
@@ -55,7 +55,7 @@ Note this is temporary - we'll update this further later.
 9. Clicking a non-selected pill switches the **current pane** to that pill's conversation in place. It does not split the pane or open a new tab. The newly active pill becomes Selected on the next render. After a click on a child pill, the pane header switches from showing the pill bar to showing breadcrumbs (see (10)).
 
 10. While viewing a child agent (the active conversation has a parent), the pane header title area is replaced with a `[Parent] › [Child]` breadcrumb path:
-    - Each crumb is a 24px-tall capsule with a 4px corner radius, 6px horizontal padding, and the same avatar treatment as pills (orchestrator uses Oz glyph + cyan disc; child uses deterministic-color disc + initial letter).
+    - Each crumb is a 24px-tall capsule with a 4px corner radius, 6px horizontal padding, and the same avatar treatment as pills (orchestrator uses Hermon glyph + cyan disc; child uses deterministic-color disc + initial letter).
     - The separator between crumbs is a `›` chevron icon (16×16) in the standard sub-text color.
     - The parent crumb's label is the parent conversation's title, falling back to its agent name, and finally to `"Orchestrator"`.
     - The trailing (child) crumb is rendered with the brighter "main" text color, no hover, no click.

@@ -8,7 +8,7 @@ Behavior is specified in `specs/APP-3801/PRODUCT.md`. This document plans the im
 
 ### Terminology note
 
-The originating Linear ticket is titled "remote server initialization with authentication runtime flags", which reads like CLI flags on `oz remote-server*`. The design does **not** introduce such flags. Once APP-4068's daemon topology is in scope, every startup-time credential transport (argv, env, fd inheritance, file handoff) fails for the same set of reasons — §4 walks through each. The "runtime" in this design means runtime protocol fields — an `auth_token` carried on `Initialize` for the initial credential, and a dedicated `Authenticate` message for mid-session rotation — exchanged over the already-encrypted client↔server byte stream, not CLI args parsed at process start. Reviewers who come in expecting `--auth-token` should start at §4.
+The originating Linear ticket is titled "remote server initialization with authentication runtime flags", which reads like CLI flags on `hermon remote-server*`. The design does **not** introduce such flags. Once APP-4068's daemon topology is in scope, every startup-time credential transport (argv, env, fd inheritance, file handoff) fails for the same set of reasons — §4 walks through each. The "runtime" in this design means runtime protocol fields — an `auth_token` carried on `Initialize` for the initial credential, and a dedicated `Authenticate` message for mid-session rotation — exchanged over the already-encrypted client↔server byte stream, not CLI args parsed at process start. Reviewers who come in expecting `--auth-token` should start at §4.
 
 ### Remote server today
 
@@ -189,7 +189,7 @@ User identity is established before any APP-3801 message flows. The client selec
 **How identity flows in practice.** Using `abc123` as a placeholder for the user's Warp UUID:
 
 1. **Client computes the path.** Warp (running on the local machine) already has the user's identity in memory. It builds the socket path: `~/.warp/remote-server/abc123/server.sock`. For anonymous users, `abc123` is replaced with the per-install `ExperimentId` UUID loaded from preferences.
-2. **Client launches the proxy with that path.** When the user opens a remote session, the client invokes something like `oz remote-server-proxy --socket-path ~/.warp/remote-server/abc123/server.sock` on the remote host over SSH. The proxy receives the path as an opaque argv string — it does not parse, validate, or interpret the UUID segment; it just knows where the socket lives.
+2. **Client launches the proxy with that path.** When the user opens a remote session, the client invokes something like `hermon remote-server-proxy --socket-path ~/.warp/remote-server/abc123/server.sock` on the remote host over SSH. The proxy receives the path as an opaque argv string — it does not parse, validate, or interpret the UUID segment; it just knows where the socket lives.
 3. **Proxy finds or spawns the daemon.** The proxy attempts to `connect()` at the given path. If a daemon is already listening, it joins. If not, it spawns one (via `setsid`) whose first action is to `bind()` the socket at that path. APP-4068 owns this whole dance; APP-3801 rides on top of it.
 4. **Daemon has no UUID awareness.** The daemon never sees a UUID in its own code. It does not parse an identifier out of any message, does not validate users, does not know what `abc123` means. It listens on the socket it was told to listen on and accepts whatever connections arrive there.
 

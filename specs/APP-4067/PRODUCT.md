@@ -25,7 +25,7 @@ The `gemini-warp` extension already exists and uses the same structured OSC 777 
 ## Non-Goals
 
 - Changing the gemini-warp plugin itself (it's maintained separately in `warpdotdev/gemini-cli-warp`).
-- Platform plugin / Oz harness support for Gemini (future work).
+- Platform plugin / Hermon harness support for Gemini (future work).
 
 ## How Gemini CLI Extensions Work
 
@@ -134,4 +134,3 @@ Same as Claude Code / OpenCode: install chip and update chip have independent di
 - Manual testing: full install flow with a real Gemini CLI session.
 - Manual testing: update flow — verify `gemini extensions update` pulls new version.
 - Manual testing: notification flow — verify stop, blocked, permission request notifications appear.
-

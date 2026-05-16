@@ -1,15 +1,15 @@
 # APP-4087: Fix Warp skill and MCP home config paths after watcher unification Product Spec
 ## Summary
-The immediate regression is that `oz agent run --skill <name>` no longer finds Warp skills stored in Warp’s home-relative config directory on Linux and Windows. APP-3945 intentionally centralized Warp-owned filesystem watching to avoid recursively watching `.warp*/worktrees`, but it also tied Warp skill lookup to platform app data paths. That works on macOS because Warp’s app data path is home-relative and channel-aware, but it breaks non-macOS users because app data follows XDG/AppData conventions instead of Warp’s `.warp*` home config directory convention.
+The immediate regression is that `hermon agent run --skill <name>` no longer finds Warp skills stored in Warp’s home-relative config directory on Linux and Windows. APP-3945 intentionally centralized Warp-owned filesystem watching to avoid recursively watching `.warp*/worktrees`, but it also tied Warp skill lookup to platform app data paths. That works on macOS because Warp’s app data path is home-relative and channel-aware, but it breaks non-macOS users because app data follows XDG/AppData conventions instead of Warp’s `.warp*` home config directory convention.
 Fixing the skill regression led us to audit other Warp-owned home config paths affected by the same watcher unification. MCP has the same shape: Warp’s file-based MCP config should live next to other home-relative Warp config for the current app environment. APP-4087 should restore those environment-aware home paths without undoing APP-3945’s worktree-watch safety.
 ## Problem
 Before APP-3945, Warp skill discovery could find skills in Warp’s home config directory, such as `~/.warp/skills`. After APP-3945, `SkillProvider::Warp` stopped going through generic home-provider watching and instead relied on the centralized Warp watcher and app data paths. That prevented broad recursive watches under `~/.warp`, which was intended, but it also meant that home-relative Warp skill directories stopped being considered when app data was somewhere else.
-Linux and Windows expose the bug because their app data directories differ from Warp’s home-relative `.warp*` config directories. A Stable user can therefore have a valid skill at `~/.warp/skills/foo/SKILL.md`, run `oz agent run --skill foo`, and see the skill fail to resolve because the resolver and watcher are looking in the platform app data directory.
+Linux and Windows expose the bug because their app data directories differ from Warp’s home-relative `.warp*` config directories. A Stable user can therefore have a valid skill at `~/.warp/skills/foo/SKILL.md`, run `hermon agent run --skill foo`, and see the skill fail to resolve because the resolver and watcher are looking in the platform app data directory.
 macOS hides most of this because Stable and Preview commonly resolve app data to `~/.warp`, while Dev and Local resolve to environment-specific home directories such as `~/.warp-dev` and `~/.warp-local`. The desired behavior is not simply “always use `~/.warp`”; it is “use the home-relative Warp config directory for the current Warp app environment.”
 While investigating Skills, we checked MCP because its global config has the same shape. Warp MCP config should use the same environment-aware home config directory as Skills, e.g. `~/.warp/.mcp.json`, `~/.warp-dev/.mcp.json`, or `~/.warp-local/.mcp.json` depending on channel/profile.
 ## Goals
 - Preserve the APP-3945 invariant that Warp does not recursively watch `.warp*/worktrees`.
-- Restore `oz --skill <name>` resolution for Warp home skills on Linux, Windows, and macOS.
+- Restore `hermon --skill <name>` resolution for Warp home skills on Linux, Windows, and macOS.
 - Preserve environment isolation for Dev, Local, Integration, OpenWarp, and development profiles.
 - Use a single purpose-specific home config path helper for Warp Skills and MCP.
 - Keep `data_dir()` and `config_local_dir()` for their existing app-managed configuration responsibilities.
@@ -27,9 +27,9 @@ Figma: none provided.
 ### Warp home skills
 - A Stable user can store a skill at `~/.warp/skills/<skill-name>/SKILL.md`.
 - Dev, Local, Integration, OpenWarp, and profiled builds use their own home-relative Warp config directories, such as `~/.warp-dev/skills`, `~/.warp-local/skills`, or `~/.warp-local-<profile>/skills`.
-- Running `oz agent run --skill <skill-name> ...` resolves the skill from the current app environment’s Warp home skills directory even when platform app data is elsewhere.
+- Running `hermon agent run --skill <skill-name> ...` resolves the skill from the current app environment’s Warp home skills directory even when platform app data is elsewhere.
 - Warp home skill resolution continues to take precedence over project skill resolution for unqualified skill names.
-- The resolver must not require the asynchronous `SkillManager` cache or filesystem watcher to be warmed before `oz --skill` works.
+- The resolver must not require the asynchronous `SkillManager` cache or filesystem watcher to be warmed before `hermon --skill` works.
 ### Warp home MCP config
 - A user can configure file-based MCP servers for the current Warp app environment at `<warp-home-config-dir>/.mcp.json`.
 - Examples include `~/.warp/.mcp.json`, `~/.warp-dev/.mcp.json`, and `~/.warp-local/.mcp.json`.

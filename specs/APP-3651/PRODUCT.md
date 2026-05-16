@@ -41,7 +41,7 @@ Note: The Figma mock shows a compact single-row rendering that is not in scope. 
 Currently the terminal row layout is:
 1. **Primary line** (main text color): working directory • git branch
 2. **Secondary line** (sub text color): conversation title/status, or terminal title if it differs from working directory
-3. **Tertiary line**: kind badge ("Terminal" or "Oz") + right-side badges (diff stats, PR)
+3. **Tertiary line**: kind badge ("Terminal" or "Hermon") + right-side badges (diff stats, PR)
 
 The new layout reverses lines 1 and 2:
 1. **Primary line** (main text color): terminal title or conversation status (see rules below)

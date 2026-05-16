@@ -1570,7 +1570,7 @@ fn test_finish_startup_commands_at_block_attaches_and_unhides_command_blocks_sin
     let _agent_view_flag = FeatureFlag::AgentView.override_enabled(true);
     let mut block_list =
         new_bootstrapped_block_list(None, None, ChannelEventListener::new_for_test());
-    block_list.set_is_executing_oz_environment_startup_commands(true);
+    block_list.set_is_executing_hermon_environment_startup_commands(true);
 
     let setup_block_index = insert_block(&mut block_list, "setup", "output");
     let harness_block_index = insert_block(&mut block_list, "claude", "output");
@@ -1596,16 +1596,16 @@ fn test_finish_startup_commands_at_block_attaches_and_unhides_command_blocks_sin
     });
 
     block_list
-        .finish_oz_environment_startup_commands_at_block(&harness_block_id, Some(conversation_id));
+        .finish_hermon_environment_startup_commands_at_block(&harness_block_id, Some(conversation_id));
 
-    assert!(!block_list.is_executing_oz_environment_startup_commands());
+    assert!(!block_list.is_executing_hermon_environment_startup_commands());
 
     for block_id in [&harness_block_id, &followup_block_id] {
         let block = block_list
             .block_with_id(block_id)
             .expect("block should still exist");
         assert!(!block.is_hidden());
-        assert!(!block.is_oz_environment_startup_command());
+        assert!(!block.is_hermon_environment_startup_command());
         assert!(!block.should_hide_block(block_list.agent_view_state()));
         match block.agent_view_visibility() {
             AgentViewVisibility::Terminal {
@@ -1629,7 +1629,7 @@ fn test_finish_startup_commands_at_block_attaches_and_unhides_command_blocks_sin
         .block_with_id(&setup_block_id)
         .expect("setup block should still exist");
     assert!(setup_block.is_hidden());
-    assert!(setup_block.is_oz_environment_startup_command());
+    assert!(setup_block.is_hermon_environment_startup_command());
     assert!(setup_block.should_hide_block(block_list.agent_view_state()));
 }
 

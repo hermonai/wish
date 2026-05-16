@@ -60,7 +60,7 @@ Both features span the agent SDK driver, the server's public API, GCS storage, a
 - `oz-local` plumbs through `-e KEY=VALUE` flags into `DirectBackendConfig.Env`, but has no dedicated flag for pointing a local-dev run at the `warp-agent-docker` checkout.
 - Block snapshots are not uploaded during harness runs.
 - The `SerializedBlock` type exists for local persistence but has no JSON round-trip support for cloud storage.
-- The conversation loader only handles `AIAgentHarness::Oz` conversations; `ClaudeCode` conversations are logged as warnings and skipped.
+- The conversation loader only handles `AIAgentHarness::Hermon` conversations; `ClaudeCode` conversations are logged as warnings and skipped.
 - The terminal view restoration path has no `HistoricalCLIAgent` variant.
 
 ### Server state before this work
@@ -78,7 +78,7 @@ Both features span the agent SDK driver, the server's public API, GCS storage, a
 - The `ServerApi` on this process already has the task ID set via `ServerApiProvider::set_ambient_agent_task_id` earlier in the driver lifecycle (see `mod.rs:763` and `mod.rs:876`), so the `POST /harness-support/upload-snapshot` request carries the right run context with no extra plumbing.
 
 **Pipeline** (`app/src/ai/agent_sdk/driver/snapshot.rs`):
-1. **Gating.** Return early if `FeatureFlag::OzHandoff` is disabled, if `AgentDriver::task_id` is `None`, or if the run was started with `--no-snapshot`. Snapshots only make sense for cloud task runs and must be operator-disableable. `OzHandoff` is the scoped flag for snapshot/handoff behavior; it is decoupled from `FeatureFlag::AgentHarness` (which gates third-party harness CLIs independently).
+1. **Gating.** Return early if `FeatureFlag::HermonHandoff` is disabled, if `AgentDriver::task_id` is `None`, or if the run was started with `--no-snapshot`. Snapshots only make sense for cloud task runs and must be operator-disableable. `HermonHandoff` is the scoped flag for snapshot/handoff behavior; it is decoupled from `FeatureFlag::AgentHarness` (which gates third-party harness CLIs independently).
 2. **Generate declarations file.** `run_declarations_script(working_dir, task_id, script_timeout)` resolves `$OZ_SNAPSHOT_DECLARATIONS_SCRIPT`, spawns it via `tokio::task::spawn_blocking(|| Command::new(..).current_dir(working_dir).env(OZ_SNAPSHOT_DECLARATIONS_FILE, resolved_path).output())`, and awaits the result with a timeout via `wishui::r#async::FutureExt::with_timeout`. The timeout defaults to 1 minute and is configurable via `--snapshot-script-timeout <DURATION>`. Setting `current_dir` anchors the bash script's `$PWD` to the agent's workspace even though the driver process's own CWD may have drifted (the macOS startup path in `app/src/terminal/platform.rs:32` `cd`s to `$HOME`). Setting the file path as an env var keeps the script's output and `resolve_declarations_path(task_id)` in sync on one per-run file. Missing script path env var, missing script file, non-zero exit, and timeout are each logged at `log::error!` and return without aborting the upload — if the declarations file already exists from a prior successful invocation the pipeline still reads it; otherwise the upload is a no-op. The helper lives in its own function (independent of `upload_snapshot_from_declarations`) so future code paths can invoke it at other points in the run lifecycle.
 3. **Read declarations file.** `resolve_declarations_path(task_id)` delegates to the pure `resolve_declarations_path_with_override(task_id, override_path)` helper so tests can exercise the logic without racing on the process-wide env var. Precedence: `$OZ_SNAPSHOT_DECLARATIONS_FILE` (operator/test override) wins; otherwise `/tmp/oz/<task-id>/snapshot-declarations.jsonl` when `task_id` is `Some`; otherwise `/tmp/oz/snapshot-declarations.jsonl`. If the file is missing, unreadable, or empty, log at WARN and return. Never fail the run tail.
 4. **Parse declarations.** One JSON object per non-empty line: `{\"version\":1,\"kind\":\"repo\",\"path\":\"/abs/path\"}` or `{\"version\":1,\"kind\":\"file\",\"path\":\"/abs/path\"}`. Malformed lines (invalid JSON, missing fields, missing or unsupported version, unknown kind, non-absolute path) are logged at WARN and skipped without aborting the upload. Duplicate `(kind, path)` pairs are ignored.
@@ -270,7 +270,7 @@ sequenceDiagram
     participant Server as Warp Server
     participant GCS as GCS
 
-    Note over Driver: Gate on OzHandoff flag + task_id + --no-snapshot
+    Note over Driver: Gate on HermonHandoff flag + task_id + --no-snapshot
     Driver->>Script: Resolve $OZ_SNAPSHOT_DECLARATIONS_SCRIPT, spawn w/ configured script timeout
     Script->>FS: find .git dirs under $PWD (or OZ_SNAPSHOT_SCAN_ROOTS)
     Script->>FS: Write JSONL repo declarations to $OZ_SNAPSHOT_DECLARATIONS_FILE
@@ -399,7 +399,7 @@ Mitigation:
 ### Integration validation
 - End-to-end test: cloud agent run with Claude Code harness → declarations file present → driver uploads snapshot before signaling completion → open conversation in client → verify inline terminal output.
 - Verify handoff snapshot files download into the next execution's attachments directory without local repo switching.
-- Verify feature flag gating: all snapshot/handoff paths are inert when `OzHandoff` is disabled (independently of `AgentHarness`).
+- Verify feature flag gating: all snapshot/handoff paths are inert when `HermonHandoff` is disabled (independently of `AgentHarness`).
 - Verify `--no-snapshot` skips declarations generation and upload.
 - Verify `--snapshot-script-timeout <DURATION>` and `--snapshot-upload-timeout <DURATION>` override the default caps.
 - Verify a run with no declarations file completes normally with only a WARN log and no upload.

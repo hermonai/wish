@@ -48,8 +48,8 @@ The second number from `git rev-list --left-right --count` is the number of upst
 | WarpUI / `warpui` | WishUI / `wishui` |
 | `warp_core` | `wish_core` |
 | `warp-oss` | `wish-oss` |
-| Oz Cloud product copy | Hermon Cloud |
-| Oz first-party harness UI | Hermon agent / Wish Agent |
+| Hermon Cloud product copy | Hermon Cloud |
+| Hermon first-party harness UI | Hermon agent / Wish Agent |
 
 GraphQL wire values, persisted analytics values, and compatibility aliases may still use upstream names when changing them would break stored data or server schema compatibility. Those cases should be isolated and documented in comments.
 

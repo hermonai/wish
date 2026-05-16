@@ -1353,14 +1353,16 @@ impl From<RunAgentsAgentOutcome> for api::run_agents_result::AgentOutcome {
     }
 }
 
-/// Maps a client-side harness string identifier (e.g. "oz", "claude")
+/// Maps a client-side harness string identifier (e.g. "hermon", "claude")
 /// to the new proto `Harness` oneof. Returns `None` for empty,
 /// unrecognized, or `"unknown"` strings; callers leave
 /// `resolved_harness` unset in that case.
 pub(super) fn build_api_harness(harness_type: &str) -> Option<api::Harness> {
     let normalized = harness_type.trim().to_ascii_lowercase().replace('_', "-");
     let variant = match normalized.as_str() {
-        "oz" => api::harness::Variant::Oz(api::harness::Oz {}),
+        // Proto-generated variant is still named `Oz` (wire format); accept
+        // both `"hermon"` (canonical) and `"oz"` (legacy) string tokens.
+        "hermon" | "oz" => api::harness::Variant::Oz(api::harness::Oz {}),
         "claude" | "claude-code" => api::harness::Variant::ClaudeCode(api::harness::ClaudeCode {}),
         "opencode" | "open-code" => api::harness::Variant::OpenCode(api::harness::OpenCode {}),
         "gemini" => api::harness::Variant::Gemini(api::harness::Gemini {}),

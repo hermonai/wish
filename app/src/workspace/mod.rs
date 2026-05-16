@@ -214,13 +214,13 @@ pub fn init(app: &mut AppContext) {
                 )
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
-                    "workspace:open_oz_launch_modal",
+                    "workspace:open_hermon_launch_modal",
                     "[Debug] Open Hermon Cloud Launch Modal",
                     WorkspaceAction::OpenHermonLaunchModal,
                 )
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
-                    "workspace:reset_oz_launch_modal_state",
+                    "workspace:reset_hermon_launch_modal_state",
                     "[Debug] Reset Hermon Cloud Launch Modal State",
                     WorkspaceAction::ResetHermonLaunchModalState,
                 )

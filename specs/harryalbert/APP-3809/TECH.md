@@ -10,7 +10,7 @@ We need a 4-step guided onboarding flow for existing users that introduces HOA f
 ## Relevant Code
 
 ### Triggering & persistence
-- `app/src/workspace/one_time_modal_model.rs` — `OneTimeModalModel`: existing pattern for one-time modals (Oz launch, build plan migration). Subscribes to auth events, waits for cloud preferences sync, then triggers.
+- `app/src/workspace/one_time_modal_model.rs` — `OneTimeModalModel`: existing pattern for one-time modals (Hermon launch, build plan migration). Subscribes to auth events, waits for cloud preferences sync, then triggers.
 - `app/src/root_view.rs:1614-1631` — `HAS_COMPLETED_ONBOARDING_KEY` / `private_user_preferences`: the other persistence approach (local-only, no cloud sync needed).
 - `app/src/root_view.rs:2143-2155` — post-onboarding flow: opens vertical tabs panel + shows `SessionConfigModal` for new users.
 
@@ -177,7 +177,7 @@ Integrate into `OneTimeModalModel`:
   2. Checks `!has_completed_hoa_onboarding(ctx)`.
   3. Checks `has_completed_local_onboarding(ctx)` — ensures this is an existing user (not someone mid-new-user-onboarding).
   4. Sets `is_hoa_onboarding_open = true` and emits the event.
-- Call this from `check_and_trigger_all_modals` alongside the existing Oz launch and build plan migration checks.
+- Call this from `check_and_trigger_all_modals` alongside the existing Hermon launch and build plan migration checks.
 
 In `Workspace`, subscribe to `OneTimeModalEvent` and when the HOA onboarding should show:
 - Ensure vertical tabs are enabled (set the `use_vertical_tabs` setting to `true` if not already).

@@ -294,7 +294,7 @@ pub fn init_actions_from_parent_view<T: Action + Clone>(
                 "Hide Hermon Agent changelog in new agent conversation view",
             ),
             builder(SettingsAction::AI(
-                AISettingsPageAction::ToggleShowOzUpdatesInZeroState,
+                AISettingsPageAction::ToggleShowHermonUpdatesInZeroState,
             )),
             SettingActionPairContexts::new(
                 context.clone()
@@ -2623,7 +2623,7 @@ pub enum AISettingsPageAction {
     ToggleCodebaseContext,
     ToggleShowInputHintText,
     ToggleShowAgentTips,
-    ToggleShowOzUpdatesInZeroState,
+    ToggleShowHermonUpdatesInZeroState,
     SetThinkingDisplayMode(ThinkingDisplayMode),
     AttemptLoginGatedUpgrade,
     RemoveCLIAgentToolbarEnabledCommand(String),
@@ -3062,10 +3062,10 @@ impl TypedActionView for AISettingsPageView {
                 });
                 ctx.notify();
             }
-            AISettingsPageAction::ToggleShowOzUpdatesInZeroState => {
+            AISettingsPageAction::ToggleShowHermonUpdatesInZeroState => {
                 AISettings::handle(ctx).update(ctx, |settings, ctx| {
                     report_if_error!(settings
-                        .should_show_oz_updates_in_zero_state
+                        .should_show_hermon_updates_in_zero_state
                         .toggle_and_save_value(ctx));
                 });
                 ctx.notify();
@@ -3683,7 +3683,7 @@ impl SettingsWidget for GlobalAIWidget {
     type View = AISettingsPageView;
 
     fn search_terms(&self) -> &str {
-        "oz hermon wish agent global ai a.i. active next command prompt code diffs suggestion suggested suggestions \
+        "hermon hermon wish agent global ai a.i. active next command prompt code diffs suggestion suggested suggestions \
                 agent mode natural language detection input hint api keys bring your own byo google anthropic openai"
     }
 
@@ -5398,7 +5398,7 @@ impl SettingsWidget for AIInputWidget {
     type View = AISettingsPageView;
 
     fn search_terms(&self) -> &str {
-        "oz hermon agent ai input natural language detection autodetection prompt terminal command commands history shell executed execution"
+        "hermon hermon agent ai input natural language detection autodetection prompt terminal command commands history shell executed execution"
     }
 
     fn render(
@@ -5648,7 +5648,7 @@ impl SettingsWidget for MCPServersWidget {
     type View = AISettingsPageView;
 
     fn search_terms(&self) -> &str {
-        "oz hermon agent mcp server servers model context protocol file-based file based project claude .mcp.json .claude/.mcp.json .codex config.toml .codex/config.toml"
+        "hermon hermon agent mcp server servers model context protocol file-based file based project claude .mcp.json .claude/.mcp.json .codex config.toml .codex/config.toml"
     }
 
     fn should_render(&self, _app: &AppContext) -> bool {
@@ -5900,7 +5900,7 @@ impl SettingsWidget for AIFactWidget {
     type View = AISettingsPageView;
 
     fn search_terms(&self) -> &str {
-        "agent oz ai a.i. knowledge fact memory memories rules warp drive context workflows notebooks environment variables"
+        "agent hermon ai a.i. knowledge fact memory memories rules warp drive context workflows notebooks environment variables"
     }
 
     fn should_render(&self, _app: &AppContext) -> bool {
@@ -6028,7 +6028,7 @@ impl SettingsWidget for VoiceWidget {
     type View = AISettingsPageView;
 
     fn search_terms(&self) -> &str {
-        "voice agent oz ai a.i. speech input natural language talk english"
+        "voice agent hermon ai a.i. speech input natural language talk english"
     }
 
     fn should_render(&self, app: &AppContext) -> bool {
@@ -6060,7 +6060,7 @@ impl SettingsWidget for VoiceWidget {
 }
 #[derive(Default)]
 struct OtherAIWidget {
-    show_oz_updates_in_zero_state_toggle: SwitchStateHandle,
+    show_hermon_updates_in_zero_state_toggle: SwitchStateHandle,
     use_agent_footer_toggle: SwitchStateHandle,
     show_conversation_history_toggle: SwitchStateHandle,
 }
@@ -6093,7 +6093,7 @@ impl SettingsWidget for OtherAIWidget {
     type View = AISettingsPageView;
 
     fn search_terms(&self) -> &str {
-        "other oz updates zero state empty changelog new conversation agent what's new use agent footer toolbar layout chip chips rearrange re-arrange thinking expanded reasoning collapse never show hide conversation history"
+        "other hermon updates zero state empty changelog new conversation agent what's new use agent footer toolbar layout chip chips rearrange re-arrange thinking expanded reasoning collapse never show hide conversation history"
     }
 
     fn render(
@@ -6122,10 +6122,10 @@ impl SettingsWidget for OtherAIWidget {
             let mut agent_view_column = Flex::column()
                 .with_child(render_ai_setting_toggle::<ShouldShowHermonUpdatesInZeroState>(
                     "Show Hermon Agent changelog in new conversation view",
-                    AISettingsPageAction::ToggleShowOzUpdatesInZeroState,
-                    *ai_settings.should_show_oz_updates_in_zero_state,
+                    AISettingsPageAction::ToggleShowHermonUpdatesInZeroState,
+                    *ai_settings.should_show_hermon_updates_in_zero_state,
                     is_toggleable,
-                    self.show_oz_updates_in_zero_state_toggle.clone(),
+                    self.show_hermon_updates_in_zero_state_toggle.clone(),
                     &view.local_only_icon_tooltip_states,
                     app,
                 ))
@@ -6529,7 +6529,7 @@ impl SettingsWidget for AgentAttributionWidget {
     type View = AISettingsPageView;
 
     fn search_terms(&self) -> &str {
-        "agent attribution commit pull request co-author author credit oz warp"
+        "agent attribution commit pull request co-author author credit hermon warp"
     }
 
     fn render(

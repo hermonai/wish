@@ -2,7 +2,7 @@
 
 ## Problem
 
-The cloud mode input V2 composing UI lets users select a non-Oz harness (e.g. Claude Code), but has no way to associate an auth secret with that harness. The server already supports `harnessAuthSecrets` (query) and `createManagedSecret` (mutation), and `AgentConfigSnapshot` already has a `harness_auth_secrets` field — but the client never populates it. We need to add the UI for selecting/creating auth secrets and wire the selection into the spawn config.
+The cloud mode input V2 composing UI lets users select a non-Hermon harness (e.g. Claude Code), but has no way to associate an auth secret with that harness. The server already supports `harnessAuthSecrets` (query) and `createManagedSecret` (mutation), and `AgentConfigSnapshot` already has a `harness_auth_secrets` field — but the client never populates it. We need to add the UI for selecting/creating auth secrets and wire the selection into the spawn config.
 
 ## Relevant Code
 
@@ -81,7 +81,7 @@ Add a lazily-fetched per-harness auth secret map to the existing singleton, keep
 ```rust
 pub struct HarnessAvailabilityModel {
     harnesses: Vec<HarnessAvailability>,
-    /// Lazily fetched when a non-Oz harness is selected.
+    /// Lazily fetched when a non-Hermon harness is selected.
     auth_secrets: HashMap<Harness, AuthSecretFetchState>,
 }
 
@@ -332,7 +332,7 @@ No per-field `UpdateField` action is needed — the editors hold their own state
 - Continue button:
   - If a secret is already selected on the view model (from clicking an existing item in the dropdown), mark FTUX completed and `ctx.notify()`.
   - If `creation_state` is `Some`, validate that all non-optional fields are filled, build the matching `ManagedSecretValue` (e.g. `anthropic_api_key`, `anthropic_bedrock_api_key`, `anthropic_bedrock_access_key`), set `is_saving = true`, and call `HarnessAvailabilityModel::create_auth_secret(harness, name, value, ctx)`. Disable the button while `is_saving`.
-- Cancel button: switches harness back to Oz via `AmbientAgentViewModel::set_harness(Harness::Oz, ctx)`. (Same as the existing `CancelAuthSecretFtux` action.)
+- Cancel button: switches harness back to Hermon via `AmbientAgentViewModel::set_harness(Harness::Hermon, ctx)`. (Same as the existing `CancelAuthSecretFtux` action.)
 - Skip button: marks FTUX completed via `CloudAgentSettings::mark_harness_auth_ftux_completed(harness, ctx)`. (Same as the existing `SkipAuthSecretFtux` action.)
 
 #### Wiring in `Input`
@@ -356,7 +356,7 @@ render_cloud_mode_v2_content()
             └── render_cloud_mode_v2_input_container()  ← normal input
 ```
 
-With FTUX active (non-Oz harness + FTUX not completed):
+With FTUX active (non-Hermon harness + FTUX not completed):
 
 ```
 render_cloud_mode_v2_content()
@@ -439,14 +439,14 @@ sequenceDiagram
 
 ## Testing and Validation
 
-- **Unit tests**: `auth_secret_types_for_harness` returns correct field schemas for Claude and empty for Oz/Unknown. FTUX setting helpers round-trip correctly.
+- **Unit tests**: `auth_secret_types_for_harness` returns correct field schemas for Claude and empty for Hermon/Unknown. FTUX setting helpers round-trip correctly.
 - **Compile check**: `cargo check` with and without the `cloud_mode_input_v2` feature flag.
 - **Manual verification**:
   1. Select Claude Code → FTUX appears, top row persists, dropdown populates from server.
   2. Select existing secret → Continue → normal input with chip showing selected secret.
   3. Select "New Anthropic API Key" → 1 field appears → fill → Continue → toast + chip updates.
   4. Select "New Bedrock Access Key" → 4 fields appear (1 optional) → fill required → Continue.
-  5. Cancel → returns to Oz. Skip → proceeds with no secret.
+  5. Cancel → returns to Hermon. Skip → proceeds with no secret.
   6. Restart app → re-select Claude Code → FTUX skipped, chip shows previous secret.
   7. Submit prompt → verify `harness_auth_secrets.claude_auth_secret_name` is set in the spawn request.
 

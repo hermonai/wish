@@ -105,7 +105,7 @@ No change. The compact row shows the terminal icon + terminal title (or agent st
 
 The compact row shows:
 - **Non-agent terminal**: Terminal icon + working directory (instead of terminal title). The working directory clips from the start.
-- **Agent terminal (Oz or CLI agent)**: Conversation status icon + working directory (instead of conversation title). The working directory clips from the start.
+- **Agent terminal (Hermon or CLI agent)**: Conversation status icon + working directory (instead of conversation title). The working directory clips from the start.
 - **Ambient agent**: `HermonCloud` icon + working directory.
 
 #### Icon behavior (both modes)

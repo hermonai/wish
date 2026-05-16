@@ -2881,7 +2881,7 @@ impl Workspace {
 
         let hermon_launch_view = ctx.add_typed_action_view(LaunchModal::<HermonLaunchSlide>::new);
         ctx.subscribe_to_view(&hermon_launch_view, |me, _, event, ctx| {
-            me.handle_oz_launch_modal_event(event, ctx);
+            me.handle_hermon_launch_modal_event(event, ctx);
         });
 
         let openwarp_launch_view = ctx.add_typed_action_view(OpenWarpLaunchModal::new);
@@ -3230,8 +3230,8 @@ impl Workspace {
                 // The model has already determined which window should show the modal.
                 let model_ref = model.as_ref(ctx);
                 if model_ref.target_window_id() == Some(ctx.window_id()) {
-                    if model_ref.is_oz_launch_modal_open() {
-                        me.open_tab_and_focus_oz_launch_modal(ctx);
+                    if model_ref.is_hermon_launch_modal_open() {
+                        me.open_tab_and_focus_hermon_launch_modal(ctx);
                     } else if model_ref.is_openwarp_launch_modal_open() {
                         me.focus_openwarp_launch_modal(ctx);
                     } else if model_ref.is_orchestration_launch_modal_open() {
@@ -16988,7 +16988,7 @@ impl Workspace {
         }
     }
 
-    fn handle_oz_launch_modal_event(
+    fn handle_hermon_launch_modal_event(
         &mut self,
         event: &LaunchModalEvent,
         ctx: &mut ViewContext<Self>,
@@ -16996,7 +16996,7 @@ impl Workspace {
         match event {
             LaunchModalEvent::Close => {
                 OneTimeModalModel::handle(ctx).update(ctx, |model, ctx| {
-                    model.mark_oz_launch_modal_dismissed(ctx);
+                    model.mark_hermon_launch_modal_dismissed(ctx);
                 });
 
                 // Clear the "Introducing Hermon" custom tab name so normal tab naming rules apply.
@@ -19626,7 +19626,7 @@ impl Workspace {
                 .is_any_ai_enabled(app)
                 .then(|| WorkspaceBannerButtonDetails {
                     text: "Fix with Hermon".to_owned(),
-                    action: WorkspaceAction::FixSettingsWithOz {
+                    action: WorkspaceAction::FixSettingsWithHermon {
                         error_description: error.to_string(),
                     },
                     variant: BannerButtonVariant::Naked,
@@ -20672,7 +20672,7 @@ impl Workspace {
                 .insert(flags::SHARED_BLOCK_TITLE_GENERATION_FLAG);
         }
 
-        if *ai_settings.should_show_oz_updates_in_zero_state.value() {
+        if *ai_settings.should_show_hermon_updates_in_zero_state.value() {
             context
                 .set
                 .insert(flags::SHOW_OZ_UPDATES_IN_ZERO_STATE_FLAG);
@@ -20870,7 +20870,7 @@ impl Workspace {
         ctx.focus(&self.orchestration_launch_modal);
     }
 
-    fn open_tab_and_focus_oz_launch_modal(&mut self, ctx: &mut ViewContext<Self>) {
+    fn open_tab_and_focus_hermon_launch_modal(&mut self, ctx: &mut ViewContext<Self>) {
         // Create a new tab with one terminal session titled "Introducing Hermon"
         self.add_tab_with_pane_layout(
             PanesLayout::SingleTerminal(Box::new(NewTerminalOptions {
@@ -21298,7 +21298,7 @@ impl TypedActionView for Workspace {
             OpenNetworkLogPane => {
                 self.open_network_log_pane(ctx);
             }
-            FixSettingsWithOz { error_description } => {
+            FixSettingsWithHermon { error_description } => {
                 use crate::ai::skills::SkillManager;
                 let modify_settings_skill = SkillManager::as_ref(ctx)
                     .active_bundled_skill("modify-settings", ctx)
@@ -22712,7 +22712,7 @@ impl TypedActionView for Workspace {
             OpenHermonLaunchModal => {
                 // Force open the Hermon launch modal for debugging
                 OneTimeModalModel::handle(ctx).update(ctx, |model, ctx| {
-                    model.force_open_oz_launch_modal(ctx);
+                    model.force_open_hermon_launch_modal(ctx);
                 });
                 ctx.notify();
             }
@@ -23980,7 +23980,7 @@ impl View for Workspace {
         let one_time_modal_model = OneTimeModalModel::as_ref(app);
         let should_show_modal = one_time_modal_model.target_window_id() == Some(self.window_id);
 
-        if should_show_modal && one_time_modal_model.is_oz_launch_modal_open() {
+        if should_show_modal && one_time_modal_model.is_hermon_launch_modal_open() {
             stack.add_child(ChildView::new(&self.hermon_launch_modal.view).finish());
         }
 

@@ -1,13 +1,13 @@
 # REMOTE-1453: Tech Spec - Resolve service-account global skills at agent driver startup
 ## Context
-The product behavior is defined in `specs/REMOTE-1453/PRODUCT.md`. This spec covers the client-side runtime implementation for resolving service-account `User.globalSkills` during Oz agent startup.
+The product behavior is defined in `specs/REMOTE-1453/PRODUCT.md`. This spec covers the client-side runtime implementation for resolving service-account `User.globalSkills` during Hermon agent startup.
 Relevant existing pieces:
 - `crates/warp_cli/src/skill.rs`: `SkillSpec`, `SkillSpec::from_str`, `SkillSpec::is_full_path`.
 - `app/src/ai/skills/file_watchers/skill_watcher.rs`: scans repository trees for `SKILL.md` files.
 - `app/src/ai/skills/skill_manager.rs`: stores the loaded skills for the active run.
 - `app/src/ai/agent_sdk/driver/environment.rs`: environment repository clone helper used by environment prep.
 - `app/src/ai/cloud_environments/mod.rs`: `GithubRepo { owner, repo }` and `AmbientAgentEnvironment.github_repos`.
-- `app/src/ai/agent_sdk/driver.rs`: agent startup sequence, environment prep, and Oz-only repo skill loading.
+- `app/src/ai/agent_sdk/driver.rs`: agent startup sequence, environment prep, and Hermon-only repo skill loading.
 ## Implemented approach
 ### 1. Global skill parsing helpers
 `app/src/ai/skills/global_skills.rs` owns the reusable parsing and filtering helpers and is re-exported through `app/src/ai/skills/mod.rs`.
@@ -24,13 +24,13 @@ Filtering behavior:
 - `load_global_skills` handles global-only repos: it reads directly from the known provider directories on disk via `read_skills_from_directories` (no `RepoMetadataModel` dependency), then applies `filter_skills_by_spec` to keep only the explicitly requested skills.
 Because global skill repos are cloned before environment prep and are not registered with `DetectedRepositories`, they are not picked up by `SkillWatcher`'s `RepositoryMetadataEvent` path; `load_global_skills` reads them directly from disk instead. If a repo appears in both the environment and the global skill set, `load_environment_skills` runs over it and loads all skills; `load_global_skills` may also process it and add the filtered subset, but `SkillManager` deduplicates by path so the effective result is all skills from that repo.
 ### 3. Driver startup sequence
-For Oz harnesses, `AgentDriver::run_internal` now does the following after the session is shared and before environment prep:
+For Hermon harnesses, `AgentDriver::run_internal` now does the following after the session is shared and before environment prep:
 1. Read cached `AuthStateProvider::get().global_skills()`.
 2. Parse specs and resolve cloneable repos with `resolve_skill_repos`.
 3. Clone those repos best-effort with `environment::clone_repo` (which clones the repo but does NOT register it with `DetectedRepositories`, so only the explicitly requested global skills are loaded from it).
 4. Prepare the configured environment, if any, preserving the existing file-based MCP discovery and setup-command sequencing. Environment repos are cloned via `ensure_repo_cloned`, which both clones and registers with `DetectedRepositories`.
 5. Call `load_environment_skills` with the environment's `github_repos`, then `load_global_skills` with the global specs and repos.
-Global-skill cloning is performed for all harnesses (before the Oz-only guard) so that skills are on disk, but skill loading into `SkillManager` remains Oz-only because third-party harnesses have separate skill systems.
+Global-skill cloning is performed for all harnesses (before the Hermon-only guard) so that skills are on disk, but skill loading into `SkillManager` remains Hermon-only because third-party harnesses have separate skill systems.
 ### 4. Repo skill loading
 Skill loading is split into two separate functions instead of a single unified `load_skills_from_repos`:
 - `load_environment_skills(foreground, repos)`: waits for `RepoMetadataModel` indexing on each repo, then scans with `SkillWatcher::read_skills_for_repos` and loads all discovered skills into `SkillManager`.

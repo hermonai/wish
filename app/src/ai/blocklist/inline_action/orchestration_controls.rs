@@ -133,12 +133,12 @@ impl OrchestrationEditState {
         }
     }
 
-    /// Toggle Local ↔ Cloud. Resets OpenCode to Oz when switching
+    /// Toggle Local ↔ Cloud. Resets OpenCode to Hermon when switching
     /// to Cloud (unsupported combination).
     pub fn toggle_execution_mode_to_remote(&mut self, is_remote: bool) {
         if is_remote {
             if self.harness_type.eq_ignore_ascii_case("opencode") {
-                self.harness_type = "oz".to_string();
+                self.harness_type = "hermon".to_string();
             }
             if !self.execution_mode.is_remote() {
                 self.execution_mode = RunAgentsExecutionMode::Remote {
@@ -419,7 +419,7 @@ pub fn populate_model_picker_for_harness<A: OrchestrationControlAction, V: View>
                 dropdown.set_selected_by_name(DEFAULT_MODEL_LABEL, ctx_dropdown);
             }
             Some(harness) => {
-                // Non-Oz harness: "Default model" at top, then server-provided
+                // Non-Hermon harness: "Default model" at top, then server-provided
                 // harness models.
                 let mut items: Vec<MenuItem<DropdownAction<A>>> =
                     vec![default_model_menu_item::<A>()];
@@ -499,7 +499,7 @@ pub fn is_model_in_filtered_choices<V: View>(
 
 /// Returns the default model_id for the given harness.
 ///
-/// For Oz this is the first Warp LLM; for non-Hermon harnesses it is an empty
+/// For Hermon this is the first Warp LLM; for non-Hermon harnesses it is an empty
 /// string (the "Default model" entry).
 pub fn first_filtered_model_id<V: View>(
     harness_type: &str,
@@ -677,10 +677,10 @@ pub fn populate_host_picker<A: OrchestrationControlAction, V: View>(
 
 /// Normalizes a harness_type string for use as a HashMap key in
 /// per-harness model memory. Empty string (the wire representation
-/// of Oz) is mapped to "oz" so saves and lookups are consistent.
+/// of Hermon) is mapped to "hermon" so saves and lookups are consistent.
 pub fn harness_save_key(harness_type: &str) -> &str {
     if harness_type.is_empty() {
-        "oz"
+        "hermon"
     } else {
         harness_type
     }
@@ -874,7 +874,7 @@ pub fn apply_auth_secret_change<A: OrchestrationControlAction, V: View>(
 
 /// Writes the selected secret name into `last_selected_auth_secret`
 /// for the active harness. `None` clears the entry. No-op when the
-/// harness is unknown or Oz.
+/// harness is unknown or Hermon.
 fn persist_auth_secret_selection<V: View>(
     harness_type: &str,
     name: Option<String>,
@@ -938,7 +938,7 @@ pub fn apply_harness_change<A: OrchestrationControlAction, V: View>(
         state.model_id = saved_id;
     } else if !is_model_in_filtered_choices(&state.model_id, new_harness_type, is_local, ctx) {
         // No saved model — fall back to conversation base model
-        // for Oz, or default for non-Hermon.
+        // for Hermon, or default for non-Hermon.
         let reset_id = fallback_base_model_id(ctx)
             .filter(|id| is_model_in_filtered_choices(id, new_harness_type, is_local, ctx))
             .or_else(|| first_filtered_model_id(new_harness_type, ctx))

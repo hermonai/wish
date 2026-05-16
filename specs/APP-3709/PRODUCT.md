@@ -65,7 +65,7 @@ armadillo, coyote, roadrunner, jackrabbit, rattler, sidewinder, gila, javelina, 
 obsidian, flint, granite, quartz, sandstone, limestone, basalt, turquoise, onyx, jasper, agate, garnet, topaz, copper, iron, cobalt, tin, zinc, mica, feldspar, gypsum, calcite, shale, pumice, travertine, petrified, opal, malachite, pyrite, cinnabar
 
 **Southwest Culture & Spanish (24)**
-adobe, oz, tinaja, acequia, ramada, portal, ristra, luminaria, mirador, hacienda, viga, latilla, nicho, olla, metate, petroglyph, pictograph, solstice, equinox, siesta, sierra, rio, tierra, cumbre
+adobe, hermon, tinaja, acequia, ramada, portal, ristra, luminaria, mirador, hacienda, viga, latilla, nicho, olla, metate, petroglyph, pictograph, solstice, equinox, siesta, sierra, rio, tierra, cumbre
 
 **Weather & Sky (23)**
 monsoon, dust-devil, mirage, sundowner, zephyr, thermal, drought, flash-flood, dry-lightning, haze, shimmer, sundog, corona, twilight, dusk, dawn, starlight, moonrise, ember, smoke, wildfire, brushfire, firestorm

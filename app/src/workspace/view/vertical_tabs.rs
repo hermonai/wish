@@ -736,7 +736,7 @@ enum VerticalTabsResolvedMode {
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum SummaryPaneKind {
     Terminal,
-    /// Hermon's first-party agent (the variant formerly named `OzAgent`).
+    /// Hermon's first-party agent (the variant formerly named `HermonAgent`).
     HermonAgent {
         is_ambient: bool,
     },
@@ -3034,7 +3034,7 @@ fn terminal_pane_search_text_fragments(
         primary_text,
         working_directory,
         terminal_view.current_git_branch(app),
-        terminal_kind_badge_label(agent_text.is_oz_agent, agent_text.cli_agent),
+        terminal_kind_badge_label(agent_text.is_hermon_agent, agent_text.cli_agent),
         pull_request_label,
         terminal_view.current_diff_line_changes(app),
     )
@@ -3110,10 +3110,10 @@ fn terminal_primary_line_data(
     }
 }
 
-fn terminal_kind_badge_label(is_oz_agent: bool, cli_agent: Option<CLIAgent>) -> String {
+fn terminal_kind_badge_label(is_hermon_agent: bool, cli_agent: Option<CLIAgent>) -> String {
     if let Some(cli_agent) = cli_agent {
         cli_agent.display_name().to_string()
-    } else if is_oz_agent {
+    } else if is_hermon_agent {
         "Hermon Agent".to_string()
     } else {
         "Terminal".to_string()
@@ -3132,7 +3132,7 @@ struct TerminalAgentText {
     conversation_latest_user_prompt: Option<String>,
     cli_agent_title: Option<String>,
     cli_agent_latest_user_prompt: Option<String>,
-    is_oz_agent: bool,
+    is_hermon_agent: bool,
     cli_agent: Option<CLIAgent>,
 }
 
@@ -3175,7 +3175,7 @@ fn terminal_agent_text(terminal_view: &TerminalView, app: &AppContext) -> Termin
     let is_ambient_agent = terminal_view.is_ambient_agent_session(app);
 
     let mut agent_text = TerminalAgentText {
-        is_oz_agent: is_ambient_agent,
+        is_hermon_agent: is_ambient_agent,
         cli_agent: cli_agent_session.map(|session| session.agent),
         ..Default::default()
     };
@@ -3187,8 +3187,8 @@ fn terminal_agent_text(terminal_view: &TerminalView, app: &AppContext) -> Termin
     agent_text.conversation_display_title = terminal_view.selected_conversation_display_title(app);
     agent_text.conversation_latest_user_prompt =
         terminal_view.selected_conversation_latest_user_prompt_for_tab_name(app);
-    agent_text.is_oz_agent =
-        agent_text.conversation_display_title.is_some() || agent_text.is_oz_agent;
+    agent_text.is_hermon_agent =
+        agent_text.conversation_display_title.is_some() || agent_text.is_hermon_agent;
 
     if let Some(session) = cli_agent_session {
         agent_text.cli_agent_title = session.session_context.title_like_text();
@@ -5616,12 +5616,12 @@ fn render_terminal_detail_section(
     let agent_text = terminal_agent_text(terminal_view, app);
     let (conversation_display_title, cli_agent_title) =
         preferred_agent_tab_titles(&agent_text, agent_tab_text_preference(app));
-    let kind_label = terminal_kind_badge_label(agent_text.is_oz_agent, agent_text.cli_agent);
+    let kind_label = terminal_kind_badge_label(agent_text.is_hermon_agent, agent_text.cli_agent);
     let status = if let Some(session) =
         cli_agent_session.filter(|s| s.listener.is_some() && agent_supports_rich_status(&s.agent))
     {
         Some(session.status.to_conversation_status())
-    } else if agent_text.is_oz_agent {
+    } else if agent_text.is_hermon_agent {
         terminal_view.selected_conversation_status_for_display(app)
     } else {
         None

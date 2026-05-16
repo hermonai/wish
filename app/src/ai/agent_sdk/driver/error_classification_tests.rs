@@ -104,7 +104,7 @@ fn conversation_harness_mismatch_is_failed_with_env_setup() {
     let (state, update) = classify_driver_error(&AgentDriverError::ConversationHarnessMismatch {
         conversation_id: "conv-123".into(),
         expected: "claude".into(),
-        got: "oz".into(),
+        got: "hermon".into(),
     });
     assert_eq!(state, AgentTaskState::Failed);
     assert_eq!(

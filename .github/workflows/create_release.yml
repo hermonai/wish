@@ -1646,7 +1646,7 @@ jobs:
           config_file: ${{ env.CONFIG_FILE }}
           channel: ${{ inputs.channel }}
 
-      - name: Generate changelog via Oz
+      - name: Generate changelog via Hermon
         uses: warpdotdev/oz-agent-action@ce1621abf6a8ed8afdd4e4cc994545ede8fe1c6f # main
         with:
           prompt: |
@@ -1774,10 +1774,10 @@ jobs:
           IMPROVEMENTS=$(echo $CHANGELOG_SECTIONS | jq 'with_entries(select(.key == "Improvements"))' | jq -r 'to_entries[] | "* \(.value[])"' | awk -v ORS='\n' '1')
           # Extract the image URL from the list, and use the latest URL even if there are multiple
           IMAGE=$(echo $CHANGELOG | jq -r '.images | if length > 0 then .[-1] else "" end')
-          # Extract Oz updates as a JSON array
-          OZ_UPDATES=$(echo $CHANGELOG | jq -c '.oz_updates // []')
+          # Extract Hermon updates as a JSON array
+          OZ_UPDATES=$(echo $CHANGELOG | jq -c '.hermon_updates // []')
           # Tweak the structure of the JSON, add in a top-level date field, and add in the markdown_sections field
-          CHANGELOG=$(echo $CHANGELOG_SECTIONS | jq --arg date "$DATE" --arg new_features "$NEW_FEATURES" --arg improvements "$IMPROVEMENTS" --arg image "$IMAGE" --argjson oz_updates "$OZ_UPDATES" '{"date": $date, "sections": to_entries | map({"title": .key, "items": .value}), "markdown_sections": [{"title": "New features", "markdown": $new_features}, {"title": "Improvements", "markdown": $improvements}, {"title": "Coming soon", "markdown": ""}]} + (if $image != "" then {"image_url": $image} else {} end) + (if ($oz_updates | length) > 0 then {"oz_updates": $oz_updates} else {} end)')
+          CHANGELOG=$(echo $CHANGELOG_SECTIONS | jq --arg date "$DATE" --arg new_features "$NEW_FEATURES" --arg improvements "$IMPROVEMENTS" --arg image "$IMAGE" --argjson hermon_updates "$OZ_UPDATES" '{"date": $date, "sections": to_entries | map({"title": .key, "items": .value}), "markdown_sections": [{"title": "New features", "markdown": $new_features}, {"title": "Improvements", "markdown": $improvements}, {"title": "Coming soon", "markdown": ""}]} + (if $image != "" then {"image_url": $image} else {} end) + (if ($hermon_updates | length) > 0 then {"hermon_updates": $hermon_updates} else {} end)')
 
           echo $CHANGELOG > changelog.json
           cat changelog.json

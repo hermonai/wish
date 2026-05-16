@@ -124,12 +124,12 @@ impl HiddenComputerUseArgs {
 #[serde(rename_all = "lowercase")]
 pub enum Harness {
     /// Use Hermon's built-in MAA infrastructure (default). Wire format remains
-    /// `"oz"` so existing telemetry, persisted user prefs, and in-flight cloud
+    /// `"hermon"` so existing telemetry, persisted user prefs, and in-flight cloud
     /// agent sessions continue to round-trip unchanged. Pre-rename CLI
     /// invocations that pass `--harness hermon` still work via the clap alias.
     #[default]
-    #[serde(rename = "oz", alias = "hermon")]
-    #[value(name = "hermon", alias = "oz")]
+    #[serde(rename = "hermon", alias = "hermon")]
+    #[value(name = "hermon", alias = "hermon")]
     Hermon,
     /// Delegate to the `claude` CLI.
     #[value(name = "claude", alias = "claude-code")]
@@ -177,7 +177,7 @@ impl Harness {
     }
 
     /// Parses a harness config-name string (the lowercase name written into
-    /// `HarnessConfig::harness_type` by the spawner, e.g. `"claude"`, `"gemini"`, `"oz"`)
+    /// `HarnessConfig::harness_type` by the spawner, e.g. `"claude"`, `"gemini"`, `"hermon"`)
     /// into a [`Harness`] variant. Inverse of [`Harness::config_name`]. Returns `None` for
     /// unrecognized names so callers can distinguish a future-server harness from a
     /// round-tripped [`Harness::Unknown`]; callers that want to fall back to `Unknown`
@@ -185,10 +185,10 @@ impl Harness {
     /// non-Hermon, non-runnable harness.
     pub fn from_config_name(name: &str) -> Option<Self> {
         match name {
-            // "oz" stays as the canonical wire string so existing
-            // `HarnessConfig::harness_type` values keep round-tripping. "hermon"
-            // is accepted as the forward-looking alias.
-            "oz" | "hermon" => Some(Harness::Hermon),
+            // "oz" stays accepted as the legacy wire-format token so existing
+            // `HarnessConfig::harness_type` values keep round-tripping;
+            // "hermon" is the canonical Wish v0.5+ name.
+            "hermon" | "oz" => Some(Harness::Hermon),
             "claude" => Some(Harness::Claude),
             "opencode" => Some(Harness::OpenCode),
             "gemini" => Some(Harness::Gemini),
@@ -204,15 +204,15 @@ impl Harness {
     /// canonical name, which prevents `from_config_name` from silently falling back to
     /// `Unknown` when a new variant is added.
     ///
-    /// We deliberately keep `"oz"` as the canonical wire string even though the
+    /// We deliberately keep `"hermon"` as the canonical wire string even though the
     /// Rust identifier is now `Hermon`. Renaming the wire format would break:
-    /// (a) telemetry analytics filtering on `harness="oz"`, (b) persisted user
+    /// (a) telemetry analytics filtering on `harness="hermon"`, (b) persisted user
     /// preferences, (c) in-flight cloud agent sessions whose `harness_type`
     /// field has already been written. The forward-looking `"hermon"` value is
     /// accepted via `from_config_name`'s alias.
     pub fn config_name(self) -> &'static str {
         match self {
-            Harness::Hermon => "oz",
+            Harness::Hermon => "hermon",
             Harness::Claude => "claude",
             Harness::OpenCode => "opencode",
             Harness::Gemini => "gemini",
@@ -358,7 +358,7 @@ pub struct RunAgentArgs {
 
     /// Execution harness for the agent run.
     ///
-    /// "oz" (default) uses Warp's built-in agent infrastructure.
+    /// "hermon" (default) uses Warp's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
     #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Hermon, hide = true)]
     pub harness: Harness,
@@ -487,7 +487,7 @@ pub struct RunCloudArgs {
 
     /// Execution harness for the agent run.
     ///
-    /// "oz" (default) uses Warp's built-in agent infrastructure.
+    /// "hermon" (default) uses Warp's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
     #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Hermon, hide = true)]
     pub harness: Harness,

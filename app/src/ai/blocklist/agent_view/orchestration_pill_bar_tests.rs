@@ -14,7 +14,7 @@ fn descendant_conversation_ids_in_spawn_order_flattens_nested_children_preorder(
         let child_a = history_model.update(&mut app, |history_model, ctx| {
             history_model.start_new_child_conversation(
                 terminal_view_id,
-                "oz-env-check".to_string(),
+                "hermon-env-check".to_string(),
                 orchestrator_id,
                 None,
                 ctx,

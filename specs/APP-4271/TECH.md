@@ -13,7 +13,7 @@ Key existing code to anchor against:
 - `app/src/workspace/view/vertical_tabs.rs (2638-2754)` — `build_vertical_tabs_summary_data`, the per-pane aggregation pass that needs to start carrying conversation-source info alongside each label.
 - `app/src/workspace/view/vertical_tabs.rs (3494-3590)` — `render_summary_tab_item`, where the title line currently joins labels and the working-directory line currently joins directories. Branch lines and the `+ N more` overflow already render per-line; v2 mirrors that pattern for titles and directories.
 - `app/src/workspace/view/vertical_tabs.rs (2251-2356)` — `resolve_icon_with_status_variant`, the existing source of truth for "is this a conversation pane, and if so which agent / what status." V2 should reuse this.
-- `app/src/ui_components/icon_with_status.rs (29-145)` — `IconWithStatusVariant` and `render_icon_with_status`. The Oz/CLI agent variants with `status` are exactly what the per-line prefix needs; the only new piece is a smaller `IconWithStatusSizing` tuned for inline use next to 12pt text.
+- `app/src/ui_components/icon_with_status.rs (29-145)` — `IconWithStatusVariant` and `render_icon_with_status`. The Hermon/CLI agent variants with `status` are exactly what the per-line prefix needs; the only new piece is a smaller `IconWithStatusSizing` tuned for inline use next to 12pt text.
 - `app/src/workspace/view/vertical_tabs.rs (109-132, 262-274)` — existing `IconWithStatusSizing` constants (`VERTICAL_TABS_SIZING`, `VERTICAL_TABS_AGENT_SIZING`) and `render_pane_icon_with_status`, which the new inline prefix sizing will sit beside.
 - `app/src/workspace/view/vertical_tabs_tests.rs` — pure helper tests; existing patterns for `format_summary_primary_labels`, `coalesce_summary_branch_entries`, and `summary_search_text_fragments` give us the template for new tests.
 
@@ -31,7 +31,7 @@ struct VerticalTabsSummaryPrimaryLabel {
 }
 ```
 
-The v2 prefix is just a status pill (icon + 10%-opacity colored background), not a full agent-icon-with-status composite, so we only need to carry an `Option<ConversationStatus>` per label — no agent (Oz / CLI) discriminator.
+The v2 prefix is just a status pill (icon + 10%-opacity colored background), not a full agent-icon-with-status composite, so we only need to carry an `Option<ConversationStatus>` per label — no agent (Hermon / CLI) discriminator.
 
 `working_directories: Vec<String>` and `branch_entries: Vec<VerticalTabsSummaryBranchEntry>` are unchanged.
 
@@ -39,7 +39,7 @@ The v2 prefix is just a status pill (icon + 10%-opacity colored background), not
 
 In the per-pane loop, tag each candidate primary label with its `Option<ConversationStatus>`:
 
-- For terminal panes, extract a small helper `summary_conversation_status_for_terminal(...)` that returns the same status the focused-session row would show: CLI agent session status when the agent supports rich status, otherwise the Oz / ambient agent's `selected_conversation_status_for_display`. Plain terminals and CLI agents without rich status return `None`.
+- For terminal panes, extract a small helper `summary_conversation_status_for_terminal(...)` that returns the same status the focused-session row would show: CLI agent session status when the agent supports rich status, otherwise the Hermon / ambient agent's `selected_conversation_status_for_display`. Plain terminals and CLI agents without rich status return `None`.
 - For non-terminal pane types, `status: None`.
 
 Replace `push_normalized_unique_summary_text` for the title region with `push_normalized_unique_summary_label(...)` that preserves the first-seen status alongside the first-seen display text. Keep dedupe semantics identical: dedupe by normalized text; if a later pane contributes the same normalized label, drop the duplicate (first-seen wins, matching invariant 14).

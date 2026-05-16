@@ -634,37 +634,37 @@ Next slices in Phase 1:
 
 After Phase 1, every subsequent phase (terminal, LSP, git, fs) follows the same template: vendor more `.proto` files, add to `build.rs`, expose generated clients, build a wish-side adapter, switch one singleton behind a `WishdBacked{Foo}` flag.
 
-#### Oz → Hermon: rebranding work — landed in 0.4.0
+#### Hermon → Hermon: rebranding work — landed in 0.4.0
 
 Original triage estimated 691 "oz" hits across 179 files. By release cut:
 
-- **User-visible UI strings** — all fixed: "Cloud Oz" → "Hermon Cloud", "Fix with Oz" → "Fix with Hermon", "Introducing Oz" tab → "Introducing Hermon", "Oz Web" source label → "Hermon Web", install/uninstall toasts → Wish CLI / Wish command, CLI examples in cloud-setup guide → `wish environment create …`, warpify SSH description, Codex modal copy, `/continue-locally` error message all updated. `OZ_URL` constants → `HERMON_URL`. URL `https://wish.hermon.ai/oz` → `…/hermon`.
+- **User-visible UI strings** — all fixed: "Cloud Hermon" → "Hermon Cloud", "Fix with Hermon" → "Fix with Hermon", "Introducing Hermon" tab → "Introducing Hermon", "Hermon Web" source label → "Hermon Web", install/uninstall toasts → Wish CLI / Wish command, CLI examples in cloud-setup guide → `wish environment create …`, warpify SSH description, Codex modal copy, `/continue-locally` error message all updated. `OZ_URL` constants → `HERMON_URL`. URL `https://wish.hermon.ai/oz` → `…/hermon`.
 - **Internal enum variants** — landed with serde aliases for wire-format compat:
-  - `Harness::Oz` → `Hermon` (88 sites; `#[serde(rename = "oz", alias = "hermon")]` + clap alias)
-  - `HarnessKind::Oz` → `Hermon` (internal dispatch)
-  - `NotificationSourceAgent::Oz` → `Hermon`
-  - `NotificationAgentVariant::Oz` → `Hermon` (`#[serde(rename = "oz")]`)
-  - `Icon::Oz` → `Hermon`
-  - `IconWithStatusVariant::OzAgent` → `HermonAgent`
-  - `SummaryPaneKind::OzAgent` → `HermonAgent`
-  - `CloudConversationData::Oz` → `Hermon`
-  - `CloudModeEntryPoint::OzLaunchModal` → `HermonLaunchModal`
-  - `FeatureFlag::Oz*` (5 variants, ~98 call sites) → `Hermon*`
-  - `OzLaunchSlide` → `HermonLaunchSlide`
-  - `SessionType::Oz` → `Hermon`
-  - `GuidedModalSessionType::Oz` → `Hermon` (`#[serde(rename = "oz")]`)
-  - `ModelSelection::Oz` → `Hermon`
-  - `ResumeOptions::Oz` → `Hermon`
-- **Variable names** — `oz_binary_path` / `oz_binary_display` → `wish_binary_path` / `wish_binary_display`; `visit_oz_button` → `visit_hermon_button`; `show_oz` → `show_hermon`.
-- **Comments + doc strings** — bulk-renamed `Oz` → `Hermon` in all `//`, `///`, `//!` lines.
+  - `Harness::Hermon` → `Hermon` (88 sites; `#[serde(rename = "oz", alias = "hermon")]` + clap alias)
+  - `HarnessKind::Hermon` → `Hermon` (internal dispatch)
+  - `NotificationSourceAgent::Hermon` → `Hermon`
+  - `NotificationAgentVariant::Hermon` → `Hermon` (`#[serde(rename = "oz")]`)
+  - `Icon::Hermon` → `Hermon`
+  - `IconWithStatusVariant::HermonAgent` → `HermonAgent`
+  - `SummaryPaneKind::HermonAgent` → `HermonAgent`
+  - `CloudConversationData::Hermon` → `Hermon`
+  - `CloudModeEntryPoint::HermonLaunchModal` → `HermonLaunchModal`
+  - `FeatureFlag::Hermon*` (5 variants, ~98 call sites) → `Hermon*`
+  - `HermonLaunchSlide` → `HermonLaunchSlide`
+  - `SessionType::Hermon` → `Hermon`
+  - `GuidedModalSessionType::Hermon` → `Hermon` (`#[serde(rename = "oz")]`)
+  - `ModelSelection::Hermon` → `Hermon`
+  - `ResumeOptions::Hermon` → `Hermon`
+- **Variable names** — `hermon_binary_path` / `hermon_binary_display` → `wish_binary_path` / `wish_binary_display`; `visit_hermon_button` → `visit_hermon_button`; `show_oz` → `show_hermon`.
+- **Comments + doc strings** — bulk-renamed `Hermon` → `Hermon` in all `//`, `///`, `//!` lines.
 - **Wire-bound surfaces retained, documented inline:**
   - GraphQL `enum AgentHarness { OZ }`, `Experiment::OZ_MULTI_HARNESS_*` — bound to `hermon-server` schema
-  - `AIAgentHarness::Oz`, `AgentHarnessInput::Oz` — Rust mirrors of GraphQL enums
-  - `api::harness::Variant::Oz` — gRPC proto wire variant
-  - `X-Oz-Api-Source` HTTP request header
-  - `did_check_to_trigger_oz_launch_modal` persisted setting key
+  - `AIAgentHarness::Hermon`, `AgentHarnessInput::Hermon` — Rust mirrors of GraphQL enums
+  - `api::harness::Variant::Hermon` — gRPC proto wire variant
+  - `X-Hermon-Api-Source` HTTP request header
+  - `did_check_to_trigger_hermon_launch_modal` persisted setting key
   - `Harness::config_name()` returning `"oz"`
-  - Settings-section parser strings `"Oz"` and `"Oz Cloud API Keys"` — legacy aliases for users migrating from older config
+  - Settings-section parser strings `"Hermon"` and `"Hermon Cloud API Keys"` — legacy aliases for users migrating from older config
 
 The retained tokens are *wire format only*, all documented in code where they appear. Forward-rolling consumers see `hermon` aliases. A coordinated `hermon-server` schema change is the next step for `enum AgentHarness` to migrate; that ships separately from the wish client.
 

@@ -303,7 +303,7 @@ fn get_cached(ctx: &ModelContext<HarnessAvailabilityModel>) -> Option<Vec<Harnes
 
 fn harness_to_graphql_harness(harness: Harness) -> Option<wish_graphql::ai::AgentHarness> {
     match harness {
-        Harness::Hermon => Some(wish_graphql::ai::AgentHarness::Oz),
+        Harness::Hermon => Some(wish_graphql::ai::AgentHarness::Hermon),
         Harness::Claude => Some(wish_graphql::ai::AgentHarness::ClaudeCode),
         Harness::Gemini => Some(wish_graphql::ai::AgentHarness::Gemini),
         Harness::Codex => Some(wish_graphql::ai::AgentHarness::Codex),

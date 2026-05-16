@@ -56,7 +56,7 @@ pub struct AgentConfigSnapshot {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub computer_use_enabled: Option<bool>,
     /// Execution harness for the agent run.
-    /// If None, we use Wish's default ("oz").
+    /// If None, we use Wish's default ("hermon").
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub harness: Option<HarnessConfig>,
     /// Authentication secrets for third-party harnesses.

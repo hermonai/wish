@@ -32,7 +32,7 @@ Two related rough edges in the V0 handoff flow:
     - The submitted prompt as a queued user-query indicator (REMOTE-1454 visual treatment, no Send-now / dismiss buttons).
     - The "Setting up environment" loading screen during the pre-session phase.
     - The "Running setup commands…" collapsible row that wraps environment startup PTY output once the shared session connects.
-10. When the cloud agent's first turn arrives, the queued-prompt indicator and the setup-v2 affordances tear down on the same transitions a fresh cloud-mode run uses (`AppendedExchange` for Oz, `HarnessCommandStarted` for non-Oz).
+10. When the cloud agent's first turn arrives, the queued-prompt indicator and the setup-v2 affordances tear down on the same transitions a fresh cloud-mode run uses (`AppendedExchange` for Hermon, `HarnessCommandStarted` for non-Hermon).
 ### Edge cases
 11. If the user closes the handoff pane between chip click and submit, the server-side fork is orphaned (visible in the user's conversation history but never run against). V0 does not clean these up.
 12. If the user clicks the chip twice on the same source conversation, two independent forks are minted — same as today's REMOTE-1486 chip behavior; nothing changes here.

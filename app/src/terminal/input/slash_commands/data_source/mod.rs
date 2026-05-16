@@ -68,7 +68,7 @@ struct ActiveCommandsContext {
     is_cloud_handoff_enabled: bool,
     is_feedback_skill_available: bool,
     #[cfg(not(target_family = "wasm"))]
-    active_conversation_is_cloud_oz: bool,
+    active_conversation_is_cloud_hermon: bool,
     has_default_host: bool,
     is_cli_agent_input: bool,
 }
@@ -323,7 +323,7 @@ impl SlashCommandDataSource {
             is_cloud_handoff_enabled: ai_settings.is_cloud_handoff_enabled(ctx),
             is_feedback_skill_available: crate::workspace::is_feedback_skill_available(ctx),
             #[cfg(not(target_family = "wasm"))]
-            active_conversation_is_cloud_oz: self.active_conversation_is_cloud_oz(ctx),
+            active_conversation_is_cloud_hermon: self.active_conversation_is_cloud_hermon(ctx),
             has_default_host,
             is_cli_agent_input,
         }
@@ -354,7 +354,7 @@ impl SlashCommandDataSource {
         // doesn't surface a no-op command.
         #[cfg(not(target_family = "wasm"))]
         if command.name == commands::CONTINUE_LOCALLY.name
-            && !context.active_conversation_is_cloud_oz
+            && !context.active_conversation_is_cloud_hermon
         {
             return false;
         }
@@ -429,7 +429,7 @@ impl SlashCommandDataSource {
     /// Only an explicit non-Hermon harness (Claude, Gemini, OpenCode, Unknown) hides the
     /// command. Conversations without a `task_id` are local and never qualify.
     #[cfg(not(target_family = "wasm"))]
-    fn active_conversation_is_cloud_oz(&self, ctx: &AppContext) -> bool {
+    fn active_conversation_is_cloud_hermon(&self, ctx: &AppContext) -> bool {
         let agent_view_state = self.agent_view_controller.as_ref(ctx).agent_view_state();
         let conversation_id = match agent_view_state.active_conversation_id() {
             Some(id) => id,

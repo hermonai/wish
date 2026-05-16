@@ -138,7 +138,7 @@ fn conversation_values_preserved_when_task_lacks_run_time_and_credits() {
 }
 
 #[test]
-fn empty_defaults_populated_from_task_for_non_oz() {
+fn empty_defaults_populated_from_task_for_non_hermon() {
     let task = task_with_run_time_and_credits();
     let mut data = TombstoneDisplayData::default();
 
@@ -205,7 +205,7 @@ fn task_without_snapshot_leaves_harness_unset() {
 }
 
 #[test]
-fn snapshot_without_explicit_harness_defaults_to_oz() {
+fn snapshot_without_explicit_harness_defaults_to_hermon() {
     let mut task = task_with_run_time_and_credits();
     task.agent_config_snapshot = Some(AgentConfigSnapshot::default());
     let mut data = TombstoneDisplayData::default();

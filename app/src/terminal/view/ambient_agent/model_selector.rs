@@ -89,7 +89,7 @@ pub struct HarnessSelection {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ModelSelection {
-    /// The Hermon agent backend (was named `Oz` pre-v0.5.0).
+    /// The Hermon agent backend (was named `Hermon` pre-v0.5.0).
     Hermon(LLMId),
     Harness(HarnessSelection),
 }
@@ -396,7 +396,7 @@ impl ModelSelector {
             Some(harness) if !matches!(harness, Harness::Hermon | Harness::Unknown) => {
                 self.build_harness_menu_items(harness, &query, hover_background, ctx)
             }
-            _ => self.build_oz_menu_items(&query, hover_background, ctx),
+            _ => self.build_hermon_menu_items(&query, hover_background, ctx),
         };
 
         if items.is_empty() {
@@ -425,7 +425,7 @@ impl ModelSelector {
 
     /// Builds menu items for the Hermon Agent Mode model list and the action that should be
     /// pre-selected for the current view's active model.
-    fn build_oz_menu_items(
+    fn build_hermon_menu_items(
         &self,
         query: &str,
         hover_background: Fill,

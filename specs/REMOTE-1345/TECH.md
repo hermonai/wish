@@ -2,16 +2,16 @@
 
 ## Context
 
-MCP server setup in the agent driver is gated on `HarnessKind::Oz` (`driver.rs:1258-1303`). Third-party harnesses (Claude Code, Codex, Gemini) receive zero MCP servers even when the user specifies them via `--mcp` or environment config. File-based MCP discovery (`driver.rs:1325-1341`) is also Oz-only.
+MCP server setup in the agent driver is gated on `HarnessKind::Hermon` (`driver.rs:1258-1303`). Third-party harnesses (Claude Code, Codex, Gemini) receive zero MCP servers even when the user specifies them via `--mcp` or environment config. File-based MCP discovery (`driver.rs:1325-1341`) is also Hermon-only.
 
-The user's MCP config arrives as `Task.mcp_specs: Vec<MCPSpec>` (`driver.rs:336`), where each spec is either a `MCPSpec::Uuid` (reference to an installed server) or `MCPSpec::Json` (inline JSON config). For the Oz harness, `resolve_mcp_specs` (`driver.rs:826`) splits these into UUID refs and ephemeral `TemplatableMCPServerInstallation` objects, which are then spawned as child processes (stdio) or HTTP clients by `TemplatableMCPServerManager`.
+The user's MCP config arrives as `Task.mcp_specs: Vec<MCPSpec>` (`driver.rs:336`), where each spec is either a `MCPSpec::Uuid` (reference to an installed server) or `MCPSpec::Json` (inline JSON config). For the Hermon harness, `resolve_mcp_specs` (`driver.rs:826`) splits these into UUID refs and ephemeral `TemplatableMCPServerInstallation` objects, which are then spawned as child processes (stdio) or HTTP clients by `TemplatableMCPServerManager`.
 
 Third-party harnesses have their own MCP client implementations:
 - **Claude Code** reads `.mcp.json` or accepts `--mcp-config <json-file>` with `{ "mcpServers": { name: { command, args, env } } }` format.
 - **Codex** reads `~/.codex/config.toml` with `[mcp_servers.name]` sections: `command`/`args`/`env` (stdio) or `url`/`bearer_token_env_var` (HTTP).
 
 ### Key files
-- `app/src/ai/agent_sdk/driver.rs:1258-1303` — Oz-only MCP setup block
+- `app/src/ai/agent_sdk/driver.rs:1258-1303` — Hermon-only MCP setup block
 - `app/src/ai/agent_sdk/driver.rs:826-858` — `resolve_mcp_specs`
 - `app/src/ai/agent_sdk/driver/harness/mod.rs:83-91` — `prepare_environment_config` trait method
 - `app/src/ai/agent_sdk/driver/harness/claude_code.rs:66-78` — Claude impl
@@ -35,7 +35,7 @@ New helper `resolve_mcp_specs_to_json` on `AgentDriver` (`driver.rs:788`), runs 
 - For ephemeral: `apply_secrets` → `resolve_json` → `serde_json::from_str`.
 - Collect all into `HashMap<String, JSONMCPServer>`.
 
-Called in `prepare_harness` before `build_runner`. `prepare_harness` is only called from the `HarnessKind::ThirdParty` branch; the Oz path uses its own `resolve_mcp_specs` → `start_mcp_servers` unchanged.
+Called in `prepare_harness` before `build_runner`. `prepare_harness` is only called from the `HarnessKind::ThirdParty` branch; the Hermon path uses its own `resolve_mcp_specs` → `start_mcp_servers` unchanged.
 
 ### 2. Remove `prepare_environment_config` from the trait; fold config setup into `build_runner`
 
@@ -88,7 +88,7 @@ Warp's `JSONTransportType` maps to each harness as follows:
 1. **Unit tests for Claude MCP config serialization** (`claude_code_tests.rs`) — `serialize_claude_mcp_config_cli_server` and `serialize_claude_mcp_config_sse_server` verify `HashMap<String, JSONMCPServer>` produces valid `--mcp-config` JSON for both transport types.
 2. **Unit tests for Codex MCP config serialization** (`codex_tests.rs`) — `write_codex_mcp_servers_cli_server` and `write_codex_mcp_servers_sse_server` verify `HashMap<String, JSONMCPServer>` produces valid `[mcp_servers]` TOML entries.
 3. **Existing test updates** — `claude_command` tests, `prepare_codex_config_toml` tests updated for new function signatures.
-4. **Regression** — Oz harness MCP setup unchanged (existing tests cover this).
+4. **Regression** — Hermon harness MCP setup unchanged (existing tests cover this).
 
 ## Follow-ups
 

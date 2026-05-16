@@ -187,7 +187,9 @@ fn harness_proto_to_string(harness: Option<&api::Harness>) -> Option<String> {
     let variant = harness?.variant.as_ref()?;
     Some(
         match variant {
-            api::harness::Variant::Oz(_) => "oz",
+            // The proto-generated variant is still named `Oz` (wire format);
+            // Wish translates it to the canonical `"hermon"` string here.
+            api::harness::Variant::Oz(_) => "hermon",
             api::harness::Variant::ClaudeCode(_) => "claude",
             api::harness::Variant::OpenCode(_) => "opencode",
             api::harness::Variant::Gemini(_) => "gemini",
@@ -198,10 +200,11 @@ fn harness_proto_to_string(harness: Option<&api::Harness>) -> Option<String> {
 }
 
 /// Converts a client-side harness string identifier to the proto `Harness`
-/// oneof variant. Returns `None` for empty or unknown strings.
+/// oneof variant. Returns `None` for empty or unknown strings. Accepts both
+/// `"hermon"` (canonical) and `"oz"` (legacy) tokens.
 fn harness_type_to_proto(harness_type: &str) -> Option<api::Harness> {
     let variant = match harness_type {
-        "oz" => api::harness::Variant::Oz(api::harness::Oz {}),
+        "hermon" | "oz" => api::harness::Variant::Oz(api::harness::Oz {}),
         "claude" => api::harness::Variant::ClaudeCode(api::harness::ClaudeCode {}),
         "opencode" => api::harness::Variant::OpenCode(api::harness::OpenCode {}),
         "gemini" => api::harness::Variant::Gemini(api::harness::Gemini {}),

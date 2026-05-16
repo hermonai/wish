@@ -61,7 +61,7 @@ The daemon never mutates its credential in response to connection events. The si
 
 ### Lifecycle
 
-8. The credential exists only in daemon memory. It is never written to disk, environment variables, process arguments, or any on-disk artifact of any `oz remote-server*` binary.
+8. The credential exists only in daemon memory. It is never written to disk, environment variables, process arguments, or any on-disk artifact of any `hermon remote-server*` binary.
 9. Deregistering a connection does not clear the credential. The daemon deliberately retains it across connection teardown so that other connections (and any future reconnects to the same daemon) continue to work without re-auth machinery.
 10. The credential is cleared only on daemon process exit — SIGTERM, panic, or APP-4068's grace-period expiry after the last proxy disconnects. There is no intermediate cleanup path.
 11. A reconnected client (after SSH drop or explicit teardown) rejoins the existing daemon if it is still alive and sees the same credential. If it arrives after a daemon restart, it observes a fresh daemon with no credential and must authenticate.
@@ -74,5 +74,5 @@ The daemon never mutates its credential in response to connection events. The si
 
 ### Security invariants
 
-15. The credential is transmitted only over the already-encrypted client-to-server byte stream (SSH stdin/stdout for the per-SSH topology; the local Unix socket for the APP-4068 daemon topology, whose file-system permissions are owned by APP-4068 and scoped to the owning user). It never appears in process arguments, environment variables, or on-disk artifacts of any `oz remote-server*` binary.
+15. The credential is transmitted only over the already-encrypted client-to-server byte stream (SSH stdin/stdout for the per-SSH topology; the local Unix socket for the APP-4068 daemon topology, whose file-system permissions are owned by APP-4068 and scoped to the owning user). It never appears in process arguments, environment variables, or on-disk artifacts of any `hermon remote-server*` binary.
 16. The credential is never written to logs. Server-side log statements redact the credential field whenever `Initialize` or `Authenticate` messages are traced.

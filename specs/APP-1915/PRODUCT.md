@@ -8,7 +8,7 @@ When a user right-clicks a hyperlink rendered inside an AI response, add a "Copy
 
 AI responses often contain links (URLs and file paths). Today there is no quick way to copy a link target from the context menu; users have to manually select the link text. Terminal grid links already offer "Copy URL" / "Copy path" on right-click, so AI responses are an outlier.
 
-A previous change on `oz-agent/copy-url-in-ai-response-context-menu` added the affordance but replaced the entire AI block right-click context menu with a one-item "Copy URL" menu, regressing every other right-click action (Share session, Copy, Copy prompt, Copy output as Markdown, Save as prompt, Share conversation, Fork…, Rewind…, Copy debugging link/ID, Split pane…, Close pane) whenever the cursor happened to be over a link. That is the bug this spec addresses.
+A previous change on `hermon-agent/copy-url-in-ai-response-context-menu` added the affordance but replaced the entire AI block right-click context menu with a one-item "Copy URL" menu, regressing every other right-click action (Share session, Copy, Copy prompt, Copy output as Markdown, Save as prompt, Share conversation, Fork…, Rewind…, Copy debugging link/ID, Split pane…, Close pane) whenever the cursor happened to be over a link. That is the bug this spec addresses.
 
 ## Non-goals
 

@@ -142,26 +142,26 @@ The day's work that turned the v0.5.0 substrate into a true Universal Reality En
 
 ### Changed
 
-- **Branding pass — Warp/Oz → Wish/Hermon, end-to-end on user-visible surfaces.**
+- **Branding pass — Warp/Hermon → Wish/Hermon, end-to-end on user-visible surfaces.**
     - "Wishing…" footer now shows `✨` (Unicode sparkles) instead of the upstream Warp brand glyph at PUA `U+E500`.
     - `wish-drive.svg` replaced from the upstream Warp Drive double-rectangle to a clean four-point sparkle in a rounded square.
-    - 14 user-visible strings renamed: "Wish Drive" (×4), "Hermon Cloud" (was "Cloud Oz"), "Wish updated!", "Wish API Key", "Wish Essentials", "Quit Wish", and the bulk of the update / notification / launch error toasts.
-    - Default git author for AI-generated commits changed from `Oz <oz-agent@warp.dev>` to `Wish <wish-agent@hermon.ai>`. Historical commits untouched.
+    - 14 user-visible strings renamed: "Wish Drive" (×4), "Hermon Cloud" (was "Cloud Hermon"), "Wish updated!", "Wish API Key", "Wish Essentials", "Quit Wish", and the bulk of the update / notification / launch error toasts.
+    - Default git author for AI-generated commits changed from `Hermon <oz-agent@warp.dev>` to `Wish <wish-agent@hermon.ai>`. Historical commits untouched.
     - `OZ_URL` brand-URL constants renamed to `HERMON_URL` at two sites (values already pointed at `wish.hermon.ai`).
-- **Deeper Oz → Wish/Hermon rename across the internal identifier surface.**
+- **Deeper Hermon → Wish/Hermon rename across the internal identifier surface.**
     - `OZ_RUN_ID_ENV` / `OZ_PARENT_RUN_ID_ENV` / `OZ_CLI_ENV` / `OZ_HARNESS_ENV` constants in `crates/wish_cli` renamed to `WISH_*_ENV` (values were already `WISH_*` — purely cosmetic identifier rename).
     - `WISH_RUN_ID_ENV_VAR` constant in `app/src/ai/agent_sdk/artifact_upload.rs` now actually reads `WISH_RUN_ID` from the environment (was `OZ_RUN_ID`); legacy `OZ_RUN_ID` kept as a fallback so existing CI configs and harness invocations keep working.
-    - `Harness::Oz` enum variant renamed to `Harness::Hermon` across 88 call sites in the wish workspace. **Wire format unchanged:** serde still emits `"oz"` via `#[serde(rename = "oz", alias = "hermon")]`, clap still accepts `--harness oz` via `#[value(alias = "oz")]`, and `Harness::config_name()` still returns `"oz"` — so telemetry analytics, persisted user preferences, in-flight cloud agent sessions, and existing CLI invocations all round-trip exactly as before.
-    - `HarnessKind::Oz` renamed to `HarnessKind::Hermon` (internal-only dispatch enum).
-    - `Harness::display_name(Harness::Hermon)` returns `"Hermon"` (was `"Oz"`).
-    - GraphQL-bound enums `AgentHarness::Oz` (cynic codegen) and `AIAgentHarness::Oz` (the Rust mirror of the GraphQL type) deliberately keep their `Oz` variant names — renaming requires a coordinated schema change in `hermon-server`. Documented inline.
+    - `Harness::Hermon` enum variant renamed to `Harness::Hermon` across 88 call sites in the wish workspace. **Wire format unchanged:** serde still emits `"oz"` via `#[serde(rename = "oz", alias = "hermon")]`, clap still accepts `--harness oz` via `#[value(alias = "oz")]`, and `Harness::config_name()` still returns `"oz"` — so telemetry analytics, persisted user preferences, in-flight cloud agent sessions, and existing CLI invocations all round-trip exactly as before.
+    - `HarnessKind::Hermon` renamed to `HarnessKind::Hermon` (internal-only dispatch enum).
+    - `Harness::display_name(Harness::Hermon)` returns `"Hermon"` (was `"Hermon"`).
+    - GraphQL-bound enums `AgentHarness::Hermon` (cynic codegen) and `AIAgentHarness::Hermon` (the Rust mirror of the GraphQL type) deliberately keep their `Hermon` variant names — renaming requires a coordinated schema change in `hermon-server`. Documented inline.
 - **Deeper internal rename pass (post-cut amend).**
-    - `Icon::Oz` → `Icon::Hermon`, `NotificationSourceAgent::Oz` → `Hermon`, `IconWithStatusVariant::OzAgent` → `HermonAgent`, `SummaryPaneKind::OzAgent` → `HermonAgent`, `CloudConversationData::Oz` → `Hermon`, `CloudModeEntryPoint::OzLaunchModal` → `HermonLaunchModal`.
-    - `FeatureFlag::Oz*` variants (5) → `FeatureFlag::Hermon*` across ~98 call sites. No serde derive on `FeatureFlag` — Debug-formatted menu IDs only, so rename is wire-safe.
-    - `OzLaunchSlide` → `HermonLaunchSlide` (file name `oz_launch.rs` retained to avoid a module-path churn cycle).
-    - `oz_binary_path` / `oz_binary_display` parameters in `managed_secrets::gcp` renamed to `wish_binary_path` / `wish_binary_display`; test fixtures `/usr/bin/oz` → `/usr/bin/wish`, `/bin/oz` → `/bin/wish`. Reflects the actual binary name produced by `cargo build -p wish`.
-    - `visit_oz_button` → `visit_hermon_button` in cloud setup guide view; CLI examples in that guide now show `wish environment create …` and `wish integration create …` (were `oz environment create …`).
-    - User-visible toasts and labels: "Successfully installed/uninstalled the Oz CLI/command" → "…Wish CLI/command"; `AgentSource::WebApp` display name "Oz Web" → "Hermon Web"; `"Fix with Oz"` action label → `"Fix with Hermon"`; `"Introducing Oz"` tab name → `"Introducing Hermon"`; `"Command from Oz"` workflow name → `"Command from Hermon"`; "/continue-locally is only available for cloud Oz conversations" → "…cloud Hermon conversations"; warpify SSH description "…auto-complete, Oz, and more." → "…auto-complete, Hermon, and more."; Codex modal "Use Codex directly in Oz and leverage…" → "…in Wish and leverage…".
+    - `Icon::Hermon` → `Icon::Hermon`, `NotificationSourceAgent::Hermon` → `Hermon`, `IconWithStatusVariant::HermonAgent` → `HermonAgent`, `SummaryPaneKind::HermonAgent` → `HermonAgent`, `CloudConversationData::Hermon` → `Hermon`, `CloudModeEntryPoint::HermonLaunchModal` → `HermonLaunchModal`.
+    - `FeatureFlag::Hermon*` variants (5) → `FeatureFlag::Hermon*` across ~98 call sites. No serde derive on `FeatureFlag` — Debug-formatted menu IDs only, so rename is wire-safe.
+    - `HermonLaunchSlide` → `HermonLaunchSlide` (file name `hermon_launch.rs` retained to avoid a module-path churn cycle).
+    - `hermon_binary_path` / `hermon_binary_display` parameters in `managed_secrets::gcp` renamed to `wish_binary_path` / `wish_binary_display`; test fixtures `/usr/bin/oz` → `/usr/bin/wish`, `/bin/oz` → `/bin/wish`. Reflects the actual binary name produced by `cargo build -p wish`.
+    - `visit_hermon_button` → `visit_hermon_button` in cloud setup guide view; CLI examples in that guide now show `wish environment create …` and `wish integration create …` (were `oz environment create …`).
+    - User-visible toasts and labels: "Successfully installed/uninstalled the Hermon CLI/command" → "…Wish CLI/command"; `AgentSource::WebApp` display name "Hermon Web" → "Hermon Web"; `"Fix with Hermon"` action label → `"Fix with Hermon"`; `"Introducing Hermon"` tab name → `"Introducing Hermon"`; `"Command from Hermon"` workflow name → `"Command from Hermon"`; "/continue-locally is only available for cloud Hermon conversations" → "…cloud Hermon conversations"; warpify SSH description "…auto-complete, Hermon, and more." → "…auto-complete, Hermon, and more."; Codex modal "Use Codex directly in Hermon and leverage…" → "…in Wish and leverage…".
     - Outbound URLs: `https://wish.hermon.ai/oz` (extended-cloud-agents link in free-tier modal) → `https://wish.hermon.ai/hermon`; `https://docs.warp.dev/reference/cli` (install toast) → `https://www.hermon.ai/docs/reference/cli`.
     - Settings search keywords gained `"hermon"` and `"wish agent"` synonyms next to the legacy `"oz"` / `"warp agent"` tokens, so typing either still finds the same pages.
     - GraphQL schema `enum AgentHarness { OZ }` annotated with a long-form comment explaining why the wire token stays `OZ` (telemetry analytics filter on it; server-side change required to migrate).
@@ -179,7 +179,7 @@ The day's work that turned the v0.5.0 substrate into a true Universal Reality En
 - **Settings → Environments → Create environment surfaced raw 4-level error chain** ("Failed to load GitHub repos: Failed to get access token for GraphQL request: …Connection refused") in the Repo(s) field when Hermon was offline. New `friendly_github_load_error()` helper collapses the chain to one of two actionable messages: "Hermon backend isn't reachable. Start hermon-server or sign in via the user menu, then click Retry." (for connection failures) or "Hermon authentication is required. Sign in via the user menu, then click Retry." (for auth failures). Unrecognized errors fall back to the leaf cause only. 4 unit tests cover the collapse cases.
 
 ### Known issues
-- **🟦 P2 — Residual `Oz` mentions in internal code comments and doc strings.** The renames above cover identifiers and user-visible strings; ~80 comment-only `Oz` references remain (e.g. `// Default to Oz when the snapshot has no harness`) and will be swept opportunistically. Not user-visible.
+- **🟦 P2 — Residual `Hermon` mentions in internal code comments and doc strings.** The renames above cover identifiers and user-visible strings; ~80 comment-only `Hermon` references remain (e.g. `// Default to Hermon when the snapshot has no harness`) and will be swept opportunistically. Not user-visible.
 - **🟦 P3 — `wishd` integration phases 1.2–7** in progress. Roadmap in `specs/general-programming-ide/TECH.md` Milestone P2.x.
 
 ### Dependencies

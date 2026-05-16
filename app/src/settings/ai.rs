@@ -1199,7 +1199,7 @@ define_settings_group!(AISettings, settings: [
 
     // Used to determine whether the "What's new in Hermon Agent" section of the agent view
     // zero state is expanded or collapsed by default.
-    should_expand_oz_updates: ShouldExpandHermonUpdates {
+    should_expand_hermon_updates: ShouldExpandHermonUpdates {
         type: bool,
         default: false,
         supported_platforms: SupportedPlatforms::ALL,
@@ -1209,13 +1209,13 @@ define_settings_group!(AISettings, settings: [
 
     // Used to determine whether the "What's new in Hermon Agent" section of the agent view
     // zero state is shown or hidden.
-    should_show_oz_updates_in_zero_state: ShouldShowHermonUpdatesInZeroState {
+    should_show_hermon_updates_in_zero_state: ShouldShowHermonUpdatesInZeroState {
         type: bool,
         default: true,
         supported_platforms: SupportedPlatforms::ALL,
         sync_to_cloud: SyncToCloud::Globally(RespectUserSyncSetting::Yes),
         private: false,
-        toml_path: "agents.warp_agent.other.should_show_oz_updates_in_zero_state",
+        toml_path: "agents.warp_agent.other.should_show_hermon_updates_in_zero_state",
         description: "Whether the \"What's new\" section is shown in the agent view.",
     }
 

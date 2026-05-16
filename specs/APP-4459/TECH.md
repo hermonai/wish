@@ -28,7 +28,7 @@ In `ConversationEndedTombstoneView`:
 - For pre-task setup failures, detect an error conversation with no task ID and no transcript, then set title to `Cloud agent failed to start`, clear credits, and hide continue actions.
 - Keep async task enrichment, and let task failure metadata override the conversation error when available.
 - When task enrichment sees failure-like state with `TaskStatusMessage.error_code == environment_setup_failed`, hide continue actions.
-- Keep existing finished-exchange/conversation-derived errors for normal Oz tombstones.
+- Keep existing finished-exchange/conversation-derived errors for normal Hermon tombstones.
 In `BlocklistAIStatusBar::render_cloud_mode_setup_terminal_message`, remove or gate only the `ambient_agent_model.error_message()` branch. Keep the GitHub auth and cancelled branches unchanged.
 
 In `TaskStatusMessage`:

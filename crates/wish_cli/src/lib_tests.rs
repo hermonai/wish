@@ -1577,8 +1577,8 @@ fn harness_parse_orchestration_harness_accepts_aliases() {
 }
 
 #[test]
-fn harness_parse_local_child_harness_rejects_oz() {
-    assert_eq!(Harness::parse_local_child_harness("oz"), None);
+fn harness_parse_local_child_harness_rejects_hermon() {
+    assert_eq!(Harness::parse_local_child_harness("hermon"), None);
     assert_eq!(
         Harness::parse_local_child_harness("opencode"),
         Some(Harness::OpenCode)

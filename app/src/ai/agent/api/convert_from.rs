@@ -83,12 +83,12 @@ fn convert_start_agent_v2_harness_type(
 }
 
 /// Maps the proto `Harness` oneof to a client-side string identifier
-/// (e.g. "oz", "claude"). Returns `None` for an unset variant.
+/// (e.g. "hermon", "claude"). Returns `None` for an unset variant.
 pub(crate) fn convert_run_agents_harness(harness: Option<&api::Harness>) -> Option<String> {
     let variant = harness?.variant.as_ref()?;
     Some(
         match variant {
-            api::harness::Variant::Oz(_) => "oz",
+            api::harness::Variant::Oz(_) => "hermon",
             api::harness::Variant::ClaudeCode(_) => "claude",
             api::harness::Variant::OpenCode(_) => "opencode",
             api::harness::Variant::Gemini(_) => "gemini",

@@ -69,7 +69,7 @@ fn cloud_mode_deferred_terminal_model_starts_view_pending() {
     assert!(model.is_dummy_cloud_mode_session());
     assert!(!model
         .block_list()
-        .is_executing_oz_environment_startup_commands());
+        .is_executing_hermon_environment_startup_commands());
 
     let restored_block = SerializedBlock {
         id: BlockId::new(),
@@ -91,7 +91,7 @@ fn cloud_mode_deferred_terminal_model_starts_view_pending() {
         .find(|block| block.command_to_string() == "setup-looking-command")
         .expect("restored command block should exist");
     assert!(!restored_command_block.is_hidden());
-    assert!(!restored_command_block.is_oz_environment_startup_command());
+    assert!(!restored_command_block.is_hermon_environment_startup_command());
 }
 
 #[test]

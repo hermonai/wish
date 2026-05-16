@@ -22,20 +22,20 @@ For the driver case, `AgentDriver::new` (`app/src/ai/agent_sdk/driver.rs (474-60
 
 ### 1. Persist and restore the event cursor sequence number (covers invariants 7, 8, 9, 10)
 
-The in-progress branch `katarina/quality-503-driver-owned-parent-bridge` in `wc-pine` establishes the right primitives here. It introduces a shared `AgentEventConsumer` trait with a `persist_cursor(sequence: i64)` callback (in `app/src/ai/agent_events/driver.rs`) and refactors both the Oz SSE path and the non-Oz Claude Code parent bridge to use a common `run_agent_event_driver`. The i64 sequence number is the existing API cursor — no new parameter type is needed.
+The in-progress branch `katarina/quality-503-driver-owned-parent-bridge` in `wc-pine` establishes the right primitives here. It introduces a shared `AgentEventConsumer` trait with a `persist_cursor(sequence: i64)` callback (in `app/src/ai/agent_events/driver.rs`) and refactors both the Hermon SSE path and the non-Hermon Claude Code parent bridge to use a common `run_agent_event_driver`. The i64 sequence number is the existing API cursor — no new parameter type is needed.
 
 The cursor is currently persisted locally only:
-- **Non-Oz (parent bridge)**: `ParentBridgeEventConsumer::persist_cursor` writes to a local file (`~/.claude-code/oz-parent-bridge/{session_id}/last-sequence`) and initializes from it via `read_parent_bridge_last_sequence` when the bridge starts.
-- **Oz (`SseForwardingConsumer`)**: uses the default no-op `persist_cursor` — the cursor is not persisted today.
+- **Non-Hermon (parent bridge)**: `ParentBridgeEventConsumer::persist_cursor` writes to a local file (`~/.claude-code/oz-parent-bridge/{session_id}/last-sequence`) and initializes from it via `read_parent_bridge_last_sequence` when the bridge starts.
+- **Hermon (`SseForwardingConsumer`)**: uses the default no-op `persist_cursor` — the cursor is not persisted today.
 
 For the driver/cloud-restart case, local-only persistence is insufficient: the session changes between runs, so the previous session's local file is not found, and a server-loaded conversation has no local SQLite state. The fix is to persist the cursor to **both** local storage and server-side conversation metadata, then use whichever source is available on restore.
 
-**Local persistence for Oz — call site**
+**Local persistence for Hermon — call site**
 The in-memory cursor is advanced in one place in this repo: `handle_poll_result` at `orchestration_event_poller.rs:413-418` (`self.event_cursor.insert(conversation_id, max_seq)`). The SSE path drains through this same function, so a single write here covers both modes. Add `last_event_sequence: Option<i64>` to `AgentConversationData` and `AIConversation`; immediately after the `event_cursor.insert` call, invoke a new `BlocklistAIHistoryModel::update_event_sequence(conversation_id, max_seq)` helper that calls `write_updated_conversation_state`. This is per-batch (up to `EVENT_POLL_BATCH_LIMIT = 100` events per batch) — acceptable granularity.
 
 Note: The WIP branch `katarina/quality-503-driver-owned-parent-bridge` in `wc-pine` refactors this path to introduce an `SseForwardingConsumer` type with a `persist_cursor` callback. If that branch merges before this one, the call site moves to that callback instead. If this feature lands first, the inline write at `handle_poll_result` is sufficient and the WIP migration can adapt it.
 
-**Server-side persistence (both Oz and non-Oz)**
+**Server-side persistence (both Hermon and non-Hermon)**
 Add `last_event_sequence: Option<i64>` to `Task` in warp-server (on `ai_tasks`). This field is part of this feature's scope; the companion warp-server change adds it to `GET /agent/runs/:run_id` and a new `PATCH /agent/runs/:run_id/event-sequence` endpoint. When `update_event_sequence` fires, call this endpoint fire-and-forget (log on failure). Losing a cursor update is recoverable — next best cursor is used on restore.
 
 **Restore initialization**
@@ -178,18 +178,18 @@ Reference `PRODUCT.md` for invariant numbers.
 - **Manual (local child, OrchestrationV2 off)**: Same scenario with V2 disabled; confirm V1 lifecycle subscriptions propagate the child's status after restart.
 - **Manual (driver/remote child)**: `warp agent run --conversation <parent-id>` where children ran on remote workers; confirm child run_ids are discovered from task messages and events are delivered from the correct resume point.
 
-## Non-Oz harness considerations
+## Non-Hermon harness considerations
 
-Non-Oz harnesses cannot currently be parents in an orchestration session, so this feature does not directly affect them. The notes below are forward-looking.
+Non-Hermon harnesses cannot currently be parents in an orchestration session, so this feature does not directly affect them. The notes below are forward-looking.
 
 The WIP branch `katarina/quality-503-driver-owned-parent-bridge` in `wc-pine` introduces `AgentEventConsumer::persist_cursor` and implements it in `ParentBridgeEventConsumer` (for a Claude Code **child** receiving parent messages) by writing to a local `last-sequence` file. That is a different role from a non-Hermon Agent conversation acting as a parent, but the `persist_cursor` hook is the same primitive.
 
-When non-Oz parents become supported, they can reuse the server-side `last_event_sequence` field on `ai_tasks` added by change 1 above: wiring their `persist_cursor` callback to also call `PATCH /agent/runs/{run_id}/event-sequence` gives cloud/driver restore without any harness-specific logic.
+When non-Hermon parents become supported, they can reuse the server-side `last_event_sequence` field on `ai_tasks` added by change 1 above: wiring their `persist_cursor` callback to also call `PATCH /agent/runs/{run_id}/event-sequence` gives cloud/driver restore without any harness-specific logic.
 
-**Why `AgentConversationData` alone is insufficient for cloud/driver non-Oz**: `AgentConversationData` is exclusively local SQLite (never sent to server). The non-Oz parent bridge state directory (`last-sequence` file) is session-scoped, so a new `warp agent run --conversation` invocation won't find the previous session's file. The server-side field is the only path that works for driver restarts.
+**Why `AgentConversationData` alone is insufficient for cloud/driver non-Hermon**: `AgentConversationData` is exclusively local SQLite (never sent to server). The non-Hermon parent bridge state directory (`last-sequence` file) is session-scoped, so a new `warp agent run --conversation` invocation won't find the previous session's file. The server-side field is the only path that works for driver restarts.
 
-**Child run_id discovery for non-Oz parents**: The two synchronous fallback sources used today (`children_by_parent` DB index and `child_run_ids_from_task_messages`) both depend on Oz's structured task messages and will not apply to non-Oz parents. The primary path — `GET /agent/runs/{parent_run_id}/children` — is already harness-agnostic (the `ai_tasks` table stores `parent_run_id` regardless of harness) and will cover non-Oz parents without any additional changes.
+**Child run_id discovery for non-Hermon parents**: The two synchronous fallback sources used today (`children_by_parent` DB index and `child_run_ids_from_task_messages`) both depend on Hermon's structured task messages and will not apply to non-Hermon parents. The primary path — `GET /agent/runs/{parent_run_id}/children` — is already harness-agnostic (the `ai_tasks` table stores `parent_run_id` regardless of harness) and will cover non-Hermon parents without any additional changes.
 
 ## Follow-ups
 - Consider scanning V1 `StartAgent` tool results (`ToolCallResultType::StartAgent`) alongside `StartAgentV2` once V1 orchestration is fully deprecated, for completeness.
-- When non-Oz event delivery is fully implemented, wire `persist_cursor` in the non-Oz parent bridge to also call the server-side `last_event_sequence` update, mirroring the Oz path.
+- When non-Hermon event delivery is fully implemented, wire `persist_cursor` in the non-Hermon parent bridge to also call the server-side `last_event_sequence` update, mirroring the Hermon path.

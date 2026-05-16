@@ -33,7 +33,7 @@ Wish is maintained as an advanced Hermon edition of the Warp codebase. Current i
 
 - Hermon-branded onboarding, settings, menus, app icons, and product surfaces
 - Local-first startup behavior with backend login deferred to cloud features
-- Hermon Cloud and Hermon agent language replacing Oz/Warp cloud product surfaces
+- Hermon Cloud and Hermon agent language replacing Hermon/Warp cloud product surfaces
 - Wish Drive and local workspace persistence aligned with Hermon identity
 - Configurable Hermon backend URLs for local and hosted environments
 - Local model discovery so Ollama-backed models can be used without cloud dependency

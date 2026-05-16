@@ -46,7 +46,7 @@ Regions with no data are omitted entirely. The card never renders placeholder te
 
 ### Conversation status icon prefix
 
-10. A title line whose contributing pane has a known conversation status renders a small status pill at the start of that line, before the title text. The pill contains only the status icon — no agent (Oz or CLI agent) icon — and is styled like the conversation status pill used in the pane header / detail sidecar (icon over a 10%-opacity colored background with rounded corners).
+10. A title line whose contributing pane has a known conversation status renders a small status pill at the start of that line, before the title text. The pill contains only the status icon — no agent (Hermon or CLI agent) icon — and is styled like the conversation status pill used in the pane header / detail sidecar (icon over a 10%-opacity colored background with rounded corners).
 11. A title line is eligible for the status pill when its contributing terminal pane has a `ConversationStatus` available — CLI agent sessions that support rich status (their session status), or Hermon agent / ambient agent conversations (their `selected_conversation_status_for_display`). Plain terminals, CLI agents without rich status, and conversations without a known status do not get a prefix.
 12. The status the pill reflects is the conversation's current `ConversationStatus` (in progress, success, error, cancelled, blocked).
 13. A title line whose underlying source is not a conversation pane — plain terminal commands, code panes, notebooks, workflows, settings, file viewers, etc. — does not render a status icon prefix; the line begins directly with the title text.

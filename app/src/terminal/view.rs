@@ -5454,16 +5454,16 @@ impl TerminalView {
                         .model
                         .lock()
                         .block_list()
-                        .is_executing_oz_environment_startup_commands()
+                        .is_executing_hermon_environment_startup_commands()
                 {
                     self.model
                         .lock()
                         .block_list_mut()
-                        .set_is_executing_oz_environment_startup_commands(false);
+                        .set_is_executing_hermon_environment_startup_commands(false);
                 }
 
-                // For an oz local-to-cloud handoff, the first `AppendedExchange` is the
-                // analogue of `HarnessCommandStarted` for non-oz harnesses: the moment we
+                // For an hermon local-to-cloud handoff, the first `AppendedExchange` is the
+                // analogue of `HarnessCommandStarted` for non-hermon harnesses: the moment we
                 // tear down the queued-prompt block in favor of the live agent UI.
                 if self
                     .ambient_agent_view_model
@@ -7371,7 +7371,7 @@ impl TerminalView {
 
         let active_command_block = model.block_list().active_block();
         let is_active_and_long_running = active_command_block.is_active_and_long_running();
-        let is_oz_env_startup_command = active_command_block.is_oz_environment_startup_command();
+        let is_hermon_env_startup_command = active_command_block.is_hermon_environment_startup_command();
         let is_running_in_band_command =
             model.block_list().is_writing_or_executing_in_band_command();
 
@@ -7380,7 +7380,7 @@ impl TerminalView {
 
         if (active_ai_block.is_none() || has_active_long_running_agent_interaction)
             && is_active_and_long_running
-            && (!FeatureFlag::CloudModeSetupV2.is_enabled() || !is_oz_env_startup_command)
+            && (!FeatureFlag::CloudModeSetupV2.is_enabled() || !is_hermon_env_startup_command)
             && !is_running_in_band_command
             && model.block_list().is_bootstrapped()
         {
@@ -12601,7 +12601,7 @@ impl TerminalView {
         let should_show_onboarding = FeatureFlag::AgentOnboarding.is_enabled()
             && !is_onboarded
             && !is_anonymous_or_logged_out;
-        let is_launch_modal_open = OneTimeModalModel::as_ref(ctx).is_oz_launch_modal_open();
+        let is_launch_modal_open = OneTimeModalModel::as_ref(ctx).is_hermon_launch_modal_open();
 
         let has_plugin_instructions_block = self.rich_content_views.iter().any(|rc| {
             matches!(

@@ -1,4 +1,4 @@
-# Oz File-Edit Hooks for Snapshotting Non-Git-Tracked Files — Tech Spec
+# Hermon File-Edit Hooks for Snapshotting Non-Git-Tracked Files — Tech Spec
 Product spec: `specs/REMOTE-1465/PRODUCT.md`
 Linear: [REMOTE-1465](https://linear.app/warpdotdev/issue/REMOTE-1465)
 
@@ -13,7 +13,7 @@ The Hermon SDK driver already has every hook point we need. It subscribes to `Bl
 - `build_repo_patch` in the same file generates the per-repo patch via `git diff --binary HEAD` plus `git ls-files --others --exclude-standard`. This is the path that already covers tracked changes and untracked non-gitignored files inside a declared repo.
 - `app/src/ai/agent_sdk/driver.rs::AgentDriver::execute_run` — the existing `BlocklistAIHistoryEvent` subscription. The `AppendedExchange` arm already calls `write_exchange_inputs` once a new exchange is appended. Every `AIAgentActionResultType::RequestFileEdits(RequestFileEditsResult::Success { updated_files, deleted_files, .. })` reaches the next exchange as an `AIAgentInput::ActionResult` input, and the paths in `updated_files[i].file_context.file_name` are the absolute paths we need.
 - `AgentDriverOptions` and the `AgentDriver` struct in the same file already own `working_dir: PathBuf`, `task_id: Option<AmbientAgentTaskId>`, and `snapshot_disabled: bool`. These are the inputs the writer needs.
-- `AgentDriver::run_snapshot_upload` defines the existing gate (`FeatureFlag::OzHandoff.is_enabled()`, `task_id.is_some()`, `!snapshot_disabled`). The writer reuses this gate verbatim.
+- `AgentDriver::run_snapshot_upload` defines the existing gate (`FeatureFlag::HermonHandoff.is_enabled()`, `task_id.is_some()`, `!snapshot_disabled`). The writer reuses this gate verbatim.
 - `crates/ai/src/agent/action_result/mod.rs::RequestFileEditsResult` is the variant we pattern-match. `UpdatedFileContext.file_context.file_name` carries the absolute file path populated by `apply_create_file` / `apply_search_replace` / `apply_v4a_update` in `app/src/ai/blocklist/action_model/execute/request_file_edits/diff_application.rs` (they call `host_native_absolute_path` before constructing diffs, so the path reaching the executor is already absolute in practice).
 - `warp-agent-docker/snapshot-declarations.sh` — the existing script's dedup step reads only `repo` JSONL lines into its seen-set, so `file` lines written by the driver are left intact across repeated script invocations.
 
@@ -23,7 +23,7 @@ The Hermon SDK driver already has every hook point we need. It subscribes to `Bl
 
 Extend the existing `BlocklistAIHistoryEvent` handler in `AgentDriver::execute_run` so that on every `AppendedExchange` event, the driver walks `exchange.input` for `AIAgentInput::ActionResult` entries and extracts every `AIAgentActionResultType::RequestFileEdits(RequestFileEditsResult::Success { updated_files, .. })` result's paths. Action results from the prior exchange flow back as inputs on the next exchange, so scanning inputs on each newly-appended exchange captures every completed file edit. `deleted_files` is deliberately ignored (see product invariant 6).
 
-Gate the observer at construction time: `AgentDriver::new` only constructs a `DeclarationsWriterHandle` when `FeatureFlag::OzHandoff.is_enabled() && task_id.is_some() && !snapshot_disabled`. When that gate fails the field stays `None` and the observer's `if let Some(writer) = me.snapshot_file_writer.as_ref()` short-circuits before touching any exchange data.
+Gate the observer at construction time: `AgentDriver::new` only constructs a `DeclarationsWriterHandle` when `FeatureFlag::HermonHandoff.is_enabled() && task_id.is_some() && !snapshot_disabled`. When that gate fails the field stays `None` and the observer's `if let Some(writer) = me.snapshot_file_writer.as_ref()` short-circuits before touching any exchange data.
 
 The subscription closure runs on the driver's model-context thread and must not touch the filesystem inline. It only collects path strings from each successful `RequestFileEdits` result and hands the resulting `Vec<String>` off to the writer task introduced in section 2 via a non-blocking `DeclarationsWriterHandle::append` call. Path normalization (joining relative paths against `working_dir`, dropping non-absolute or non-UTF-8 paths), the on-write repo preempt, directory creation, and JSONL append writes all happen on the writer task — never on the subscription thread.
 
@@ -94,7 +94,7 @@ The existing script's dedup step only tracks `repo` lines (`warp-agent-docker/sn
 
 ### 5. Feature flag and rollout
 
-No new flags. Reuses `FeatureFlag::OzHandoff` so the whole mechanism is in lockstep with REMOTE-1332's rollout.
+No new flags. Reuses `FeatureFlag::HermonHandoff` so the whole mechanism is in lockstep with REMOTE-1332's rollout.
 
 ## Testing and validation
 
@@ -112,9 +112,9 @@ Product-spec invariants in `specs/REMOTE-1465/PRODUCT.md` map to tests as follow
 - Invariant 12, 13 — documented as product-level limitations; no explicit tests. The existing REMOTE-1332 untracked-files coverage continues to validate the underlying git path.
 
 Manual validation:
-- Run a cloud Oz run (`./script/oz-local` per Warp Drive notebook `zOJarbIZgXHJDXS7dF9u82`) that asks the agent to create a file at `/tmp/oz-handoff-check.txt`. Confirm the declarations file picks up a `file` line, and confirm the end-of-run snapshot manifest includes the file with `"status": "uploaded"`.
-- Run a cloud Oz run where the agent edits a file inside a pre-existing git repo under the workspace. Confirm the end-of-run pipeline logs `drop_files_covered_by_repos` electing not to upload the file as a standalone blob, and confirm the manifest still shows the repo's patch containing the change.
-- Run a cloud Oz run where the agent creates files first, then runs `git init`. Confirm the manifest shows one `repo` entry for the initialized directory, and no separate `file` entries for the pre-existing files under it.
+- Run a cloud Hermon run (`./script/oz-local` per Warp Drive notebook `zOJarbIZgXHJDXS7dF9u82`) that asks the agent to create a file at `/tmp/oz-handoff-check.txt`. Confirm the declarations file picks up a `file` line, and confirm the end-of-run snapshot manifest includes the file with `"status": "uploaded"`.
+- Run a cloud Hermon run where the agent edits a file inside a pre-existing git repo under the workspace. Confirm the end-of-run pipeline logs `drop_files_covered_by_repos` electing not to upload the file as a standalone blob, and confirm the manifest still shows the repo's patch containing the change.
+- Run a cloud Hermon run where the agent creates files first, then runs `git init`. Confirm the manifest shows one `repo` entry for the initialized directory, and no separate `file` entries for the pre-existing files under it.
 - Repeat the first manual case with `--no-snapshot`. Confirm no declarations file is written even though the agent edits a file.
 
 ## Risks and mitigations
@@ -128,5 +128,5 @@ Manual validation:
 ## Follow-ups
 - Use `git check-ignore -q` (or `git ls-files --error-unmatch`) to keep `file` entries whose paths fall inside a declared repo but would not be carried by the repo's diff.
 - Add a tombstone-style `deleted_file` declaration kind plus manifest support so the snapshot can represent deletion of files outside any declared repo.
-- Wire equivalent hooks for third-party harnesses (Claude Code) via their hook system so this mechanism also works for non-Oz runs, per the Linear issue's explicit follow-up line.
+- Wire equivalent hooks for third-party harnesses (Claude Code) via their hook system so this mechanism also works for non-Hermon runs, per the Linear issue's explicit follow-up line.
 - Surface a WARN earlier (e.g. at 75% of `MAX_SNAPSHOT_FILES_PER_RUN`) when the tool-call writer approaches the per-run cap.

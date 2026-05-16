@@ -4738,7 +4738,7 @@ impl SettingsWidget for AutoOpenCodeReviewPaneWidget {
     type View = FeaturesPageView;
 
     fn search_terms(&self) -> &str {
-        "oz hermon auto open code review pane panel agent mode change first time accepted diff view conversation"
+        "hermon auto open code review pane panel agent mode change first time accepted diff view conversation"
     }
 
     fn render(

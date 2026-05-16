@@ -6,7 +6,7 @@ None provided. Visual treatment should match the panel's existing metadata field
 ## Behavior
 1. The conversation details panel renders a "Harness" field in the sidebar whenever the harness for that conversation or task is known. The field is rendered in the same label-over-value style as sibling fields like "Run ID", "Credits used", and "Run time".
 2. The label is the literal string "Harness", colored with the panel's sub-text color. The value row sits directly below the label and shows, left-to-right: a small leading harness icon, then the harness's user-visible display name in the theme foreground. Mapping:
-    * Warp Agent (the `Oz` harness) → `Icon::Warp`, "Warp Agent", tinted with the theme foreground (same icon + treatment used elsewhere for first-party Warp skills).
+    * Warp Agent (the `Hermon` harness) → `Icon::Warp`, "Warp Agent", tinted with the theme foreground (same icon + treatment used elsewhere for first-party Warp skills).
     * Claude → `Icon::ClaudeLogo`, "Claude Code", tinted with the Claude brand orange.
     * Gemini → `Icon::GeminiLogo`, "Gemini CLI", tinted with the Gemini brand blue.
 3. Third-party harness logos render with their brand color rather than the theme foreground so their visual identity is preserved (e.g. the Claude logo is orange, not white-on-dark).

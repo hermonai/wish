@@ -20,14 +20,14 @@ Use the existing in-app third-party cloud agent queued-query UI as the reference
 ## Behavior
 1. When a user submits an initial Hermon Cloud mode query and the submission is accepted by Warp, the terminal immediately shows a queued-query UI item for that submitted prompt.
 2. When a user submits an Hermon Cloud mode follow-up query after a cloud execution has ended and the submission is accepted by Warp, the terminal immediately shows a queued-query UI item for that submitted follow-up prompt.
-3. The queued-query item for Oz uses the same visual pattern as third-party cloud agents in cloud mode:
+3. The queued-query item for Hermon uses the same visual pattern as third-party cloud agents in cloud mode:
    - The submitted prompt is shown as the user-authored query.
    - The item communicates that the query is queued or waiting.
    - The item does not show dismiss or "send now" controls when those controls are absent from the third-party cloud queued-query pattern.
    - The item uses the same user identity/avatar treatment as the third-party cloud queued-query pattern.
 4. The queued-query item preserves the displayed prompt text the user expects to see. If the user submitted a cloud query through a mode prefix such as `/plan` or `/orchestrate`, the queued-query item shows the user-facing prompt form consistently with the rest of Warp's query UI.
-5. Warp does not insert the bespoke Oz optimistic user-query block for initial Hermon Cloud mode queries.
-6. Warp does not insert the bespoke Oz optimistic user-query block for Hermon Cloud follow-up queries.
+5. Warp does not insert the bespoke Hermon optimistic user-query block for initial Hermon Cloud mode queries.
+6. Warp does not insert the bespoke Hermon optimistic user-query block for Hermon Cloud follow-up queries.
 7. Setup-command rich content remains unchanged. Any setup-command intro text, setup-command blocks, setup-command ordering, visibility, collapse state, and transitions continue to behave as they did before this feature.
 8. The queued-query item does not replace setup-command rich content. If setup commands are executed while the cloud run is starting, the user sees both the queued-query state and the normal setup-command rich content in the same relative flow where pending query and setup progress are shown today.
 9. The queued-query item remains visible while Warp is waiting for the cloud execution or follow-up session to become ready and no real transcript item for that submitted prompt is available yet.
@@ -38,13 +38,13 @@ Use the existing in-app third-party cloud agent queued-query UI as the reference
 14. If cloud session attach or replay delivers the real user query before the queued-query item has visibly rendered, Warp may skip showing the queued-query item, but the user must not see both a queued item and a duplicate real user query for the same submitted prompt at rest.
 15. If the cloud submission fails before Warp accepts it, Warp should not leave behind a queued-query item for a query that was not actually queued. The user's prompt should remain available for retry according to the existing failed-submission behavior.
 16. If the cloud submission is accepted but the run later fails, is cancelled, requires authentication, or hits another startup error before a real transcript item appears, the queued-query item follows the same lifecycle as the third-party cloud queued-query UI for that state.
-17. Authentication, cancellation, capacity, quota, and startup error UI remains unchanged except for the absence of the bespoke Oz optimistic user-query block.
+17. Authentication, cancellation, capacity, quota, and startup error UI remains unchanged except for the absence of the bespoke Hermon optimistic user-query block.
 18. Starting a new Hermon Cloud run from an empty cloud compose state shows at most one queued-query item for the accepted initial prompt.
 19. Starting an Hermon Cloud follow-up from a tombstone or other follow-up entrypoint shows at most one queued-query item for the accepted follow-up prompt.
 20. Repeated lifecycle updates while the cloud run is starting do not insert duplicate queued-query items for the same accepted prompt.
 21. If a user leaves and re-enters the relevant agent view while the cloud query is still waiting, the queued-query item remains associated with the same conversation context and does not appear in unrelated conversations.
 22. Exiting the agent view or changing panes does not convert the queued-query item into a bespoke optimistic query block.
-23. Queued-query UI for Oz does not affect the content or visibility of prior terminal output, prior agent responses, existing tombstones, or already-rendered setup-command blocks.
+23. Queued-query UI for Hermon does not affect the content or visibility of prior terminal output, prior agent responses, existing tombstones, or already-rendered setup-command blocks.
 24. When the cloud run becomes live and begins streaming agent output, the transition from queued state to transcript state should feel continuous: the prompt is not lost, duplicated, or visually reordered around the first agent response.
 25. The behavior is consistent between initial and follow-up Hermon Cloud queries. A user should not need to learn one pending-query presentation for the first cloud prompt and another for subsequent cloud prompts.
-26. The behavior is consistent between Oz and third-party cloud agents wherever both are waiting for a cloud session to produce the real transcript. Any intentional differences should be limited to agent identity, iconography, or existing agent-specific transcript rendering, not the pending-query pattern.
+26. The behavior is consistent between Hermon and third-party cloud agents wherever both are waiting for a cloud session to produce the real transcript. Any intentional differences should be limited to agent identity, iconography, or existing agent-specific transcript rendering, not the pending-query pattern.

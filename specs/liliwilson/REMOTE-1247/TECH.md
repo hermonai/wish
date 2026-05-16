@@ -4,7 +4,7 @@ Linear: [REMOTE-1247](https://linear.app/warpdotdev/issue/REMOTE-1247)
 
 ## Problem
 
-When Oz runs third-party CLI agents like Claude Code or Codex in a fresh cloud environment (for example a Namespace-backed runner), the CLI may start an interactive first-run onboarding flow before executing the user's prompt. That breaks the harness contract that cloud agents should run autonomously and produce useful output without manual terminal interaction.
+When Hermon runs third-party CLI agents like Claude Code or Codex in a fresh cloud environment (for example a Namespace-backed runner), the CLI may start an interactive first-run onboarding flow before executing the user's prompt. That breaks the harness contract that cloud agents should run autonomously and produce useful output without manual terminal interaction.
 
 For Claude Code specifically, the first-run flow currently asks the user to choose a theme, approve `ANTHROPIC_API_KEY` auth, trust the current project directory, and confirm bypass-permissions mode.
 
@@ -98,17 +98,17 @@ This keeps the top-level operation stable (`prepare harness config files`) while
 
 ```mermaid path=null start=null
 autonomous cloud run
-  participant Oz as Oz harness
+  participant Hermon as Hermon harness
   participant FS as Home/config files
   participant CLI as Claude Code
   participant API as Anthropic API
 
-  Oz->>FS: read/merge/write ~/.claude.json and ~/.claude/settings.json
-  Oz->>CLI: launch claude --session-id ... --dangerously-skip-permissions
+  Hermon->>FS: read/merge/write ~/.claude.json and ~/.claude/settings.json
+  Hermon->>CLI: launch claude --session-id ... --dangerously-skip-permissions
   CLI->>FS: read onboarding, trust, and permission config
   CLI->>API: authenticate from existing ANTHROPIC_API_KEY handling
-  CLI-->>Oz: execute prompt without interactive onboarding
-  Oz->>FS: read ~/.claude transcript/todo artifacts
+  CLI-->>Hermon: execute prompt without interactive onboarding
+  Hermon->>FS: read ~/.claude transcript/todo artifacts
 ```
 
 Main Claude flow:
@@ -140,7 +140,7 @@ Main Claude flow:
 ## Follow-ups
 
 - Decide and implement Claude API-key prompt suppression if onboarding/trust/permission config alone does not fully remove first-run interactivity. Options are merging `customApiKeyResponses.approved` or using `apiKeyHelper`.
-- Add Codex/Gemini-specific config prep if they still trigger first-run auth/onboarding in fresh Oz images.
+- Add Codex/Gemini-specific config prep if they still trigger first-run auth/onboarding in fresh Hermon images.
 - Consider supporting user-provided harness config overlays so advanced users can opt into selected local CLI settings in cloud runs.
 - Update `resources/bundled/skills/hermon-cloud/SKILL.md` and `resources/bundled/skills/hermon-cloud/references/third-party-clis.md` once this behavior is implemented and verified.
 - Add telemetry around whether harness prep succeeded and whether the CLI still emitted known onboarding prompts, if we need production visibility into drift.

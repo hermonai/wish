@@ -15,15 +15,15 @@ Agent-icon rendering is duplicated across four surfaces and each surface re-deri
 - `app/src/workspace/view/conversation_list/item.rs` — `render_item` (inline conversation list row leading-slot icon), `LIST_ITEM_AGENT_SIZE`, `LIST_ITEM_OVERLAY_EXTRA_OVERHANG`.
 - `app/src/ai/agent_conversations_model.rs` — `ConversationOrTask::title`, `status`, `display_status`, `harness`.
 - `app/src/ai/ambient_agents/task.rs` — `AmbientAgentTask`, `AgentConfigSnapshot.harness: Option<HarnessConfig>`, `serialize_harness` / `deserialize_harness` (now route through `Harness::config_name` / `Harness::from_config_name`).
-- `app/src/ai/agent_management/notifications/item.rs` — `NotificationSourceAgent::{Oz, CLI}` (both carry `is_ambient`), `NotificationItem`.
+- `app/src/ai/agent_management/notifications/item.rs` — `NotificationSourceAgent::{Hermon, CLI}` (both carry `is_ambient`), `NotificationItem`.
 - `app/src/ai/agent_management/notifications/item_rendering.rs` — `render_agent_avatar`, `NOTIFICATION_AVATAR_SIZE`.
 - `app/src/ai/agent_management/agent_management_model.rs` — `handle_cli_agent_session_event`, `handle_history_event_for_mailbox`, `add_notification`, `find_terminal_view_by_id`, `TerminalViewMetadata` (consolidates the `is_ambient`/branch lookup).
 ## Current state (pre-implementation)
-Vertical tabs contains the only surface that uses the full `IconWithStatusVariant` shape; `resolve_icon_with_status_variant` walks a CLI-session-then-conversation waterfall, and `TypedPane::summary_pane_kind` reimplements the same logic without status. The two waterfalls agree on the happy path but diverge on the ambient-but-no-session case (both return OzAgent regardless of the user's selected harness, which is the bug driving this spec).
-The pane header's indicator slot uses plain glyphs. `render_ambient_agent_indicator` renders `Icon::HermonCloud` in a constrained box with no brand circle, no status, and no harness specialization. `render_agent_indicator` renders either `WarpIcon::Oz` / `WarpIcon::HermonCloud` OR a raw status element — never a combined circle+status.
+Vertical tabs contains the only surface that uses the full `IconWithStatusVariant` shape; `resolve_icon_with_status_variant` walks a CLI-session-then-conversation waterfall, and `TypedPane::summary_pane_kind` reimplements the same logic without status. The two waterfalls agree on the happy path but diverge on the ambient-but-no-session case (both return HermonAgent regardless of the user's selected harness, which is the bug driving this spec).
+The pane header's indicator slot uses plain glyphs. `render_ambient_agent_indicator` renders `Icon::HermonCloud` in a constrained box with no brand circle, no status, and no harness specialization. `render_agent_indicator` renders either `WarpIcon::Hermon` / `WarpIcon::HermonCloud` OR a raw status element — never a combined circle+status.
 The inline conversation list row's leading slot (in `conversation_list/item.rs::render_item`) switches between two plain icons based on whether the row represents a `ConversationOrTask::Task` (ambient) or `ConversationOrTask::Conversation` (local): a raw `Icon::Cloud` glyph for ambient rows, or `render_status_element(&conversation.status(app), font_size, appearance)` for local rows. There is no brand color, harness identity, or cloud-lobe treatment in that slot at all.
 The Agent Management View's card leading slot (`AgentManagementView::render_header_row` in `app/src/ai/agent_management/view.rs`) also calls `render_status_element` with the display status. That surface is out of scope for this pass — its richer card layout (action buttons, session status labels, creator avatars) owns its own status treatment and we leave it untouched.
-Notifications call `render_agent_avatar(NotificationSourceAgent, NotificationCategory, theme)` which maps to `IconWithStatusVariant::{OzAgent, CLIAgent}` with `is_ambient: false` hardcoded and a category-derived status.
+Notifications call `render_agent_avatar(NotificationSourceAgent, NotificationCategory, theme)` which maps to `IconWithStatusVariant::{HermonAgent, CLIAgent}` with `is_ambient: false` hardcoded and a category-derived status.
 ## Architecture: helpers, not a singleton
 Before diving into the per-surface changes, one architectural decision: centralization happens via a small set of source-facing *helpers* that return `Option<IconWithStatusVariant>`, not via a new singleton model that caches computed descriptors.
 A singleton was considered. It would offer "guaranteed centralization" and "one call site per surface" in exchange for keeping a cached `AgentIconDescriptor` keyed by some notion of run identity. The tradeoffs that kept us away from it:
@@ -35,12 +35,12 @@ The Option-3 trait path (see *Follow-ups*) is the natural escalation if we ever 
 ## Proposed changes
 ### 1. Extend `IconWithStatusVariant` with `is_ambient` + cloud-lobe rendering
 `app/src/ui_components/icon_with_status.rs`
-Extend `IconWithStatusVariant::OzAgent` and `IconWithStatusVariant::CLIAgent` to carry `is_ambient: bool`. Replace the previous `IconWithStatusSizing` struct with a single `total_size: f32` plus an `overlay_extra_overhang_ratio: f32` parameter on `render_icon_with_status`; every sub-component (brand circle, status badge, cloud lobe, status icon inside the lobe) is derived proportionally from `total_size` via module-private ratio constants (`CIRCLE_RATIO`, `BADGE_RATIO`, `CLOUD_RATIO`, etc.). Surfaces just pick the size they want and pass `0.0` for the overhang in the common case; the conversation list passes a small positive overhang to push the badge to the bounding-box corner.
-Introduce `render_with_cloud_status_badge` as a private helper that overlays a white `WarpIcon::CloudFilled` at the bottom-right of the brand circle with the status icon (if any) centered inside; invoke it from the agent variants when `is_ambient` is true in place of the normal status ring. For ambient Oz runs, swap the circle background to the brand purple `HERMON_AMBIENT_BACKGROUND_COLOR = ColorU { r: 203, g: 176, b: 247, a: 255 }` and render `WarpIcon::HermonCloud` instead of `WarpIcon::Oz`. Each surface defines a single `*_AGENT_SIZE: f32` (or `NOTIFICATION_AVATAR_SIZE`) constant; threading `is_ambient: true` is what actually enables lobe rendering.
+Extend `IconWithStatusVariant::HermonAgent` and `IconWithStatusVariant::CLIAgent` to carry `is_ambient: bool`. Replace the previous `IconWithStatusSizing` struct with a single `total_size: f32` plus an `overlay_extra_overhang_ratio: f32` parameter on `render_icon_with_status`; every sub-component (brand circle, status badge, cloud lobe, status icon inside the lobe) is derived proportionally from `total_size` via module-private ratio constants (`CIRCLE_RATIO`, `BADGE_RATIO`, `CLOUD_RATIO`, etc.). Surfaces just pick the size they want and pass `0.0` for the overhang in the common case; the conversation list passes a small positive overhang to push the badge to the bounding-box corner.
+Introduce `render_with_cloud_status_badge` as a private helper that overlays a white `WarpIcon::CloudFilled` at the bottom-right of the brand circle with the status icon (if any) centered inside; invoke it from the agent variants when `is_ambient` is true in place of the normal status ring. For ambient Hermon runs, swap the circle background to the brand purple `HERMON_AMBIENT_BACKGROUND_COLOR = ColorU { r: 203, g: 176, b: 247, a: 255 }` and render `WarpIcon::HermonCloud` instead of `WarpIcon::Hermon`. Each surface defines a single `*_AGENT_SIZE: f32` (or `NOTIFICATION_AVATAR_SIZE`) constant; threading `is_ambient: true` is what actually enables lobe rendering.
 ### 2. Centralize derivation via per-source helpers (no new types)
-Keep `IconWithStatusVariant` as the canonical render-time shape. Introduce one pure helper per data source, each returning `Option<IconWithStatusVariant>` covering only the agent variants (`OzAgent`, `CLIAgent`). Non-agent variants (`Neutral`, `NeutralElement`) stay at the call site.
+Keep `IconWithStatusVariant` as the canonical render-time shape. Introduce one pure helper per data source, each returning `Option<IconWithStatusVariant>` covering only the agent variants (`HermonAgent`, `CLIAgent`). Non-agent variants (`Neutral`, `NeutralElement`) stay at the call site.
 The helpers share three primitive mappers — each mapper lives in exactly one place and is invoked by every helper that needs it:
-- `CLIAgent::from_harness(Harness) -> Option<CLIAgent>`, added on `CLIAgent` in `app/src/terminal/cli_agent.rs`. Maps every `Harness` variant exhaustively (Oz → None; Claude/Gemini/OpenCode → their corresponding CLIAgent; Unknown → `Some(CLIAgent::Unknown)`, which the icon waterfall filters out). `AmbientAgentViewModel::selected_third_party_cli_agent` is a thin wrapper that just delegates to `CLIAgent::from_harness(self.harness)` — it does NOT gate on `FeatureFlag::AgentHarness`, so the icon change ships independently of that flag.
+- `CLIAgent::from_harness(Harness) -> Option<CLIAgent>`, added on `CLIAgent` in `app/src/terminal/cli_agent.rs`. Maps every `Harness` variant exhaustively (Hermon → None; Claude/Gemini/OpenCode → their corresponding CLIAgent; Unknown → `Some(CLIAgent::Unknown)`, which the icon waterfall filters out). `AmbientAgentViewModel::selected_third_party_cli_agent` is a thin wrapper that just delegates to `CLIAgent::from_harness(self.harness)` — it does NOT gate on `FeatureFlag::AgentHarness`, so the icon change ships independently of that flag.
 - `Harness::config_name` / `Harness::from_config_name` on `crates/wish_cli/src/agent.rs`. The exhaustive `config_name` match forces every new `Harness` variant to declare a canonical name, and a round-trip test in `wish_cli::agent::tests` locks the inverse pair. `task.rs::serialize_harness` / `deserialize_harness` route through these helpers, so no separate string parser exists.
 - `ConversationOrTask::status(app) -> ConversationStatus` (already exists in `agent_conversations_model.rs`).
 - `ConversationOrTask::harness() -> Option<Harness>` (already exists in `agent_conversations_model.rs`); the task-card helper consumes this directly without round-tripping through a string.
@@ -62,7 +62,7 @@ pub(crate) fn terminal_view_agent_icon_variant(
 The public function gathers primitives from the live `TerminalView` into a `TerminalIconInputs` struct, then delegates to a pure inner function (`agent_icon_variant_from_terminal_inputs`) that's exercised directly by the cross-surface tests without an `AppContext`. Resolution order:
 1. If `CLIAgentSessionsModel::session(terminal_view.id())` returns a session with a known (non-`Unknown`) agent, return `CLIAgent { agent, status, is_ambient }` where `status` is `Some(session.status.to_conversation_status())` only when the session is plugin-backed AND the handler exposes rich status (Codex's OSC 9 handler does not). Plugin-backed and command-detected sessions share a single match arm here.
 2. Else if the terminal is ambient and `ambient_agent_view_model.selected_third_party_cli_agent()` returns a non-`Unknown` agent, return `CLIAgent { agent, status: selected_conversation_status_for_display, is_ambient: true }`. **This is the fix for the pre-setup bug.** `Unknown` is filtered to avoid rendering an unbranded gray circle for a future-server harness this client doesn't recognize.
-3. Else if the terminal has a selected conversation OR `is_ambient`, return `OzAgent { status: selected_conversation_status_for_display, is_ambient }`.
+3. Else if the terminal has a selected conversation OR `is_ambient`, return `HermonAgent { status: selected_conversation_status_for_display, is_ambient }`.
 4. Else `None` (caller falls through to `Neutral { Terminal }` / `Neutral { Shell }` / error indicator).
 ### 6. `conversation_or_task_agent_icon_variant` helper
 Same module as above. Signature:
@@ -73,8 +73,8 @@ pub(crate) fn conversation_or_task_agent_icon_variant(
 ) -> Option<IconWithStatusVariant>;
 ```
 Rules:
-- `ConversationOrTask::Task(_)`: ambient run. Pull the `Harness` directly from `ConversationOrTask::harness()` (already returns `Option<Harness>` from the deserialized `agent_config_snapshot.harness.harness_type`, no string parsing) and pass it to a private `agent_icon_variant_for_task(harness, status)` that maps via `CLIAgent::from_harness`. Filter out `CLIAgent::Unknown` so future-server harnesses fall back to the Oz treatment instead of an unbranded gray circle.
-- `ConversationOrTask::Conversation(_)`: local Hermon Agent conversation. Emit `OzAgent { status: Some(src.status(app)), is_ambient: false }`. Local conversations have no `CLIAgent` signal on this surface (per product spec).
+- `ConversationOrTask::Task(_)`: ambient run. Pull the `Harness` directly from `ConversationOrTask::harness()` (already returns `Option<Harness>` from the deserialized `agent_config_snapshot.harness.harness_type`, no string parsing) and pass it to a private `agent_icon_variant_for_task(harness, status)` that maps via `CLIAgent::from_harness`. Filter out `CLIAgent::Unknown` so future-server harnesses fall back to the Hermon treatment instead of an unbranded gray circle.
+- `ConversationOrTask::Conversation(_)`: local Hermon Agent conversation. Emit `HermonAgent { status: Some(src.status(app)), is_ambient: false }`. Local conversations have no `CLIAgent` signal on this surface (per product spec).
 ### 7. Wire vertical tabs through the helper
 Replace the two inline derivations:
 - `resolve_icon_with_status_variant` in `vertical_tabs.rs:2254-2299` for the Terminal branch becomes:
@@ -91,11 +91,11 @@ Replace the two inline derivations:
       }
   }
   ```
-- `TypedPane::summary_pane_kind` in `vertical_tabs.rs:2488-2509` for the Terminal branch becomes a thin wrapper that maps the helper's variant into `SummaryPaneKind::OzAgent`/`CLIAgent` with matching `is_ambient`:
+- `TypedPane::summary_pane_kind` in `vertical_tabs.rs:2488-2509` for the Terminal branch becomes a thin wrapper that maps the helper's variant into `SummaryPaneKind::HermonAgent`/`CLIAgent` with matching `is_ambient`:
   ```rust
   if let Some(variant) = terminal_view_agent_icon_variant(terminal_view, app) {
       return match variant {
-          IconWithStatusVariant::OzAgent { is_ambient, .. } => SummaryPaneKind::OzAgent { is_ambient },
+          IconWithStatusVariant::HermonAgent { is_ambient, .. } => SummaryPaneKind::HermonAgent { is_ambient },
           IconWithStatusVariant::CLIAgent { agent, is_ambient, .. } => SummaryPaneKind::CLIAgent { agent, is_ambient },
           _ => unreachable!("helper only returns agent variants"),
       };
@@ -131,19 +131,19 @@ Expand the enum to carry the flag so downstream rendering can honor it:
 ```rust
 // app/src/ai/agent_management/notifications/item.rs
 pub enum NotificationSourceAgent {
-    Oz { is_ambient: bool },
+    Hermon { is_ambient: bool },
     CLI { agent: CLIAgent, is_ambient: bool },
 }
 ```
 Both notification emit paths (`handle_cli_agent_session_event` and `handle_history_event_for_mailbox`) need `is_ambient` on the source. They also already need the git branch for the rich-layout header row, and that lookup walks the same workspace tree. Consolidate both into a single `TerminalViewMetadata { is_ambient, branch }` struct and a `TerminalViewMetadata::lookup(terminal_view_id, app)` helper that calls `find_terminal_view_by_id` once per notification, then reads `view.is_ambient_agent_session(app)` (the existing `TerminalView` helper, which gates on `FeatureFlag::CloudMode`) and `view.current_git_branch(app)`. `add_notification` takes the `branch: Option<String>` as a parameter so it doesn't perform a second lookup; callers thread the metadata through.
-Update `render_agent_avatar` in `item_rendering.rs` to read `is_ambient` from the enum variant rather than hardcoding `false`. The existing `IconWithStatusVariant::{OzAgent, CLIAgent}` code path already produces the cloud-lobe rendering when `is_ambient` is true; no changes to `render_icon_with_status` itself.
+Update `render_agent_avatar` in `item_rendering.rs` to read `is_ambient` from the enum variant rather than hardcoding `false`. The existing `IconWithStatusVariant::{HermonAgent, CLIAgent}` code path already produces the cloud-lobe rendering when `is_ambient` is true; no changes to `render_icon_with_status` itself.
 The telemetry event `TelemetryEvent::AgentNotificationShown { agent_variant: agent.into() }` keeps its existing schema by dropping the ambient flag in the `From<NotificationSourceAgent>` impl.
 ### 11. Telemetry / logs
 No new telemetry events. Existing `AgentNotificationShown` keeps firing with the agent variant. If schema allows, extend it with `is_ambient: bool` to enable future cloud-vs-local notification analytics; otherwise defer.
 ### 12. Cross-surface equivalence tests
 The suite's job is to lock the invariant *"same logical run → identical icon on every surface"* and catch drift when a new surface or state combo is added. Three essential pieces, all in a new `app/src/ui_components/agent_icon_tests.rs`.
 #### 12.1 Canonical state fixture
-A test-only enum `CanonicalRunState` enumerates every conceptually distinct run (plain terminal; local Hermon Agent conversation; local CLI agent (plugin-backed in-progress / plugin-backed blocked / command-detected); cloud Oz in-progress; cloud third-party pre-dispatch and in-progress). It exposes:
+A test-only enum `CanonicalRunState` enumerates every conceptually distinct run (plain terminal; local Hermon Agent conversation; local CLI agent (plugin-backed in-progress / plugin-backed blocked / command-detected); cloud Hermon in-progress; cloud third-party pre-dispatch and in-progress). It exposes:
 ```rust
 impl CanonicalRunState {
     fn all() -> &'static [Self];
@@ -156,9 +156,9 @@ impl CanonicalRunState {
 #### 12.2 Canonical-state equivalence table
 One parameterized test (`every_canonical_state_produces_consistent_icon_across_surfaces`) drives every canonical state through both the terminal-side helper (`agent_icon_variant_from_terminal_inputs`) and the task-side helper (`agent_icon_variant_for_task`) and asserts they project to the same `AgentIconFields`. Adding a surface = one more comparison; adding a state = one more enum variant + `expected` arm. A second test (`terminal_is_ambient_matches_inputs_for_every_state`) locks the structural invariant that `is_ambient` on the rendered variant always matches the input flag.
 #### 12.3 Spot tests
-- `cli_agent_from_harness_maps_known_harnesses` covers Oz/Claude/Gemini/OpenCode.
+- `cli_agent_from_harness_maps_known_harnesses` covers Hermon/Claude/Gemini/OpenCode.
 - `local_claude_vs_cloud_claude_differ_only_by_is_ambient` asserts a locally-registered Claude CLI session and an ambient Claude run produce the same `CLIAgent { Claude, .. }` variant differing only by `is_ambient`.
-- `task_with_oz_or_unknown_harness_renders_as_oz` asserts both Oz and Unknown harnesses fall back to the Oz variant on task cards.
+- `task_with_hermon_or_unknown_harness_renders_as_oz` asserts both Hermon and Unknown harnesses fall back to the Hermon variant on task cards.
 - `summary_pane_kind_icons_distinguish_ambient_claude_from_local_claude` in `vertical_tabs_tests.rs` stays as-is. Existing `notifications/item_tests.rs` tests are extended with `is_ambient: true` and `false` cases for each variant.
 ## End-to-end flow (Claude cloud run)
 1. User selects Claude in harness selector. `AmbientAgentViewModel::set_harness(Harness::Claude, ctx)` fires `HarnessSelected`.
@@ -179,12 +179,12 @@ One parameterized test (`every_canonical_state_produces_consistent_icon_across_s
 **Helper takes a full `TerminalView` reference.** This creates a transitive dependency from `ui_components/agent_icon.rs` back to `terminal::view::TerminalView`. Acceptable because `ui_components` already has terminal-aware code (`icon_with_status.rs` imports `CLIAgent` from `terminal`). Alternative: invert the dependency by making the helper a method on `TerminalView` in `pane_impl.rs`. Pick based on where the compile dependencies look cleanest; prefer the free function in `ui_components/agent_icon.rs` for testability.
 ## Testing and validation
 Unit coverage:
-- Add `CLIAgent::from_harness` tests for Oz/Claude/Gemini inputs.
+- Add `CLIAgent::from_harness` tests for Hermon/Claude/Gemini inputs.
 - Extend `vertical_tabs_tests.rs` (or add `ui_components/agent_icon_tests.rs`) with the cross-surface equivalence suite described in §12.
 - Test `conversation_or_task_agent_icon_variant` with:
   - A `ConversationOrTask::Task` whose `agent_config_snapshot.harness` is `"claude"` → `CLIAgent::Claude` + `is_ambient: true`.
-  - A `ConversationOrTask::Task` whose harness is `"oz"` or missing → `OzAgent` + `is_ambient: true`.
-  - A `ConversationOrTask::Conversation` → `OzAgent` + `is_ambient: false`.
+  - A `ConversationOrTask::Task` whose harness is `"oz"` or missing → `HermonAgent` + `is_ambient: true`.
+  - A `ConversationOrTask::Conversation` → `HermonAgent` + `is_ambient: false`.
 - Test that `terminal_view_agent_icon_variant` returns `CLIAgent { Claude, ... is_ambient: true }` when the view-model's selected harness is Claude and no CLIAgent session exists yet.
 - Test idempotency of `NotificationSourceAgent` schema: old tests in `notifications/item_tests.rs` need updates for the new `is_ambient` field; add one new test case asserting the cloud-lobe path is taken when `is_ambient: true`.
 Integration / manual validation:

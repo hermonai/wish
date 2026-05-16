@@ -10,7 +10,7 @@ Bring the `oz run list` and `oz run get` CLI commands to parity with the public 
 
 ## Problem
 
-Today the `oz run list` and `oz run get` commands are useful for a human glancing at recent runs, but they do not let users script against Oz from the shell:
+Today the `oz run list` and `oz run get` commands are useful for a human glancing at recent runs, but they do not let users script against Hermon from the shell:
 
 - Neither command honors the global `--output-format=json` flag. Both always render a pretty ASCII table, which is the only output mode.
 - `oz run list` only exposes `--limit`. None of the other server-supported filters are reachable from the CLI, so users cannot narrow to a specific state, source, creator, environment, time range, or search query.

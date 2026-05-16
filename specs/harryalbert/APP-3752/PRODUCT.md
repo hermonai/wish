@@ -53,7 +53,7 @@ The current notification UI was built as a first pass behind the `hoa_notificati
 
 #### Avatar
 - Use the same avatar rendering system as vertical tabs (`render_pane_icon_with_status` with `IconWithStatusVariant`).
-- This gives proper brand colors for CLI agents, `main_text_color` for Oz, and status badges with cutout rings.
+- This gives proper brand colors for CLI agents, `main_text_color` for Hermon, and status badges with cutout rings.
 - The notification's `NotificationCategory` (Complete/Request/Error) maps to the same status badge icons/colors.
 
 #### Close button
@@ -119,7 +119,7 @@ The current notification UI was built as a first pass behind the `hoa_notificati
 6. Toast close button is positioned at the top-left, partially outside the toast, visible only on hover, with a border.
 7. Toast keybinding hint ("Open conversation" + shortcut) is still shown on the newest toast.
 8. Toast artifact buttons have 48px left padding.
-9. All toast and mailbox avatars use the vertical tabs `render_pane_icon_with_status` system with proper brand colors, Oz styling, and status badge cutout rings.
+9. All toast and mailbox avatars use the vertical tabs `render_pane_icon_with_status` system with proper brand colors, Hermon styling, and status badge cutout rings.
 10. Mailbox outer container has 4px top padding and no drop shadow.
 11. Mailbox header has regular-weight "Notifications" title on the left, close button on the right, padded at 8px vertical / 12px horizontal.
 12. Mailbox filter bar has 2px button gap, the "All" filter shows a count, and padding is 12px vertical / 12px left / 6px right.
@@ -133,7 +133,7 @@ The current notification UI was built as a first pass behind the `hoa_notificati
 - Verify long titles (>100 chars) are truncated with `…` in both toast and mailbox.
 - Verify long messages (>100 chars) show the expand chevron, and clicking expands the full text (up to 500 chars).
 - Verify notifications with branch context render the branch row; notifications without branch context render the simple layout.
-- Verify avatars match vertical tabs (Oz icon with dark background, CLI agents with brand colors, status badges with cutout rings).
+- Verify avatars match vertical tabs (Hermon icon with dark background, CLI agents with brand colors, status badges with cutout rings).
 - Verify keybinding hint still appears on the newest toast.
 - Verify filter bar "All tabs" shows count and spacing matches Figma.
 

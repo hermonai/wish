@@ -18,7 +18,7 @@ APP_DIR="$DIST_DIR/AppDir"
 
 # Extract channel suffix from BINARY_NAME
 if [ "$ARTIFACT" = "cli" ]; then
-  CHANNEL_SUFFIX="${BINARY_NAME#oz}"
+  CHANNEL_SUFFIX="${BINARY_NAME#hermon}"
 else
   CHANNEL_SUFFIX="${BINARY_NAME#warp}"
 fi

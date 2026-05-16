@@ -4,7 +4,7 @@ Linear: [APP-3575](https://linear.app/warpdotdev/issue/APP-3575/finalize-toml-sc
 
 ## Summary
 
-Replace the recursive `[layout]` / `[[layout.panes]]` TOML nesting in tab configs with a flat `[[panes]]` array where nodes reference children by string ID. This makes deeply nested split layouts readable and hand-editable, and ships a bundled Oz skill so users can generate tab configs from natural language.
+Replace the recursive `[layout]` / `[[layout.panes]]` TOML nesting in tab configs with a flat `[[panes]]` array where nodes reference children by string ID. This makes deeply nested split layouts readable and hand-editable, and ships a bundled Hermon skill so users can generate tab configs from natural language.
 
 ## Problem
 
@@ -15,7 +15,7 @@ Additionally, there is no guided way for users to create tab configs — they mu
 ## Goals
 
 - A flat, ID-referenced pane tree format that supports arbitrarily deep nesting while remaining readable.
-- A bundled Oz skill (`tab-configs`) that generates valid tab config TOML from natural language descriptions.
+- A bundled Hermon skill (`tab-configs`) that generates valid tab config TOML from natural language descriptions.
 - A default template that is ready to use out of the box (single terminal pane, uncommitted, with `commands = []` pre-populated).
 - Tab color support (`color` field) matching launch config parity.
 
@@ -28,7 +28,7 @@ Additionally, there is no guided way for users to create tab configs — they mu
 
 ## Figma
 
-Figma: none provided. This feature has no new UI — it changes the file format and adds an Oz skill.
+Figma: none provided. This feature has no new UI — it changes the file format and adds an Hermon skill.
 
 ## User experience
 
@@ -37,12 +37,12 @@ Figma: none provided. This feature has no new UI — it changes the file format 
 1. User clicks `+` → "Create new tab config..." in the tab bar menu.
 2. Warp writes the default template to `~/.warp/tab_configs/my_tab_config.toml` and opens it in the user's configured editor.
 3. The template contains an active single-pane config with `commands = []`, and commented-out examples for two-pane split, 2x2 grid, and parameterized configs.
-4. The template header mentions the Oz skill: "Ask Oz to generate a tab config for you!"
+4. The template header mentions the Hermon skill: "Ask Hermon to generate a tab config for you!"
 
-### Using the Oz skill
+### Using the Hermon skill
 
-- User invokes `/skills → tab-configs` or asks Oz naturally (e.g. "create me a 2x2 tab config with one pane running my dev server").
-- Oz generates a valid `.toml` file and writes it to `~/.warp/tab_configs/`.
+- User invokes `/skills → tab-configs` or asks Hermon naturally (e.g. "create me a 2x2 tab config with one pane running my dev server").
+- Hermon generates a valid `.toml` file and writes it to `~/.warp/tab_configs/`.
 - The file immediately appears in the `+` menu (the filesystem watcher picks it up).
 
 ### Opening a tab config

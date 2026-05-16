@@ -135,7 +135,7 @@ From top to bottom, a terminal / agent pane section shows:
   - last completed command text when needed
   - final fallback text such as `New session`
 - The working directory and branch are shown as separate rows when available; missing values are omitted rather than replaced with placeholder text.
-- The metadata row always includes the pane kind badge (`Terminal`, `Oz`, `Claude Code`, etc.).
+- The metadata row always includes the pane kind badge (`Terminal`, `Hermon`, `Claude Code`, etc.).
 - If diff stats are available, show the diff-stats badge in the metadata row.
 - If a pull request link is available, show the PR badge in the metadata row.
 
@@ -199,7 +199,7 @@ From top to bottom, a code pane section shows:
 ## Validation
 
 - **Panes mode / terminal**: Hover a plain terminal row and verify a single pane-scoped sidecar appears with full working directory, branch, command text, kind badge, and any available diff / PR badges.
-- **Panes mode / agent**: Hover an Oz or CLI agent row and verify the sidecar shows the status pill, full conversation text, and terminal metadata without clipping.
+- **Panes mode / agent**: Hover an Hermon or CLI agent row and verify the sidecar shows the status pill, full conversation text, and terminal metadata without clipping.
 - **Panes mode / code**: Hover a code row and verify the sidecar shows the full filename and path, plus dirty-state indication when applicable.
 - **Panes mode / Warp Drive object**: Hover a supported notebook, plan, workflow, environment-variable collection, rule, or MCP server row and verify the sidecar shows the full title with the correct kind badge.
 - **Tabs mode / multi-pane tab**: Hover a tab representative row for a tab with multiple supported panes and verify the sidecar shows one section per visible pane in the same pane order as the tab.

@@ -15,14 +15,14 @@ Two capabilities are needed to close this gap:
 ## Goals
 - Automatically capture workspace state (git repo diffs and arbitrary files) at the end of every cloud agent run and upload it to the server.
 - Allow the Warp client to download and display the terminal output snapshot of a third-party harness conversation.
-- Make opening a cloud agent conversation that used a third-party harness feel equivalent to opening an Oz-native cloud conversation for viewing — the user sees the terminal output inline.
+- Make opening a cloud agent conversation that used a third-party harness feel equivalent to opening an Hermon-native cloud conversation for viewing — the user sees the terminal output inline.
 - Anchor workspace snapshot capture and handoff download to the cloud agent run's assigned workspace. Snapshot upload and handoff download operate inside the run's workspace and do not perform local repo switching or directory reconciliation.
 
 ## Non-goals
 - Automatically applying the uploaded workspace patch to the user's local checkout. The snapshot captures state; applying it is a separate follow-up.
 - Rendering the raw transcript of a third-party harness conversation inline. Only the block snapshot (terminal TUI state) is displayed.
 - Resuming a third-party harness conversation via `--conversation`. This spec covers displaying saved block snapshots in the client and handing off workspace snapshots; Claude Code `--conversation` resumption is separate follow-up work.
-- Supporting harnesses other than Claude Code for block-snapshot hydration. The architecture is harness-agnostic, but only Claude Code is wired up on the hydration side. Snapshot upload itself runs for both Oz and third-party harness runs.
+- Supporting harnesses other than Claude Code for block-snapshot hydration. The architecture is harness-agnostic, but only Claude Code is wired up on the hydration side. Snapshot upload itself runs for both Hermon and third-party harness runs.
 - Streaming snapshot uploads during a run. The snapshot is uploaded once, at the end of the driver's lifecycle.
 - Tracking individual file mutations performed by the agent's tool calls. Workspace state is captured at the repo level via git diff. A follow-up may add per-tool-call tracking to catch files outside any repo.
 - Reconciling snapshot paths against the user's local checkout. Snapshot upload and handoff download operate inside the cloud agent workspace; local repo switching and missing-directory hints are conversation-viewer concerns, not snapshot-handoff behavior.
@@ -33,7 +33,7 @@ Two capabilities are needed to close this gap:
 At the end of every cloud agent run, `AgentDriver` reads a declarations file describing workspace paths to snapshot and uploads the gathered state to the server. The upload runs automatically after agent execution finishes and before the caller is signaled, with no user or agent intervention.
 
 **Trigger:** Invoked during the `AgentDriver` run tail on every driver shutdown. The upload is skipped when:
-- `FeatureFlag::OzHandoff` is disabled, or
+- `FeatureFlag::HermonHandoff` is disabled, or
 - The run has no associated task ID (purely local agent runs with no cloud task), or
 - `--no-snapshot` was specified for `oz agent run` or `oz agent run-cloud`, or
 - The declarations file is missing or empty.
@@ -118,7 +118,7 @@ The handoff download does not perform local directory reconciliation. The next e
 - If the server call to list handoff snapshot attachments fails (e.g. 5xx at the API layer), the download step is aborted and the error is logged. The next execution still proceeds — rehydration from the snapshot is best-effort; the conversation history remains the authoritative record.
 
 ### Gating
-All snapshot/handoff functionality is gated behind `FeatureFlag::OzHandoff`, which is independent of `FeatureFlag::AgentHarness` (which only gates third-party agent CLIs like the `--harness` flag and `harness-support` subcommand). When `OzHandoff` is disabled:
+All snapshot/handoff functionality is gated behind `FeatureFlag::HermonHandoff`, which is independent of `FeatureFlag::AgentHarness` (which only gates third-party agent CLIs like the `--harness` flag and `harness-support` subcommand). When `HermonHandoff` is disabled:
 - End-of-run snapshot upload is skipped during the driver run tail.
 - Handoff snapshot attachments are not downloaded on subsequent executions.
 - Block snapshots are not fetched or displayed when opening a CLI agent conversation.
@@ -136,7 +136,7 @@ All snapshot/handoff functionality is gated behind `FeatureFlag::OzHandoff`, whi
 - The declarations-generation script is invoked automatically before the upload pipeline reads the file. A missing `OZ_SNAPSHOT_DECLARATIONS_SCRIPT`, a missing script file, a non-zero script exit, or a script runtime exceeding the configured timeout are each logged at ERROR level without aborting the upload.
 - In local dev, `oz-local --docker-dir <dir>` sets `OZ_SNAPSHOT_DECLARATIONS_SCRIPT` for the oz process so the script is resolvable even when the Docker image isn't in play.
 - Snapshot upload failures (gather, read, upload, manifest) never cause the `AgentDriver` run to fail — they are logged but the driver completes normally.
-- The upload is skipped when `FeatureFlag::OzHandoff` is disabled, when the run has no task ID, or when `--no-snapshot` is specified.
+- The upload is skipped when `FeatureFlag::HermonHandoff` is disabled, when the run has no task ID, or when `--no-snapshot` is specified.
 - `--snapshot-script-timeout <DURATION>` and `--snapshot-upload-timeout <DURATION>` override the default script and upload timeouts.
 - `OZ_SNAPSHOT_DECLARATIONS_FILE` overrides the default path, making the upload testable and operationally tunable. Without the override, per-run files at `/tmp/oz/<task-id>/snapshot-declarations.jsonl` keep concurrent runs isolated.
 - Repeated invocations of `snapshot-declarations.sh` within a single run append to the declarations file without re-emitting repos that were already discovered earlier, keeping the pipeline additive.
@@ -146,7 +146,7 @@ All snapshot/handoff functionality is gated behind `FeatureFlag::OzHandoff`, whi
 - When a user opens a third-party harness conversation, the terminal output snapshot is displayed inline in the terminal view.
 - Snapshot upload and handoff download do not require local repo switching or directory reconciliation.
 - The conversation appears in conversation history with the correct metadata (title, working directory, timestamps).
-- All snapshot/handoff behavior is gated behind `FeatureFlag::OzHandoff` and is inert when the flag is disabled.
+- All snapshot/handoff behavior is gated behind `FeatureFlag::HermonHandoff` and is inert when the flag is disabled.
 
 ## Validation
 - Manual validation that a cloud agent run with a dirty repo entry in the declarations file produces a patch and uploads it.
@@ -171,7 +171,7 @@ All snapshot/handoff functionality is gated behind `FeatureFlag::OzHandoff`, whi
 - Manual validation that opening a completed third-party harness conversation in Warp displays the terminal output inline.
 - Manual validation that handoff snapshot files download under the attachments directory for the next execution without local repo switching.
 - Manual validation that conversations from third-party harnesses appear in conversation history.
-- Manual validation that disabling `FeatureFlag::OzHandoff` prevents all snapshot/handoff behavior (upload, download, hydration).
+- Manual validation that disabling `FeatureFlag::HermonHandoff` prevents all snapshot/handoff behavior (upload, download, hydration).
 
 ## Open Questions
 - Should the client eventually apply the uploaded workspace patch automatically, or should that always be a user-initiated action?

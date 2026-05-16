@@ -1940,13 +1940,13 @@ fn test_harness_filter_matches_only_selected_harness() {
 
         let task_claude = task_with_harness(5100, "user-a", Some(Some(Harness::Claude)));
         let task_gemini = task_with_harness(5101, "user-a", Some(Some(Harness::Gemini)));
-        let task_oz_default = task_with_harness(5102, "user-a", Some(None));
+        let task_hermon_default = task_with_harness(5102, "user-a", Some(None));
         let task_no_snapshot = task_with_harness(5103, "user-a", None);
 
         for task in [
             &task_claude,
             &task_gemini,
-            &task_oz_default,
+            &task_hermon_default,
             &task_no_snapshot,
         ] {
             model.tasks.insert(task.task_id, task.clone());
@@ -1987,16 +1987,16 @@ fn test_harness_filter_matches_only_selected_harness() {
             let gemini_items = items_for(HarnessFilter::Specific(Harness::Gemini));
             assert_eq!(gemini_items, vec![format!("task:{}", task_gemini.task_id)]);
 
-            let oz_items = items_for(HarnessFilter::Specific(Harness::Hermon));
+            let hermon_mon_items = items_for(HarnessFilter::Specific(Harness::Hermon));
             assert_eq!(
-                oz_items.len(),
+                hermon_mon_items.len(),
                 2,
-                "expected 2 Wish Agent matches, got {oz_items:?}"
+                "expected 2 Wish Agent matches, got {hermon_mon_items:?}"
             );
-            assert!(oz_items.contains(&format!("task:{}", task_oz_default.task_id)));
-            assert!(oz_items.contains(&format!("conversation:{conv_id}")));
+            assert!(hermon_mon_items.contains(&format!("task:{}", thermon__hermon_default.task_id)));
+            assert!(hermon_mon_items.contains(&format!("conversation:{conv_id}")));
             assert!(
-                !oz_items.contains(&format!("task:{}", task_no_snapshot.task_id)),
+                !hermon_mon_items.contains(&format!("task:{}", task_no_snapshot.task_id)),
                 "stub task with no snapshot should not match the Wish Agent filter"
             );
         });

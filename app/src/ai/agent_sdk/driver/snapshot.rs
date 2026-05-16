@@ -53,7 +53,7 @@ use crate::server::server_api::harness_support::{
 
 /// Default path of the declarations file when neither the env var override nor a task ID
 /// is available. Per-run files use `{DEFAULT_DECLARATIONS_DIR}/<id>/{DEFAULT_DECLARATIONS_FILENAME}`.
-const DEFAULT_DECLARATIONS_DIR: &str = "/tmp/oz";
+const DEFAULT_DECLARATIONS_DIR: &str = "/tmp/hermon";
 const DEFAULT_DECLARATIONS_FILENAME: &str = "snapshot-declarations.jsonl";
 const DECLARATION_VERSION: u32 = 1;
 

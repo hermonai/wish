@@ -120,7 +120,10 @@ pub enum AIConversationArtifact {
 
 #[derive(cynic::Enum, Clone, Debug, PartialEq)]
 pub enum AgentHarness {
-    Oz,
+    /// Wire format `OZ` (preserved for server-schema back-compat); the Wish
+    /// codebase uses `Hermon` as the canonical internal name.
+    #[cynic(rename = "OZ")]
+    Hermon,
     ClaudeCode,
     Gemini,
     Codex,

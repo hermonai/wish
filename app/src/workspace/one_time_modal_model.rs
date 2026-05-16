@@ -20,7 +20,7 @@ use wishui::{Entity, ModelContext, SingletonEntity, WindowId};
 pub struct OneTimeModalModel {
     is_build_plan_migration_modal_open: bool,
     /// Whether the Hermon Cloud launch modal is currently being shown.
-    is_oz_launch_modal_open: bool,
+    is_hermon_launch_modal_open: bool,
     /// Whether the OpenWarp launch modal is currently being shown.
     is_openwarp_launch_modal_open: bool,
     is_orchestration_launch_modal_open: bool,
@@ -93,7 +93,7 @@ impl OneTimeModalModel {
 
         Self {
             is_build_plan_migration_modal_open: false,
-            is_oz_launch_modal_open: false,
+            is_hermon_launch_modal_open: false,
             is_openwarp_launch_modal_open: false,
             is_orchestration_launch_modal_open: false,
             is_hoa_onboarding_open: false,
@@ -102,8 +102,8 @@ impl OneTimeModalModel {
     }
 
     /// Returns whether the Hermon Cloud launch modal is currently open.
-    pub fn is_oz_launch_modal_open(&self) -> bool {
-        self.is_oz_launch_modal_open && self.target_window_id.is_some()
+    pub fn is_hermon_launch_modal_open(&self) -> bool {
+        self.is_hermon_launch_modal_open && self.target_window_id.is_some()
     }
 
     /// Returns the window ID where the currently open one-time modal should be displayed.
@@ -111,8 +111,8 @@ impl OneTimeModalModel {
         self.target_window_id
     }
 
-    pub fn mark_oz_launch_modal_dismissed(&mut self, ctx: &mut ModelContext<Self>) {
-        self.set_oz_launch_modal_open(false, ctx);
+    pub fn mark_hermon_launch_modal_dismissed(&mut self, ctx: &mut ModelContext<Self>) {
+        self.set_hermon_launch_modal_open(false, ctx);
     }
 
     /// Returns whether the OpenWarp launch modal is currently open.
@@ -143,7 +143,7 @@ impl OneTimeModalModel {
 
     /// Returns true if any one-time modal is currently open.
     pub fn is_any_modal_open(&self) -> bool {
-        (self.is_oz_launch_modal_open
+        (self.is_hermon_launch_modal_open
             || self.is_openwarp_launch_modal_open
             || self.is_orchestration_launch_modal_open
             || self.is_build_plan_migration_modal_open
@@ -152,8 +152,8 @@ impl OneTimeModalModel {
     }
 
     #[cfg(debug_assertions)]
-    pub fn force_open_oz_launch_modal(&mut self, ctx: &mut ModelContext<Self>) {
-        self.set_oz_launch_modal_open(true, ctx);
+    pub fn force_open_hermon_launch_modal(&mut self, ctx: &mut ModelContext<Self>) {
+        self.set_hermon_launch_modal_open(true, ctx);
     }
 
     #[cfg(debug_assertions)]
@@ -176,9 +176,9 @@ impl OneTimeModalModel {
         }
     }
 
-    fn set_oz_launch_modal_open(&mut self, is_open: bool, ctx: &mut ModelContext<Self>) -> bool {
-        if self.is_oz_launch_modal_open != is_open {
-            self.is_oz_launch_modal_open = is_open;
+    fn set_hermon_launch_modal_open(&mut self, is_open: bool, ctx: &mut ModelContext<Self>) -> bool {
+        if self.is_hermon_launch_modal_open != is_open {
+            self.is_hermon_launch_modal_open = is_open;
             ctx.emit(OneTimeModalEvent::VisibilityChanged { is_open });
             return true;
         }
@@ -240,7 +240,7 @@ impl OneTimeModalModel {
             return;
         }
 
-        if self.check_and_trigger_oz_launch_modal(ctx) {
+        if self.check_and_trigger_hermon_launch_modal(ctx) {
             return;
         }
 
@@ -284,7 +284,7 @@ impl OneTimeModalModel {
         self.set_hoa_onboarding_open(true, ctx)
     }
 
-    fn check_and_trigger_oz_launch_modal(&mut self, ctx: &mut ModelContext<Self>) -> bool {
+    fn check_and_trigger_hermon_launch_modal(&mut self, ctx: &mut ModelContext<Self>) -> bool {
         // Only show if the feature flag is enabled.
         if !FeatureFlag::HermonLaunchModal.is_enabled() {
             return false;
@@ -307,9 +307,9 @@ impl OneTimeModalModel {
             }
         });
 
-        let should_show_oz_modal = !matches!(ChannelState::channel(), Channel::Integration);
-        self.set_oz_launch_modal_open(should_show_oz_modal, ctx);
-        should_show_oz_modal
+        let should_show_hermon_modal = !matches!(ChannelState::channel(), Channel::Integration);
+        self.set_hermon_launch_modal_open(should_show_hermon_modal, ctx);
+        should_show_hermon_modal
     }
 
     fn check_and_trigger_openwarp_launch_modal(&mut self, ctx: &mut ModelContext<Self>) -> bool {

@@ -3,13 +3,13 @@ Linear: [REMOTE-1373](https://linear.app/warpdotdev/issue/REMOTE-1373)
 ## Summary
 Two capabilities for Claude Code cloud runs that together let a Claude session pick up where it left off:
 1. **Transcript rehydration** (the foundation) — when a fresh Claude sandbox starts against an existing conversation, restore the prior transcript into `~/.claude/` on disk AND make Claude actually use it. The latter requires a Claude-specific server-side system-prompt body plus a user-turn preamble that overrides Claude's baked-in prompt, which previously caused resumed sessions to ignore saved state and effectively start over (including dropping any uncommitted workspace patches from cloud-to-cloud handoff).
-2. **`--conversation <id>` for Claude Code** (the CLI surface) — lets a user deliberately trigger transcript rehydration against a finished Claude conversation, matching what `--conversation` does today for Oz. Works in both `run-cloud` and local `run`.
+2. **`--conversation <id>` for Claude Code** (the CLI surface) — lets a user deliberately trigger transcript rehydration against a finished Claude conversation, matching what `--conversation` does today for Hermon. Works in both `run-cloud` and local `run`.
 Transcript rehydration is the more important of the two: it's what makes cloud-to-cloud handoff actually survive on Claude, and `--conversation` is just the user-facing way to invoke it on demand.
 ## Problem
 Cloud Claude runs upload their full state to GCS (`claude_code.json` transcript, `block_snapshot.json`, handoff workspace patches), but nothing on the read side picks it back up:
 - The stored transcript is never rewritten into Claude's on-disk layout, so `claude --resume <uuid>` finds nothing and starts fresh.
-- On cloud-to-cloud handoff, the existing Oz-style rehydration system prompt gets deprioritized relative to Claude's baked-in system prompt on resumed sessions, so Claude acknowledges the instructions and proceeds as if the workspace were reset — uncommitted changes are silently lost.
-- `--conversation` is Oz-only, so a finished Claude conversation is effectively read-only.
+- On cloud-to-cloud handoff, the existing Hermon-style rehydration system prompt gets deprioritized relative to Claude's baked-in system prompt on resumed sessions, so Claude acknowledges the instructions and proceeds as if the workspace were reset — uncommitted changes are silently lost.
+- `--conversation` is Hermon-only, so a finished Claude conversation is effectively read-only.
 ## Goals
 - **Transcript rehydration works on Claude** — whenever a Claude sandbox is spun up against an existing conversation (cloud-to-cloud handoff, or explicit `--conversation`), the prior transcript lands in `~/.claude/projects/<encoded_cwd>/<uuid>.jsonl` with subagents, todos, and a `sessions-index.json` entry, AND any workspace patches from the prior sandbox are applied before Claude answers the new user turn. The "AND" is the hard part: it requires server-side prompt changes that survive Claude's own system prompt.
 - **`--conversation <id>` for Claude Code** — `warp agent run-cloud --harness claude --conversation <id> --prompt "..."` spawns a new cloud run that resumes the prior Claude session; `warp agent run --harness claude --conversation <id> --prompt "..."` does the same locally.
@@ -41,7 +41,7 @@ The client validates `--harness` against the conversation's stored harness befor
 - Transient transcript fetch failures: bounded exponential backoff inside `HarnessSupportClient::fetch_transcript`; permanent 4xx fails fast.
 - `claude --resume` failing at runtime (e.g. upstream session-index desync): surface the error and exit non-zero instead of silently starting a fresh session.
 - `--conversation` without a prompt/skill: same rejection as today's `has_prompt_source` check.
-- In-progress prior run: no special handling — same as Oz `--conversation`.
+- In-progress prior run: no special handling — same as Hermon `--conversation`.
 ### Feature-flag gating
 - `FeatureFlag::CloudConversations` off → `--conversation` hidden and rejected (unchanged).
 - `FeatureFlag::AgentHarness` off → `--harness claude` rejected; the Claude transcript-rehydration client path is also gated on it.
@@ -57,11 +57,11 @@ The client validates `--harness` against the conversation's stored harness befor
 - **Conversation resuming (local)**: `agent run --harness claude --conversation <id>` locally; `~/.claude/projects/<encoded_cwd>/<uuid>.jsonl` grows and Claude's `/resume` picker lists the session.
 - **Errors**: harness-mismatch id, missing-transcript id, non-existent id all fail cleanly pre-launch.
 - **Unit tests**: `--resume` vs `--session-id` flag selection, envelope cwd rewrite, session-index upsert, `HarnessSupportClient::fetch_transcript` retry behavior, harness-mismatch + resume-state-missing error paths.
-- **Integration tests**: `GET /harness-support/transcript` (Claude 307, Oz 400, no-conversation 400, unauthed 403); worker appends `--conversation` to CLI args when set.
+- **Integration tests**: `GET /harness-support/transcript` (Claude 307, Hermon 400, no-conversation 400, unauthed 403); worker appends `--conversation` to CLI args when set.
 ## Resolved decisions
 - Transcript rehydration runs on any resumed Claude sandbox, not just `--conversation`; the same code path serves cloud-to-cloud handoff.
-- Third-party-CLI rehydration prompt is stronger than Oz's and is also echoed as a user-turn preamble — on resumed Claude sessions the system prompt alone gets treated as background instead of pre-turn action.
-- Same conversation id, in place (matches Oz `--conversation`).
+- Third-party-CLI rehydration prompt is stronger than Hermon's and is also echoed as a user-turn preamble — on resumed Claude sessions the system prompt alone gets treated as background instead of pre-turn action.
+- Same conversation id, in place (matches Hermon `--conversation`).
 - Explicit `--harness claude` required; no auto-detect from metadata.
 - Reuse the envelope's Claude `session_id` so the transcript grows linearly instead of fragmenting across saves.
 - Rewrite `envelope.cwd` silently (cloud sandboxes routinely change cwd).

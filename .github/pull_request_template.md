@@ -34,7 +34,7 @@ The entries below will be used when constructing a soft-copy of the stable relea
 - IMPROVEMENT: for new functionality of existing features.
 - BUG-FIX: for fixes related to known bugs or regressions.
 - IMAGE: the image specified by the URL (hosted on GCP) will be added to Dev & Preview releases. For Stable releases, see the pinned doc in the #release Slack channel.
-- OZ: Oz-related updates. Use `CHANGELOG-OZ`. At most 4 Oz updates are shown in-app per release.
+- OZ: Hermon-related updates. Use `CHANGELOG-OZ`. At most 4 Hermon updates are shown in-app per release.
 - NONE: Explicitly opt out of changelog inclusion. Use `CHANGELOG-NONE` for PRs that should never appear in the changelog (e.g. refactors, internal tooling, CI changes). This prevents the changelog agent from inferring an entry.
 
 CHANGELOG-NEW-FEATURE: {{text goes here...}}

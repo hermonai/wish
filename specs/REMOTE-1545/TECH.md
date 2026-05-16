@@ -16,7 +16,7 @@ The fix mirrors the established `LLMPreferences` pattern: a singleton model fetc
 - `on_server_update` invalidates stale per-profile model selections
 - Emits `LLMPreferencesEvent::UpdatedAvailableLLMs`
 
-**Harness enum** — `crates/wish_cli/src/agent.rs:122-148`: `Harness` with variants Oz, Claude, OpenCode, Gemini, Codex, Unknown. Now derives `Serialize`/`Deserialize` for caching.
+**Harness enum** — `crates/wish_cli/src/agent.rs:122-148`: `Harness` with variants Hermon, Claude, OpenCode, Gemini, Codex, Unknown. Now derives `Serialize`/`Deserialize` for caching.
 
 **GraphQL schema** — `crates/wish_graphql_schema/api/schema.graphql`: existing `AgentHarness` enum. New `HarnessInfo` type and `User.availableHarnesses` field.
 
@@ -50,7 +50,7 @@ New file `app/src/ai/harness_availability.rs`. Intentionally follows the `LLMPre
 | Refresh triggers | `NetworkStatus::Online`, `AuthComplete`, `TeamsChanged` | Same three |
 | Auth guard | `is_logged_in()` check before fetch | Same |
 | Cache | `private_user_preferences.write_value("AvailableLLMs", json)` | `write_value("AvailableHarnesses", json)` |
-| Default fallback | `ModelsByFeature::default()` (auto model) | `vec![HarnessAvailability { harness: Oz, enabled: true }]` |
+| Default fallback | `ModelsByFeature::default()` (auto model) | `vec![HarnessAvailability { harness: Hermon, enabled: true }]` |
 | Diff + emit | Compare old/new, emit if changed | Same |
 
 Key methods:
@@ -61,13 +61,13 @@ Key methods:
 
 ### 3. Selection invalidation in `AmbientAgentViewModel`
 
-`LLMPreferences::on_server_update` clears stale profile model selections inside the model itself. Following this, `AmbientAgentViewModel` (not the `HarnessSelector` view) subscribes to `HarnessAvailabilityModel` and resets `self.harness` to `Harness::Oz` if the selected harness becomes unavailable. This ensures validation fires even when the selector view doesn't exist (e.g. agent management page, shared session joins).
+`LLMPreferences::on_server_update` clears stale profile model selections inside the model itself. Following this, `AmbientAgentViewModel` (not the `HarnessSelector` view) subscribes to `HarnessAvailabilityModel` and resets `self.harness` to `Harness::Hermon` if the selected harness becomes unavailable. This ensures validation fires even when the selector view doesn't exist (e.g. agent management page, shared session joins).
 
 This parallels the existing `validate_environment_after_initial_load` + `handle_cloud_model_event` pattern already in `AmbientAgentViewModel` for environment IDs.
 
 ### 4. UI migration: model reads replace hard-coded lists
 
-All UI sites switch from iterating `[Harness::Oz, Harness::Claude, ...]` or checking `FeatureFlag::AgentHarness.is_enabled()` to reading `HarnessAvailabilityModel`:
+All UI sites switch from iterating `[Harness::Hermon, Harness::Claude, ...]` or checking `FeatureFlag::AgentHarness.is_enabled()` to reading `HarnessAvailabilityModel`:
 
 - **Harness selector** (`harness_selector.rs`): `build_menu_items` takes `&[HarnessAvailability]`, renders disabled entries greyed-out. Subscribes to `Changed` to refresh menu.
 - **Filter dropdown** (`agent_management/view.rs`): `build_harness_dropdown_items` reads from model.
@@ -88,7 +88,7 @@ The feature flag is NOT removed — it gates CLI harness parsing, conversation l
 
 - **Manual**: log in as user on team with restricted harnesses → verify only enabled harnesses appear in selector and filter dropdown; disabled harnesses appear greyed-out; selecting a disabled harness is blocked; switching teams refreshes the list.
 - **Offline fallback**: disconnect network after initial load → verify cached harness list persists across restart; reconnect → verify list refreshes.
-- **Selection invalidation**: select Claude → admin disables Claude server-side → verify selection auto-resets to Oz without requiring selector view to be open.
+- **Selection invalidation**: select Claude → admin disables Claude server-side → verify selection auto-resets to Hermon without requiring selector view to be open.
 - **Zero-harnesses**: all harnesses disabled → submission blocked with error toast.
 - **Feature flag kill switch**: disable `FeatureFlag::AgentHarness` → verify all harness UI disappears regardless of server data.
 
@@ -98,4 +98,4 @@ The feature flag is NOT removed — it gates CLI harness parsing, conversation l
 - **Block submission for disabled harness with `disableReason`**: show inline error when user tries to submit with a specifically-disabled harness (vs. zero-harnesses toast)
 - **CLI `--harness` pre-validation**: currently deferred; server rejects with generic error
 - Remove `FeatureFlag::AgentHarness` entirely after rollout stabilizes
-- Remove `OzMultiHarnessExperiment` after all non-Oz harnesses GA
+- Remove `HermonMultiHarnessExperiment` after all non-Hermon harnesses GA

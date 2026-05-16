@@ -346,7 +346,7 @@ fn cli_agent_from_harness_maps_known_harnesses() {
 }
 
 #[test]
-fn run_card_with_oz_or_unknown_harness_renders_as_oz() {
+fn run_card_with_hermon_or_unknown_harness_renders_as_hermon() {
     // Hermon harness explicitly: local Hermon is the spec-defined fallback.
     let variant = agent_icon_variant_for_run(Harness::Hermon, ConversationStatus::Success, true);
     let fields = AgentIconFields::from_variant(&variant).unwrap();

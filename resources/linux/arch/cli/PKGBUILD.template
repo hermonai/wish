@@ -11,19 +11,19 @@ depends=(
 )
 replaces=(
 	'warp-cli@@CHANNEL_SUFFIX@@'
-	'oz=v0.2026.02.09.06.06.stable_00'
-	'oz=v0.2026.02.09.06.06.stable_02'
-	'oz=v0.2026.02.10.11.37.stable_00'
-	'oz=v0.2026.02.10.11.37.stable_01'
-	'oz=v0.2026.02.11.08.23.stable_00'
+	'hermon=v0.2026.02.09.06.06.stable_00'
+	'hermon=v0.2026.02.09.06.06.stable_02'
+	'hermon=v0.2026.02.10.11.37.stable_00'
+	'hermon=v0.2026.02.10.11.37.stable_01'
+	'hermon=v0.2026.02.11.08.23.stable_00'
 )
 conflicts=(
 	'warp-cli@@CHANNEL_SUFFIX@@'
-	'oz=v0.2026.02.09.06.06.stable_00'
-	'oz=v0.2026.02.09.06.06.stable_02'
-	'oz=v0.2026.02.10.11.37.stable_00'
-	'oz=v0.2026.02.10.11.37.stable_01'
-	'oz=v0.2026.02.11.08.23.stable_00'
+	'hermon=v0.2026.02.09.06.06.stable_00'
+	'hermon=v0.2026.02.09.06.06.stable_02'
+	'hermon=v0.2026.02.10.11.37.stable_00'
+	'hermon=v0.2026.02.10.11.37.stable_01'
+	'hermon=v0.2026.02.11.08.23.stable_00'
 )
 optdepends=(
 	'org.freedesktop.secrets: for securely storing passwords'

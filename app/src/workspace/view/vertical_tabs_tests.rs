@@ -156,7 +156,7 @@ fn preferred_agent_tab_titles_default_to_title_like_text() {
         conversation_latest_user_prompt: Some("Latest Hermon Agent prompt".to_string()),
         cli_agent_title: Some("CLI summary".to_string()),
         cli_agent_latest_user_prompt: Some("Latest CLI prompt".to_string()),
-        is_oz_agent: true,
+        is_hermon_agent: true,
         cli_agent: Some(CLIAgent::Claude),
     };
 
@@ -176,7 +176,7 @@ fn preferred_agent_tab_titles_do_not_use_cli_prompt_when_disabled() {
         conversation_latest_user_prompt: None,
         cli_agent_title: None,
         cli_agent_latest_user_prompt: Some("Latest CLI prompt".to_string()),
-        is_oz_agent: false,
+        is_hermon_agent: false,
         cli_agent: Some(CLIAgent::Claude),
     };
 
@@ -193,7 +193,7 @@ fn terminal_primary_line_uses_terminal_title_when_disabled_cli_has_only_prompt()
         conversation_latest_user_prompt: None,
         cli_agent_title: None,
         cli_agent_latest_user_prompt: Some("Latest CLI prompt".to_string()),
-        is_oz_agent: false,
+        is_hermon_agent: false,
         cli_agent: Some(CLIAgent::Claude),
     };
     let (conversation_title, cli_title) =
@@ -226,7 +226,7 @@ fn preferred_agent_tab_titles_use_latest_prompt_when_enabled() {
         conversation_latest_user_prompt: Some("Latest Hermon Agent prompt".to_string()),
         cli_agent_title: Some("CLI summary".to_string()),
         cli_agent_latest_user_prompt: Some("Latest CLI prompt".to_string()),
-        is_oz_agent: true,
+        is_hermon_agent: true,
         cli_agent: Some(CLIAgent::Claude),
     };
 
@@ -246,7 +246,7 @@ fn terminal_primary_line_uses_cli_prompt_when_enabled_cli_has_prompt() {
         conversation_latest_user_prompt: None,
         cli_agent_title: None,
         cli_agent_latest_user_prompt: Some("Latest CLI prompt".to_string()),
-        is_oz_agent: false,
+        is_hermon_agent: false,
         cli_agent: Some(CLIAgent::Claude),
     };
     let (conversation_title, cli_title) =
@@ -272,7 +272,7 @@ fn terminal_primary_line_uses_cli_prompt_when_enabled_cli_is_long_running() {
         conversation_latest_user_prompt: None,
         cli_agent_title: None,
         cli_agent_latest_user_prompt: Some("Latest CLI prompt".to_string()),
-        is_oz_agent: false,
+        is_hermon_agent: false,
         cli_agent: Some(CLIAgent::Claude),
     };
     let (conversation_title, cli_title) =
@@ -298,7 +298,7 @@ fn preferred_agent_tab_titles_fall_back_when_preferred_text_is_missing() {
         conversation_latest_user_prompt: None,
         cli_agent_title: None,
         cli_agent_latest_user_prompt: Some("Latest CLI prompt".to_string()),
-        is_oz_agent: true,
+        is_hermon_agent: true,
         cli_agent: Some(CLIAgent::Claude),
     };
 

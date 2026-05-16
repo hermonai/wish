@@ -8,7 +8,7 @@ Companion product spec: `specs/QUALITY-643/PRODUCT.md`
 
 The orchestration config UI (plan card and run_agents confirmation card) lets users pick a harness and model for child agents. Both cards share picker logic in `orchestration_controls.rs`. Two problems exist today:
 
-1. **Harness picker** is hardcoded to `[Oz, Claude, Codex]` — it doesn't read from the server's `availableHarnesses` list, doesn't include Gemini, and doesn't respect admin enabled/disabled state.
+1. **Harness picker** is hardcoded to `[Hermon, Claude, Codex]` — it doesn't read from the server's `availableHarnesses` list, doesn't include Gemini, and doesn't respect admin enabled/disabled state.
 2. **Model picker** always shows Warp's internal LLM catalog filtered by provider (Anthropic for Claude, OpenAI for Codex). Those IDs (e.g. `claude-4-6-opus-high`) are not recognized by third-party harness CLIs. The server maintains separate harness-specific model catalogs that the desktop client already fetches and caches in `HarnessAvailabilityModel`, but the orchestration UI doesn't use them.
 
 Additionally, model_id is not delivered to local child harness processes: Claude Code doesn't receive `ANTHROPIC_MODEL`. Codex model delivery uses `~/.codex/config.toml`, which is only safe in cloud/remote environments where the filesystem is isolated — local children must not touch it (see `local_harness_launch.rs:143` comment).
@@ -35,7 +35,7 @@ Additionally, model_id is not delivered to local child harness processes: Claude
 **Model ID delivery to harness processes**
 - `app/src/ai/agent_sdk/driver/harness/mod.rs` — `harness_model_env_vars()` (line 373): sets `ANTHROPIC_MODEL` for Claude, no-op for Codex
 - `app/src/pane_group/pane/local_harness_launch.rs` — `prepare_local_harness_child_launch()` (line 77): builds child env_vars but does not include model_id
-- `app/src/pane_group/pane/terminal_pane.rs` — `launch_local_harness_child()` (line 1302): passes `model_id` to `apply_child_model_id_override` which only sets Oz LLM preference
+- `app/src/pane_group/pane/terminal_pane.rs` — `launch_local_harness_child()` (line 1302): passes `model_id` to `apply_child_model_id_override` which only sets Hermon LLM preference
 - `app/src/ai/agent_sdk/driver/harness/codex.rs` — `prepare_codex_config_toml()` (line 573): writes `~/.codex/config.toml` but does not write a `model` key; top-level key name is `"model"` (confirmed by test at `codex_tests.rs:201`)
 
 ## Proposed changes
@@ -44,7 +44,7 @@ Additionally, model_id is not delivered to local child harness processes: Claude
 
 **File**: `orchestration_controls.rs` — `populate_harness_picker()`
 
-Replace the hardcoded `[Harness::Oz, Harness::Claude, Harness::Codex]` iteration (line 392) with a read from `HarnessAvailabilityModel::as_ref(ctx).available_harnesses()`.
+Replace the hardcoded `[Harness::Hermon, Harness::Claude, Harness::Codex]` iteration (line 392) with a read from `HarnessAvailabilityModel::as_ref(ctx).available_harnesses()`.
 
 For each `HarnessAvailability` entry:
 - Use `harness_display::icon_for()` and `harness_display::brand_color()` for icons (these already cover all variants including Gemini).
@@ -65,7 +65,7 @@ Add an `is_local: bool` parameter (or pass the current `RunAgentsExecutionMode`)
 ```
 let harness = Harness::parse_orchestration_harness(harness_type);
 match harness {
-    Some(Harness::Oz) | None => {
+    Some(Harness::Hermon) | None => {
         // Current behavior: LLMPreferences filtered by provider
     }
     Some(Harness::Codex) if is_local => {
@@ -85,10 +85,10 @@ The "Default model" entry should use label `"Default model"` and emit `A::model_
 
 When execution mode toggles between Local and Cloud, the `HarnessChanged` / `ExecutionModeToggled` handlers must repopulate the model picker since Codex's available models depend on the mode.
 
-Apply the same Oz-vs-non-Oz branching to:
-- `is_model_in_filtered_choices()` — for non-Oz, check model_id against `HarnessAvailabilityModel::models_for()` OR accept empty string (the "Default model" entry). For local Codex, only empty string is valid.
-- `first_filtered_model_id()` — for non-Oz, return `Some(String::new())` (the "Default model" entry) as the default.
-- `sync_picker_selections()` — for non-Oz, find display_name from `HarnessAvailabilityModel::models_for()` instead of `LLMPreferences`. Map empty model_id to the "Default model" label.
+Apply the same Hermon-vs-non-Hermon branching to:
+- `is_model_in_filtered_choices()` — for non-Hermon, check model_id against `HarnessAvailabilityModel::models_for()` OR accept empty string (the "Default model" entry). For local Codex, only empty string is valid.
+- `first_filtered_model_id()` — for non-Hermon, return `Some(String::new())` (the "Default model" entry) as the default.
+- `sync_picker_selections()` — for non-Hermon, find display_name from `HarnessAvailabilityModel::models_for()` instead of `LLMPreferences`. Map empty model_id to the "Default model" label.
 
 Addresses behaviors 6–10, 11–14, 15–16.
 
@@ -98,7 +98,7 @@ Addresses behaviors 6–10, 11–14, 15–16.
 
 Both views already subscribe to `LLMPreferencesEvent::UpdatedAvailableLLMs`. Add an analogous subscription to `HarnessAvailabilityModel`:
 - Repopulate the **harness picker** when the harness list changes (behaviors 1–5).
-- Repopulate the **model picker** when harness models arrive, but only when the current harness is non-Oz (behavior 15).
+- Repopulate the **model picker** when harness models arrive, but only when the current harness is non-Hermon (behavior 15).
 
 Addresses behaviors 1–5, 15.
 
@@ -150,9 +150,9 @@ Addresses behaviors 17 (remote), 18 (remote).
 - `populate_model_picker_for_harness` with harness="codex", cloud mode: "Default model" entry at top, then Codex models. (Behavior 8)
 - `populate_model_picker_for_harness` with harness="codex", local mode: only "Default model" entry. (Behavior 8)
 - `populate_model_picker_for_harness` with harness="oz": Warp LLM catalog (existing behavior). (Behavior 6)
-- `is_model_in_filtered_choices` returns false for Warp IDs when harness is non-Oz, true for empty string ("Default model"). (Behavior 12)
-- `first_filtered_model_id` returns empty string for non-Oz harness. (Behavior 11)
-- Harness change from Claude (model="opus") to Oz: model resets to first Warp LLM. (Behavior 12)
+- `is_model_in_filtered_choices` returns false for Warp IDs when harness is non-Hermon, true for empty string ("Default model"). (Behavior 12)
+- `first_filtered_model_id` returns empty string for non-Hermon harness. (Behavior 11)
+- Harness change from Claude (model="opus") to Hermon: model resets to first Warp LLM. (Behavior 12)
 
 **local_harness_launch tests** — new/updated tests:
 - `prepare_local_harness_child_launch` merges `ANTHROPIC_MODEL` into env_vars when harness is Claude and model_id is provided. (Behavior 17)
@@ -172,13 +172,13 @@ Run `cargo fmt`, `cargo clippy`, and `./script/presubmit` before PR.
 
 ### Manual validation
 
-- Open orchestration config on a plan card → harness picker shows Oz, Claude Code, Codex (and Gemini if server returns it, possibly disabled).
+- Open orchestration config on a plan card → harness picker shows Hermon, Claude Code, Codex (and Gemini if server returns it, possibly disabled).
 - Select Claude Code → model picker shows "Default model" at top, then `best`, `opus`, `sonnet`, etc.
 - Select Codex (Cloud mode) → model picker shows "Default model" at top, then `default`, `GPT-5.5`, `GPT-5.4`, etc.
 - Select Codex (Local mode) → model picker shows only "Default model".
 - Toggle Local → Cloud with Codex selected → model picker repopulates with full Codex catalog.
-- Select Oz → model picker returns to Warp LLM catalog.
-- Change harness from Claude (with "opus" selected) to Oz → model resets.
+- Select Hermon → model picker returns to Warp LLM catalog.
+- Change harness from Claude (with "opus" selected) to Hermon → model resets.
 - Launch local agents with Claude Code + "opus" → verify `ANTHROPIC_MODEL=opus` in child env.
 - Launch local agents with Claude Code + "Default model" → verify no `ANTHROPIC_MODEL` in child env.
 - Launch cloud agents with Codex + "gpt-5.4" → verify `model = "gpt-5.4"` in `~/.codex/config.toml` inside the cloud env.

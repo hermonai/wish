@@ -26,7 +26,7 @@ use crate::BlocklistAIHistoryModel;
 const TRANSCRIPT_PANEL_WIDTH: f32 = 280.0;
 
 /// Builds the OZ runs URL for viewing all cloud runs.
-fn build_oz_runs_url() -> String {
+fn build_hermon_runs_url() -> String {
     format!("{}/runs", ChannelState::hermon_root_url())
 }
 
@@ -60,7 +60,7 @@ impl Workspace {
     pub(super) fn build_view_cloud_runs_button(
         ctx: &mut ViewContext<Self>,
     ) -> ViewHandle<ActionButton> {
-        let url = build_oz_runs_url();
+        let url = build_hermon_runs_url();
         ctx.add_typed_action_view(|_ctx| {
             ActionButton::new("View all cloud runs", SecondaryTheme).on_click(move |ctx| {
                 ctx.dispatch_typed_action(WorkspaceAction::OpenLink(url.clone()));

@@ -1,11 +1,11 @@
 # REMOTE-1453: Resolve service-account global skills at agent driver startup
 ## Summary
-Service accounts can have a configured set of global skill specs that should be available in every Oz agent run. The client resolves those specs at agent-driver startup, clones any org-qualified source repos that are not already on disk, and loads skills before the first query runs.
+Service accounts can have a configured set of global skill specs that should be available in every Hermon agent run. The client resolves those specs at agent-driver startup, clones any org-qualified source repos that are not already on disk, and loads skills before the first query runs.
 Global skills are intentionally not treated as permission to load every skill in their source repos. Repos that are part of the run's environment still use normal environment behavior and autodiscover all skills. Repos cloned only because they contain global skills load only the explicitly requested global skills.
 ## Problem
 Before this work, an `oz agent run` only saw skills that were already present on disk or explicitly requested with `--skill <SPEC>`. Service-account global skills exposed by `User.globalSkills` were not made available automatically, and a repo cloned only to satisfy one global skill could accidentally expose unrelated skills in that repo.
 ## Goals
-- For service-account-authenticated Oz agent runs, make every explicitly requested global skill available before the agent processes its first query.
+- For service-account-authenticated Hermon agent runs, make every explicitly requested global skill available before the agent processes its first query.
 - Autodiscover all skills from repositories that are part of the configured environment.
 - For repositories cloned solely as global-skill sources, load only the global skills explicitly listed in `User.globalSkills`.
 - If the same `(owner, repo)` appears both in the environment and in `User.globalSkills`, environment behavior wins and all skills from that repo are autodiscovered.
@@ -16,10 +16,10 @@ Before this work, an `oz agent run` only saw skills that were already present on
 - A Warp-managed cache directory for cloned skill repositories.
 - Periodic or background refresh of the global skill list during a run.
 - Changing CLI `--skill` resolution semantics.
-- Adding global-skill loading to non-Oz harnesses in this iteration.
+- Adding global-skill loading to non-Hermon harnesses in this iteration.
 ## Behavior
-1. When an Oz agent driver starts, it reads the cached `User.globalSkills` list. The list uses the same skill spec format accepted by `--skill`: `skill_name`, `repo:skill_name`, `org/repo:skill_name`, or full-path variants.
-2. If `OzPlatformSkills` is disabled, the client treats `globalSkills` as empty and bypasses the flow.
+1. When an Hermon agent driver starts, it reads the cached `User.globalSkills` list. The list uses the same skill spec format accepted by `--skill`: `skill_name`, `repo:skill_name`, `org/repo:skill_name`, or full-path variants.
+2. If `HermonPlatformSkills` is disabled, the client treats `globalSkills` as empty and bypasses the flow.
 3. Each raw global skill string is parsed with the existing `SkillSpec` parser. Parse failures are logged at warn level and skipped; the rest of the list still resolves.
 4. Specs without an org-qualified repository are not cloneable, so they do not add any repository to the global-skill clone set. They may still resolve through normal on-disk skill discovery if the skill is already present.
 5. Specs with an `org/repo` qualifier contribute `(org, repo)` to the global-skill repo set. Multiple specs for the same `(org, repo)` result in one clone attempt and retain the explicit specs for later filtering.
@@ -31,7 +31,7 @@ Before this work, an `oz agent run` only saw skills that were already present on
    - Overlapping repos: treat the repo as an environment repo, so all skills are loaded.
 9. For simple global skill names such as `org/repo:deploy`, filtering matches parsed skill names and mirrors normal provider precedence when multiple providers define the same name. For full-path specs, filtering matches the exact path relative to the repo root.
 10. Once loaded, the selected skills participate in the existing `SkillManager` flow. There is no separate global-skill registry or global-skill badge.
-11. The flow is Oz-only for now. Non-Oz harnesses keep their existing behavior.
+11. The flow is Hermon-only for now. Non-Hermon harnesses keep their existing behavior.
 12. Historical conversations are unaffected; they retain whatever skills were available when they ran.
 ## Edge cases
 1. Duplicate global skill specs: cloning is deduped by `(org, repo)` and skill filtering dedupes by selected skill path.

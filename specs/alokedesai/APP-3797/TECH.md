@@ -2,7 +2,7 @@
 
 ## Problem
 
-The current SSH wrapper flow creates a `RemoteCommandExecutor` that runs every generator/completion command by opening a new SSH channel through a ControlMaster socket. This is unreliable and stateless. We want to replace it with a persistent remote server binary (`~/.warp/remote-server/oz`) on the remote machine that communicates over stdin/stdout using length-prefixed protobuf messages. The binary is the Wish CLI, installed from the `/download/cli` endpoint if not already present.
+The current SSH wrapper flow creates a `RemoteCommandExecutor` that runs every generator/completion command by opening a new SSH channel through a ControlMaster socket. This is unreliable and stateless. We want to replace it with a persistent remote server binary (`~/.warp/remote-server/hermon`) on the remote machine that communicates over stdin/stdout using length-prefixed protobuf messages. The binary is the Wish CLI, installed from the `/download/cli` endpoint if not already present.
 
 The challenge is that this introduces two independent async conditions that must both complete before the session is ready: (1) the shell `Bootstrapped` DCS hook, and (2) the remote server `InitializeResponse`. Today the bootstrap path is fully synchronous — `Bootstrapped` DCS immediately triggers `initialize_bootstrapped_session()`. We need to gate that call on both conditions without breaking non-SSH or flag-off flows.
 
@@ -65,25 +65,25 @@ enum RemoteServerSetupState {
 
 The setup runs as an async task, using the existing SSH ControlMaster socket (from `IsLegacySSHSession::Yes { socket_path }`) to execute remote commands. The steps are:
 
-1. **Check**: `ssh -o ControlPath={socket} placeholder@placeholder 'test -x ~/.warp/remote-server/oz && ~/.warp/remote-server/oz --version'`
+1. **Check**: `ssh -o ControlPath={socket} placeholder@placeholder 'test -x ~/.warp/remote-server/hermon && ~/.warp/remote-server/hermon --version'`
 2. **Install** (if check fails): pipe the following script into `bash -s` over the control socket SSH connection (mirroring how `RemoteCommandExecutor` runs commands today):
 
    ```sh
    set -e
    arch=$(uname -m)
    case "$arch" in
-     x86_64)  pkg=oz-linux-x86_64.tar.gz ;;
-     aarch64|arm64) pkg=oz-linux-aarch64.tar.gz ;;
+     x86_64)  pkg=hermon-linux-x86_64.tar.gz ;;
+     aarch64|arm64) pkg=hermon-linux-aarch64.tar.gz ;;
      *) echo "unsupported arch: $arch" >&2; exit 2 ;;
    esac
    mkdir -p "$HOME/.warp/remote-server"
-   curl -fSL "$WARP_GET_URL?package=$pkg" -o "$HOME/.warp/remote-server/oz.tar.gz"
-   tar -xzf "$HOME/.warp/remote-server/oz.tar.gz" -C "$HOME/.warp/remote-server"
-   chmod +x "$HOME/.warp/remote-server/oz"
+   curl -fSL "$WARP_GET_URL?package=$pkg" -o "$HOME/.warp/remote-server/hermon.tar.gz"
+   tar -xzf "$HOME/.warp/remote-server/hermon.tar.gz" -C "$HOME/.warp/remote-server"
+   chmod +x "$HOME/.warp/remote-server/hermon"
    ```
 
    `$WARP_GET_URL` is substituted at runtime from the configured server root URL (`SERVER_ROOT_URL` env var or its compiled-in default), pointing at `/download/cli`. Exit code 2 is mapped to `ErrorReason::UnsupportedPlatform`. The script is shipped as a constant `&str` in the install module. Parse `curl` stderr for download progress if available.
-3. **Launch**: `ssh -o ControlPath={socket} placeholder@placeholder '~/.warp/remote-server/oz'` — keep the SSH channel open, forwarding stdin/stdout.
+3. **Launch**: `ssh -o ControlPath={socket} placeholder@placeholder '~/.warp/remote-server/hermon'` — keep the SSH channel open, forwarding stdin/stdout.
 4. **Initialize**: Send a `ClientMessage { request_id, initialize: Initialize {} }` (length-prefixed protobuf) to the process's stdin. Read a `ServerMessage { initialize_response }` from stdout. Timeout after 10 seconds.
 
 The async task communicates state changes back to the UI via an event channel.

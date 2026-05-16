@@ -21,7 +21,7 @@ pub fn apply_onboarding_settings(selected_settings: &SelectedSettings, app: &mut
             ..
         } => {
             apply_agent_settings(agent_settings, app);
-            let is_ai_enabled = !agent_settings.disable_oz;
+            let is_ai_enabled = !agent_settings.disable_hermon;
             if let Some(ui) = ui_customization {
                 apply_ui_customization_settings(ui, true, app);
             }

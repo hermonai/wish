@@ -1133,7 +1133,7 @@ fn render_hover_card(
     // harness (always when known). Hidden entirely when no chip applies.
     let mut chips: Vec<Box<dyn Element>> = Vec::new();
 
-    // Harness chip: defaults to Wish Agent (Oz) when server metadata
+    // Harness chip: defaults to Wish Agent (Hermon) when server metadata
     // hasn't loaded yet so the chip slot stays useful for in-progress
     // local conversations. The brand color matches `harness_display`
     // (e.g. orange for Claude Code, blue for Gemini CLI).
@@ -1921,7 +1921,7 @@ pub fn render_orchestration_breadcrumbs(
         .unwrap_or("Agent");
     let child_label = child_name.to_string();
 
-    // Parent crumb uses the Oz glyph on a neutral disc to match the
+    // Parent crumb uses the Hermon glyph on a neutral disc to match the
     // orchestrator pill in the pill bar.
     let parent_spec = CrumbSpec {
         conversation_id: parent_id,

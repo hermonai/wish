@@ -192,5 +192,5 @@ pub fn is_cloud_agent_pre_first_exchange(
 
     terminal_model
         .block_list()
-        .is_executing_oz_environment_startup_commands()
+        .is_executing_hermon_environment_startup_commands()
 }

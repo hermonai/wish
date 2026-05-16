@@ -8,7 +8,9 @@ use crate::{
 #[derive(cynic::Enum, Clone, Copy, Debug, PartialEq)]
 #[cynic(graphql_type = "AgentHarness")]
 pub enum AgentHarnessInput {
-    Oz,
+    /// Wire format `OZ` (preserved for server-schema back-compat).
+    #[cynic(rename = "OZ")]
+    Hermon,
     ClaudeCode,
     Gemini,
     Codex,
@@ -17,7 +19,7 @@ pub enum AgentHarnessInput {
 impl From<crate::ai::AgentHarness> for Option<AgentHarnessInput> {
     fn from(h: crate::ai::AgentHarness) -> Self {
         match h {
-            crate::ai::AgentHarness::Oz => Some(AgentHarnessInput::Oz),
+            crate::ai::AgentHarness::Hermon => Some(AgentHarnessInput::Hermon),
             crate::ai::AgentHarness::ClaudeCode => Some(AgentHarnessInput::ClaudeCode),
             crate::ai::AgentHarness::Gemini => Some(AgentHarnessInput::Gemini),
             crate::ai::AgentHarness::Codex => Some(AgentHarnessInput::Codex),

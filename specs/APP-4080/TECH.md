@@ -1,8 +1,8 @@
 # APP-4080: Use Latest User Prompt as Conversation Title in Tab Names
 
 ## Problem
-Vertical tabs currently resolve agent terminal row text in several places, and the Oz and plugin-backed CLI agent paths use different semantics.
-Oz rows call through `TerminalView::selected_conversation_display_title`, which ultimately uses `AIConversation::title()`: generated task description, then an initial prompt-style fallback, then explicit fallback title. Plugin-backed CLI agent rows call `CLIAgentSessionContext::display_title()`, which currently prefers the latest plugin `query` over `summary`. The new setting needs to make this choice consistent:
+Vertical tabs currently resolve agent terminal row text in several places, and the Hermon and plugin-backed CLI agent paths use different semantics.
+Hermon rows call through `TerminalView::selected_conversation_display_title`, which ultimately uses `AIConversation::title()`: generated task description, then an initial prompt-style fallback, then explicit fallback title. Plugin-backed CLI agent rows call `CLIAgentSessionContext::display_title()`, which currently prefers the latest plugin `query` over `summary`. The new setting needs to make this choice consistent:
 - setting off/default: prefer conversation title/title-like metadata
 - setting on: prefer latest user prompt
 
@@ -41,7 +41,7 @@ The technical work is to add the setting, expose it in AI settings, and route al
 Each call site:
 1. reads `CLIAgentSessionsModel::session(terminal_view.id())`
 2. suppresses agent metadata for non-plugin-backed CLI sessions
-3. calls `terminal_view.selected_conversation_display_title(app)` for Oz
+3. calls `terminal_view.selected_conversation_display_title(app)` for Hermon
 4. calls `session.session_context.display_title()` for plugin-backed CLI agents
 5. passes both values into `terminal_primary_line_data()`
 
@@ -77,7 +77,7 @@ Render the toggle in `OtherAIWidget`, near `Show conversation history in tools p
 - `Use latest user prompt as conversation title in tab names`
 
 Suggested description:
-- `Show the latest user prompt instead of the generated conversation title for Oz and third-party agent sessions in vertical tabs.`
+- `Show the latest user prompt instead of the generated conversation title for Hermon and third-party agent sessions in vertical tabs.`
 
 Because the setting also affects plugin-backed third-party CLI agent sessions, do not make editability depend exclusively on `AISettings::is_any_ai_enabled(app)`. The row can still use standard AI settings styling, but the toggle should remain usable for users who keep Warp AI disabled while using third-party coding agents.
 
@@ -89,7 +89,7 @@ Suggested private types in `vertical_tabs.rs`:
 - `TerminalAgentText` containing:
   - `conversation_display_title: Option<String>`
   - `cli_agent_title: Option<String>`
-  - `is_oz_agent: bool`
+  - `is_hermon_agent: bool`
   - `cli_agent: Option<CLIAgent>`
 
 Suggested helpers:
@@ -98,7 +98,7 @@ Suggested helpers:
 
 `terminal_agent_text()` should own the plugin-backed suppression rule:
 - if a CLI agent session exists and `listener.is_none()`, do not use CLI or Hermon Agent conversation metadata for the row; preserve current terminal fallback behavior
-- otherwise resolve Oz and CLI text according to the setting
+- otherwise resolve Hermon and CLI text according to the setting
 
 `terminal_primary_line_data()` can remain as the pure fallback combiner once the agent text has been chosen. This avoids coupling it directly to settings or `AppContext`, and keeps existing unit tests easy to extend.
 
@@ -142,9 +142,9 @@ Adding an `AISettings` field may require updating generated or checked-in settin
 ## End-to-end flow
 1. User opens Settings > AI and sees `Use latest user prompt as conversation title in tab names` disabled by default.
 2. Vertical tabs render a terminal row.
-3. The row asks `terminal_agent_text()` for Oz/CLI conversation text.
+3. The row asks `terminal_agent_text()` for Hermon/CLI conversation text.
 4. `terminal_agent_text()` reads `AISettings::use_latest_user_prompt_as_conversation_title_in_tab_names`.
-5. For Oz:
+5. For Hermon:
    - disabled: use `AIConversation::title()`, with existing empty-conversation default title handling
    - enabled: use `AIConversation::latest_user_prompt_for_tab_name()`, falling back to title/default text
 6. For plugin-backed CLI agents:
@@ -158,13 +158,13 @@ Adding an `AISettings` field may require updating generated or checked-in settin
 flowchart TD
     Settings[AISettings: use_latest_user_prompt_as_conversation_title_in_tab_names]
     VTabs[vertical_tabs.rs terminal_agent_text]
-    Oz[TerminalView selected AIConversation]
+    Hermon[TerminalView selected AIConversation]
     CLI[CLIAgentSessionsModel session]
     Primary[terminal_primary_line_data]
     Surfaces[Row text / Compact subtitle / Detail sidecar / Search]
 
     Settings --> VTabs
-    Oz --> VTabs
+    Hermon --> VTabs
     CLI --> VTabs
     VTabs --> Primary
     Primary --> Surfaces
@@ -199,7 +199,7 @@ Add or update unit tests:
 
 Manual validation:
 - Default-off Hermon Agent conversation shows generated title in vertical tabs.
-- Toggle on and send an Oz follow-up prompt; row, compact command subtitle, detail sidecar, and search reflect the latest prompt.
+- Toggle on and send an Hermon follow-up prompt; row, compact command subtitle, detail sidecar, and search reflect the latest prompt.
 - Plugin-backed CLI agent with both summary and query shows summary/title-like text by default and query when toggled on.
 - Non-plugin CLI detection and plain terminal rows keep existing fallback behavior.
 

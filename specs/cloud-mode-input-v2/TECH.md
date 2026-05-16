@@ -10,7 +10,7 @@ We are reshaping the Cloud Mode composing UI to match the new Figma design. Toda
 2. The editor/input box.
 3. A separate `AgentInputFooter` below the input box containing the environment selector, mic/file/voice buttons, chips, model/profile selector, etc.
 
-V2 changes the layout: a new **top row above the input box** that contains a host selector ("Warp"), the restyled harness selector ("Oz"), and (out of scope for this PR) an MCP-config button; and a **taller input box** whose **control footer is rendered inside the same rounded container**, holding the environment selector, voice button, image button, and profile/model selector. The legacy `AgentInputFooter` is not rendered in V2.
+V2 changes the layout: a new **top row above the input box** that contains a host selector ("Warp"), the restyled harness selector ("Hermon"), and (out of scope for this PR) an MCP-config button; and a **taller input box** whose **control footer is rendered inside the same rounded container**, holding the environment selector, voice button, image button, and profile/model selector. The legacy `AgentInputFooter` is not rendered in V2.
 
 This is gated behind a new feature flag `CloudModeInputV2`. When the flag is off, V1 behavior is unchanged.
 

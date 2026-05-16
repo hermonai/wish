@@ -3839,7 +3839,7 @@ impl TryFrom<String> for AIConversationId {
 pub enum AIAgentHarness {
     /// The Hermon agent backend. GraphQL still emits this as `"OZ"` on the
     /// wire until the server schema migrates (see
-    /// [`wish_graphql::ai::AgentHarness::Oz`]).
+    /// [`wish_graphql::ai::AgentHarness::Hermon`]).
     Hermon,
     ClaudeCode,
     Gemini,

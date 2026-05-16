@@ -3,7 +3,7 @@ Product spec: `specs/APP-3585/PRODUCT.md`.
 
 Server tech spec: `warp-server/specs/APP-3585/TECH.md` (PR https://github.com/warpdotdev/warp-server/pull/10476).
 ## Problem
-The attribution setting (whether Oz adds a `Co-Authored-By` line to commits and PRs) is currently a binary team-level flag. We need to turn it into a two-level setting: team admins get a three-way `AdminEnablementSetting` (Enable / Disable / RespectUserSetting), and individual users get their own boolean preference that takes effect when the team delegates.
+The attribution setting (whether Hermon adds a `Co-Authored-By` line to commits and PRs) is currently a binary team-level flag. We need to turn it into a two-level setting: team admins get a three-way `AdminEnablementSetting` (Enable / Disable / RespectUserSetting), and individual users get their own boolean preference that takes effect when the team delegates.
 
 This spec covers the warp-internal (client) changes. Anything about how the server stores or resolves the effective value lives in the server spec.
 ## Relevant code
@@ -57,19 +57,19 @@ Visual structure follows the AI-page convention: a `render_separator` and a `bui
 For the locked-toggle tooltip, the widget uses `WORKSPACE_OVERRIDE_TOOLTIP_MESSAGE` from `app/src/ai/execution_profiles/editor/ui_helpers.rs` ("This option is enforced by your organization's settings and cannot be customized."), matching `CloudAgentComputerUseWidget` and the rest of the AI page. The Privacy page uses a shorter "This setting is managed by your organization." string; we deliberately follow the AI-page wording here for consistency.
 
 ## End-to-end flow (user toggles attribution off)
-1. User opens Settings → AI → Oz.
+1. User opens Settings → AI → Hermon.
 2. Client reads the team's `enable_warp_attribution` from cached `WorkspaceSettings` via `get_agent_attribution_setting()`.
 3. Setting is `RespectUserSetting`, so the toggle is interactive and reflects `AISettings.agent_attribution_enabled` (default `true`, showing as checked).
 4. User clicks the toggle → `ToggleAgentAttribution` action sets `AISettings.agent_attribution_enabled` to `false` (persisted locally).
 5. `CloudPreferencesSyncer` picks up the change and upserts the user's `JsonPreference` GSO (`unique_key = {firebaseUID}_Global_AgentAttributionEnabled`, `serialized_model.value = false`).
-6. Next Oz run: warp-server resolves the effective setting (team = RespectUserSetting → read user GSO = false) and excludes attribution instructions from the prompt. Oz creates a commit without the `Co-Authored-By` line.
+6. Next Hermon run: warp-server resolves the effective setting (team = RespectUserSetting → read user GSO = false) and excludes attribution instructions from the prompt. Hermon creates a commit without the `Co-Authored-By` line.
 
 ```mermaid
 flowchart TD
     A[User toggles off] --> B[AISettings.agent_attribution_enabled = false]
     B --> C[CloudPreferencesSyncer upsert]
     C --> D[(warp-server generic_string_objects\nunique_key = firebaseUID_Global_AgentAttributionEnabled)]
-    D --> E[Next Oz run]
+    D --> E[Next Hermon run]
     E --> F{Team setting}
     F -->|Enable| G[Attribution included]
     F -->|Disable| H[Attribution excluded]
@@ -86,7 +86,7 @@ flowchart TD
   - `test_agent_attribution_forced_on_by_team` — team `Enable` → accessor returns `Enable`
   - `test_agent_attribution_forced_off_by_team` — team `Disable` → accessor returns `Disable`
   - `test_agent_attribution_respects_user_setting` — team `RespectUserSetting` → accessor returns `RespectUserSetting`
-- UI manual test: verify each team-setting state renders the toggle in the correct locked/interactive state, in both the legacy and Oz subpages.
+- UI manual test: verify each team-setting state renders the toggle in the correct locked/interactive state, in both the legacy and Hermon subpages.
 - End-to-end (once the server branch merges): run an Hermon agent task that creates a commit with the setting off → verify no attribution line. Run with team-level `Enable` and verify the client toggle is locked on; same for `Disable`.
 ## Follow-ups
 - Admin-panel UI (separate warp-server PR) to change the team-level control from a binary toggle to a three-way selector.

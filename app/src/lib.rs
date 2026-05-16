@@ -783,10 +783,10 @@ pub fn run() -> Result<()> {
         }
     }
 
-    // If running as a standalone CLI binary or invoked as "oz", print help
+    // If running as a standalone CLI binary or invoked as "hermon", print help
     // instead of launching the GUI app.
     let is_cli_binary = cfg!(feature = "standalone")
-        || wish_cli::binary_name().is_some_and(|name| name.starts_with("oz"))
+        || wish_cli::binary_name().is_some_and(|name| name.starts_with("hermon"))
         || std::env::var_os("WARP_CLI_MODE").is_some();
     if is_cli_binary {
         wish_cli::Args::clap_command().print_help()?;

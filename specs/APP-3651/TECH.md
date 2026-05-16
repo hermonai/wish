@@ -23,7 +23,7 @@ The vertical tabs panel pane rows need restructuring to improve information hier
 `render_terminal_row_content` builds three lines:
 1. **Primary** (`render_terminal_primary_line`): working directory + git branch, main text color
 2. **Secondary** (`render_terminal_secondary_line`): conversation title/status, or terminal title if it differs from working directory; sub text color. Returns `None` if terminal title matches working directory.
-3. **Tertiary** (`render_terminal_tertiary_line`): kind badge (Terminal/Oz icon + label) + right badges (diff stats, PR)
+3. **Tertiary** (`render_terminal_tertiary_line`): kind badge (Terminal/Hermon icon + label) + right badges (diff stats, PR)
 
 ### Non-terminal pane rows
 `render_pane_row` builds the content in the `else` branch (line 739-774):

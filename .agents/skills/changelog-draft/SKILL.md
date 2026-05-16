@@ -170,7 +170,7 @@ Combine explicit entries (Step 2) and inferred entries (Step 6) into the final r
 1. `NEW-FEATURE` — New Features
 2. `IMPROVEMENT` — Improvements
 3. `BUG-FIX` — Bug Fixes
-4. `OZ` — Oz Updates
+4. `OZ` — Hermon Updates
 
 PRs marked with `CHANGELOG-NONE` are explicitly opted out and must never appear in the changelog markdown.
 
@@ -195,7 +195,7 @@ Write two files to `output_dir`:
 ## Bug Fixes
 - Fixed crash on startup ([#1236](https://github.com/warpdotdev/warp/pull/1236))
 
-## Oz Updates
+## Hermon Updates
 - Improved agent memory ([#1237](https://github.com/warpdotdev/warp/pull/1237))
 
 ## Community

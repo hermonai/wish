@@ -218,8 +218,8 @@ The harness that produced an agent conversation.
 The `OZ` value is the canonical wire string for Hermon's first-party harness
 (client-side Rust identifier is `Harness::Hermon`; see crates/wish_cli/src/agent.rs).
 The wire token stays `OZ` for round-trip safety: telemetry analytics filter on
-`harness="oz"`, persisted user preferences carry the same string, and in-flight
-cloud agent sessions have `harness_type="oz"` baked in. Renaming to `HERMON`
+`harness="hermon"`, persisted user preferences carry the same string, and in-flight
+cloud agent sessions have `harness_type="hermon"` baked in. Renaming to `HERMON`
 requires a coordinated schema + server + analytics migration; recorded as a
 deferred follow-up rather than landed with the user-facing Hermon rename.
 """
@@ -3878,7 +3878,7 @@ type User {
   billingMetadata: BillingMetadata
   blocks: [Block!]!
   bonusGrants: [BonusGrant!]!
-  completedOzWebappFtue: Boolean!
+  completedHermonWebappFtue: Boolean!
 
   """
   Returns a history of user's conversation usage data over the past N days

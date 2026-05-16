@@ -45,13 +45,13 @@ When the user hovers over a separator, "New worktree config", or "New Tab Config
 
 ### Sidecar layout
 The sidecar panel contains:
-1. **Title**: The item name (e.g., "Terminal", "PowerShell", "Oz", or the tab config's `name` field).
+1. **Title**: The item name (e.g., "Terminal", "PowerShell", "Hermon", or the tab config's `name` field).
 2. **Subtitle**: For user tab configs, the full path to the `.toml` source file displayed in a subdued/secondary text style (e.g., `~/.warp/tab_configs/my_config.toml`). For built-in items, no subtitle.
 3. **Buttons**: Varies by item type (see below).
 
 ### Sidecar buttons by item type
 
-**Built-in items (Terminal, shell variants, Oz, Hermon Cloud):**
+**Built-in items (Terminal, shell variants, Hermon, Hermon Cloud):**
 - "Make default" only.
 
 **User tab configs:**
@@ -66,7 +66,7 @@ This directly writes the **"Default mode for new sessions"** setting (see below)
 
 - **Terminal**: Sets default to `Terminal`.
 - **A shell variant** (Windows): Sets default to `Terminal`. (Shell-specific defaults are out of scope; this just ensures Cmd+T opens a terminal.)
-- **Oz**: Sets default to `Agent`.
+- **Hermon**: Sets default to `Agent`.
 - **Hermon Cloud**: Sets default to `Cloud Agent` (i.e. the tab you open to when you click this option now)
 - **A user tab config**: Sets default to that config (identified by source file path).
 
@@ -113,7 +113,7 @@ This editor-setting fix also applies to:
 - **Windows Terminal flattening**: Removing the Terminal submenu means `NewSessionSidecarKind::Terminal` and `configure_terminal_new_session_sidecar` are no longer needed. The shell items become regular top-level menu entries.
 
 ## Success criteria
-1. Hovering over any actionable item (Terminal, shell variants, Oz, user tab configs) in the tab configs menu shows a sidecar.
+1. Hovering over any actionable item (Terminal, shell variants, Hermon, user tab configs) in the tab configs menu shows a sidecar.
 2. The sidecar for user tab configs shows the config name, file path, and three buttons (Make default, Edit config, Remove).
 3. The sidecar for built-in items shows only "Make default".
 4. Clicking "Make default" updates the "Default mode for new sessions" setting.

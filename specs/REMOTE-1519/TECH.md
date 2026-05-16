@@ -92,7 +92,7 @@ The cloud agent's replay rebroadcasts every exchange in the forked conversation,
 - the incoming `request_id` matches an existing exchange's `server_output_id`.
 Replay events for already-known exchanges are dropped; new turns the cloud agent appends after the local fork (e.g. the user's first submitted prompt) carry request_ids we have never seen and flow through normally.
 ### 7. Feature-flag posture
-No new feature flags. All changes are gated on the existing `FeatureFlag::OzHandoff && FeatureFlag::LocalToCloudHandoff` (client) and `features.LocalToCloudHandoffEnabled()` (server) used by REMOTE-1486.
+No new feature flags. All changes are gated on the existing `FeatureFlag::HermonHandoff && FeatureFlag::LocalToCloudHandoff` (client) and `features.LocalToCloudHandoffEnabled()` (server) used by REMOTE-1486.
 ## Risks and mitigations
 - **Chip-click latency is now gated on the prepare-fork RPC.** Previously the pane opened instantly; now the user sees nothing until the fork resolves. The fork is a synchronous metadata + GCS-copy round-trip already used at submit time today; expected latency is similar to other authenticated public-API RPCs (<300ms p50). On error we surface a toast immediately.
 - **Source conversation not synced to GCS.** `ForkConversationForHandoff` returns `InvalidRequestError` when `BatchDoesConversationDataExist` is false. The client surfaces this as the toast above; the user can wait a moment and click again.

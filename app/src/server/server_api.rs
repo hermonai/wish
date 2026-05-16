@@ -86,7 +86,7 @@ const WARP_ERROR_CODE_OUT_OF_CREDITS: &str = "OUT_OF_CREDITS";
 const WARP_ERROR_CODE_AT_CAPACITY: &str = "AT_CLOUD_AGENT_CAPACITY";
 
 /// Header used to communicate the source of an agent run (e.g. "CLI", "GITHUB_ACTION").
-pub(crate) const AGENT_SOURCE_HEADER: &str = "X-Oz-Api-Source";
+pub(crate) const AGENT_SOURCE_HEADER: &str = "X-Hermon-Api-Source";
 
 #[cfg(feature = "agent_mode_evals")]
 pub const EVAL_USER_ID_HEADER: &str = "X-Eval-User-ID";

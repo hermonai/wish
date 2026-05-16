@@ -30,8 +30,8 @@ pub enum WorktreeBranchNamingMode {
 #[serde(rename_all = "snake_case")]
 pub enum GuidedModalSessionType {
     Terminal,
-    /// Wire format stays `"oz"` so telemetry analytics see no discontinuity.
-    #[serde(rename = "oz")]
+    /// Wire format stays `"hermon"` so telemetry analytics see no discontinuity.
+    #[serde(rename = "hermon")]
     Hermon,
     CliAgent,
 }

@@ -116,7 +116,7 @@ pub async fn load_conversation_from_server(
         Ok((conversation_data, server_metadata)) => {
             match server_metadata.harness {
                 AIAgentHarness::Hermon => {
-                    // Convert Oz conversations to an AIConversation.
+                    // Convert Hermon conversations to an AIConversation.
                     match convert_conversation_data_to_ai_conversation(
                         conversation_id,
                         &conversation_data,
@@ -124,7 +124,7 @@ pub async fn load_conversation_from_server(
                         RestorationMode::Continue,
                     ) {
                         Some(conversation) => {
-                            log::info!("Loaded Oz conversation {conversation_id} from server");
+                            log::info!("Loaded Hermon conversation {conversation_id} from server");
                             Some(CloudConversationData::Hermon(Box::new(conversation)))
                         }
                         None => {

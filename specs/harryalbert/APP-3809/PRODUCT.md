@@ -110,7 +110,7 @@ The flow has 4 sequential steps. The user progresses forward only (no back navig
 **Content**:
 - Title: "Create your default tab config"
 - Description: "A tab config defines what opens when you create a new tab. Select a repo, choose a session type (terminal, Warp agent, or third-party agents like Claude or Codex), and optionally attach a worktree. This setup is used for every new tab."
-- **Session type** selector: pill/chip buttons matching the existing session config modal (reuse the same rendering code and logic, including dynamic filtering of session types based on whether Oz/AI is enabled).
+- **Session type** selector: pill/chip buttons matching the existing session config modal (reuse the same rendering code and logic, including dynamic filtering of session types based on whether Hermon/AI is enabled).
 - **Select directory** button: opens the native file picker. Displays the selected path in user-friendly form (e.g. `~/warp-internal`). Defaults to the user's home directory.
 - **Enable worktree support** checkbox with description: "Work on multiple branches at once. Worktrees give each tab its own copy of the repo, so you don't need to switch branches or stash changes." Disabled when the selected directory is not a git repo, with a tooltip explaining why.
 - Progress indicator: 3 dots, dot 3 active.

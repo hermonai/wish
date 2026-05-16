@@ -108,7 +108,7 @@ pub struct AgentDevelopmentSettings {
     /// The default session mode chosen during onboarding.
     pub session_default: crate::SessionDefault,
     /// Whether the user chose to disable the built-in Wish agent.
-    pub disable_oz: bool,
+    pub disable_hermon: bool,
     /// Whether agent notifications (mailbox button, toasts, notification items) are shown.
     pub show_agent_notifications: bool,
 }
@@ -120,7 +120,7 @@ impl AgentDevelopmentSettings {
             autonomy: Some(AgentAutonomy::default()),
             cli_agent_toolbar_enabled: true,
             session_default: crate::SessionDefault::Agent,
-            disable_oz: false,
+            disable_hermon: false,
             show_agent_notifications: true,
         }
     }
@@ -136,7 +136,7 @@ pub enum AgentSlideAction {
     /// Dispatched from hover handlers on enabled rows.
     HighlightModel(LLMId),
     SelectAutonomy(AgentAutonomy),
-    ToggleDisableOz,
+    ToggleDisableHermon,
     BackClicked,
     NextClicked,
     UpgradeClicked,
@@ -164,7 +164,7 @@ pub struct AgentSlide {
     autonomy_partial_mouse_state: MouseStateHandle,
     autonomy_none_mouse_state: MouseStateHandle,
 
-    disable_oz_mouse: MouseStateHandle,
+    disable_hermon_mouse: MouseStateHandle,
 
     back_button: button::Button,
     next_button: button::Button,
@@ -260,7 +260,7 @@ impl AgentSlide {
             autonomy_full_mouse_state: MouseStateHandle::default(),
             autonomy_partial_mouse_state: MouseStateHandle::default(),
             autonomy_none_mouse_state: MouseStateHandle::default(),
-            disable_oz_mouse: MouseStateHandle::default(),
+            disable_hermon_mouse: MouseStateHandle::default(),
             back_button: button::Button::default(),
             next_button: button::Button::default(),
             upgrade_button: button::Button::default(),
@@ -379,7 +379,7 @@ impl AgentSlide {
 
         // Apply a semi-transparent overlay to visually disable the upper sections
         // when the built-in agent checkbox is disabled.
-        let upper_sections: Box<dyn Element> = if settings.disable_oz {
+        let upper_sections: Box<dyn Element> = if settings.disable_hermon {
             let bg = appearance.theme().background().into_solid();
             let overlay_color = ColorU::new(bg.r, bg.g, bg.b, 128);
             Container::new(upper_col.finish())
@@ -394,9 +394,9 @@ impl AgentSlide {
             .with_child(upper_sections);
 
         if FeatureFlag::OpenWarpNewSettingsModes.is_enabled() {
-            let disable_oz_section = self.render_disable_oz_section(appearance, settings);
+            let disable_hermon_section = self.render_disable_hermon_section(appearance, settings);
             col = col.with_child(
-                Container::new(disable_oz_section)
+                Container::new(disable_hermon_section)
                     .with_margin_top(24.)
                     .finish(),
             );
@@ -512,7 +512,7 @@ impl AgentSlide {
             Some(model) => (model.title.clone(), Some(model.icon)),
             None => ("".to_string(), None),
         };
-        let is_disabled = settings.disable_oz;
+        let is_disabled = settings.disable_hermon;
 
         let title_color: ColorU = if is_disabled {
             internal_colors::text_disabled(theme, background_for_text)
@@ -903,7 +903,7 @@ impl AgentSlide {
         for (idx, (autonomy, title, subtitle, mouse_state)) in
             autonomy_options.into_iter().enumerate()
         {
-            let is_selected = !settings.disable_oz && settings.autonomy == Some(autonomy);
+            let is_selected = !settings.disable_hermon && settings.autonomy == Some(autonomy);
             let (title_color, subtitle_color) = if is_selected {
                 (text_main.into(), text_main.into())
             } else {
@@ -924,7 +924,7 @@ impl AgentSlide {
                     subtitle_color,
                     icon: None,
                     disabled_badge: None,
-                    is_disabled: settings.disable_oz,
+                    is_disabled: settings.disable_hermon,
                 },
             );
 
@@ -939,7 +939,7 @@ impl AgentSlide {
             .finish()
     }
 
-    fn render_disable_oz_section(
+    fn render_disable_hermon_section(
         &self,
         appearance: &Appearance,
         settings: &AgentDevelopmentSettings,
@@ -949,10 +949,10 @@ impl AgentSlide {
 
         let checkbox = appearance
             .ui_builder()
-            .checkbox(self.disable_oz_mouse.clone(), Some(12.))
-            .check(settings.disable_oz)
+            .checkbox(self.disable_hermon_mouse.clone(), Some(12.))
+            .check(settings.disable_hermon)
             .build()
-            .on_click(|ctx, _, _| ctx.dispatch_typed_action(AgentSlideAction::ToggleDisableOz))
+            .on_click(|ctx, _, _| ctx.dispatch_typed_action(AgentSlideAction::ToggleDisableHermon))
             .finish();
 
         let label = Text::new("Disable Wish Agent", appearance.ui_font_family(), 14.0)
@@ -1480,7 +1480,7 @@ impl AgentSlide {
 
 impl OnboardingSlide for AgentSlide {
     fn on_up(&mut self, ctx: &mut ViewContext<Self>) {
-        if self.agent_settings(ctx).disable_oz {
+        if self.agent_settings(ctx).disable_hermon {
             return;
         }
         // While the picker is expanded, arrow keys move the highlight cursor
@@ -1505,7 +1505,7 @@ impl OnboardingSlide for AgentSlide {
     }
 
     fn on_down(&mut self, ctx: &mut ViewContext<Self>) {
-        if self.agent_settings(ctx).disable_oz {
+        if self.agent_settings(ctx).disable_hermon {
             return;
         }
         if self.is_model_list_expanded {
@@ -1563,7 +1563,7 @@ impl TypedActionView for AgentSlide {
     fn handle_action(&mut self, action: &Self::Action, ctx: &mut ViewContext<Self>) {
         match action {
             AgentSlideAction::SelectModel(model_id) => {
-                if !self.agent_settings(ctx).disable_oz {
+                if !self.agent_settings(ctx).disable_hermon {
                     self.select_model(model_id.clone(), ctx);
                     // If the picker is open, clicking a row collapses it after selecting.
                     if self.is_model_list_expanded {
@@ -1572,7 +1572,7 @@ impl TypedActionView for AgentSlide {
                 }
             }
             AgentSlideAction::ToggleModelListExpanded => {
-                if self.agent_settings(ctx).disable_oz {
+                if self.agent_settings(ctx).disable_hermon {
                     return;
                 }
                 self.set_model_list_expanded(!self.is_model_list_expanded, ctx);
@@ -1593,18 +1593,18 @@ impl TypedActionView for AgentSlide {
                 }
             }
             AgentSlideAction::SelectAutonomy(autonomy) => {
-                if !self.agent_settings(ctx).disable_oz {
+                if !self.agent_settings(ctx).disable_hermon {
                     self.select_autonomy(*autonomy, ctx);
                 }
             }
-            AgentSlideAction::ToggleDisableOz => {
+            AgentSlideAction::ToggleDisableHermon => {
                 let current = self
                     .onboarding_state
                     .as_ref(ctx)
                     .agent_settings()
-                    .disable_oz;
+                    .disable_hermon;
                 self.onboarding_state.update(ctx, |state, ctx| {
-                    state.set_disable_oz(!current, ctx);
+                    state.set_disable_hermon(!current, ctx);
                 });
                 ctx.notify();
             }

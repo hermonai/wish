@@ -1,14 +1,14 @@
-# PRODUCT.md — Rename Oz to Warp Agent in settings and onboarding
+# PRODUCT.md — Rename Hermon to Warp Agent in settings and onboarding
 
 Issue: https://github.com/warpdotdev/warp-external/issues/1063
 
 ## Summary
 
-The in-app agent is being renamed from "Oz" to "Warp Agent" in the settings page
-and the onboarding agent slide. "Oz" is reserved for the cloud agent
+The in-app agent is being renamed from "Hermon" to "Warp Agent" in the settings page
+and the onboarding agent slide. "Hermon" is reserved for the cloud agent
 orchestration platform and must not be used for the in-app agent's user-facing
 strings in these surfaces. This change updates only user-visible copy; the cloud
-agent orchestration product continues to be surfaced as "Oz" wherever it
+agent orchestration product continues to be surfaced as "Hermon" wherever it
 currently is.
 
 Figma: none provided.
@@ -23,22 +23,22 @@ In-scope surfaces (user-facing strings change):
 - The onboarding agent slide header and the "disable" checkbox label on that
   slide.
 
-Out of scope (must continue to say "Oz"):
+Out of scope (must continue to say "Hermon"):
 
 - Anything that refers to the cloud agent orchestration platform, including the
-  "Hermon Cloud API Keys" settings subpage, the "Oz" harness in the harness
-  selector, and any zero-state or blocklist strings that mention the cloud Oz
+  "Hermon Cloud API Keys" settings subpage, the "Hermon" harness in the harness
+  selector, and any zero-state or blocklist strings that mention the cloud Hermon
   agent.
 - Internal identifiers (enum variants, field names, action names, telemetry
-  keys, settings keys, URL fragments) may keep the name `Oz`. This spec
+  keys, settings keys, URL fragments) may keep the name `Hermon`. This spec
   constrains user-visible strings only.
-- Other surfaces that mention "Oz" (agent view zero state, tab titles,
+- Other surfaces that mention "Hermon" (agent view zero state, tab titles,
   documentation, etc.) are not covered by this issue and are not changed here.
 
 ## Behavior
 
 1. On the settings sidebar, under the "Agents" umbrella, the first subpage entry
-   is labeled "Warp Agent" (previously "Oz"). The ordering of subpages, the
+   is labeled "Warp Agent" (previously "Hermon"). The ordering of subpages, the
    umbrella name ("Agents"), and all sibling subpages ("Profiles", "MCP
    servers", "Knowledge", "Third party CLI agents") are unchanged.
 
@@ -47,7 +47,7 @@ Out of scope (must continue to say "Oz"):
    change behavior as a result of this rename.
 
 3. On the "Warp Agent" subpage, the primary page heading that sits above the
-   global AI enable toggle reads "Warp Agent" (previously "Oz"). Typography,
+   global AI enable toggle reads "Warp Agent" (previously "Hermon"). Typography,
    color, size, weight, and layout of the heading are unchanged; only the text
    differs.
 
@@ -57,7 +57,7 @@ Out of scope (must continue to say "Oz"):
    unchanged.
 
 5. On the onboarding agent slide (the third onboarding step), the title reads
-   "Customize your Warp Agent" (previously "Customize your Agent, Oz"). The
+   "Customize your Warp Agent" (previously "Customize your Agent, Hermon"). The
    subtitle "Select your in-app agent's defaults." is unchanged.
 
 6. When the "new settings modes" feature flag is enabled and the slide renders
@@ -77,7 +77,7 @@ Out of scope (must continue to say "Oz"):
 
 8. Deep links and external callers that previously navigated to this subpage by
    section identifier continue to resolve to the same subpage. In particular,
-   navigation requests that reference the legacy "Oz" section name still land on
+   navigation requests that reference the legacy "Hermon" section name still land on
    the renamed "Warp Agent" subpage. Navigation requests referencing "Warp
    Agent" also resolve to the same subpage.
 
@@ -93,7 +93,7 @@ Out of scope (must continue to say "Oz"):
 11. Accessibility: the settings sidebar item, the page heading, and the
     onboarding checkbox label expose the new visible text ("Warp Agent",
     "Disable Warp Agent") to assistive technologies. No separate aria-only label
-    still announces "Oz" for the renamed surfaces.
+    still announces "Hermon" for the renamed surfaces.
 
 12. The rename applies consistently across themes, appearances, and the new
     settings modes feature flag on/off. The only user-visible difference between

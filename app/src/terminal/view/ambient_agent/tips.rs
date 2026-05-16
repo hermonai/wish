@@ -48,7 +48,7 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/reference/api-and-sdk"),
         ),
         CloudModeTip::new(
-            "Set team or personal secrets for agents using the `oz secret` command.",
+            "Set team or personal secrets for agents using the `hermon secret` command.",
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/secrets"),
         ),
         CloudModeTip::new(
@@ -136,7 +136,7 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/integrations/github-actions"),
         ),
         CloudModeTip::new(
-            "Use `oz environment create` to define reproducible execution contexts.",
+            "Use `hermon environment create` to define reproducible execution contexts.",
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/environments"),
         ),
         CloudModeTip::new(
@@ -164,15 +164,15 @@ pub fn get_cloud_mode_tips() -> Vec<CloudModeTip> {
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/triggers/scheduled-agents"),
         ),
         CloudModeTip::new(
-            "Use `oz schedule create` to set up cron-triggered agents.",
+            "Use `hermon schedule create` to set up cron-triggered agents.",
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/triggers/scheduled-agents"),
         ),
         CloudModeTip::new(
-            "Pause and resume scheduled agents without deleting them using `oz schedule pause`.",
+            "Pause and resume scheduled agents without deleting them using `hermon schedule pause`.",
             Some("https://wish.hermon.ai/docs/agent-platform/cloud-agents/triggers/scheduled-agents"),
         ),
         CloudModeTip::new(
-            "Use `oz mcp list` to see which MCP servers are available to your agents.",
+            "Use `hermon mcp list` to see which MCP servers are available to your agents.",
             Some("https://wish.hermon.ai/docs/agent-platform/capabilities/mcp"),
         ),
         CloudModeTip::new(

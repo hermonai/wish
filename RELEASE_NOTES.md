@@ -80,7 +80,7 @@ Counts of errors/warnings now render next to the LSP indicator in the workspace 
 
 22 unit tests cover the rewrite logic and the new flag parses.
 
-### ✨ Branding pass — Warp/Oz → Wish/Hermon, end-to-end on user-visible surfaces
+### ✨ Branding pass — Warp/Hermon → Wish/Hermon, end-to-end on user-visible surfaces
 
 | Surface | Was | Now |
 | --- | --- | --- |
@@ -88,7 +88,7 @@ Counts of errors/warnings now render next to the LSP indicator in the workspace 
 | Wish Drive icon | upstream Warp Drive double-rectangle SVG | clean four-point sparkle in rounded square |
 | Wish Drive panel header (×2 sites) | "Warp Drive" | "Wish Drive" |
 | File-tree tooltip & left-panel | "Warp Drive" | "Wish Drive" |
-| New-session dropdown | "Cloud Oz" | "Hermon Cloud" |
+| New-session dropdown | "Cloud Hermon" | "Hermon Cloud" |
 | Update toast | "Warp updated!" | "Wish updated!" |
 | Notification-permission banner | "Warp doesn't have permission…" | "Wish doesn't have permission…" |
 | Update-failure banners (×2) | "Warp is unable to perform the update." | "Wish is unable to perform the update." |
@@ -100,11 +100,11 @@ Counts of errors/warnings now render next to the LSP indicator in the workspace 
 | Settings feature page search-term | "warp default terminal application" | "wish default terminal application" |
 | Subshell page search-term | "warpify subshell" | "wishify warpify subshell" (kept legacy as alias) |
 | AI harness default display name | "Warp" | "Wish" |
-| Agent git-author for AI-generated commits | `Oz <oz-agent@warp.dev>` | `Wish <wish-agent@hermon.ai>` |
+| Agent git-author for AI-generated commits | `Hermon <oz-agent@warp.dev>` | `Wish <wish-agent@hermon.ai>` |
 | Brand URLs (×2 sites) | `OZ_URL` constants | renamed to `HERMON_URL` (values already pointed at `wish.hermon.ai`) |
 
 What deliberately stayed unchanged:
-- Internal type names (`WarpTheme`, `WarpDriveModel`, `Harness::Oz`, `NotificationSourceAgent::Oz`) — these serialize to telemetry, persisted settings, cloud agent sessions; renaming them needs a dedicated migration slice with serde aliases.
+- Internal type names (`WarpTheme`, `WarpDriveModel`, `Harness::Hermon`, `NotificationSourceAgent::Hermon`) — these serialize to telemetry, persisted settings, cloud agent sessions; renaming them needs a dedicated migration slice with serde aliases.
 - TOML persistence keys (`warpify.ssh.…`) — renaming would silently wipe user settings on upgrade.
 - macOS bundle qualifier `org.warp.dev` — required for OS-level upgrade paths.
 - Rustdoc comments / variable names — cosmetic only, ride along on the next telemetry-aware variant migration.
@@ -161,30 +161,30 @@ Behavior matrix:
 | ❌ | ✅ | **Local Ollama models replace stale `auto` default** (the fix) |
 | ❌ | ❌ | Existing model list kept; no user-visible change |
 
-### ✅ P1 — Internal Oz → Hermon rename — **shipped in 0.4.0**
+### ✅ P1 — Internal Hermon → Hermon rename — **shipped in 0.4.0**
 
 The rename landed late in the cycle with the wire format preserved for round-trip safety:
 
-- **`Harness::Oz` → `Harness::Hermon`** across 88 call sites. `#[serde(rename = "oz", alias = "hermon")]` + clap `#[value(name = "hermon", alias = "oz")]` mean every wire format keeps emitting/accepting `"oz"`; the Rust identifier and the CLI value are forward-looking. `Harness::display_name(Harness::Hermon)` returns `"Hermon"`. `Harness::config_name()` keeps returning `"oz"` to preserve `HarnessConfig::harness_type` values in persisted state.
-- **`HarnessKind::Oz` → `HarnessKind::Hermon`** (internal dispatch enum).
+- **`Harness::Hermon` → `Harness::Hermon`** across 88 call sites. `#[serde(rename = "oz", alias = "hermon")]` + clap `#[value(name = "hermon", alias = "oz")]` mean every wire format keeps emitting/accepting `"oz"`; the Rust identifier and the CLI value are forward-looking. `Harness::display_name(Harness::Hermon)` returns `"Hermon"`. `Harness::config_name()` keeps returning `"oz"` to preserve `HarnessConfig::harness_type` values in persisted state.
+- **`HarnessKind::Hermon` → `HarnessKind::Hermon`** (internal dispatch enum).
 - **`OZ_*_ENV` constants → `WISH_*_ENV`** in `crates/wish_cli` (cosmetic; values were already `WISH_*`).
 - **`artifact_upload.rs`** now reads `WISH_RUN_ID` from the environment; legacy `OZ_RUN_ID` accepted as a fallback so pre-rename CI configs keep working.
-- **GraphQL-bound enums** `AgentHarness::Oz` (cynic codegen) and `AIAgentHarness::Oz` (Rust mirror) deliberately kept — renaming requires a coordinated schema change in `hermon-server`. Documented inline.
+- **GraphQL-bound enums** `AgentHarness::Hermon` (cynic codegen) and `AIAgentHarness::Hermon` (Rust mirror) deliberately kept — renaming requires a coordinated schema change in `hermon-server`. Documented inline.
 - **Outbound URLs**: `https://warp.dev` → `https://www.hermon.ai` (2 sites), `https://oz.warp.dev/agents?new=true` → `https://www.hermon.ai/agents?new=true`.
 
-Why it was safe to ship in this release: every Rust-side rename is paired with a serde/clap alias preserving the wire format. A 0.4.0 user with persisted state from a pre-rename build deserializes their stored `harness="oz"` cleanly into `Harness::Hermon` (via serde alias); a 0.3.0 binary still talking to a 0.4.0-authored config sees `harness="oz"` and deserializes into its own `Harness::Oz`. No coordinated rollout required.
+Why it was safe to ship in this release: every Rust-side rename is paired with a serde/clap alias preserving the wire format. A 0.4.0 user with persisted state from a pre-rename build deserializes their stored `harness="oz"` cleanly into `Harness::Hermon` (via serde alias); a 0.3.0 binary still talking to a 0.4.0-authored config sees `harness="oz"` and deserializes into its own `Harness::Hermon`. No coordinated rollout required.
 
 **Post-cut amend (same commit):** the rename was extended to a second pass covering the remaining identifier and user-string surface that hadn't been migrated:
 
-- `Icon::Oz` → `Icon::Hermon`, `NotificationSourceAgent::Oz` → `Hermon`, `IconWithStatusVariant::OzAgent` → `HermonAgent`, `SummaryPaneKind::OzAgent` → `HermonAgent`, `CloudConversationData::Oz` → `Hermon`, `CloudModeEntryPoint::OzLaunchModal` → `HermonLaunchModal`, `FeatureFlag::Oz*` (5 variants, ~98 call sites) → `FeatureFlag::Hermon*`, `OzLaunchSlide` → `HermonLaunchSlide`.
-- `oz_binary_path` / `oz_binary_display` (managed_secrets::gcp) → `wish_binary_path` / `wish_binary_display`; test fixtures `/usr/bin/oz` etc. → `/usr/bin/wish`.
+- `Icon::Hermon` → `Icon::Hermon`, `NotificationSourceAgent::Hermon` → `Hermon`, `IconWithStatusVariant::HermonAgent` → `HermonAgent`, `SummaryPaneKind::HermonAgent` → `HermonAgent`, `CloudConversationData::Hermon` → `Hermon`, `CloudModeEntryPoint::HermonLaunchModal` → `HermonLaunchModal`, `FeatureFlag::Hermon*` (5 variants, ~98 call sites) → `FeatureFlag::Hermon*`, `HermonLaunchSlide` → `HermonLaunchSlide`.
+- `hermon_binary_path` / `hermon_binary_display` (managed_secrets::gcp) → `wish_binary_path` / `wish_binary_display`; test fixtures `/usr/bin/oz` etc. → `/usr/bin/wish`.
 - CLI examples in the cloud-setup guide now show `wish environment create …` and `wish integration create …` (were `oz …`).
-- User-visible strings: `"Fix with Oz"` → `"Fix with Hermon"`; `"Introducing Oz"` → `"Introducing Hermon"`; `"Command from Oz"` → `"Command from Hermon"`; `"Oz Web"` source label → `"Hermon Web"`; all install/uninstall toasts now say "Wish CLI/command"; the warpify SSH description and Codex modal copy updated to mention Hermon/Wish instead of Oz; the `/continue-locally` slash-command error message updated.
+- User-visible strings: `"Fix with Hermon"` → `"Fix with Hermon"`; `"Introducing Hermon"` → `"Introducing Hermon"`; `"Command from Hermon"` → `"Command from Hermon"`; `"Hermon Web"` source label → `"Hermon Web"`; all install/uninstall toasts now say "Wish CLI/command"; the warpify SSH description and Codex modal copy updated to mention Hermon/Wish instead of Hermon; the `/continue-locally` slash-command error message updated.
 - Outbound URL `https://wish.hermon.ai/oz` (extended-cloud-agents link) → `https://wish.hermon.ai/hermon`.
 - Settings-search keyword strings extended with `hermon` and `wish agent` synonyms next to legacy `oz` / `warp agent` tokens so typing either still finds the right page.
 - GraphQL schema's `enum AgentHarness { OZ }` and `Experiment::OZ_MULTI_HARNESS_*` values retained, annotated inline with the cross-binary contract reasoning.
 
-What remains: roughly 80 `Oz`-mentioning code comments. Doc-only, not visible to users, swept opportunistically in 0.4.x patch releases.
+What remains: roughly 80 `Hermon`-mentioning code comments. Doc-only, not visible to users, swept opportunistically in 0.4.x patch releases.
 
 ### 🟨 P2 — Settings page hover-only close (now resolved)
 
@@ -217,7 +217,7 @@ For language coverage roadmap, see `PRODUCT.md` — short list: Kotlin, Swift, J
 
 - **No data migration required.** Settings, persisted projects, agent conversations all continue to work.
 - **Agent context injection is on in dogfood, off in stable.** To try it on stable: toggle `FeatureFlag::AgentLiveWorkspaceContext` via the runtime flags menu (`/MODEL` → manage features).
-- **Agent commit author has changed** from `Oz <oz-agent@warp.dev>` to `Wish <wish-agent@hermon.ai>`. Historical commits unaffected; commits authored by the agent going forward use the new identity. Adjust any tooling that filters commits by author.
+- **Agent commit author has changed** from `Hermon <oz-agent@warp.dev>` to `Wish <wish-agent@hermon.ai>`. Historical commits unaffected; commits authored by the agent going forward use the new identity. Adjust any tooling that filters commits by author.
 - **`Cmd+W` / tab close** now works without a hover dance — the X is always visible.
 
 ---
@@ -228,7 +228,7 @@ For language coverage roadmap, see `PRODUCT.md` — short list: Kotlin, Swift, J
 | --- | --- |
 | Slices shipped (incl. hotfixes) | 17 |
 | New unit tests across diagnostics + context tray + badge + CLI + wishd_client | 58 |
-| User-visible Warp/Oz strings renamed | 14 |
+| User-visible Warp/Hermon strings renamed | 14 |
 | New workspace crates | 1 (`wishd_client`) |
 | Bug fixes shipped | 3 (init-order panic, flex full_width panic, loading-agents spinner) |
 | New feature flags | 2 (`AgentLiveWorkspaceContext`, `LogAgentWorkspaceContext`) — both on in dogfood |

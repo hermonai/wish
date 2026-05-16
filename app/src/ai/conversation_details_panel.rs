@@ -150,7 +150,7 @@ struct PrincipalInfo {
     pub display_name: String,
     /// Optional photo URL for the avatar.
     pub photo_url: Option<String>,
-    /// UID of the principal, when known (used for building Oz links).
+    /// UID of the principal, when known (used for building Hermon links).
     pub uid: Option<String>,
     /// Whether this principal is a service account.
     pub is_service_account: bool,
@@ -575,7 +575,7 @@ pub enum ConversationDetailsPanelAction {
     CopySelectedText,
     #[cfg(not(target_family = "wasm"))]
     ContinueLocally,
-    OpenInOz,
+    OpenInHermon,
 }
 
 pub fn init(app: &mut AppContext) {
@@ -603,7 +603,7 @@ pub struct ConversationDetailsPanel {
     #[cfg(not(target_family = "wasm"))]
     continue_locally_button: ViewHandle<ActionButton>,
     /// Text button "View in Hermon Cloud" shown next to "Continue locally".
-    open_in_oz_button: ViewHandle<ActionButton>,
+    open_in_hermon_button: ViewHandle<ActionButton>,
     /// Tracks when each copy button was last clicked (for checkmark feedback).
     copy_feedback_times: HashMap<CopyButtonKind, Instant>,
     /// Selection state for cmd+C copy.
@@ -634,12 +634,12 @@ impl ConversationDetailsPanel {
                     ctx.dispatch_typed_action(ConversationDetailsPanelAction::ContinueLocally);
                 })
         });
-        let open_in_oz_button = ctx.add_typed_action_view(|_| {
+        let open_in_hermon_button = ctx.add_typed_action_view(|_| {
             ActionButton::new("View in Hermon Cloud", SecondaryTheme)
                 .with_tooltip("View this run in the Hermon Cloud dashboard")
                 .with_size(ButtonSize::Small)
                 .on_click(|ctx| {
-                    ctx.dispatch_typed_action(ConversationDetailsPanelAction::OpenInOz);
+                    ctx.dispatch_typed_action(ConversationDetailsPanelAction::OpenInHermon);
                 })
         });
         #[cfg(not(target_family = "wasm"))]
@@ -657,7 +657,7 @@ impl ConversationDetailsPanel {
             show_open_button,
             #[cfg(not(target_family = "wasm"))]
             continue_locally_button,
-            open_in_oz_button,
+            open_in_hermon_button,
             resizable_state_handle: resizable_state_handle(initial_width),
             scroll_state: ClippedScrollStateHandle::default(),
             copy_feedback_times: HashMap::new(),
@@ -765,7 +765,7 @@ impl ConversationDetailsPanel {
     }
 
     /// Builds the Hermon web UI URL for a task, if a task_id is available.
-    fn oz_run_url(data: &ConversationDetailsData) -> Option<String> {
+    fn hermon_run_url(data: &ConversationDetailsData) -> Option<String> {
         if let PanelMode::Task {
             task_id: Some(task_id),
             ..
@@ -1019,8 +1019,8 @@ impl ConversationDetailsPanel {
         .finish();
 
         let agent_name_element = if let Some(uid) = &executor.uid {
-            let oz_root_url = ChannelState::hermon_root_url();
-            let agent_url = format!("{oz_root_url}/agents/{}", urlencoding::encode(uid));
+            let hermon_mon_root_url = ChannelState::hermon_root_url();
+            let agent_url = format!("{hermon_mon_root_url}/agents/{}", urlencoding::encode(uid));
             appearance
                 .ui_builder()
                 .link(
@@ -1258,7 +1258,7 @@ impl ConversationDetailsPanel {
         let encoded_skill_name = urlencoding::encode(&skill_name);
         let skill_url = format!("{hermon_root_url}/agents/{encoded_skill_name}");
 
-        let oz_link = appearance
+        let hermon_mon_link = appearance
             .ui_builder()
             .link(
                 "Open in Hermon Cloud".to_string(),
@@ -1285,7 +1285,7 @@ impl ConversationDetailsPanel {
             .with_child(Container::new(icon).with_margin_right(4.).finish())
             .with_child(Shrinkable::new(1., skill_name_text).finish())
             .with_child(separator())
-            .with_child(Shrinkable::new(1., oz_link).finish());
+            .with_child(Shrinkable::new(1., hermon_mon_link).finish());
 
         // Add GitHub source link if we have enough info to construct it.
         if let (Some(org), Some(repo)) = (&skill_spec.org, &skill_spec.repo) {
@@ -1648,17 +1648,17 @@ impl View for ConversationDetailsPanel {
         let has_continue_locally = self.continue_locally_conversation_id(app).is_some();
         #[cfg(target_family = "wasm")]
         let has_continue_locally = false;
-        let has_oz_url = Self::oz_run_url(&self.data).is_some();
+        let has_hermon_url = Self::hermon_run_url(&self.data).is_some();
 
-        if has_continue_locally || has_oz_url {
+        if has_continue_locally || has_hermon_url {
             let mut buttons_wrap = Wrap::row().with_spacing(8.).with_run_spacing(8.);
 
             #[cfg(not(target_family = "wasm"))]
             if has_continue_locally {
                 buttons_wrap.add_child(ChildView::new(&self.continue_locally_button).finish());
             }
-            if has_oz_url {
-                buttons_wrap.add_child(ChildView::new(&self.open_in_oz_button).finish());
+            if has_hermon_url {
+                buttons_wrap.add_child(ChildView::new(&self.open_in_hermon_button).finish());
             }
 
             header_row.add_child(
@@ -2090,8 +2090,8 @@ impl TypedActionView for ConversationDetailsPanel {
                     });
                 }
             }
-            ConversationDetailsPanelAction::OpenInOz => {
-                if let Some(url) = Self::oz_run_url(&self.data) {
+            ConversationDetailsPanelAction::OpenInHermon => {
+                if let Some(url) = Self::hermon_run_url(&self.data) {
                     ctx.open_url(&url);
                 }
             }

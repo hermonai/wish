@@ -68,7 +68,7 @@ pub enum CloudSetupGuideAction {
         workflow: Box<WorkflowType>,
         step: SetupGuideStep,
     },
-    VisitOz,
+    VisitHermon,
     OpenDocs {
         docs: SetupGuideDocs,
     },
@@ -117,7 +117,7 @@ impl CloudSetupGuideView {
 
         let visit_hermon_button = ctx.add_typed_action_view(|_| {
             ActionButton::new("Visit Hermon", SecondaryTheme)
-                .on_click(|ctx| ctx.dispatch_typed_action(CloudSetupGuideAction::VisitOz))
+                .on_click(|ctx| ctx.dispatch_typed_action(CloudSetupGuideAction::VisitHermon))
         });
 
         Self {
@@ -652,11 +652,11 @@ impl TypedActionView for CloudSetupGuideView {
                     (**workflow).clone(),
                 ));
             }
-            CloudSetupGuideAction::VisitOz => {
+            CloudSetupGuideAction::VisitHermon => {
                 ctx.open_url(HERMON_URL);
                 send_telemetry_from_ctx!(
                     AgentManagementTelemetryEvent::SetupGuideStepRun {
-                        step: SetupGuideStep::VisitOz
+                        step: SetupGuideStep::VisitHermon
                     },
                     ctx
                 );

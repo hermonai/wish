@@ -110,10 +110,10 @@ impl TryFrom<Experiment> for ServerExperiment {
             }
             Experiment::FreeUserNoAiControl => Ok(Self::FreeUserNoAiControl),
             Experiment::FreeUserNoAiExperiment => Ok(Self::FreeUserNoAiExperiment),
-            // `wish_graphql::Experiment::Oz*` is the wire-format name from the
+            // `wish_graphql::Experiment::Hermon*` is the wire-format name from the
             // server; locally we map to the canonical Hermon-named variant.
-            Experiment::OzMultiHarnessControl => Ok(Self::HermonMultiHarnessControl),
-            Experiment::OzMultiHarnessExperiment => Ok(Self::HermonMultiHarnessExperiment),
+            Experiment::HermonMultiHarnessControl => Ok(Self::HermonMultiHarnessControl),
+            Experiment::HermonMultiHarnessExperiment => Ok(Self::HermonMultiHarnessExperiment),
             Experiment::SshRemoteServerControl => Ok(Self::SshRemoteServerControl),
             Experiment::SshRemoteServerExperiment => Ok(Self::SshRemoteServerExperiment),
             // Experiments that we no longer support on the client.

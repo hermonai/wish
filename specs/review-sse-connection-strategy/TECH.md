@@ -23,7 +23,7 @@ There is also a related state-leak: `register_watched_run_id` (line 138) only in
 - `app/src/ai/active_agent_views_model.rs` — already tracks "is this conversation expanded in any pane?" via `agent_view_handles`. Emits `ActiveAgentViewsEvent::ConversationClosed { conversation_id }` on `ExitedAgentView` (line 167-169) and on `unregister_agent_view_controller` from the pane-close path (line 200-202; see `pane_group/pane/terminal_pane.rs:383-385`). Helper `is_conversation_open(conversation_id, ctx)` (line 354) gives the cross-pane "open anywhere?" check.
 - `app/src/ai/agent/conversation.rs:781-792` — `parent_conversation_id()` and `is_child_agent_conversation()` classify a conversation as child or non-child; combined with the poller's own `watched_run_ids` set these classify a conversation as parent/child/solo.
 - `app/src/ai/agent_events/driver.rs (38-50, 177-199)` — `AgentEventDriverConfig::run_ids` is forwarded to `ServerApi::stream_agent_events` and is the server-side filter for which events come back. A run watching its own run_id is using that subscription as its inbox.
-- `app/src/ai/agent_sdk/driver.rs` — drives Hermon Agent conversations headlessly via the Warp CLI (locally for `start_agent` with `execution_mode: local` + Oz harness, and on cloud workers for cloud Oz runs). The same `OrchestrationEventStreamer` singleton is registered here (`lib.rs:1564-1566` is unconditional aside from the `OrchestrationV2` feature flag), so the streamer must serve a CLI/cloud process where there are no `AgentViewController` registrations at all.
+- `app/src/ai/agent_sdk/driver.rs` — drives Hermon Agent conversations headlessly via the Warp CLI (locally for `start_agent` with `execution_mode: local` + Hermon harness, and on cloud workers for cloud Hermon runs). The same `OrchestrationEventStreamer` singleton is registered here (`lib.rs:1564-1566` is unconditional aside from the `OrchestrationV2` feature flag), so the streamer must serve a CLI/cloud process where there are no `AgentViewController` registrations at all.
 
 ## Proposed changes
 
@@ -56,7 +56,7 @@ The streamer treats parent and child agent runs differently because the trigger 
 - The parent's GUI process gets `parent_conversation_id` set when it creates the child placeholder via `start_new_child_conversation`.
 - The driver-hosted process (CLI subprocess for `execution_mode: local`, cloud worker for cloud children) never sees the parent's local `AIConversationId`. It does fetch the parent's `run_id` from the server task metadata (`get_ambient_agent_task` returns `parent_run_id`), so the agent_sdk driver stamps that run_id onto the conversation's `parent_agent_id` field at register time. That stamp is what the streamer's child-role check picks up.
 
-The subscription is the child's inbox. It is gated on having an active consumer in *this process* the same way the parent role is. In the process where the child run actually lives, the agent_sdk driver registers a consumer for the run's lifetime, so the child's inbox stays live for the whole run. In any other process (e.g. the user's GUI tracking a cloud child), the child's own SSE only opens while a consumer is registered — i.e. the child's agent view is open. Without a local consumer the events would have nowhere to land, and the user's GUI already sees child→parent traffic via the parent's SSE. This applies to every harness — Oz, ClaudeCode, Gemini, headless CLI children spawned via `start_agent` with `execution_mode: local`, and cloud children. Children today cannot themselves spawn children; if that constraint is lifted later, this role keeps applying unchanged.
+The subscription is the child's inbox. It is gated on having an active consumer in *this process* the same way the parent role is. In the process where the child run actually lives, the agent_sdk driver registers a consumer for the run's lifetime, so the child's inbox stays live for the whole run. In any other process (e.g. the user's GUI tracking a cloud child), the child's own SSE only opens while a consumer is registered — i.e. the child's agent view is open. Without a local consumer the events would have nowhere to land, and the user's GUI already sees child→parent traffic via the parent's SSE. This applies to every harness — Hermon, ClaudeCode, Gemini, headless CLI children spawned via `start_agent` with `execution_mode: local`, and cloud children. Children today cannot themselves spawn children; if that constraint is lifted later, this role keeps applying unchanged.
 
 **Parent role** — the conversation has at least one child run_id registered in `watched_run_ids` (from `register_watched_run_id` in `start_agent.rs`). The subscription delivers child lifecycle and child→parent messages into the parent's consumer. The parent role is gated on having an active consumer. In the GUI that means the agent view is open; in CLI/cloud it means the agent driver is running. When the last consumer for a parent disappears, child events for that parent are stored on the server and backfilled via the cursor when a consumer comes back.
 
@@ -87,7 +87,7 @@ Where `has_active_consumer()` returns true when at least one `AgentViewControlle
 
 `reevaluate_eligibility` is the single dispatch point: it computes the eligibility predicate and either calls `start_sse_connection`, reconnects, or tears down. Status is not part of the lifecycle decision for either role.
 
-The agent_sdk driver registers itself as a consumer at the start of its run (a natural place is `AgentDriver::execute_run` for Oz, or where the third-party harness path picks up the `task_id` for ThirdParty harnesses) and unregisters when the run terminates. Registration is by `AIConversationId` so it composes with the existing per-conversation streamer state.
+The agent_sdk driver registers itself as a consumer at the start of its run (a natural place is `AgentDriver::execute_run` for Hermon, or where the third-party harness path picks up the `task_id` for ThirdParty harnesses) and unregisters when the run terminates. Registration is by `AIConversationId` so it composes with the existing per-conversation streamer state.
 
 Because both roles share a single SSE connection per conversation, the SSE's `run_ids` filter must be the union of `{self_run_id}` (child role) and the registered child run_ids (parent role), where each role's contribution is included only when that role's eligibility is met. The simplest implementation is to compute the run_id list at SSE-open time from current state.
 
@@ -162,7 +162,7 @@ Add unit tests in `orchestration_event_streamer_tests.rs` covering the new invar
 
 1. **Solo conversation does not subscribe.** Server token assigned for a conversation that is not a child and never spawns one; consumers come and go; status reaches Success → no entry in `sse_connections` at any point.
 2. **Child subscribes immediately on server-token assignment regardless of consumer state.** A child conversation (parent_conversation_id set) gets server token while no consumer is registered → SSE is active. Adding/removing consumers does not affect the connection.
-3. **Headless CLI child of any harness subscribes.** Cover Oz, ClaudeCode, and Gemini harness children spawned with `execution_mode: local` — each must have a live SSE once their run_id is assigned, with no agent view ever opened. The Wish CLI case must also have the agent_sdk driver registered as a consumer.
+3. **Headless CLI child of any harness subscribes.** Cover Hermon, ClaudeCode, and Gemini harness children spawned with `execution_mode: local` — each must have a live SSE once their run_id is assigned, with no agent view ever opened. The Wish CLI case must also have the agent_sdk driver registered as a consumer.
 4. **Parent subscribes when first child is registered while a consumer is active.** Register a consumer first, then `register_watched_run_id` → connection opens.
 5. **Parent latent until a consumer registers.** Children registered while no consumer exists → no connection. Consumer registers → connection opens with the right run_id list.
 6. **Last consumer leaving tears down (parent-only conversation).** A subscribed parent that is not itself a child has its only consumer unregister; `sse_connections`/cursor/timer state are all gone. `watched_run_ids` is preserved so the parent can re-subscribe when a new consumer appears.
@@ -175,7 +175,7 @@ Add unit tests in `orchestration_event_streamer_tests.rs` covering the new invar
 
 Manual validation:
 
-Observation setup. Each test below names the process where SSE state should appear: either the user's GUI Warp app (a desktop binary) or a driver process (a local CLI subagent subprocess, or a cloud Oz worker). The relevant log lines are the same in either process; the difference is which log file you tail.
+Observation setup. Each test below names the process where SSE state should appear: either the user's GUI Warp app (a desktop binary) or a driver process (a local CLI subagent subprocess, or a cloud Hermon worker). The relevant log lines are the same in either process; the difference is which log file you tail.
 
 Log lines to watch for, all at info level unless noted:
 
@@ -189,7 +189,7 @@ Where to tail:
 
 - GUI process: the Warp app log for the active build flavor (e.g. `~/Library/Logs/dev.warp.Warp-Stable/warp.log` on macOS).
 - Local CLI driver subprocess: the subprocess's stderr or its dedicated log file. `start_agent` with `execution_mode: local` runs `wish_cli` as a subprocess; tail wherever that subprocess writes logs.
-- Hermon Cloud worker: the worker logs surfaced by the Oz UI / cloud logging tool for the run.
+- Hermon Cloud worker: the worker logs surfaced by the Hermon UI / cloud logging tool for the run.
 - Server-side: `stream_agent_events` requests in the dev `warp-server` access log — one request per active SSE; new requests on reconnect; disconnects when the client closes the stream.
 
 ### A. Solo conversation
@@ -218,7 +218,7 @@ Server: one `stream_agent_events` request per active SSE.
 
 ### C. Local parent + Cloud child (parent in GUI, child in cloud worker)
 
-In the user's GUI, spawn a child via `start_agent` with cloud Oz harness. Parent runs in GUI; child runs on a cloud worker.
+In the user's GUI, spawn a child via `start_agent` with cloud Hermon harness. Parent runs in GUI; child runs on a cloud worker.
 
 GUI process expectations:
 
@@ -232,7 +232,7 @@ Cloud worker expectations:
 
 ### D. Cloud parent + Local child (both in same cloud worker process)
 
-A top-level cloud Oz parent driver spawns a CLI subagent locally (in the same worker process). Both runs are headless on the cloud worker — driver runs do not have a GUI; any user-side viewer pane on the parent or child is a passive remote-run view and is covered by section F. Two `AgentDriver` instances register two `Driver` consumers with the worker's single streamer.
+A top-level cloud Hermon parent driver spawns a CLI subagent locally (in the same worker process). Both runs are headless on the cloud worker — driver runs do not have a GUI; any user-side viewer pane on the parent or child is a passive remote-run view and is covered by section F. Two `AgentDriver` instances register two `Driver` consumers with the worker's single streamer.
 
 Cloud worker expectations:
 
@@ -249,7 +249,7 @@ Like D but split across two worker processes. The parent worker holds the parent
 A conversation in the local process that is a passive view of an agent run hosted in another process. Two flavors share the same predicate path:
 
 - **Shared-session viewer.** Open a pane that views someone else's shared session. The local conversation has `is_viewing_shared_session() == true`.
-- **Remote-child placeholder.** Spawn a child via `start_agent` with `execution_mode: cloud` (e.g. cloud Oz). The user's GUI auto-opens a viewer pane for the child; the local placeholder conversation has `is_remote_child() == true` and `parent_conversation_id` set, but the actual run lives on the cloud worker.
+- **Remote-child placeholder.** Spawn a child via `start_agent` with `execution_mode: cloud` (e.g. cloud Hermon). The user's GUI auto-opens a viewer pane for the child; the local placeholder conversation has `is_remote_child() == true` and `parent_conversation_id` set, but the actual run lives on the cloud worker.
 
 In both cases the local process has no run to host — the inbox lives elsewhere — so opening an SSE here would re-inject events the real consumer has already processed.
 

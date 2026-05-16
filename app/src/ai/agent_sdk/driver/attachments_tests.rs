@@ -364,7 +364,7 @@ async fn e2e_get_handoff_snapshot_attachments_failure_is_fatal() {
 }
 
 #[tokio::test]
-async fn e2e_returns_none_when_oz_handoff_flag_is_disabled() {
+async fn e2e_returns_none_when_hermon_handoff_flag_is_disabled() {
     // With the feature flag off, the function short-circuits to None without calling the
     // AIClient. Any call site that forgot to gate on the flag would log an error; here we
     // just verify the return value.

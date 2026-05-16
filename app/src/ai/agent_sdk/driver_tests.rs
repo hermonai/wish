@@ -269,7 +269,7 @@ fn task_env_vars_omit_parent_run_id_when_absent() {
     assert!(!env_vars.contains_key(&OsString::from(WISH_PARENT_RUN_ID_ENV)));
     assert_eq!(
         env_vars.get(&OsString::from(WISH_HARNESS_ENV)),
-        Some(&OsString::from("oz"))
+        Some(&OsString::from("hermon"))
     );
     assert!(!env_vars.contains_key(&OsString::from(HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV)));
     assert!(!env_vars.contains_key(&OsString::from(

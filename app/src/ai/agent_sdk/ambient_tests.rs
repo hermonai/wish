@@ -137,7 +137,7 @@ fn every_field_maps_through() {
         created_after: Some(created_after),
         created_before: Some(created_before),
         updated_after: Some(updated_after),
-        query: Some("oz run".to_string()),
+        query: Some("hermon run".to_string()),
         sort_by: Some(RunSortByArg::CreatedAt),
         sort_order: Some(RunSortOrderArg::Asc),
         cursor: Some("abcd==".to_string()),
@@ -163,7 +163,7 @@ fn every_field_maps_through() {
     assert_eq!(filter.config_name.as_deref(), Some("nightly"));
     assert_eq!(filter.model_id.as_deref(), Some("claude-4-5"));
     assert_eq!(filter.artifact_type, Some(ArtifactType::PullRequest));
-    assert_eq!(filter.search_query.as_deref(), Some("oz run"));
+    assert_eq!(filter.search_query.as_deref(), Some("hermon run"));
     assert_eq!(filter.sort_by, Some(RunSortBy::CreatedAt));
     assert_eq!(filter.sort_order, Some(RunSortOrder::Asc));
     assert_eq!(filter.cursor.as_deref(), Some("abcd=="));
@@ -195,7 +195,7 @@ fn task_id_for_message_send_prefers_sender_run_id() {
 
 #[test]
 #[serial_test::serial]
-fn task_id_for_message_send_falls_back_to_oz_run_id() {
+fn task_id_for_message_send_falls_back_to_hermon_run_id() {
     std::env::set_var(wish_cli::WISH_RUN_ID_ENV, TASK_ID);
     let task_id = task_id_for_message_send("local-child-run")
         .expect("valid env task id")
@@ -207,9 +207,9 @@ fn task_id_for_message_send_falls_back_to_oz_run_id() {
 
 #[test]
 #[serial_test::serial]
-fn task_id_from_oz_run_id_env_rejects_invalid_value() {
+fn task_id_from_hermon_run_id_env_rejects_invalid_value() {
     std::env::set_var(wish_cli::WISH_RUN_ID_ENV, "not-a-task-id");
-    let err = task_id_from_oz_run_id_env().expect_err("invalid task id");
+    let err = task_id_from_hermon_run_id_env().expect_err("invalid task id");
     std::env::remove_var(wish_cli::WISH_RUN_ID_ENV);
 
     assert!(err.to_string().contains("Invalid HERMON_RUN_ID"));

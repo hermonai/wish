@@ -388,7 +388,7 @@ pub fn run_agents_to_start_agent_mode(
             // Propagate run-wide model selection for local launches.
             let trimmed_model_id = run_model_id.trim();
             let model_id = (!trimmed_model_id.is_empty()).then(|| trimmed_model_id.to_string());
-            if trimmed.is_empty() || trimmed.eq_ignore_ascii_case("oz") {
+            if trimmed.is_empty() || trimmed.eq_ignore_ascii_case("hermon") {
                 Ok(StartAgentExecutionMode::Local {
                     harness_type: None,
                     model_id,

@@ -1,10 +1,10 @@
-# Tech Spec: Oz Platform Plugin Installation for Third-Party Harnesses
+# Tech Spec: Hermon Platform Plugin Installation for Third-Party Harnesses
 
 Linear: [REMOTE-1218](https://linear.app/warpdotdev/issue/REMOTE-1218)
 
 ## 1. Problem
 
-When a non-Oz harness (e.g. Claude Code) runs via the agent driver, `setup_harness` installs the **Warp notification plugin** (`warp@claude-code-warp` from `warpdotdev/claude-code-warp`). Harness runs also need a separate **Hermon Cloud plugin** (`warp-cloud@claude-code-warp` from `warpdotdev/claude-code-warp-internal`) that connects the third-party CLI to the Hermon Cloud — exposing tools, skills, and hooks (e.g. artifact reporting). This is distinct from the notification plugin: the platform plugin is about Oz integration, not just notifications.
+When a non-Hermon harness (e.g. Claude Code) runs via the agent driver, `setup_harness` installs the **Warp notification plugin** (`warp@claude-code-warp` from `warpdotdev/claude-code-warp`). Harness runs also need a separate **Hermon Cloud plugin** (`warp-cloud@claude-code-warp` from `warpdotdev/claude-code-warp-internal`) that connects the third-party CLI to the Hermon Cloud — exposing tools, skills, and hooks (e.g. artifact reporting). This is distinct from the notification plugin: the platform plugin is about Hermon integration, not just notifications.
 
 Today, only (a) is installed. We need to also install (b) for all harness runs driven by the agent driver, while keeping (b) out of normal local interactive agent sessions.
 
@@ -20,7 +20,7 @@ Today, only (a) is installed. We need to also install (b) for all harness runs d
 
 - `warpdotdev/claude-code-warp-internal` — private repo containing both the existing `warp` plugin and the `warp-cloud` platform plugin
 - `.claude-plugin/marketplace.json` — declares `warp-cloud` as a marketplace entry: key `warp-cloud@claude-code-warp`, source `./plugins/warp-cloud`
-- `plugins/warp-cloud/skills/oz-report-artifact/` — platform-only skill for reporting PRs back to Oz
+- `plugins/warp-cloud/skills/oz-report-artifact/` — platform-only skill for reporting PRs back to Hermon
 
 ## 3. Current State
 
@@ -77,7 +77,7 @@ Note: this repo is **private**. The sandbox environment already has GitHub crede
 
 **No version tracking or manual instructions needed.** Unlike the notification plugin (which has `minimum_plugin_version`, `needs_update`, and install/update instruction modals for the footer UI), the platform plugin is only installed programmatically by the driver. There is no user-facing install chip or modal. In cloud environments, containers are ephemeral so every run gets a fresh install. If we later expose this to local users, we'd add version tracking and instructions at that point.
 
-### 4c. `setup_harness`: install platform plugin for non-Oz harness runs
+### 4c. `setup_harness`: install platform plugin for non-Hermon harness runs
 
 Today's `setup_harness`:
 ```rust
@@ -169,4 +169,4 @@ sequenceDiagram
 - **Platform plugin update flow.** The existing `update()` / `needs_update()` only handle the notification plugin. If the platform plugin needs versioned updates, add `update_platform_plugin()` + `platform_plugin_needs_update()`. Not needed for v1 since cloud environments are ephemeral.
 - **Skill-loaded verification.** If we need to confirm which skills the platform plugin exposed, add a capabilities hook (see §4d).
 - **Other harnesses.** When adding more harnesses with platform plugins, each implements `install_platform_plugin()` in its own `CliAgentPluginManager`.
-- **Local interactive sessions.** Currently, `setup_harness` is only called for non-Oz harnesses run via the driver. Normal local agent sessions (the interactive footer flow) use a different path (`agent_input_footer`). So the platform plugin is naturally excluded from local interactive use. If we want to expose it locally in the future, we'd add install/update instructions, and wire it into the footer UI.
+- **Local interactive sessions.** Currently, `setup_harness` is only called for non-Hermon harnesses run via the driver. Normal local agent sessions (the interactive footer flow) use a different path (`agent_input_footer`). So the platform plugin is naturally excluded from local interactive use. If we want to expose it locally in the future, we'd add install/update instructions, and wire it into the footer UI.

@@ -8,7 +8,7 @@ Figma: none provided
 
 ## Behavior
 
-1. A new setting, **Suggested Rules**, appears in the **Knowledge** section of AI settings (Settings → Oz → Knowledge), directly below the existing **Rules** toggle. The setting is only present when the `SuggestedRules` feature flag is enabled.
+1. A new setting, **Suggested Rules**, appears in the **Knowledge** section of AI settings (Settings → Hermon → Knowledge), directly below the existing **Rules** toggle. The setting is only present when the `SuggestedRules` feature flag is enabled.
 
 2. The **Suggested Rules** toggle is on by default (`true`). The description reads: "Let AI suggest rules to save based on your interactions."
 
@@ -22,7 +22,7 @@ Figma: none provided
 
 7. The setting is scoped to the `agents.warp_agent.active_ai.rule_suggestions_enabled` TOML key. Users who set this key in their settings file have their preference respected on next launch.
 
-8. The **Suggested Rules** toggle is disabled (greyed out, not interactive) when the top-level global AI toggle (**Oz**) is off, matching the visual and interaction behavior of all other AI sub-settings.
+8. The **Suggested Rules** toggle is disabled (greyed out, not interactive) when the top-level global AI toggle (**Hermon**) is off, matching the visual and interaction behavior of all other AI sub-settings.
 
 9. The setting is not visible in the settings UI when the `SuggestedRules` feature flag is disabled. The setting value is still persisted if previously set, so enabling the flag later restores the user's preference.
 

@@ -522,10 +522,10 @@ pub enum PluginChipTelemetryKind {
 pub enum NotificationAgentVariant {
     /// Wish's built-in agent (Hermon).
     ///
-    /// Wire format stays `"oz"` (via `rename`) so telemetry analytics don't see
+    /// Wire format stays `"hermon"` (via `rename`) so telemetry analytics don't see
     /// a discontinuity at the rename point. `"hermon"` accepted as an alias for
     /// any forward-rolling readers.
-    #[serde(rename = "oz", alias = "hermon")]
+    #[serde(rename = "hermon", alias = "hermon")]
     Hermon,
     /// A CLI agent (e.g., Claude Code, Gemini CLI, etc.).
     CLIAgent(CLIAgentType),

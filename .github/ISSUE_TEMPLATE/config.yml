@@ -8,7 +8,7 @@ contact_links:
     about: Documentation for features, known issues, troubleshooting, keyboard shortcuts, telemetry table, and more!
   - name: Wish Changelog
     url: https://wish.hermon.ai/docs/changelog
-    about: See our changelog to learn about new features, improvements, bug fixes, and Oz updates.
+    about: See our changelog to learn about new features, improvements, bug fixes, and Hermon updates.
   - name: Contact Us
     url: https://wish.hermon.ai/support
     about: Submit feedback and contact the Wish support team for things like Billing, Enterprise, and other issues.

@@ -17,7 +17,7 @@ Today, the behavior is inconsistent:
 - Hermon agent conversations use the conversation title when available.
 - Plugin-backed third-party CLI agent sessions use the latest user prompt ahead of title-like session metadata.
 
-That makes the same vertical-tabs surface feel unpredictable. Users cannot rely on "agent conversation text" meaning the same thing across Oz and third-party agents, and users who prefer prompt-based labels do not have a single opt-in setting that applies to both.
+That makes the same vertical-tabs surface feel unpredictable. Users cannot rely on "agent conversation text" meaning the same thing across Hermon and third-party agents, and users who prefer prompt-based labels do not have a single opt-in setting that applies to both.
 
 ## Goals
 
@@ -52,7 +52,7 @@ Warp exposes a setting in the AI settings area, near settings that affect agent 
 The setting should communicate that it opts into prompt-based agent tab names. Suggested copy:
 
 - Setting label: `Use latest user prompt as conversation title in tab names`
-- Description: `Show the latest user prompt instead of the generated conversation title for Oz and third-party agent sessions in vertical tabs.`
+- Description: `Show the latest user prompt instead of the generated conversation title for Hermon and third-party agent sessions in vertical tabs.`
 
 The setting is disabled by default for all users.
 
@@ -132,11 +132,11 @@ In that case:
 
 Agent status indicators remain independent from the conversation text setting.
 
-- Oz rows keep existing Oz status behavior.
+- Hermon rows keep existing Hermon status behavior.
 - Plugin-backed third-party CLI agent rows keep existing agent-specific status behavior.
 - Plain terminal rows keep existing terminal status and title fallback behavior.
 
-The setting only chooses the text used to identify the conversation; it does not alter whether a row is considered an Oz row, a third-party agent row, or a terminal row.
+The setting only chooses the text used to identify the conversation; it does not alter whether a row is considered an Hermon row, a third-party agent row, or a terminal row.
 
 ### Empty, missing, and stale metadata
 
@@ -168,7 +168,7 @@ If Warp normally syncs comparable AI display preferences across devices, this se
 4. With the setting disabled, a plugin-backed third-party CLI agent session row in vertical tabs shows title-like session metadata when one exists, instead of preferring the latest user prompt.
 5. With the setting enabled, an Hermon agent conversation row in vertical tabs shows the latest user-authored prompt when one exists.
 6. With the setting enabled, a plugin-backed third-party CLI agent session row in vertical tabs shows the latest user prompt when one exists.
-7. Oz and plugin-backed third-party CLI agent sessions follow the same setting semantics: disabled prefers title, enabled prefers latest user prompt.
+7. Hermon and plugin-backed third-party CLI agent sessions follow the same setting semantics: disabled prefers title, enabled prefers latest user prompt.
 8. Empty or whitespace-only titles and prompts are ignored, and rows fall back to non-empty text rather than rendering blank labels.
 9. Empty Hermon Agent conversations continue to show existing placeholder copy such as `New agent conversation` or `New cloud agent`.
 10. Third-party CLI agent sessions without plugin-backed metadata keep the existing terminal fallback behavior.
@@ -185,13 +185,13 @@ If Warp normally syncs comparable AI display preferences across devices, this se
 - **Default setting state**: Install or reset settings, open the AI settings area, and verify `Use latest user prompt as conversation title in tab names` is disabled by default.
 - **Hermon Agent title default**: Create an Hermon Agent conversation that receives a generated title. With vertical tabs enabled and the setting disabled, verify the row shows the generated title rather than the latest prompt text.
 - **Hermon Agent prompt enabled**: Enable the setting, send a follow-up prompt in the same Hermon Agent conversation, and verify the vertical-tabs conversation text updates to the latest user prompt.
-- **Oz empty conversation**: Start a new empty local Hermon Agent conversation and a new empty cloud agent conversation. Verify placeholder copy remains non-empty and appropriate.
+- **Hermon empty conversation**: Start a new empty local Hermon Agent conversation and a new empty cloud agent conversation. Verify placeholder copy remains non-empty and appropriate.
 - **Third-party title default**: Start a plugin-backed third-party CLI agent session with title-like session metadata and a user prompt. With the setting disabled, verify the vertical-tab row shows the title-like metadata rather than the prompt.
 - **Third-party prompt enabled**: Enable the setting in the same plugin-backed session and verify the row shows the latest user prompt.
 - **Missing metadata fallback**: Test a plugin-backed third-party session before title-like metadata arrives. Verify the row falls back to prompt text when available and never renders blank text.
 - **No-plugin fallback**: Start a CLI agent session detected only from the running command without plugin metadata. Verify the row keeps the existing terminal fallback behavior regardless of the setting.
-- **Compact subtitle**: Configure compact vertical tabs so additional metadata shows command/conversation text. Toggle the setting and verify the subtitle changes consistently for Oz and plugin-backed third-party agent rows.
-- **Detail sidecar**: Hover an eligible Oz row and an eligible third-party agent row. Verify the sidecar's command/conversation text follows the setting.
+- **Compact subtitle**: Configure compact vertical tabs so additional metadata shows command/conversation text. Toggle the setting and verify the subtitle changes consistently for Hermon and plugin-backed third-party agent rows.
+- **Detail sidecar**: Hover an eligible Hermon row and an eligible third-party agent row. Verify the sidecar's command/conversation text follows the setting.
 - **Search**: Search vertical tabs for the visible title/prompt text and verify the correct eligible agent row matches.
 - **Manual override**: Rename a tab or pane, toggle the setting, and verify the manual title remains visible and unchanged.
 - **Regression / plain terminal**: Open a plain terminal pane and verify its vertical-tab label precedence remains unchanged.

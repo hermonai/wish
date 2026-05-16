@@ -14,7 +14,7 @@ A new modal ("Create your default tab config") appears after onboarding complete
 ## Goals
 
 - Let users configure their first session immediately after onboarding in a single modal.
-- Support Built in agent (Oz), third-party CLI agents (Claude, Codex, Gemini), and Terminal as session types.
+- Support Built in agent (Hermon), third-party CLI agents (Claude, Codex, Gemini), and Terminal as session types.
 - Always persist the configuration as a reusable tab config TOML in `~/.warp/tab_configs/`.
 - Keep the modal implementation reusable so it can be surfaced in other contexts later (e.g., from a menu or command palette).
 
@@ -45,7 +45,7 @@ The modal appears once, immediately after the user completes the onboarding slid
 Each session type determines what happens when the user clicks "Get warping":
 
 - **Terminal:** Opens a terminal session in the selected directory. No command is auto-run.
-- **Oz:** Opens the tab into agent view / Hermon agent mode (not a CLI command). The tab starts in the selected directory with the Hermon agent UI active.
+- **Hermon:** Opens the tab into agent view / Hermon agent mode (not a CLI command). The tab starts in the selected directory with the Hermon agent UI active.
 - **Claude / Codex / Gemini:** Opens a terminal session in the selected directory and auto-runs the corresponding CLI command (`claude`, `codex`, `gemini`).
 
 ### Directory selection
@@ -139,7 +139,7 @@ description = "New worktree branch name"
 default = "my-feature-branch"
 ```
 
-**Oz session:** Uses `type = "agent"` on the pane, which causes the tab to open in agent view via `PaneMode::Agent`. The `DefaultSessionMode` setting is also set to `Agent` so future new tabs default to agent view. When the feature flag for this new onboarding modal is off, the existing behavior (where selecting `AgentDrivenDevelopment` sets the mode to `Agent`) remains unchanged.
+**Hermon session:** Uses `type = "agent"` on the pane, which causes the tab to open in agent view via `PaneMode::Agent`. The `DefaultSessionMode` setting is also set to `Agent` so future new tabs default to agent view. When the feature flag for this new onboarding modal is off, the existing behavior (where selecting `AgentDrivenDevelopment` sets the mode to `Agent`) remains unchanged.
 ```toml
 name = "Startup Config"
 
@@ -189,6 +189,6 @@ The modal's core logic (collecting session type, directory, worktree preference,
 
 ## Resolved Decisions
 
-1. **Oz in tab config TOML:** Oz uses `type = "agent"` on the pane node, which maps to `PaneMode::Agent` and causes the pane to enter agent view automatically. `DefaultSessionMode` is also set to `Agent` so future new tabs default to agent view. This must not break the existing behavior when the feature flag for this modal is disabled.
+1. **Hermon in tab config TOML:** Hermon uses `type = "agent"` on the pane node, which maps to `PaneMode::Agent` and causes the pane to enter agent view automatically. `DefaultSessionMode` is also set to `Agent` so future new tabs default to agent view. This must not break the existing behavior when the feature flag for this modal is disabled.
 2. **Worktree base branch:** The `{{branch}}` param is omitted. The `git worktree add` command uses HEAD implicitly (no base branch argument). The worktree branch name is hardcoded to `"my-feature-branch"` as a default. **TODO(moira):** Once worktree name generation is ready, replace the hardcoded `"my-feature-branch"` default with the generated name and revisit whether a base branch param should be added.
 3. **Session type list:** Hardcoded to Built in agent, Claude, Codex, Gemini, Terminal (in that order). Not dynamically derived from the `CLIAgent` enum.

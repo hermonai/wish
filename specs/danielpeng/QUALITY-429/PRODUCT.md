@@ -85,4 +85,4 @@ The banner includes an "Open settings file" button styled consistently with othe
 
 ## Follow-ups
 
-- Not included in this PR, but once we have the skill for an agent to edit the settings file, we should have some kind of "Oz auto-fix" button.
+- Not included in this PR, but once we have the skill for an agent to edit the settings file, we should have some kind of "Hermon auto-fix" button.

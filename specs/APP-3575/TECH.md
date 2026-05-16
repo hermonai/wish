@@ -4,7 +4,7 @@ Linear: [APP-3575](https://linear.app/warpdotdev/issue/APP-3575/finalize-toml-sc
 
 ## Problem
 
-The recursive `[layout]` / `[[layout.panes]]` TOML format becomes unreadable at depth 3+. We need to replace it with a flat `[[panes]]` array where nodes reference children by string ID, add tab color support, and ship a bundled Oz skill for generating configs.
+The recursive `[layout]` / `[[layout.panes]]` TOML format becomes unreadable at depth 3+. We need to replace it with a flat `[[panes]]` array where nodes reference children by string ID, add tab color support, and ship a bundled Hermon skill for generating configs.
 
 ## Relevant code
 
@@ -17,7 +17,7 @@ The recursive `[layout]` / `[[layout.panes]]` TOML format becomes unreadable at 
 - `app/src/user_config/native.rs:228-232` — `load_tab_configs`
 - `app/src/user_config/util.rs:167-180` — `parse_tab_config_dir_entry` (TOML parsing)
 - `app/resources/tab_configs/new_tab_config_template.toml` — default template
-- `resources/bundled/skills/tab-configs/SKILL.md` — bundled Oz skill
+- `resources/bundled/skills/tab-configs/SKILL.md` — bundled Hermon skill
 - `app/src/ai/skills/skill_manager.rs` — bundled skill loading from `resources/bundled/skills/`
 
 ## Current state
@@ -75,7 +75,7 @@ After `add_tab_with_pane_layout`, apply `tab_config.color` to the new tab's `sel
 
 `app/resources/tab_configs/new_tab_config_template.toml` uses the new flat format. Active (uncommented) content is a single-pane terminal with `commands = []`. Commented examples show two-pane split, 2x2 grid, and parameterized configs.
 
-### 7. Bundled Oz skill
+### 7. Bundled Hermon skill
 
 `resources/bundled/skills/tab-configs/SKILL.md` contains the full schema reference, examples, validation rules, and common natural-language-to-layout mappings. The build script (`script/prepare_bundled_resources`) copies it into the app bundle automatically.
 
@@ -115,4 +115,4 @@ After `add_tab_with_pane_layout`, apply `tab_config.color` to the new tab's `sel
 - Add non-terminal pane types (notebook, code, settings, etc.) with a `type` field discriminator.
 - Consider cycle detection in validation (currently not implemented — the recursive resolver will stack overflow on cycles, but configs are small enough that this is not a practical concern).
 - Consider orphan pane warnings (panes not referenced by any `children` and not the root).
-- Investigate whether the Oz skill should auto-open the created config in the user's editor.
+- Investigate whether the Hermon skill should auto-open the created config in the user's editor.

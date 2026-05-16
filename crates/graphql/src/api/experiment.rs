@@ -65,8 +65,12 @@ pub enum Experiment {
     FreeUserInitialCreditsControl,
     FreeUserInitialCreditsFiveHundred,
     FreeUserInitialCreditsThreeHundred,
-    OzMultiHarnessControl,
-    OzMultiHarnessExperiment,
+    /// Wire format `OZ_MULTI_HARNESS_*` (preserved for server-schema
+    /// back-compat); Rust uses the canonical Hermon name internally.
+    #[cynic(rename = "OZ_MULTI_HARNESS_CONTROL")]
+    HermonMultiHarnessControl,
+    #[cynic(rename = "OZ_MULTI_HARNESS_EXPERIMENT")]
+    HermonMultiHarnessExperiment,
     SshRemoteServerControl,
     SshRemoteServerExperiment,
     #[cynic(fallback)]

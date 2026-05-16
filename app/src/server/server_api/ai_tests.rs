@@ -957,7 +957,7 @@ fn build_list_agent_runs_url_all_fields() {
         config_name: Some("nightly".to_string()),
         model_id: Some("claude-4-5".to_string()),
         artifact_type: Some(ArtifactType::PullRequest),
-        search_query: Some("oz run".to_string()),
+        search_query: Some("hermon run".to_string()),
         sort_by: Some(RunSortBy::CreatedAt),
         sort_order: Some(RunSortOrder::Asc),
         cursor: Some("abcd==".to_string()),
@@ -982,7 +982,7 @@ fn build_list_agent_runs_url_all_fields() {
          &name=nightly\
          &model_id=claude-4-5\
          &artifact_type=PULL_REQUEST\
-         &q=oz%20run\
+         &q=hermon%20run\
          &sort_by=created_at\
          &sort_order=asc\
          &cursor=abcd%3D%3D"

@@ -203,7 +203,7 @@ fn subpage_from_str_parses_display_names() {
     // telemetry strings, and external callers continue to work after the
     // user-facing rename (see specs/GH1063/product.md, Behavior #8).
     assert_eq!(
-        SettingsSection::from_str("Oz"),
+        SettingsSection::from_str("Hermon"),
         Ok(SettingsSection::WarpAgent)
     );
     assert_eq!(
@@ -612,7 +612,7 @@ fn auto_select_with_no_matches_anywhere() {
 // ── Backward compatibility ──────────────────────────────────────────────────
 
 #[test]
-fn legacy_ai_section_maps_to_oz_default() {
+fn legacy_ai_section_maps_to_hermon_default() {
     // SettingsSection::AI should be treated as backward-compat and map to Hermon
     // via the code in set_and_refresh_current_page_internal.
     // Here we just verify the parent_page_section is still AI (for page lookup).
