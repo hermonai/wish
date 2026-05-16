@@ -1987,16 +1987,16 @@ fn test_harness_filter_matches_only_selected_harness() {
             let gemini_items = items_for(HarnessFilter::Specific(Harness::Gemini));
             assert_eq!(gemini_items, vec![format!("task:{}", task_gemini.task_id)]);
 
-            let hermon_mon_items = items_for(HarnessFilter::Specific(Harness::Hermon));
+            let hermon_items = items_for(HarnessFilter::Specific(Harness::Hermon));
             assert_eq!(
-                hermon_mon_items.len(),
+                hermon_items.len(),
                 2,
-                "expected 2 Wish Agent matches, got {hermon_mon_items:?}"
+                "expected 2 Wish Agent matches, got {hermon_items:?}"
             );
-            assert!(hermon_mon_items.contains(&format!("task:{}", thermon__hermon_default.task_id)));
-            assert!(hermon_mon_items.contains(&format!("conversation:{conv_id}")));
+            assert!(hermon_items.contains(&format!("task:{}", task_hermon_default.task_id)));
+            assert!(hermon_items.contains(&format!("conversation:{conv_id}")));
             assert!(
-                !hermon_mon_items.contains(&format!("task:{}", task_no_snapshot.task_id)),
+                !hermon_items.contains(&format!("task:{}", task_no_snapshot.task_id)),
                 "stub task with no snapshot should not match the Wish Agent filter"
             );
         });
