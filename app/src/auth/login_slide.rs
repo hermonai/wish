@@ -1190,7 +1190,7 @@ impl TypedActionView for LoginSlideView {
                 self.last_login_failure_reason = None;
                 self.step = LoginStep::BrowserOpen;
                 AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
-                    let sign_up_url = auth_manager.sign_up_url();
+                    let sign_up_url = auth_manager.sign_up_url(ctx);
                     ctx.open_url(&sign_up_url);
                 });
                 ctx.notify();
@@ -1269,7 +1269,7 @@ impl TypedActionView for LoginSlideView {
             },
             LoginSlideAction::CopyLoginUrl => {
                 AuthManager::handle(ctx).update(ctx, |auth_manager, inner_ctx| {
-                    let sign_in_url = auth_manager.sign_in_url();
+                    let sign_in_url = auth_manager.sign_in_url(inner_ctx);
                     inner_ctx.clipboard().write(ClipboardContent {
                         plain_text: sign_in_url.clone(),
                         paths: Some(vec![sign_in_url]),

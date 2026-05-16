@@ -20824,7 +20824,7 @@ impl Workspace {
         } else {
             // User is fully logged out (no Firebase user) — open the regular sign-up page.
             AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
-                let sign_up_url = auth_manager.sign_up_url();
+                let sign_up_url = auth_manager.sign_up_url(ctx);
                 ctx.open_url(&sign_up_url);
             });
         }
@@ -22154,7 +22154,7 @@ impl TypedActionView for Workspace {
             }
             Reauth => {
                 AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
-                    let sign_in_url = auth_manager.sign_in_url();
+                    let sign_in_url = auth_manager.sign_in_url(ctx);
                     ctx.open_url(&sign_in_url);
                 });
                 send_telemetry_from_ctx!(TelemetryEvent::InitiateReauth, ctx);

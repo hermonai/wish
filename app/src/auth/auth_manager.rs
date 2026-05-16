@@ -92,6 +92,18 @@ pub type LoginGatedFeature = &'static str;
 
 type URLConstructorCallback = Box<dyn FnOnce(Option<&str>) -> String>;
 
+/// Wire body of `GET /v1/auth/pickup` on the Hermon gateway. Mirrors the
+/// `PickupResponse` struct in `hermon-gateway::routes::auth`.
+#[derive(serde::Deserialize)]
+struct PickupResponse {
+    refresh_token: String,
+    user_id: String,
+    #[allow(dead_code)]
+    email: String,
+    #[allow(dead_code)]
+    display_name: String,
+}
+
 /// AuthManager is a singleton model which manages the currently logged-in user's state.
 /// If you need to access the state, use `AuthStateProvider`.
 pub struct AuthManager {
@@ -773,8 +785,9 @@ impl AuthManager {
         state
     }
 
-    pub fn sign_up_url(&mut self) -> String {
+    pub fn sign_up_url(&mut self, ctx: &mut ModelContext<Self>) -> String {
         let state = self.generate_auth_state();
+        self.start_pickup_polling(state.clone(), ctx);
         format!(
             // TODO: we should probably be able to remove the public_beta flag
             "{}/signup/remote?scheme={}&state={}&public_beta=true",
@@ -784,14 +797,78 @@ impl AuthManager {
         )
     }
 
-    pub fn sign_in_url(&mut self) -> String {
+    pub fn sign_in_url(&mut self, ctx: &mut ModelContext<Self>) -> String {
         let state = self.generate_auth_state();
+        self.start_pickup_polling(state.clone(), ctx);
         format!(
             "{}/login/remote?scheme={}&state={}",
             ChannelState::server_root_url(),
             ChannelState::url_scheme(),
             state,
         )
+    }
+
+    /// Polls `GET {server}/v1/auth/pickup?state=<state>` for up to 10 minutes.
+    ///
+    /// The Hermon gateway deposits a refresh token keyed by `state` when the
+    /// browser sign-up/sign-in form succeeds. Polling means the desktop app
+    /// can complete sign-in without depending on the `wish://` custom scheme
+    /// (which Safari rejects when no OS handler is registered) and without
+    /// requiring the user to manually paste a token.
+    ///
+    /// - 204 → not ready yet, sleep and try again.
+    /// - 200 → tokens delivered; build a payload and finish sign-in.
+    /// - The loop bails as soon as `pending_auth_state` no longer matches —
+    ///   i.e. the user cancelled or completed via a different path.
+    fn start_pickup_polling(&self, state: String, ctx: &mut ModelContext<Self>) {
+        let server_root = ChannelState::server_root_url().to_string();
+        let _ = ctx.spawn(
+            async move {
+                let client = http_client::Client::new();
+                let url = format!("{server_root}/v1/auth/pickup?state={state}");
+                let deadline = std::time::Instant::now() + Duration::from_secs(600);
+                while std::time::Instant::now() < deadline {
+                    // 2-second cadence is friendly to free-tier rate limits
+                    // and still feels instant once the user finishes the form.
+                    wishui::r#async::Timer::after(Duration::from_secs(2)).await;
+                    let resp = match client.get(&url).send().await {
+                        Ok(r) => r,
+                        Err(_) => continue,
+                    };
+                    if resp.status().as_u16() == 204 {
+                        continue;
+                    }
+                    if !resp.status().is_success() {
+                        continue;
+                    }
+                    let payload: PickupResponse = match resp.json().await {
+                        Ok(p) => p,
+                        Err(_) => continue,
+                    };
+                    return Some((state.clone(), payload));
+                }
+                None
+            },
+            |me, result, ctx| {
+                let Some((state, payload)) = result else {
+                    log::debug!("auth pickup polling timed out");
+                    return;
+                };
+                if me.pending_auth_state.as_deref() != Some(state.as_str()) {
+                    log::debug!("auth pickup arrived for a stale state; ignoring");
+                    return;
+                }
+                log::info!("auth pickup succeeded; signing in user {}", payload.user_id);
+                me.pending_auth_state = None;
+                let auth_payload = AuthRedirectPayload {
+                    refresh_token: super::credentials::RefreshToken::new(payload.refresh_token),
+                    user_uid: Some(UserUid::new(&payload.user_id)),
+                    deleted_anonymous_user: None,
+                    state: Some(state),
+                };
+                me.initialize_user_from_auth_payload(auth_payload, false, ctx);
+            },
+        );
     }
 
     /// The upgrade confirmation page will kick the user back to the app with a refresh token

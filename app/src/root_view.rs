@@ -2386,7 +2386,7 @@ impl RootView {
 
                 // Open the sign-in URL in the browser for existing users.
                 AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
-                    let sign_in_url = auth_manager.sign_in_url();
+                    let sign_in_url = auth_manager.sign_in_url(ctx);
                     ctx.open_url(&sign_in_url);
                 });
 

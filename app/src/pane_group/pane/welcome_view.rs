@@ -475,7 +475,7 @@ impl WelcomeView {
     /// that doesn't conflict with the singleton-handle borrow.
     fn open_login_url(&self, ctx: &mut ViewContext<Self>) {
         crate::auth::AuthManager::handle(ctx).update(ctx, |auth_manager, inner_ctx| {
-            let url = auth_manager.sign_in_url();
+            let url = auth_manager.sign_in_url(inner_ctx);
             inner_ctx.open_url(&url);
         });
     }
