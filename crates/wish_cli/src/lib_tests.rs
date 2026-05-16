@@ -32,15 +32,15 @@ fn restore_env_var(name: &str, previous: Option<OsString>) {
 #[test]
 fn agent_run_accepts_model() {
     let args = Args::try_parse_from([
-        "warp", "agent", "run", "--prompt", "hello", "--model", "gpt-4o",
+        "wish", "agent", "run", "--prompt", "hello", "--model", "gpt-4o",
     ])
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(run_args.model.model.as_deref(), Some("gpt-4o"));
@@ -49,7 +49,7 @@ fn agent_run_accepts_model() {
 #[test]
 fn agent_run_accepts_hidden_bedrock_inference_role_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -60,10 +60,10 @@ fn agent_run_accepts_hidden_bedrock_inference_role_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(
@@ -74,13 +74,13 @@ fn agent_run_accepts_hidden_bedrock_inference_role_flag() {
 
 #[test]
 fn model_list_parses() {
-    let args = Args::try_parse_from(["warp", "model", "list"]).unwrap();
+    let args = Args::try_parse_from(["wish", "model", "list"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp model list` command");
+        panic!("Expected `wish model list` command");
     };
     let CliCommand::Model(model_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp model` command");
+        panic!("Expected `wish model` command");
     };
 
     assert!(matches!(model_cmd, crate::model::ModelCommand::List));
@@ -88,10 +88,10 @@ fn model_list_parses() {
 
 #[test]
 fn login_parses() {
-    let args = Args::try_parse_from(["warp", "login"]).unwrap();
+    let args = Args::try_parse_from(["wish", "login"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp login` command");
+        panic!("Expected `wish login` command");
     };
 
     assert!(matches!(boxed_cmd.as_ref(), CliCommand::Login(_)));
@@ -99,10 +99,10 @@ fn login_parses() {
 
 #[test]
 fn logout_parses() {
-    let args = Args::try_parse_from(["warp", "logout"]).unwrap();
+    let args = Args::try_parse_from(["wish", "logout"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp logout` command");
+        panic!("Expected `wish logout` command");
     };
 
     assert!(matches!(boxed_cmd.as_ref(), CliCommand::Logout));
@@ -111,7 +111,7 @@ fn logout_parses() {
 #[test]
 fn agent_run_accepts_file() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -122,10 +122,10 @@ fn agent_run_accepts_file() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(
@@ -137,7 +137,7 @@ fn agent_run_accepts_file() {
 #[test]
 fn agent_run_accepts_idle_on_complete_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -147,10 +147,10 @@ fn agent_run_accepts_idle_on_complete_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(
@@ -164,7 +164,7 @@ fn agent_run_accepts_idle_on_complete_flag() {
 #[test]
 fn agent_run_accepts_idle_on_complete_duration() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -175,10 +175,10 @@ fn agent_run_accepts_idle_on_complete_duration() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(
@@ -192,7 +192,7 @@ fn agent_run_accepts_idle_on_complete_duration() {
 #[test]
 fn agent_run_accepts_snapshot_flags() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -206,10 +206,10 @@ fn agent_run_accepts_snapshot_flags() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(run_args.snapshot.no_snapshot);
@@ -229,7 +229,7 @@ fn agent_run_accepts_snapshot_flags() {
 #[test]
 fn agent_run_cloud_accepts_file_short_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -240,10 +240,10 @@ fn agent_run_cloud_accepts_file_short_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert_eq!(
@@ -255,7 +255,7 @@ fn agent_run_cloud_accepts_file_short_flag() {
 #[test]
 fn agent_run_cloud_accepts_model() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -266,10 +266,10 @@ fn agent_run_cloud_accepts_model() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert_eq!(run_args.model.model.as_deref(), Some("gpt-4o"));
@@ -278,7 +278,7 @@ fn agent_run_cloud_accepts_model() {
 #[test]
 fn agent_run_cloud_accepts_agent_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -289,10 +289,10 @@ fn agent_run_cloud_accepts_agent_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert_eq!(run_args.agent_uid.as_deref(), Some("agent_123"));
@@ -303,7 +303,7 @@ fn agent_run_cloud_accepts_mcp() {
     let uuid = uuid::Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000").unwrap();
 
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -314,10 +314,10 @@ fn agent_run_cloud_accepts_mcp() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert!(matches!(
@@ -329,20 +329,20 @@ fn agent_run_cloud_accepts_mcp() {
 #[test]
 fn agent_run_cloud_accepts_run_ambient_alias() {
     // Ensure backwards compatibility: run-ambient should still work as an alias
-    let args = Args::try_parse_from(["warp", "agent", "run-ambient", "--prompt", "hello"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run-ambient", "--prompt", "hello"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-ambient` (alias) command");
+        panic!("Expected `wish agent run-ambient` (alias) command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(_)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-ambient` to parse as RunCloud");
+        panic!("Expected `wish agent run-ambient` to parse as RunCloud");
     };
 }
 
 #[test]
 fn agent_run_rejects_prompt_and_task_id() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -355,7 +355,7 @@ fn agent_run_rejects_prompt_and_task_id() {
 
 #[test]
 fn agent_run_rejects_without_prompt_or_task_id() {
-    let result = Args::try_parse_from(["warp", "agent", "run", "--model", "gpt-4o"]);
+    let result = Args::try_parse_from(["wish", "agent", "run", "--model", "gpt-4o"]);
     assert!(result.is_err());
     let err = result.unwrap_err();
     let err_str = err.to_string();
@@ -364,13 +364,13 @@ fn agent_run_rejects_without_prompt_or_task_id() {
 
 #[test]
 fn agent_run_accepts_prompt_only() {
-    let args = Args::try_parse_from(["warp", "agent", "run", "--prompt", "hello"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run", "--prompt", "hello"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(run_args.prompt_arg.prompt.as_deref(), Some("hello"));
@@ -381,13 +381,13 @@ fn agent_run_accepts_prompt_only() {
 
 #[test]
 fn agent_run_accepts_saved_prompt_only() {
-    let args = Args::try_parse_from(["warp", "agent", "run", "--saved-prompt", "sp-123"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run", "--saved-prompt", "sp-123"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(run_args.prompt_arg.prompt.is_none());
@@ -398,13 +398,13 @@ fn agent_run_accepts_saved_prompt_only() {
 
 #[test]
 fn agent_run_accepts_skill_only() {
-    let args = Args::try_parse_from(["warp", "agent", "run", "--skill", "my-skill"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run", "--skill", "my-skill"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(run_args.prompt_arg.prompt.is_none());
@@ -414,13 +414,13 @@ fn agent_run_accepts_skill_only() {
 
 #[test]
 fn agent_run_accepts_task_id_only() {
-    let args = Args::try_parse_from(["warp", "agent", "run", "--task-id", "tid-456"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run", "--task-id", "tid-456"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(run_args.prompt_arg.prompt.is_none());
@@ -431,15 +431,15 @@ fn agent_run_accepts_task_id_only() {
 #[test]
 fn agent_run_accepts_prompt_and_skill() {
     let args = Args::try_parse_from([
-        "warp", "agent", "run", "--prompt", "do stuff", "--skill", "my-skill",
+        "wish", "agent", "run", "--prompt", "do stuff", "--skill", "my-skill",
     ])
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(run_args.prompt_arg.prompt.as_deref(), Some("do stuff"));
@@ -449,7 +449,7 @@ fn agent_run_accepts_prompt_and_skill() {
 #[test]
 fn agent_run_accepts_saved_prompt_and_skill() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--saved-prompt",
@@ -460,10 +460,10 @@ fn agent_run_accepts_saved_prompt_and_skill() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(run_args.prompt_arg.saved_prompt.as_deref(), Some("sp-1"));
@@ -473,7 +473,7 @@ fn agent_run_accepts_saved_prompt_and_skill() {
 #[test]
 fn agent_run_rejects_saved_prompt_and_task_id() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--saved-prompt",
@@ -487,7 +487,7 @@ fn agent_run_rejects_saved_prompt_and_task_id() {
 #[test]
 fn agent_run_rejects_file_and_task_id() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--task-id",
@@ -501,7 +501,7 @@ fn agent_run_rejects_file_and_task_id() {
 #[test]
 fn agent_run_accepts_skill_and_task_id() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--skill",
@@ -512,10 +512,10 @@ fn agent_run_accepts_skill_and_task_id() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(run_args.prompt_arg.prompt.is_none());
@@ -526,7 +526,7 @@ fn agent_run_accepts_skill_and_task_id() {
 #[test]
 fn agent_run_rejects_prompt_and_saved_prompt() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -540,7 +540,7 @@ fn agent_run_rejects_prompt_and_saved_prompt() {
 #[test]
 fn schedule_create_accepts_file() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "schedule",
         "create",
         "--name",
@@ -555,14 +555,14 @@ fn schedule_create_accepts_file() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
     let CliCommand::Schedule(schedule_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
 
     let Some(ScheduleSubcommand::Create(create_args)) = schedule_cmd.subcommand() else {
-        panic!("Expected `warp schedule create` subcommand");
+        panic!("Expected `wish schedule create` subcommand");
     };
 
     assert_eq!(
@@ -577,17 +577,17 @@ fn schedule_create_accepts_file() {
 
 #[test]
 fn schedule_resume_alias_parses_as_unpause() {
-    let args = Args::try_parse_from(["warp", "schedule", "resume", "schedule-id"]).unwrap();
+    let args = Args::try_parse_from(["wish", "schedule", "resume", "schedule-id"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp schedule resume` command");
+        panic!("Expected `wish schedule resume` command");
     };
     let CliCommand::Schedule(schedule_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp schedule resume` command");
+        panic!("Expected `wish schedule resume` command");
     };
 
     let Some(ScheduleSubcommand::Unpause(unpause_args)) = schedule_cmd.subcommand() else {
-        panic!("Expected `warp schedule resume` to parse as `unpause`");
+        panic!("Expected `wish schedule resume` to parse as `unpause`");
     };
 
     assert_eq!(unpause_args.schedule_id, "schedule-id");
@@ -596,7 +596,7 @@ fn schedule_resume_alias_parses_as_unpause() {
 #[test]
 fn artifact_upload_accepts_run_id() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "artifact",
         "upload",
         "path/to/file.json",
@@ -606,10 +606,10 @@ fn artifact_upload_accepts_run_id() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
     let CliCommand::Artifact(ArtifactCommand::Upload(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
 
     assert_eq!(args.path.to_str(), Some("path/to/file.json"));
@@ -703,7 +703,7 @@ fn raw_command_keeps_message_visible_before_runtime_help_customization() {
 #[test]
 fn artifact_upload_accepts_run_id_and_description() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "artifact",
         "upload",
         "path/to/file.json",
@@ -715,10 +715,10 @@ fn artifact_upload_accepts_run_id_and_description() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
     let CliCommand::Artifact(ArtifactCommand::Upload(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
 
     assert_eq!(args.run_id.as_deref(), Some("run-123"));
@@ -729,7 +729,7 @@ fn artifact_upload_accepts_run_id_and_description() {
 #[test]
 fn artifact_upload_accepts_conversation_id_and_description() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "artifact",
         "upload",
         "path/to/file.json",
@@ -741,10 +741,10 @@ fn artifact_upload_accepts_conversation_id_and_description() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
     let CliCommand::Artifact(ArtifactCommand::Upload(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
 
     assert_eq!(args.path.to_str(), Some("path/to/file.json"));
@@ -755,13 +755,13 @@ fn artifact_upload_accepts_conversation_id_and_description() {
 
 #[test]
 fn artifact_upload_accepts_missing_association_target_for_env_fallback() {
-    let args = Args::try_parse_from(["warp", "artifact", "upload", "path/to/file.json"]).unwrap();
+    let args = Args::try_parse_from(["wish", "artifact", "upload", "path/to/file.json"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
     let CliCommand::Artifact(ArtifactCommand::Upload(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp artifact upload` command");
+        panic!("Expected `wish artifact upload` command");
     };
 
     assert_eq!(args.path.to_str(), Some("path/to/file.json"));
@@ -772,7 +772,7 @@ fn artifact_upload_accepts_missing_association_target_for_env_fallback() {
 #[test]
 fn artifact_upload_rejects_both_association_targets() {
     let err = Args::try_parse_from([
-        "warp",
+        "wish",
         "artifact",
         "upload",
         "path/to/file.json",
@@ -791,7 +791,7 @@ fn artifact_upload_rejects_both_association_targets() {
 #[test]
 fn artifact_download_parses_artifact_id_and_out() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "artifact",
         "download",
         "artifact-123",
@@ -801,10 +801,10 @@ fn artifact_download_parses_artifact_id_and_out() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp artifact download` command");
+        panic!("Expected `wish artifact download` command");
     };
     let CliCommand::Artifact(ArtifactCommand::Download(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp artifact download` command");
+        panic!("Expected `wish artifact download` command");
     };
 
     assert_eq!(args.artifact_uid, "artifact-123");
@@ -815,13 +815,13 @@ fn artifact_download_parses_artifact_id_and_out() {
 }
 #[test]
 fn artifact_get_parses_artifact_uid() {
-    let args = Args::try_parse_from(["warp", "artifact", "get", "artifact-123"]).unwrap();
+    let args = Args::try_parse_from(["wish", "artifact", "get", "artifact-123"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp artifact get` command");
+        panic!("Expected `wish artifact get` command");
     };
     let CliCommand::Artifact(ArtifactCommand::Get(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp artifact get` command");
+        panic!("Expected `wish artifact get` command");
     };
 
     assert_eq!(args.artifact_uid, "artifact-123");
@@ -830,7 +830,7 @@ fn artifact_get_parses_artifact_uid() {
 #[test]
 fn integration_create_accepts_file() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "integration",
         "create",
         "slack",
@@ -840,10 +840,10 @@ fn integration_create_accepts_file() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp integration create` command");
+        panic!("Expected `wish integration create` command");
     };
     let CliCommand::Integration(IntegrationCommand::Create(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp integration create` command");
+        panic!("Expected `wish integration create` command");
     };
 
     assert_eq!(
@@ -855,7 +855,7 @@ fn integration_create_accepts_file() {
 #[test]
 fn integration_create_accepts_model() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "integration",
         "create",
         "slack",
@@ -865,10 +865,10 @@ fn integration_create_accepts_model() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp integration create` command");
+        panic!("Expected `wish integration create` command");
     };
     let CliCommand::Integration(IntegrationCommand::Create(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp integration create` command");
+        panic!("Expected `wish integration create` command");
     };
 
     assert_eq!(args.model.model.as_deref(), Some("gpt-4o"));
@@ -877,7 +877,7 @@ fn integration_create_accepts_model() {
 #[test]
 fn integration_update_accepts_file() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "integration",
         "update",
         "slack",
@@ -887,10 +887,10 @@ fn integration_update_accepts_file() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp integration update` command");
+        panic!("Expected `wish integration update` command");
     };
     let CliCommand::Integration(IntegrationCommand::Update(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp integration update` command");
+        panic!("Expected `wish integration update` command");
     };
 
     assert_eq!(
@@ -902,7 +902,7 @@ fn integration_update_accepts_file() {
 #[test]
 fn integration_update_accepts_model() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "integration",
         "update",
         "slack",
@@ -912,10 +912,10 @@ fn integration_update_accepts_model() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp integration update` command");
+        panic!("Expected `wish integration update` command");
     };
     let CliCommand::Integration(IntegrationCommand::Update(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp integration update` command");
+        panic!("Expected `wish integration update` command");
     };
 
     assert_eq!(args.model.model.as_deref(), Some("gpt-4o"));
@@ -926,13 +926,13 @@ fn integration_create_accepts_mcp_json() {
     let json = r#"{"my-server":{"command":"echo"}}"#;
 
     let args =
-        Args::try_parse_from(["warp", "integration", "create", "slack", "--mcp", json]).unwrap();
+        Args::try_parse_from(["wish", "integration", "create", "slack", "--mcp", json]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp integration create` command");
+        panic!("Expected `wish integration create` command");
     };
     let CliCommand::Integration(IntegrationCommand::Create(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp integration create` command");
+        panic!("Expected `wish integration create` command");
     };
 
     assert!(matches!(
@@ -946,7 +946,7 @@ fn integration_update_accepts_mcp_json_and_remove_mcp() {
     let json = r#"{"my-server":{"command":"echo"}}"#;
 
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "integration",
         "update",
         "slack",
@@ -958,10 +958,10 @@ fn integration_update_accepts_mcp_json_and_remove_mcp() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp integration update` command");
+        panic!("Expected `wish integration update` command");
     };
     let CliCommand::Integration(IntegrationCommand::Update(args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp integration update` command");
+        panic!("Expected `wish integration update` command");
     };
 
     assert!(matches!(
@@ -976,7 +976,7 @@ fn schedule_create_accepts_mcp_json() {
     let json = r#"{"my-server":{"command":"echo"}}"#;
 
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "schedule",
         "create",
         "--name",
@@ -991,14 +991,14 @@ fn schedule_create_accepts_mcp_json() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
     let CliCommand::Schedule(schedule_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
 
     let Some(ScheduleSubcommand::Create(create_args)) = schedule_cmd.subcommand() else {
-        panic!("Expected `warp schedule create` subcommand");
+        panic!("Expected `wish schedule create` subcommand");
     };
 
     assert!(matches!(
@@ -1010,7 +1010,7 @@ fn schedule_create_accepts_mcp_json() {
 #[test]
 fn schedule_create_accepts_team_scope() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "schedule",
         "create",
         "--name",
@@ -1024,14 +1024,14 @@ fn schedule_create_accepts_team_scope() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
     let CliCommand::Schedule(schedule_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
 
     let Some(ScheduleSubcommand::Create(create_args)) = schedule_cmd.subcommand() else {
-        panic!("Expected `warp schedule create` subcommand");
+        panic!("Expected `wish schedule create` subcommand");
     };
 
     assert!(create_args.scope.team);
@@ -1041,7 +1041,7 @@ fn schedule_create_accepts_team_scope() {
 #[test]
 fn schedule_create_accepts_personal_scope() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "schedule",
         "create",
         "--name",
@@ -1055,14 +1055,14 @@ fn schedule_create_accepts_personal_scope() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
     let CliCommand::Schedule(schedule_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp schedule create` command");
+        panic!("Expected `wish schedule create` command");
     };
 
     let Some(ScheduleSubcommand::Create(create_args)) = schedule_cmd.subcommand() else {
-        panic!("Expected `warp schedule create` subcommand");
+        panic!("Expected `wish schedule create` subcommand");
     };
 
     assert!(!create_args.scope.team);
@@ -1073,7 +1073,7 @@ fn schedule_create_accepts_personal_scope() {
 fn schedule_create_rejects_multiple_scopes() {
     assert!(
         Args::try_parse_from([
-            "warp",
+            "wish",
             "schedule",
             "create",
             "--name",
@@ -1092,7 +1092,7 @@ fn schedule_create_rejects_multiple_scopes() {
 #[test]
 fn schedule_update_accepts_file() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "schedule",
         "update",
         "schedule-id",
@@ -1102,14 +1102,14 @@ fn schedule_update_accepts_file() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp schedule update` command");
+        panic!("Expected `wish schedule update` command");
     };
     let CliCommand::Schedule(schedule_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp schedule update` command");
+        panic!("Expected `wish schedule update` command");
     };
 
     let Some(ScheduleSubcommand::Update(update_args)) = schedule_cmd.subcommand() else {
-        panic!("Expected `warp schedule update` subcommand");
+        panic!("Expected `wish schedule update` subcommand");
     };
 
     assert_eq!(
@@ -1127,7 +1127,7 @@ fn schedule_update_accepts_mcp_json_and_remove_mcp() {
     let json = r#"{"my-server":{"command":"echo"}}"#;
 
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "schedule",
         "update",
         "schedule-id",
@@ -1139,14 +1139,14 @@ fn schedule_update_accepts_mcp_json_and_remove_mcp() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp schedule update` command");
+        panic!("Expected `wish schedule update` command");
     };
     let CliCommand::Schedule(schedule_cmd) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp schedule update` command");
+        panic!("Expected `wish schedule update` command");
     };
 
     let Some(ScheduleSubcommand::Update(update_args)) = schedule_cmd.subcommand() else {
-        panic!("Expected `warp schedule update` subcommand");
+        panic!("Expected `wish schedule update` subcommand");
     };
 
     assert!(matches!(
@@ -1158,13 +1158,13 @@ fn schedule_update_accepts_mcp_json_and_remove_mcp() {
 
 #[test]
 fn environment_image_list_parses() {
-    let args = Args::try_parse_from(["warp", "environment", "image", "list"]).unwrap();
+    let args = Args::try_parse_from(["wish", "environment", "image", "list"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp environment image list` command");
+        panic!("Expected `wish environment image list` command");
     };
     let CliCommand::Environment(EnvironmentCommand::Image(image_cmd)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp environment image` command");
+        panic!("Expected `wish environment image` command");
     };
 
     assert!(matches!(image_cmd, ImageCommand::List));
@@ -1173,7 +1173,7 @@ fn environment_image_list_parses() {
 #[test]
 fn environment_create_accepts_description() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "environment",
         "create",
         "--name",
@@ -1186,7 +1186,7 @@ fn environment_create_accepts_description() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp environment create` command");
+        panic!("Expected `wish environment create` command");
     };
     let CliCommand::Environment(EnvironmentCommand::Create {
         name,
@@ -1195,7 +1195,7 @@ fn environment_create_accepts_description() {
         ..
     }) = boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp environment create` command");
+        panic!("Expected `wish environment create` command");
     };
 
     assert_eq!(name, "test-env");
@@ -1208,7 +1208,7 @@ fn environment_create_description_max_length() {
     // 240 characters should be accepted
     let valid_description = "a".repeat(240);
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "environment",
         "create",
         "--name",
@@ -1221,12 +1221,12 @@ fn environment_create_description_max_length() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp environment create` command");
+        panic!("Expected `wish environment create` command");
     };
     let CliCommand::Environment(EnvironmentCommand::Create { description, .. }) =
         boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp environment create` command");
+        panic!("Expected `wish environment create` command");
     };
 
     assert_eq!(description.as_deref(), Some(valid_description.as_str()));
@@ -1235,7 +1235,7 @@ fn environment_create_description_max_length() {
     let invalid_description = "a".repeat(241);
     assert!(
         Args::try_parse_from([
-            "warp",
+            "wish",
             "environment",
             "create",
             "--name",
@@ -1252,7 +1252,7 @@ fn environment_create_description_max_length() {
 #[test]
 fn environment_update_accepts_description() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "environment",
         "update",
         "env-id",
@@ -1262,7 +1262,7 @@ fn environment_update_accepts_description() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp environment update` command");
+        panic!("Expected `wish environment update` command");
     };
     let CliCommand::Environment(EnvironmentCommand::Update {
         id,
@@ -1271,7 +1271,7 @@ fn environment_update_accepts_description() {
         ..
     }) = boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp environment update` command");
+        panic!("Expected `wish environment update` command");
     };
 
     assert_eq!(id, "env-id");
@@ -1282,7 +1282,7 @@ fn environment_update_accepts_description() {
 #[test]
 fn environment_update_accepts_remove_description() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "environment",
         "update",
         "env-id",
@@ -1291,7 +1291,7 @@ fn environment_update_accepts_remove_description() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp environment update` command");
+        panic!("Expected `wish environment update` command");
     };
     let CliCommand::Environment(EnvironmentCommand::Update {
         id,
@@ -1300,7 +1300,7 @@ fn environment_update_accepts_remove_description() {
         ..
     }) = boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp environment update` command");
+        panic!("Expected `wish environment update` command");
     };
 
     assert_eq!(id, "env-id");
@@ -1311,7 +1311,7 @@ fn environment_update_accepts_remove_description() {
 #[test]
 fn agent_run_accepts_computer_use_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -1321,10 +1321,10 @@ fn agent_run_accepts_computer_use_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(run_args.computer_use.computer_use);
@@ -1335,7 +1335,7 @@ fn agent_run_accepts_computer_use_flag() {
 #[test]
 fn agent_run_accepts_no_computer_use_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -1345,10 +1345,10 @@ fn agent_run_accepts_no_computer_use_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(!run_args.computer_use.computer_use);
@@ -1359,7 +1359,7 @@ fn agent_run_accepts_no_computer_use_flag() {
 #[test]
 fn agent_run_rejects_both_computer_use_flags() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--prompt",
@@ -1373,13 +1373,13 @@ fn agent_run_rejects_both_computer_use_flags() {
 
 #[test]
 fn agent_run_defaults_to_no_computer_use_override() {
-    let args = Args::try_parse_from(["warp", "agent", "run", "--prompt", "hello"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run", "--prompt", "hello"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert!(!run_args.computer_use.computer_use);
@@ -1389,7 +1389,7 @@ fn agent_run_defaults_to_no_computer_use_override() {
 #[test]
 fn agent_run_cloud_accepts_snapshot_flags() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -1403,10 +1403,10 @@ fn agent_run_cloud_accepts_snapshot_flags() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert!(run_args.snapshot.no_snapshot);
@@ -1427,7 +1427,7 @@ fn agent_run_cloud_accepts_snapshot_flags() {
 #[test]
 fn agent_run_accepts_task_id_with_conversation_for_worker_followups() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run",
         "--task-id",
@@ -1438,10 +1438,10 @@ fn agent_run_accepts_task_id_with_conversation_for_worker_followups() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
     let CliCommand::Agent(AgentCommand::Run(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run` command");
+        panic!("Expected `wish agent run` command");
     };
 
     assert_eq!(run_args.task_id.as_deref(), Some("task-123"));
@@ -1451,7 +1451,7 @@ fn agent_run_accepts_task_id_with_conversation_for_worker_followups() {
 #[test]
 fn agent_run_cloud_accepts_computer_use_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -1461,10 +1461,10 @@ fn agent_run_cloud_accepts_computer_use_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert!(run_args.computer_use.computer_use);
@@ -1475,7 +1475,7 @@ fn agent_run_cloud_accepts_computer_use_flag() {
 #[test]
 fn agent_run_cloud_accepts_no_computer_use_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -1485,10 +1485,10 @@ fn agent_run_cloud_accepts_no_computer_use_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert!(!run_args.computer_use.computer_use);
@@ -1499,7 +1499,7 @@ fn agent_run_cloud_accepts_no_computer_use_flag() {
 #[test]
 fn agent_run_cloud_rejects_both_computer_use_flags() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -1513,13 +1513,13 @@ fn agent_run_cloud_rejects_both_computer_use_flags() {
 
 #[test]
 fn agent_run_cloud_defaults_to_no_computer_use_override() {
-    let args = Args::try_parse_from(["warp", "agent", "run-cloud", "--prompt", "hello"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run-cloud", "--prompt", "hello"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert!(!run_args.computer_use.computer_use);
@@ -1530,7 +1530,7 @@ fn agent_run_cloud_defaults_to_no_computer_use_override() {
 #[test]
 fn agent_run_cloud_accepts_harness_flag() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -1541,10 +1541,10 @@ fn agent_run_cloud_accepts_harness_flag() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert_eq!(run_args.harness, Harness::Claude);
@@ -1552,13 +1552,13 @@ fn agent_run_cloud_accepts_harness_flag() {
 
 #[test]
 fn agent_run_cloud_defaults_harness_to_hermon() {
-    let args = Args::try_parse_from(["warp", "agent", "run-cloud", "--prompt", "hello"]).unwrap();
+    let args = Args::try_parse_from(["wish", "agent", "run-cloud", "--prompt", "hello"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert_eq!(run_args.harness, Harness::Hermon);
@@ -1604,7 +1604,7 @@ fn harness_parse_local_child_harness_accepts_codex() {
 #[test]
 fn agent_run_cloud_accepts_claude_auth_secret_with_harness() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -1617,10 +1617,10 @@ fn agent_run_cloud_accepts_claude_auth_secret_with_harness() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert_eq!(run_args.harness, Harness::Claude);
@@ -1631,7 +1631,7 @@ fn agent_run_cloud_accepts_claude_auth_secret_with_harness() {
 fn agent_run_cloud_claude_auth_secret_without_harness_parses() {
     // Clap parsing succeeds; runtime validation (in mod.rs) rejects this combination.
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "agent",
         "run-cloud",
         "--prompt",
@@ -1642,10 +1642,10 @@ fn agent_run_cloud_claude_auth_secret_without_harness_parses() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
     let CliCommand::Agent(AgentCommand::RunCloud(run_args)) = boxed_cmd.as_ref() else {
-        panic!("Expected `warp agent run-cloud` command");
+        panic!("Expected `wish agent run-cloud` command");
     };
 
     assert_eq!(run_args.harness, Harness::Hermon);
@@ -1655,7 +1655,7 @@ fn agent_run_cloud_claude_auth_secret_without_harness_parses() {
 #[test]
 fn run_message_send_parses() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "run",
         "message",
         "send",
@@ -1673,11 +1673,11 @@ fn run_message_send_parses() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp run message send` command");
+        panic!("Expected `wish run message send` command");
     };
     let CliCommand::Run(TaskCommand::Message(MessageCommand::Send(send_args))) = boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp run message send` command");
+        panic!("Expected `wish run message send` command");
     };
 
     assert_eq!(send_args.to, vec!["run-1".to_string(), "run-2".to_string()]);
@@ -1689,7 +1689,7 @@ fn run_message_send_parses() {
 #[test]
 fn run_message_list_parses_filters() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "run",
         "message",
         "list",
@@ -1703,11 +1703,11 @@ fn run_message_list_parses_filters() {
     .unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp run message list` command");
+        panic!("Expected `wish run message list` command");
     };
     let CliCommand::Run(TaskCommand::Message(MessageCommand::List(list_args))) = boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp run message list` command");
+        panic!("Expected `wish run message list` command");
     };
 
     assert_eq!(list_args.run_id, "run-123");
@@ -1719,7 +1719,7 @@ fn run_message_list_parses_filters() {
 #[test]
 fn run_message_list_rejects_non_positive_limit() {
     assert!(
-        Args::try_parse_from(["warp", "run", "message", "list", "run-123", "--limit", "0",])
+        Args::try_parse_from(["wish", "run", "message", "list", "run-123", "--limit", "0",])
             .is_err()
     );
 }
@@ -1727,7 +1727,7 @@ fn run_message_list_rejects_non_positive_limit() {
 #[test]
 fn run_message_watch_parses() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "run",
         "message",
         "watch",
@@ -1742,12 +1742,12 @@ fn run_message_watch_parses() {
     assert_eq!(args.global_options.output_format, OutputFormat::Ndjson);
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp run message watch` command");
+        panic!("Expected `wish run message watch` command");
     };
     let CliCommand::Run(TaskCommand::Message(MessageCommand::Watch(watch_args))) =
         boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp run message watch` command");
+        panic!("Expected `wish run message watch` command");
     };
 
     assert_eq!(watch_args.run_id, "run-123");
@@ -1756,14 +1756,14 @@ fn run_message_watch_parses() {
 
 #[test]
 fn run_message_read_parses() {
-    let args = Args::try_parse_from(["warp", "run", "message", "read", "message-123"]).unwrap();
+    let args = Args::try_parse_from(["wish", "run", "message", "read", "message-123"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp run message read` command");
+        panic!("Expected `wish run message read` command");
     };
     let CliCommand::Run(TaskCommand::Message(MessageCommand::Read(read_args))) = boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp run message read` command");
+        panic!("Expected `wish run message read` command");
     };
 
     assert_eq!(read_args.message_id, "message-123");
@@ -1772,15 +1772,15 @@ fn run_message_read_parses() {
 #[test]
 fn run_message_mark_delivered_parses() {
     let args =
-        Args::try_parse_from(["warp", "run", "message", "mark-delivered", "message-456"]).unwrap();
+        Args::try_parse_from(["wish", "run", "message", "mark-delivered", "message-456"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp run message mark-delivered` command");
+        panic!("Expected `wish run message mark-delivered` command");
     };
     let CliCommand::Run(TaskCommand::Message(MessageCommand::MarkDelivered(delivered_args))) =
         boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp run message mark-delivered` command");
+        panic!("Expected `wish run message mark-delivered` command");
     };
 
     assert_eq!(delivered_args.message_id, "message-456");
@@ -1796,7 +1796,7 @@ fn hidden_server_overrides_parse_from_env() {
         "ws://127.0.0.1:8081",
     );
 
-    let args = Args::try_parse_from(["warp", "whoami"]).unwrap();
+    let args = Args::try_parse_from(["wish", "whoami"]).unwrap();
 
     restore_env_var(SERVER_ROOT_URL_OVERRIDE_ENV, previous_server_root);
     restore_env_var(WS_SERVER_URL_OVERRIDE_ENV, previous_ws);
@@ -1816,15 +1816,15 @@ fn hidden_server_overrides_parse_from_env() {
 #[test]
 fn run_message_delivered_alias_parses() {
     let args =
-        Args::try_parse_from(["warp", "run", "message", "delivered", "message-456"]).unwrap();
+        Args::try_parse_from(["wish", "run", "message", "delivered", "message-456"]).unwrap();
 
     let Some(Command::CommandLine(boxed_cmd)) = args.command else {
-        panic!("Expected `warp run message delivered` command");
+        panic!("Expected `wish run message delivered` command");
     };
     let CliCommand::Run(TaskCommand::Message(MessageCommand::MarkDelivered(delivered_args))) =
         boxed_cmd.as_ref()
     else {
-        panic!("Expected `warp run message delivered` command");
+        panic!("Expected `wish run message delivered` command");
     };
 
     assert_eq!(delivered_args.message_id, "message-456");
@@ -1833,7 +1833,7 @@ fn run_message_delivered_alias_parses() {
 #[test]
 fn finish_task_accepts_status_success() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "harness-support",
         "--run-id",
         "run-1",
@@ -1862,7 +1862,7 @@ fn finish_task_accepts_status_success() {
 #[test]
 fn finish_task_accepts_status_failure() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "harness-support",
         "--run-id",
         "run-1",
@@ -1891,7 +1891,7 @@ fn finish_task_accepts_status_failure() {
 #[test]
 fn finish_task_rejects_invalid_status() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "harness-support",
         "--run-id",
         "run-1",
@@ -1907,7 +1907,7 @@ fn finish_task_rejects_invalid_status() {
 #[test]
 fn finish_task_rejects_missing_status() {
     let result = Args::try_parse_from([
-        "warp",
+        "wish",
         "harness-support",
         "--run-id",
         "run-1",
@@ -1921,7 +1921,7 @@ fn finish_task_rejects_missing_status() {
 #[test]
 fn report_shutdown_clean_parses() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "harness-support",
         "--run-id",
         "run-1",
@@ -1946,7 +1946,7 @@ fn report_shutdown_clean_parses() {
 #[test]
 fn report_shutdown_abnormal_parses() {
     let args = Args::try_parse_from([
-        "warp",
+        "wish",
         "harness-support",
         "--run-id",
         "run-1",

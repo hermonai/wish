@@ -36,10 +36,10 @@ fn test_parse_repo_input_owner_repo() {
 
 #[test]
 fn test_parse_repo_input_github_url() {
-    let (owner, repo) = UpdateEnvironmentForm::parse_repo_input("https://github.com/warp/warp.git")
+    let (owner, repo) = UpdateEnvironmentForm::parse_repo_input("https://github.com/wish/wish.git")
         .expect("expected github url to parse");
-    assert_eq!(owner, "warp");
-    assert_eq!(repo, "warp");
+    assert_eq!(owner, "wish");
+    assert_eq!(repo, "wish");
 }
 
 #[test]

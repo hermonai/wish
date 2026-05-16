@@ -6,7 +6,7 @@ use wish_core::telemetry::{EnablementState, TelemetryEvent, TelemetryEventDesc};
 #[derive(Debug, EnumDiscriminants)]
 #[strum_discriminants(derive(EnumIter))]
 pub(super) enum CliTelemetryEvent {
-    /// Executing `warp agent run`
+    /// Executing `wish agent run`
     AgentRun {
         gui: bool,
         requested_mcp_servers: usize,
@@ -16,103 +16,103 @@ pub(super) enum CliTelemetryEvent {
         /// Which execution harness was selected (e.g. "oz", "claude").
         harness: String,
     },
-    /// Executing `warp agent run-ambient`
+    /// Executing `wish agent run-ambient`
     AgentRunAmbient,
-    /// Executing `warp agent profile list`
+    /// Executing `wish agent profile list`
     AgentProfileList,
-    /// Executing `warp agent list`
+    /// Executing `wish agent list`
     AgentList,
-    /// Executing `warp environment list`
+    /// Executing `wish environment list`
     EnvironmentList,
-    /// Executing `warp environment create`
+    /// Executing  `wish environment create`
     EnvironmentCreate,
-    /// Executing `warp environment delete`
+    /// Executing  `wish environment delete`
     EnvironmentDelete,
-    /// Executing `warp environment update`
+    /// Executing  `wish environment update`
     EnvironmentUpdate,
-    /// Executing `warp environment get`
+    /// Executing  `wish environment get`
     EnvironmentGet,
-    /// Executing `warp environment image list`
+    /// Executing  `wish environment image list`
     EnvironmentImageList,
-    /// Executing `warp mcp list`
+    /// Executing  `wish mcp list`
     MCPList,
-    /// Executing `warp model list`
+    /// Executing  `wish model list`
     ModelList,
-    /// Executing `warp task list`
+    /// Executing  `wish task list`
     TaskList,
-    /// Executing `warp task get`
+    /// Executing  `wish task get`
     TaskGet,
-    /// Executing `warp run conversation get`
+    /// Executing  `wish run conversation get`
     ConversationGet,
-    /// Executing `warp run get <id> --conversation`
+    /// Executing  `wish run get <id> --conversation`
     RunConversationGet,
-    /// Executing `warp run message watch`
+    /// Executing  `wish run message watch`
     RunMessageWatch { harness: &'static str },
-    /// Executing `warp run message send`
+    /// Executing  `wish run message send`
     RunMessageSend { harness: &'static str },
-    /// Executing `warp run message list`
+    /// Executing  `wish run message list`
     RunMessageList { harness: &'static str },
-    /// Executing `warp run message read`
+    /// Executing  `wish run message read`
     RunMessageRead { harness: &'static str },
-    /// Executing `warp run message mark-delivered`
+    /// Executing  `wish run message mark-delivered`
     RunMessageMarkDelivered { harness: &'static str },
-    /// Executing `warp login`
+    /// Executing  `wish login`
     Login,
-    /// Executing `warp logout`
+    /// Executing  `wish logout`
     Logout,
-    /// Executing `warp whoami`
+    /// Executing  `wish whoami`
     Whoami,
-    /// Executing `warp provider setup`
+    /// Executing  `wish provider setup`
     ProviderSetup,
-    /// Executing `warp provider list`
+    /// Executing  `wish provider list`
     ProviderList,
-    /// Executing `warp integration create`
+    /// Executing  `wish integration create`
     IntegrationCreate,
-    /// Executing `warp integration update`
+    /// Executing  `wish integration update`
     IntegrationUpdate,
-    /// Executing `warp integration list`
+    /// Executing  `wish integration list`
     IntegrationList,
-    /// Executing `warp artifact upload`
+    /// Executing  `wish artifact upload`
     ArtifactUpload,
-    /// Executing `warp artifact get`
+    /// Executing  `wish artifact get`
     ArtifactGet,
-    /// Executing `warp artifact download`
+    /// Executing  `wish artifact download`
     ArtifactDownload,
-    /// Executing `warp schedule create`
+    /// Executing  `wish schedule create`
     ScheduleCreate,
-    /// Executing `warp schedule list`
+    /// Executing  `wish schedule list`
     ScheduleList,
-    /// Executing `warp schedule get`
+    /// Executing  `wish schedule get`
     ScheduleGet,
-    /// Executing `warp schedule pause`
+    /// Executing  `wish schedule pause`
     SchedulePause,
-    /// Executing `warp schedule unpause`
+    /// Executing  `wish schedule unpause`
     ScheduleUnpause,
-    /// Executing `warp schedule update`
+    /// Executing  `wish schedule update`
     ScheduleUpdate,
-    /// Executing `warp schedule delete`
+    /// Executing  `wish schedule delete`
     ScheduleDelete,
-    /// Executing `warp secret create`
+    /// Executing  `wish secret create`
     SecretCreate,
-    /// Executing `warp secret delete`
+    /// Executing  `wish secret delete`
     SecretDelete,
-    /// Executing `warp secret update`
+    /// Executing  `wish secret update`
     SecretUpdate,
-    /// Executing `warp secret list`
+    /// Executing  `wish secret list`
     SecretList,
-    /// Executing `warp federate issue-token`
+    /// Executing  `wish federate issue-token`
     FederateIssueToken,
-    /// Executing `warp federate issue-gcp-token`
+    /// Executing  `wish federate issue-gcp-token`
     FederateIssueGcpToken,
-    /// Executing `warp harness-support ping`
+    /// Executing  `wish harness-support ping`
     HarnessSupportPing,
-    /// Executing `warp harness-support report-artifact`
+    /// Executing  `wish harness-support report-artifact`
     HarnessSupportReportArtifact { artifact_type: &'static str },
-    /// Executing `warp harness-support notify-user`
+    /// Executing  `wish harness-support notify-user`
     HarnessSupportNotifyUser,
-    /// Executing `warp harness-support finish-task`
+    /// Executing  `wish harness-support finish-task`
     HarnessSupportFinishTask { success: bool },
-    /// Executing `warp harness-support report-shutdown`
+    /// Executing  `wish harness-support report-shutdown`
     HarnessSupportReportShutdown,
 }
 

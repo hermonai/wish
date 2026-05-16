@@ -607,11 +607,11 @@ fn test_nonsequential_fragments_sorting() {
 #[test]
 fn test_diff_merkle_node_no_diffs() {
     VirtualFS::test("test_diff_merkle_node_no_diffs", |dirs, mut sandbox| {
-        let repo_name = "warp-virtual";
+        let repo_name = "wish-virtual";
         let repo_path = dirs.tests().join(repo_name);
 
         // Initialize repo:
-        // warp-virtual/
+        // wish-virtual/
         // ├── foo
         // └── bar
         sandbox.mkdir(repo_name);
@@ -650,10 +650,10 @@ fn test_diff_merkle_node_no_diffs() {
 #[test]
 fn test_diff_merkle_node_new_file() {
     VirtualFS::test("test_diff_merkle_node_new_file", |dirs, mut sandbox| {
-        let repo_name = "warp-virtual";
+        let repo_name = "wish-virtual";
 
         // Initialize repo:
-        // warp-virtual/
+        // wish-virtual/
         // ├── foo
         // └── bar
         sandbox.mkdir(repo_name);
@@ -674,7 +674,7 @@ fn test_diff_merkle_node_new_file() {
         let (tree, _) = block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
         // Add a new file:
-        // warp-virtual/
+        // wish-virtual/
         // ├── foo
         // └── bar
         // └── baz
@@ -708,10 +708,10 @@ fn test_diff_merkle_node_new_empty_subdirectory() {
     VirtualFS::test(
         "test_diff_merkle_node_new_empty_subdirectory",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             sandbox.mkdir(repo_name);
@@ -733,7 +733,7 @@ fn test_diff_merkle_node_new_empty_subdirectory() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Add a new subdirectory:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             // └── subdir/
@@ -762,10 +762,10 @@ fn test_diff_merkle_node_new_subdirectory_with_file() {
     VirtualFS::test(
         "test_diff_merkle_node_new_subdirectory_with_file",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             sandbox.mkdir(repo_name);
@@ -787,7 +787,7 @@ fn test_diff_merkle_node_new_subdirectory_with_file() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Add a new subdirectory with a file:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             // └── subdir/
@@ -824,10 +824,10 @@ fn test_diff_merkle_node_new_subdirectory_with_file() {
 #[test]
 fn test_diff_merkle_node_deleted_file() {
     VirtualFS::test("test_diff_merkle_node_deleted_file", |dirs, mut sandbox| {
-        let repo_name = "warp-virtual";
+        let repo_name = "wish-virtual";
 
         // Initialize repo:
-        // warp-virtual/
+        // wish-virtual/
         // ├── foo
         // └── bar
         sandbox.mkdir(repo_name);
@@ -848,7 +848,7 @@ fn test_diff_merkle_node_deleted_file() {
         let (tree, _) = block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
         // Delete foo:
-        // warp-virtual/
+        // wish-virtual/
         // └── bar
         std::fs::remove_file(repo_path.join("foo")).expect("can not remove file");
 
@@ -879,10 +879,10 @@ fn test_diff_merkle_node_deleted_empty_subdirectory() {
     VirtualFS::test(
         "test_diff_merkle_node_deleted_empty_subdirectory",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo with two files:
-            // warp-virtual/
+            // wish-virtual/
             // ├── subdir/
             // └── bar
             sandbox.mkdir(repo_name);
@@ -901,7 +901,7 @@ fn test_diff_merkle_node_deleted_empty_subdirectory() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Delete subdir:
-            // warp-virtual/
+            // wish-virtual/
             // └── bar
             std::fs::remove_dir_all(repo_path.join("subdir")).expect("can not remove subdirectory");
 
@@ -931,10 +931,10 @@ fn test_diff_merkle_node_deleted_subdirectory_with_file() {
     VirtualFS::test(
         "test_diff_merkle_node_deleted_subdirectory_with_file",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo with two files:
-            // warp-virtual/
+            // wish-virtual/
             // ├── subdir/
             // │   └── foo
             // └── bar
@@ -958,7 +958,7 @@ fn test_diff_merkle_node_deleted_subdirectory_with_file() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Delete subdir:
-            // warp-virtual/
+            // wish-virtual/
             // └── bar
             std::fs::remove_dir_all(repo_path.join("subdir")).expect("can not remove subdirectory");
 
@@ -991,10 +991,10 @@ fn test_diff_merkle_node_deleted_subdirectory_with_file() {
 #[test]
 fn test_diff_merkle_node_moved_file() {
     VirtualFS::test("test_diff_merkle_node_moved_file", |dirs, mut sandbox| {
-        let repo_name = "warp-virtual";
+        let repo_name = "wish-virtual";
 
         // Initialize repo with two files:
-        // warp-virtual/
+        // wish-virtual/
         // ├── foo
         // └── bar
         sandbox.mkdir(repo_name);
@@ -1015,7 +1015,7 @@ fn test_diff_merkle_node_moved_file() {
         let (tree, _) = block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
         // Rename bar to baz:
-        // warp-virtual/
+        // wish-virtual/
         // ├── foo
         // └── baz
         std::fs::rename(repo_path.join("bar"), repo_path.join("baz")).expect("can not rename file");
@@ -1049,10 +1049,10 @@ fn test_diff_merkle_node_moved_subdirectory_with_file() {
     VirtualFS::test(
         "test_diff_merkle_node_moved_subdirectory_with_file",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── subdir/
             // │   └── foo
             // └── bar
@@ -1076,7 +1076,7 @@ fn test_diff_merkle_node_moved_subdirectory_with_file() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Rename subdir to otherdir:
-            // warp-virtual/
+            // wish-virtual/
             // ├── otherdir/
             // │   └── foo
             // └── bar
@@ -1120,10 +1120,10 @@ fn test_diff_merkle_node_file_changed_to_empty_subdirectory() {
     VirtualFS::test(
         "test_diff_merkle_node_file_changed_to_empty_subdirectory",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             sandbox.mkdir(repo_name);
@@ -1145,7 +1145,7 @@ fn test_diff_merkle_node_file_changed_to_empty_subdirectory() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Delete foo, and create a subdirectory with the same name:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo/
             // └── bar
             std::fs::remove_file(repo_path.join("foo")).expect("can not remove file");
@@ -1184,10 +1184,10 @@ fn test_diff_merkle_node_file_changed_to_non_empty_subdirectory() {
     VirtualFS::test(
         "test_diff_merkle_node_file_changed_to_non_empty_subdirectory",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             sandbox.mkdir(repo_name);
@@ -1209,7 +1209,7 @@ fn test_diff_merkle_node_file_changed_to_non_empty_subdirectory() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Delete foo, and create a subdirectory with the same name:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo/
             // │   └── bar
             // └── bar
@@ -1255,10 +1255,10 @@ fn test_diff_merkle_node_subdirectory_changed_to_file() {
     VirtualFS::test(
         "test_diff_merkle_node_subdirectory_changed_to_file",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── subdir/
             // │   └── foo
             // └── bar
@@ -1278,7 +1278,7 @@ fn test_diff_merkle_node_subdirectory_changed_to_file() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Delete subdir, and create a file with the same name:
-            // warp-virtual/
+            // wish-virtual/
             // ├── subdir
             // └── bar
             std::fs::remove_dir_all(repo_path.join("subdir")).expect("can not remove subdirectory");
@@ -1322,10 +1322,10 @@ fn test_diff_merkle_node_file_content_changed() {
     VirtualFS::test(
         "test_diff_merkle_node_file_content_changed",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             sandbox.mkdir(repo_name);
@@ -1347,7 +1347,7 @@ fn test_diff_merkle_node_file_content_changed() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Change content of foo file:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo (content changed)
             // └── bar
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -1392,10 +1392,10 @@ fn test_diff_merkle_node_file_content_changed_but_file_size_unchanged() {
     VirtualFS::test(
         "test_diff_merkle_node_file_content_changed_but_file_size_unchanged",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── bar
             sandbox.mkdir(repo_name);
@@ -1417,7 +1417,7 @@ fn test_diff_merkle_node_file_content_changed_but_file_size_unchanged() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Change content of foo file:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo (content changed)
             // └── bar
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -1463,10 +1463,10 @@ fn test_diff_merkle_node_multiple_files_changed() {
     VirtualFS::test(
         "test_diff_merkle_node_multiple_files_changed",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // ├── bar
             // └── baz
@@ -1493,7 +1493,7 @@ fn test_diff_merkle_node_multiple_files_changed() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Change multiple files simultaneously:
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo (content changed)
             // ├── bar (content changed)
             // └── baz (unchanged)
@@ -1547,10 +1547,10 @@ fn test_diff_merkle_node_gitignore_file_changed() {
     VirtualFS::test(
         "test_diff_merkle_node_gitignore_file_changed",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // ├── subdir/
             // │   └── baz
             // ├── foo
@@ -1579,7 +1579,7 @@ fn test_diff_merkle_node_gitignore_file_changed() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Add a gitignore file to root directory:
-            // warp-virtual/
+            // wish-virtual/
             // ├── .gitignore
             // ├── subdir/
             // │   └── baz
@@ -1660,10 +1660,10 @@ fn test_diff_merkle_node_file_node_with_no_children() {
     VirtualFS::test(
         "test_diff_merkle_node_file_node_with_no_children",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // └── foo
             sandbox.mkdir(repo_name);
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -1750,10 +1750,10 @@ fn test_diff_merkle_node_file_node_with_fragment_children_with_children() {
     VirtualFS::test(
         "test_diff_merkle_node_file_node_with_fragment_children_with_children",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo:
-            // warp-virtual/
+            // wish-virtual/
             // └── foo
             sandbox.mkdir(repo_name);
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -1874,10 +1874,10 @@ fn test_diff_merkle_node_max_depth_exceeded() {
     VirtualFS::test(
         "test_diff_merkle_node_max_depth_exceeded",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize a simple repo:
-            // warp-virtual/
+            // wish-virtual/
             // └── foo
             sandbox.mkdir(repo_name);
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -1926,10 +1926,10 @@ fn test_diff_merkle_node_max_depth_boundary() {
     VirtualFS::test(
         "test_diff_merkle_node_max_depth_boundary",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize a simple repo:
-            // warp-virtual/
+            // wish-virtual/
             // └── foo
             sandbox.mkdir(repo_name);
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -1974,10 +1974,10 @@ fn test_diff_merkle_node_file_limit_exceeded() {
     VirtualFS::test(
         "test_diff_merkle_node_file_limit_exceeded",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo with multiple files:
-            // warp-virtual/
+            // wish-virtual/
             // └── foo
             sandbox.mkdir(repo_name);
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -2027,7 +2027,7 @@ fn test_diff_merkle_node_file_limit_boundary() {
     VirtualFS::test(
         "test_diff_merkle_node_file_limit_boundary",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize repo with one file
             sandbox.mkdir(repo_name);
@@ -2087,10 +2087,10 @@ fn test_add_merkle_node_max_depth_exceeded() {
     VirtualFS::test(
         "test_add_merkle_node_max_depth_exceeded",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize a simple repo with a single file
-            // warp-virtual/
+            // wish-virtual/
             // └── foo
             sandbox.mkdir(repo_name);
             sandbox.with_files(vec![Stub::FileWithContent(
@@ -2107,7 +2107,7 @@ fn test_add_merkle_node_max_depth_exceeded() {
                 block_on(MerkleTree::try_new(build_file_tree_result.file_tree)).unwrap();
 
             // Add a deep directory structure to the merkle tree
-            // warp-virtual/
+            // wish-virtual/
             // ├── foo
             // └── deep/
             //     └── nested/
@@ -2174,10 +2174,10 @@ fn test_add_merkle_node_file_limit_exceeded() {
     VirtualFS::test(
         "test_add_merkle_node_file_limit_exceeded",
         |dirs, mut sandbox| {
-            let repo_name = "warp-virtual";
+            let repo_name = "wish-virtual";
 
             // Initialize a repo with multiple files:
-            // warp-virtual/
+            // wish-virtual/
             // └── dir/
             //     ├── file1.txt
             //     ├── file2.txt

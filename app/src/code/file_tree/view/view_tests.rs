@@ -609,13 +609,13 @@ fn click_on_file_under_absorbed_descendant_keeps_file_selected() {
     VirtualFS::test(
         "file_tree_click_file_preserves_selection",
         |dirs, mut vfs| {
-            vfs.mkdir("code/warp-server")
+            vfs.mkdir("code/wish-server")
                 .with_files(vec![Stub::FileWithContent(
-                    "code/warp-server/main.rs",
+                    "code/wish-server/main.rs",
                     "fn main() {}\n",
                 )]);
             let code = dirs.tests().join("code");
-            let warp_server = code.join("warp-server");
+            let wish_server = code.join("wish-server");
             let main_rs = warp_server.join("main.rs");
 
             App::test((), |mut app| async move {
@@ -682,7 +682,7 @@ fn pending_focus_target_does_not_re_scroll_after_first_apply() {
                 "fn main() {}\n",
             )]);
         let tree = dirs.tests().join("tree");
-        let warp_server = tree.join("warp-server");
+        let wish_server = tree.join("warp-server");
 
         App::test((), |mut app| async move {
             let _ = initialize_app(&mut app);
@@ -728,7 +728,7 @@ fn focus_follows_absorbed_descendant_once_its_item_is_materialized() {
                 "fn main() {}\n",
             )]);
         let tree = dirs.tests().join("tree");
-        let warp_server = tree.join("warp-server");
+        let wish_server = tree.join("warp-server");
 
         App::test((), |mut app| async move {
             let _ = initialize_app(&mut app);

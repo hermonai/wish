@@ -716,7 +716,7 @@ const MAX_FONT_SIZE: f32 = 25.0;
 const FONT_SIZE_INCREMENT: f32 = 1.0;
 
 pub const TAB_BAR_HEIGHT: f32 = 34.;
-/// Height for all panel headers (tab bar, warp drive, resource center, theme chooser, etc.).
+/// Height for all panel headers (tab bar, wish drive, resource center, theme chooser, etc.).
 /// This ensures consistent header heights across all UI panels.
 pub const PANEL_HEADER_HEIGHT: f32 = TAB_BAR_HEIGHT;
 /// The hover area height for states where the tab bar is revealed on hover.
@@ -8305,8 +8305,8 @@ impl Workspace {
         explicit_user_action: bool,
         ctx: &mut ViewContext<Self>,
     ) {
-        // Closing all left panels will also close warp drive so we need to retrieve
-        // whether warp drive was open first, and toggle based on the initial value.
+        // Closing all left panels will also close wish drive so we need to retrieve
+        // whether wish drive was open first, and toggle based on the initial value.
         let was_warp_drive_open = self.current_workspace_state.is_warp_drive_open;
         self.current_workspace_state.close_all_left_panels();
         self.current_workspace_state.is_warp_drive_open =
@@ -8326,7 +8326,7 @@ impl Workspace {
         ctx.notify();
 
         // Telemetry and welcome tip logic is only for when the user explicitly opens Warp Drive
-        // AND warp drive wasn't open before. There are other scenarios where we open Warp Drive like:
+        // AND wish drive wasn't open before. There are other scenarios where we open Warp Drive like:
         // new user onboarding, user joins a team, etc so we want to avoid counting those.
         if explicit_user_action
             && !was_warp_drive_open
@@ -13192,7 +13192,7 @@ impl Workspace {
         ctx.notify();
     }
 
-    /// Updates the left panel's warp drive view.
+    /// Updates the left panel's wish drive view.
     fn update_warp_drive_view<F>(&mut self, ctx: &mut ViewContext<Self>, update_fn: F)
     where
         F: FnOnce(&mut DrivePanel, &mut ViewContext<DrivePanel>),
