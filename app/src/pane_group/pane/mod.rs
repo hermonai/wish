@@ -435,8 +435,8 @@ impl PaneId {
         matches!(self.0.pane_type, IPaneType::EnvironmentManagement)
     }
 
-    /// Returns true if this pane contains a Warp Drive object (notebook, workflow, etc.).
-    pub fn is_warp_drive_object_pane(&self) -> bool {
+    /// Returns true if this pane contains a Wish Drive object (notebook, workflow, etc.).
+    pub fn is_wish_drive_object_pane(&self) -> bool {
         matches!(
             self.0.pane_type,
             IPaneType::Notebook

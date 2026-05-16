@@ -68,7 +68,11 @@ fn layered(canvas: &mut Canvas) {
     }
 
     // If we have a cycle, append the rest as one final layer.
-    let leftover: Vec<CanvasNodeId> = ids.iter().copied().filter(|id| !placed.contains(id)).collect();
+    let leftover: Vec<CanvasNodeId> = ids
+        .iter()
+        .copied()
+        .filter(|id| !placed.contains(id))
+        .collect();
     if !leftover.is_empty() {
         layers.push(leftover);
     }
@@ -149,7 +153,8 @@ fn force_directed_stub(canvas: &mut Canvas) {
         .collect();
 
     for _ in 0..iterations {
-        let mut disp: HashMap<CanvasNodeId, (f32, f32)> = ids.iter().map(|id| (*id, (0.0, 0.0))).collect();
+        let mut disp: HashMap<CanvasNodeId, (f32, f32)> =
+            ids.iter().map(|id| (*id, (0.0, 0.0))).collect();
 
         // Repulsive forces: O(n^2) — fine for canvas sizes we ship.
         for i in 0..n {

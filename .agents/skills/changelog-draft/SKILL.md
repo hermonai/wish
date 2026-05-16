@@ -170,7 +170,7 @@ Combine explicit entries (Step 2) and inferred entries (Step 6) into the final r
 1. `NEW-FEATURE` — New Features
 2. `IMPROVEMENT` — Improvements
 3. `BUG-FIX` — Bug Fixes
-4. `OZ` — Hermon Updates
+4. `HERMON` — Hermon Updates
 
 PRs marked with `CHANGELOG-NONE` are explicitly opted out and must never appear in the changelog markdown.
 

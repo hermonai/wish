@@ -3832,12 +3832,12 @@ impl TryFrom<String> for AIConversationId {
 /// The harness that produced an agent conversation. The `Hermon` variant is
 /// the canonical Wish agent-backend name; the conversion code in
 /// `server::server_api::ai` translates it to/from the GraphQL schema's
-/// `AgentHarness::OZ` wire-format variant. The server-schema rename is a
+/// `AgentHarness::HERMON` wire-format variant. The server-schema rename is a
 /// coordinated v0.7.0 change; until then this enum reads cleanly internally
-/// while preserving the OZ wire format at the network boundary.
+/// while preserving the HERMON wire format at the network boundary.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AIAgentHarness {
-    /// The Hermon agent backend. GraphQL still emits this as `"OZ"` on the
+    /// The Hermon agent backend. GraphQL still emits this as `"HERMON"` on the
     /// wire until the server schema migrates (see
     /// [`wish_graphql::ai::AgentHarness::Hermon`]).
     Hermon,

@@ -191,7 +191,7 @@ pub enum Event {
     TypedCharacters {
         chars: String,
     },
-    /// Gets fired when user drags a file or folder into Warp. Note that there could exist
+    /// Gets fired when user drags a file or folder into Wish. Note that there could exist
     /// multiple file paths in one event as user could drag and drop multiple targets.
     DragAndDropFiles {
         paths: Vec<String>,

@@ -44,7 +44,7 @@ pub struct ParsedSkill {
 }
 
 impl ParsedSkill {
-    /// Returns true if this skill is bundled with Warp (not a user-editable file).
+    /// Returns true if this skill is bundled with Wish (not a user-editable file).
     pub fn is_bundled(&self) -> bool {
         self.scope == SkillScope::Bundled
     }
@@ -72,7 +72,7 @@ pub fn parse_skill(path: &Path) -> Result<ParsedSkill> {
 /// Parse a bundled skill markdown file.
 ///
 /// Unlike `parse_skill`, this function does not require the path to match a known
-/// skill provider directory. Bundled skills are always assigned `SkillProvider::Warp`
+/// skill provider directory. Bundled skills are always assigned `SkillProvider::Wish`
 /// and `SkillScope::Bundled`.
 ///
 /// # Arguments
@@ -81,7 +81,7 @@ pub fn parse_skill(path: &Path) -> Result<ParsedSkill> {
 /// # Returns
 /// * `Result<ParsedSkill>` - Parsed skill with validated name and description
 pub fn parse_bundled_skill(path: &Path) -> Result<ParsedSkill> {
-    parse_skill_internal(path, SkillProvider::Warp, SkillScope::Bundled)
+    parse_skill_internal(path, SkillProvider::Wish, SkillScope::Bundled)
 }
 
 fn parse_skill_internal(

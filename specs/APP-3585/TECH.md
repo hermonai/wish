@@ -8,7 +8,7 @@ The attribution setting (whether Hermon adds a `Co-Authored-By` line to commits 
 This spec covers the warp-internal (client) changes. Anything about how the server stores or resolves the effective value lives in the server spec.
 ## Relevant code
 - `app/src/settings/ai.rs` — `define_settings_group!(AISettings, ...)`: new user-level `agent_attribution_enabled` bool.
-- `app/src/workspaces/workspace.rs (631–776)` — domain types for team settings (`AdminEnablementSetting`, `WorkspaceSettings`); flat `enable_warp_attribution: AdminEnablementSetting` added directly on `WorkspaceSettings`.
+- `app/src/workspaces/workspace.rs (631–776)` — domain types for team settings (`AdminEnablementSetting`, `WorkspaceSettings`); flat `enable_wish_attribution: AdminEnablementSetting` added directly on `WorkspaceSettings`.
 - `app/src/workspaces/user_workspaces.rs (1363–1458)` — accessor methods for team settings; new `get_agent_attribution_setting()`.
 - `app/src/workspaces/gql_convert.rs` — `From<GqlAdminEnablementSetting>` mapping for the new field.
 - `crates/graphql/src/api/workspace.rs (124–146)` — `WorkspaceSettings` cynic fragment; new `AmbientAgentSettings` fragment.
@@ -31,14 +31,14 @@ On toggle, the setting is persisted locally and the existing `CloudPreferencesSy
 Because we use `RespectUserSyncSetting::Yes`, users who have turned "Sync settings across devices" off do not publish their preference to the server; the server falls back to the default (`true`) for those users. This matches how all other `AISettings` fields behave today.
 
 ### 2. Team-level field on `WorkspaceSettings` (flat, not wrapped)
-Add a flat `enable_warp_attribution: AdminEnablementSetting` field (with `#[serde(default)]`) directly on `WorkspaceSettings` in `app/src/workspaces/workspace.rs`. No wrapper struct — the GQL field name matches the server directly.
+Add a flat `enable_wish_attribution: AdminEnablementSetting` field (with `#[serde(default)]`) directly on `WorkspaceSettings` in `app/src/workspaces/workspace.rs`. No wrapper struct — the GQL field name matches the server directly.
 
 `UserWorkspaces::get_agent_attribution_setting()` reads this field off the current team:
 
 ```rust
 pub fn get_agent_attribution_setting(&self) -> AdminEnablementSetting {
     self.current_team()
-        .map(|team| team.organization_settings.enable_warp_attribution.clone())
+        .map(|team| team.organization_settings.enable_wish_attribution.clone())
         .unwrap_or_default()
 }
 ```
@@ -46,7 +46,7 @@ pub fn get_agent_attribution_setting(&self) -> AdminEnablementSetting {
 This matches the shape of every other admin-enablement accessor on `UserWorkspaces` (`team_allows_codebase_context`, `is_ai_allowed_in_remote_sessions`, `get_cloud_conversation_storage_enablement_setting`).
 
 ### 3. GraphQL fetch
-Add an `AmbientAgentSettings` cynic fragment in `crates/graphql/src/api/workspace.rs` with `enable_warp_attribution: AdminEnablementSetting`, and include it on the `WorkspaceSettings` fragment as `ambient_agent_settings: Option<AmbientAgentSettings>`. The wrapper is `Option` because `WorkspaceSettings.ambientAgentSettings` is nullable in the GQL schema (no `!`); this matches the existing convention for `sandboxed_agent_settings`. When the wrapper is `None`, `gql_convert.rs` falls back to `AdminEnablementSetting::default()` (= `RespectUserSetting`). The inner `enable_warp_attribution` is non-optional, as the server guarantees a value when the wrapper is present.
+Add an `AmbientAgentSettings` cynic fragment in `crates/graphql/src/api/workspace.rs` with `enable_wish_attribution: AdminEnablementSetting`, and include it on the `WorkspaceSettings` fragment as `ambient_agent_settings: Option<AmbientAgentSettings>`. The wrapper is `Option` because `WorkspaceSettings.ambientAgentSettings` is nullable in the GQL schema (no `!`); this matches the existing convention for `sandboxed_agent_settings`. When the wrapper is `None`, `gql_convert.rs` falls back to `AdminEnablementSetting::default()` (= `RespectUserSetting`). The inner `enable_wish_attribution` is non-optional, as the server guarantees a value when the wrapper is present.
 ### 4. AI settings page widget
 Add `AgentAttributionWidget` in `app/src/settings_view/ai_page.rs`. It reads `UserWorkspaces::get_agent_attribution_setting()` and derives the toggle state:
 - `Enable` → locked on
@@ -58,7 +58,7 @@ For the locked-toggle tooltip, the widget uses `WORKSPACE_OVERRIDE_TOOLTIP_MESSA
 
 ## End-to-end flow (user toggles attribution off)
 1. User opens Settings → AI → Hermon.
-2. Client reads the team's `enable_warp_attribution` from cached `WorkspaceSettings` via `get_agent_attribution_setting()`.
+2. Client reads the team's `enable_wish_attribution` from cached `WorkspaceSettings` via `get_agent_attribution_setting()`.
 3. Setting is `RespectUserSetting`, so the toggle is interactive and reflects `AISettings.agent_attribution_enabled` (default `true`, showing as checked).
 4. User clicks the toggle → `ToggleAgentAttribution` action sets `AISettings.agent_attribution_enabled` to `false` (persisted locally).
 5. `CloudPreferencesSyncer` picks up the change and upserts the user's `JsonPreference` GSO (`unique_key = {firebaseUID}_Global_AgentAttributionEnabled`, `serialized_model.value = false`).
@@ -77,7 +77,7 @@ flowchart TD
     I --> H
 ```
 ## Risks and mitigations
-- **Client ships ahead of server**: the cynic fragment requires `enable_warp_attribution: AdminEnablementSetting!` on the inner `AmbientAgentSettings` type; if the client lands first, `GetWorkspaceSettings` fails to parse. Mitigation: sequence the server change first (covered by the server spec). The outer `Option<AmbientAgentSettings>` wrapper already absorbs the case where the whole sub-object is missing.
+- **Client ships ahead of server**: the cynic fragment requires `enable_wish_attribution: AdminEnablementSetting!` on the inner `AmbientAgentSettings` type; if the client lands first, `GetWorkspaceSettings` fails to parse. Mitigation: sequence the server change first (covered by the server spec). The outer `Option<AmbientAgentSettings>` wrapper already absorbs the case where the whole sub-object is missing.
 - **User has settings sync off**: their preference never reaches the server; the server defaults to `true`. This is the documented behavior for any `RespectUserSyncSetting::Yes` setting.
 - **Widget enablement**: when AI is globally disabled, the widget renders in a disabled state (greyed-out toggle, label, and description), consistent with every other widget on the AI page.
 ## Testing and validation

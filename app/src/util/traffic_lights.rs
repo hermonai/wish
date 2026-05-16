@@ -121,7 +121,7 @@ impl TrafficLightMouseStates {
     }
 }
 
-/// Data the Warp app needs to avoid rendering anything below the traffic lights.
+/// Data the Wish app needs to avoid rendering anything below the traffic lights.
 #[derive(Clone, Debug)]
 pub struct TrafficLightData {
     width: f32,

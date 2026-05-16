@@ -69,7 +69,10 @@ impl Money {
     /// keeps multi-currency bugs visible at the type level.
     pub fn checked_add(&self, other: &Money) -> Option<Money> {
         if self.currency == other.currency {
-            Some(Money::new(self.amount + other.amount, self.currency.clone()))
+            Some(Money::new(
+                self.amount + other.amount,
+                self.currency.clone(),
+            ))
         } else {
             None
         }
@@ -77,7 +80,10 @@ impl Money {
 
     pub fn checked_sub(&self, other: &Money) -> Option<Money> {
         if self.currency == other.currency {
-            Some(Money::new(self.amount - other.amount, self.currency.clone()))
+            Some(Money::new(
+                self.amount - other.amount,
+                self.currency.clone(),
+            ))
         } else {
             None
         }

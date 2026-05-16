@@ -33,7 +33,7 @@ The cloud mode input V2 composing UI lets users select a non-Hermon harness (e.g
 - `HarnessAvailabilityModel` fetches harness metadata on auth/network/workspace changes and caches it. It has no awareness of auth secrets.
 - `AmbientAgentViewModel` tracks harness selection and builds the spawn config, but never sets `harness_auth_secrets`.
 - The cloud mode V2 composing UI renders a top row (host + harness selectors) and an input container below it. There is no auth secret UI.
-- The oz web app (`client/packages/agents/src/components/HarnessAuthSecretSelector`) already has a React component and `useHarnessAuthSecrets` hook that query the same server endpoint.
+- The hermon web app (`client/packages/agents/src/components/HarnessAuthSecretSelector`) already has a React component and `useHarnessAuthSecrets` hook that query the same server endpoint.
 
 ## Proposed Changes
 

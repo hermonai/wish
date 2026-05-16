@@ -1213,7 +1213,7 @@ impl NotebookView {
         });
     }
 
-    fn view_in_warp_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
+    fn view_in_wish_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
         ctx.emit(NotebookEvent::ViewInWarpDrive(id));
     }
 
@@ -1694,7 +1694,7 @@ impl NotebookView {
                 source: SharingDialogSource::InviteeRequest,
             });
         } else if let Some(focused_folder_id) = settings.focused_folder_id.map(SyncId::ServerId) {
-            self.view_in_warp_drive(
+            self.view_in_wish_drive(
                 WarpDriveItemId::Object(CloudObjectTypeAndId::Folder(focused_folder_id)),
                 ctx,
             );
@@ -2307,7 +2307,7 @@ impl TypedActionView for NotebookView {
             NotebookAction::ResetFontSize => {
                 self.apply_font_size_to_setting(NotebookFontSize::default_value(), ctx)
             }
-            NotebookAction::ViewInWarpDrive(id) => self.view_in_warp_drive(*id, ctx),
+            NotebookAction::ViewInWarpDrive(id) => self.view_in_wish_drive(*id, ctx),
             NotebookAction::FocusTerminalInput => {
                 ctx.emit(NotebookEvent::Pane(PaneEvent::FocusActiveSession))
             }

@@ -26,7 +26,7 @@ pub enum FeatureFlag {
     /// Enables cloud object related features for an explicit allowlist of team testers.
     CloudObjects,
 
-    /// If `true`, fetch updated Warp channel versions from the Warp server endpoint instead of
+    /// If `true`, fetch updated Wish channel versions from the Wish server endpoint instead of
     /// from GCP directly.
     FetchChannelVersionsFromWarpServer,
 
@@ -109,7 +109,7 @@ pub enum FeatureFlag {
     /// surface stays unchanged for default users.
     WishCanvas2D,
 
-    /// Whether the user is part of the Warp Alpha Program (AI Trusted Testers).
+    /// Whether the user is part of the Wish Alpha Program (AI Trusted Testers).
     /// This is enabled automatically for local and dev builds.
     /// Collect conversation and input autodetection data for agent mode.
     /// Also collects block data for Next Command, if enabled.
@@ -128,7 +128,7 @@ pub enum FeatureFlag {
     /// Feature flag for cursor reflow fix (fixes part of the Alacritty resizing logic).
     ResizeFix,
 
-    /// Enable multiselect in Notebooks and Warp Text.
+    /// Enable multiselect in Notebooks and Wish Text.
     RichTextMultiselect,
 
     /// If enabled, the default input mode is set to waterfall for new users.
@@ -184,7 +184,7 @@ pub enum FeatureFlag {
     /// tab.
     FullScreenZenMode,
 
-    /// Playground for reducing Warp UI clutter.
+    /// Playground for reducing Wish UI clutter.
     MinimalistUI,
 
     /// Enables support for using native shell completions to supplement our
@@ -240,7 +240,7 @@ pub enum FeatureFlag {
     /// Enables Kitty image rendering
     KittyImages,
 
-    /// Enables support for Warp Packs.
+    /// Enables support for Wish Packs.
     WarpPacks,
 
     /// Enables the revised AI analytics policy banner.
@@ -495,7 +495,7 @@ pub enum FeatureFlag {
     /// Enables cloud environments management via CLI.
     CloudEnvironments,
 
-    /// Enables the /create-environment slash command for setting up Warp Environments
+    /// Enables the /create-environment slash command for setting up Wish Environments
     CreateEnvironmentSlashCommand,
 
     /// Enables the local docker sandbox entrypoints in the client.
@@ -587,7 +587,7 @@ pub enum FeatureFlag {
     /// Enables host selection in cloud mode.
     CloudModeHostSelector,
 
-    /// Enables Warp Managed Secrets functionality.
+    /// Enables Wish Managed Secrets functionality.
     WarpManagedSecrets,
 
     /// Enables support for AM file diffs backed by the V4A patch format.
@@ -681,7 +681,7 @@ pub enum FeatureFlag {
     /// Enables the Hermon Cloud launch modal for introducing cloud agent features.
     HermonLaunchModal,
 
-    /// Enables the OpenWarp launch modal announcing Warp going open-source.
+    /// Enables the OpenWish launch modal announcing Warp going open-source.
     /// When enabled, the HOA onboarding flow is suppressed.
     OpenWarpLaunchModal,
 
@@ -780,7 +780,7 @@ pub enum FeatureFlag {
     AgentHarness,
 
     /// Enables workspace- and block-snapshot handoff between cloud agent runs
-    /// and the local Warp client.
+    /// and the local Wish client.
     /// When enabled:
     /// - The `AgentDriver` uploads a workspace snapshot (repo diffs + files) at the end of every
     ///   cloud agent run, regardless of harness.
@@ -1071,14 +1071,14 @@ impl FeatureFlag {
             BlocklistMarkdownImages => {
                 Some("Enables rendering markdown images inline in AI block list responses.")
             }
-            CloudEnvironments => Some("Enables creating and managing Warp Environments via the CLI."),
-            CreateEnvironmentSlashCommand => Some("Enables the /create environment slash command for setting up Warp Environments with custom configurations."),
+            CloudEnvironments => Some("Enables creating and managing Wish Environments via the CLI."),
+            CreateEnvironmentSlashCommand => Some("Enables the /create environment slash command for setting up Wish Environments with custom configurations."),
             GlobalSearch => Some("Enables global search in the left panel"),
             BlocklistMarkdownTableRendering => {
                 Some("Enables rendering markdown tables inline in AI block list responses.")
             }
             MarkdownTables => Some("Enables rendering and interaction support for markdown tables in notebooks."),
-            SettingsFile => Some("Enables configuring Warp via a user-editable `settings.toml` file, with hot reload and error reporting for invalid values."),
+            SettingsFile => Some("Enables configuring Wish via a user-editable `settings.toml` file, with hot reload and error reporting for invalid values."),
             GitOperationsInCodeReview => Some("Enables commit, push, and create-PR actions directly from the code review panel."),
             OrchestrationV2 => Some("Enables orchestration of teams of agents with dedicated UI, lifecycle events and inter-agent messaging."),
             _ => None,

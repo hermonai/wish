@@ -31,10 +31,7 @@ pub fn var_limit(account: &SemanticId, limit: Money, confidence: f64) -> Constra
     let mut expr = HashMap::new();
     let (k, v) = money_expression("limit", &limit);
     expr.insert(k, v);
-    expr.insert(
-        "confidence".to_string(),
-        PropertyValue::Number(confidence),
-    );
+    expr.insert("confidence".to_string(), PropertyValue::Number(confidence));
     Constraint {
         id: finance_id("constraint", format!("var-{}", account.stable_key)),
         kind: "var_limit".to_string(),
@@ -54,10 +51,7 @@ pub fn var_limit(account: &SemanticId, limit: Money, confidence: f64) -> Constra
 /// constraint (exchanges and prime brokers enforce these directly).
 pub fn position_limit(asset: &SemanticId, max_size: f64) -> Constraint {
     let mut expr = HashMap::new();
-    expr.insert(
-        "max_size".to_string(),
-        PropertyValue::Number(max_size),
-    );
+    expr.insert("max_size".to_string(), PropertyValue::Number(max_size));
     Constraint {
         id: finance_id("constraint", format!("poslim-{}", asset.stable_key)),
         kind: "position_limit".to_string(),
@@ -72,10 +66,7 @@ pub fn position_limit(asset: &SemanticId, max_size: f64) -> Constraint {
 /// (Basel III). Regulatory severity.
 pub fn capital_ratio(institution: &SemanticId, min_ratio: f64) -> Constraint {
     let mut expr = HashMap::new();
-    expr.insert(
-        "min_ratio".to_string(),
-        PropertyValue::Number(min_ratio),
-    );
+    expr.insert("min_ratio".to_string(), PropertyValue::Number(min_ratio));
     Constraint {
         id: finance_id("constraint", format!("capratio-{}", institution.stable_key)),
         kind: "capital_ratio".to_string(),

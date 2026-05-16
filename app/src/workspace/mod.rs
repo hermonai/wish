@@ -250,13 +250,13 @@ pub fn init(app: &mut AppContext) {
                 )
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
-                    "workspace:install_opencode_warp_plugin",
+                    "workspace:install_opencode_wish_plugin",
                     "[Debug] Install OpenCode Wish plugin",
                     WorkspaceAction::InstallOpenCodeWarpPlugin,
                 )
                 .with_context_predicate(id!("Workspace")),
                 EditableBinding::new(
-                    "workspace:use_local_opencode_warp_plugin",
+                    "workspace:use_local_opencode_wish_plugin",
                     "[Debug] Use local OpenCode Wish plugin (testing only)",
                     WorkspaceAction::UseLocalOpenCodeWarpPlugin,
                 )
@@ -1103,7 +1103,7 @@ pub fn init(app: &mut AppContext) {
 
     if cfg!(not(target_family = "wasm")) {
         app.register_editable_bindings([EditableBinding::new(
-            "workspace:export_all_warp_drive_objects",
+            "workspace:export_all_wish_drive_objects",
             "Export all Wish Drive objects",
             WorkspaceAction::ExportAllWarpDriveObjects,
         )
@@ -1184,7 +1184,7 @@ pub fn init(app: &mut AppContext) {
         .with_context_predicate(id!("Workspace") & id!(flags::IS_ANY_AI_ENABLED))
         .with_group(bindings::BindingGroup::WarpAi.as_str())
         // We use the same custom action as AM so that we don't have
-        // two mac menu items for AM vs Warp AI since they are mutually exclusive.
+        // two mac menu items for AM vs Wish AI since they are mutually exclusive.
         .with_custom_action(CustomAction::NewAgentModePane),
     ]);
 

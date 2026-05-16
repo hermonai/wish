@@ -125,7 +125,7 @@ impl SkillWatcher {
                 },
             );
             ctx.subscribe_to_model(&WarpManagedPathsWatcher::handle(ctx), |me, event, ctx| {
-                me.handle_warp_managed_paths_event(event, ctx);
+                me.handle_wish_managed_paths_event(event, ctx);
             });
         }
 
@@ -141,7 +141,7 @@ impl SkillWatcher {
             Self::spawn_read_skills_from_directories(warp_managed_skill_dirs(), ctx);
             let skills_parent_paths: HashSet<PathBuf> = SKILL_PROVIDER_DEFINITIONS
                 .iter()
-                .filter(|provider| provider.provider != SkillProvider::Warp)
+                .filter(|provider| provider.provider != SkillProvider::Wish)
                 .filter_map(|provider| {
                     home_skills_path(provider.provider)
                         .and_then(|skills_path| skills_path.parent().map(Path::to_path_buf))
@@ -697,7 +697,7 @@ impl SkillWatcher {
 
         let provider_root_paths: HashSet<String> = SKILL_PROVIDER_DEFINITIONS
             .iter()
-            .filter(|provider| provider.provider != SkillProvider::Warp)
+            .filter(|provider| provider.provider != SkillProvider::Wish)
             .filter_map(|provider| {
                 let component = provider.skills_path.components().next();
                 component.map(|component| component.as_os_str().to_string_lossy().to_string())
@@ -779,7 +779,7 @@ impl SkillWatcher {
         }
     }
 
-    fn handle_warp_managed_paths_event(
+    fn handle_wish_managed_paths_event(
         &mut self,
         event: &WarpManagedPathsWatcherEvent,
         ctx: &mut ModelContext<Self>,

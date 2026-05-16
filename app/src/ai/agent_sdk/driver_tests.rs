@@ -16,8 +16,8 @@ use wishui::{App, SingletonEntity as _};
 
 use super::{
     build_secret_env_vars, AgentDriver, IdleTimeoutSender,
-    LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV, LEGACY_OZ_PARENT_STATE_ROOT_ENV,
     HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV, HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
+    LEGACY_HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV, LEGACY_HERMON_PARENT_STATE_ROOT_ENV,
 };
 use crate::ai::agent::{
     task::TaskId, AIAgentActionResult, AIAgentActionResultType, AIAgentInput, AIAgentOutput,
@@ -207,12 +207,14 @@ fn task_env_vars_include_parent_run_id_when_present() {
         Some(&OsString::from("claude"))
     );
     assert_eq!(
-        env_vars.get(&OsString::from(HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV)),
+        env_vars.get(&OsString::from(
+            HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV
+        )),
         Some(&OsString::from("1"))
     );
     assert_eq!(
         env_vars.get(&OsString::from(
-            LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV
+            LEGACY_HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV
         )),
         Some(&OsString::from("1"))
     );
@@ -271,9 +273,11 @@ fn task_env_vars_omit_parent_run_id_when_absent() {
         env_vars.get(&OsString::from(WISH_HARNESS_ENV)),
         Some(&OsString::from("hermon"))
     );
-    assert!(!env_vars.contains_key(&OsString::from(HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV)));
     assert!(!env_vars.contains_key(&OsString::from(
-        LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV
+        HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV
+    )));
+    assert!(!env_vars.contains_key(&OsString::from(
+        LEGACY_HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV
     )));
     assert_eq!(
         env_vars.contains_key(&OsString::from(SERVER_ROOT_URL_OVERRIDE_ENV)),
@@ -290,12 +294,14 @@ fn task_env_vars_enable_external_parent_listener_for_claude_runs_without_parent_
     let task_id: AmbientAgentTaskId = "550e8400-e29b-41d4-a716-446655440002".parse().unwrap();
     let env_vars = task_env_vars(Some(&task_id), None, Harness::Claude);
     assert_eq!(
-        env_vars.get(&OsString::from(HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV)),
+        env_vars.get(&OsString::from(
+            HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV
+        )),
         Some(&OsString::from("1"))
     );
     assert_eq!(
         env_vars.get(&OsString::from(
-            LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV
+            LEGACY_HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV
         )),
         Some(&OsString::from("1"))
     );
@@ -317,7 +323,7 @@ fn task_env_vars_propagate_message_listener_state_root_with_legacy_alias() {
         Some(&OsString::from("/tmp/message-listener-root"))
     );
     assert_eq!(
-        env_vars.get(&OsString::from(LEGACY_OZ_PARENT_STATE_ROOT_ENV)),
+        env_vars.get(&OsString::from(LEGACY_HERMON_PARENT_STATE_ROOT_ENV)),
         Some(&OsString::from("/tmp/message-listener-root"))
     );
 }

@@ -51,7 +51,7 @@ fn initialize_app(app: &mut App) {
 }
 
 #[test]
-fn test_warp_drive_sections_with_no_team() {
+fn test_wish_drive_sections_with_no_team() {
     App::test(Assets, |mut app| async move {
         initialize_app(&mut app);
 

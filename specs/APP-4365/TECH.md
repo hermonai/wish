@@ -47,7 +47,7 @@ Remove `should_hide_ai_block_query_and_header` from `app/src/ai/blocklist/block/
 ### Preserve setup-command rich content
 Do not change `maybe_insert_setup_command_blocks`, `CloudModeSetupTextBlock`, `CloudModeSetupCommandBlock`, `is_cloud_agent_pre_first_exchange`, or the block-list startup-command flags. The queued-query change should be limited to which pending prompt rich content is inserted and when it is removed. This preserves `PRODUCT.md` Behavior 7-8 and avoids changing the setup-command grouping/order behavior already covered by CloudModeSetupV2.
 ### Update comments and names where they become stale
-Update comments on `insert_cloud_mode_queued_user_query_block` from “non-oz Cloud Mode run” to “Cloud Mode run waiting for the real transcript” so it accurately covers Hermon and third-party runs. Update comments in `pending_user_query_view_id` only if needed; the field remains shared by normal `/queue` prompts and lifecycle-owned cloud queued prompts, but cloud insertion still uses the callback-free helper.
+Update comments on `insert_cloud_mode_queued_user_query_block` from “non-hermon Cloud Mode run” to “Cloud Mode run waiting for the real transcript” so it accurately covers Hermon and third-party runs. Update comments in `pending_user_query_view_id` only if needed; the field remains shared by normal `/queue` prompts and lifecycle-owned cloud queued prompts, but cloud insertion still uses the callback-free helper.
 No new feature flag is needed. Initial-run behavior remains under `CloudModeSetupV2`, and cloud follow-up behavior remains reachable only through the existing `HandoffCloudCloud` follow-up entrypoints.
 ## End-to-end flow
 1. User submits an initial Hermon Cloud prompt.

@@ -37,10 +37,7 @@ pub fn canvas_html(title: &str, canvas: &Canvas, svg: &str) -> String {
     use std::collections::BTreeMap;
     let mut by_kind: BTreeMap<String, Vec<&wish_canvas_core::types::CanvasNode>> = BTreeMap::new();
     for n in canvas.nodes.values() {
-        by_kind
-            .entry(format!("{:?}", n.kind))
-            .or_default()
-            .push(n);
+        by_kind.entry(format!("{:?}", n.kind)).or_default().push(n);
     }
 
     let mut entity_html = String::new();
@@ -58,7 +55,11 @@ pub fn canvas_html(title: &str, canvas: &Canvas, svg: &str) -> String {
 
     render(
         title,
-        &format!("{} nodes · {} edges", canvas.nodes.len(), canvas.edges.len()),
+        &format!(
+            "{} nodes · {} edges",
+            canvas.nodes.len(),
+            canvas.edges.len()
+        ),
         canvas.nodes.len(),
         0,
         entity_html,
@@ -97,7 +98,9 @@ fn agents_html(world: &WishWorld) -> String {
 }
 
 fn worldline_html(world_dir: Option<&Path>) -> String {
-    let Some(dir) = world_dir else { return String::new() };
+    let Some(dir) = world_dir else {
+        return String::new();
+    };
     let wl_path = dir.join("provenance").join("worldline.jsonl");
     if !wl_path.is_file() {
         return String::new();

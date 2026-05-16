@@ -517,12 +517,12 @@ impl Task {
         }
     }
 
-    pub fn is_warp_documentation_search_subagent(&self) -> bool {
+    pub fn is_wish_documentation_search_subagent(&self) -> bool {
         match &self.data {
             TaskImpl::Server(server_data) => server_data
                 .subagent_params
                 .as_ref()
-                .is_some_and(|params| params.call.is_warp_documentation_search()),
+                .is_some_and(|params| params.call.is_wish_documentation_search()),
             TaskImpl::Optimistic(_) => false,
         }
     }

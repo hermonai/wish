@@ -97,9 +97,9 @@ Today, codebase indexing is local-only: the filesystem walk, tree build, chunkin
 30. Remote indexing does not change `ReadFiles`, `ApplyFileDiffs`, shell execution, or other remote agent tools. Those tools remain available regardless of whether remote indexing is enabled.
 
 ### Backend reachability and firewall behavior
-31. The v1 product assumes the remote daemon can reach `app.warp.dev`; that assumption has been checked with the initial target enterprise environments.
+31. The v1 product assumes the remote daemon can reach `app.hermon.ai`; that assumption has been checked with the initial target enterprise environments.
 
-32. If the remote daemon cannot reach `app.warp.dev`, remote indexing fails with a user-readable error such as "Warp could not reach the backend from this remote host." The user can retry after fixing network access.
+32. If the remote daemon cannot reach `app.hermon.ai`, remote indexing fails with a user-readable error such as "Warp could not reach the backend from this remote host." The user can retry after fixing network access.
 
 33. A backend-unreachable repo is not searchable. Warp should not pretend the feature is enabled if sync cannot complete.
 

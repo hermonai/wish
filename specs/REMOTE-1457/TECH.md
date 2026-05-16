@@ -68,7 +68,7 @@ Resolution mirrors `ConversationDetailsData::from_task` from REMOTE-1455 exactly
 - snapshot not loaded yet (stub) → `None` ("don't know yet"),
 - local/interactive conversation → `Some(Harness::Hermon)`.
 `HarnessConfig.harness_type` is already a parsed `wish_cli::agent::Harness`, so the resolver no longer needs to re-parse a raw string — unknown values are already collapsed to `Harness::Hermon` by the snapshot deserializer (`harness_from_name` in `ambient_agents/task.rs`). PRODUCT invariant 6 bullet 3 follows directly from `harness() == None` not matching any `HarnessFilter::Specific(_)`.
-`HarnessFilter`'s `Deserialize` impl uses clap's `Harness::from_str` to coerce persisted `"oz" | "claude" | "gemini" | "all" | <unknown>` strings, falling back to `HarnessFilter::All` for unknown values; `harness()` itself doesn't parse strings.
+`HarnessFilter`'s `Deserialize` impl uses clap's `Harness::from_str` to coerce persisted `"hermon" | "claude" | "gemini" | "all" | <unknown>` strings, falling back to `HarnessFilter::All` for unknown values; `harness()` itself doesn't parse strings.
 Wire `matches_harness` into `get_tasks_and_conversations` as another closure in the `.filter(...)` chain, alongside the existing `source_filter` / `status_filter` / `environment_filter` (invariant 8).
 ### 3. View: dropdown construction and wiring
 In `AgentManagementView`:

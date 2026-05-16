@@ -526,7 +526,7 @@ impl LeftPanelView {
         self.active_view.get()
     }
 
-    pub fn is_warp_drive_active(&self) -> bool {
+    pub fn is_wish_drive_active(&self) -> bool {
         self.active_view.get() == ToolPanelView::WarpDrive
     }
 
@@ -675,7 +675,7 @@ impl LeftPanelView {
             ToolPanelView::WarpDrive => {
                 ctx.focus(&self.warp_drive_view);
                 self.warp_drive_view.update(ctx, |view, ctx| {
-                    view.reset_focused_index_in_warp_drive(true, ctx);
+                    view.reset_focused_index_in_wish_drive(true, ctx);
                 });
             }
             ToolPanelView::ConversationListView => {

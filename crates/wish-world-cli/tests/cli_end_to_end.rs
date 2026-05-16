@@ -135,7 +135,11 @@ fn canvas_repo_walks_this_repo_and_recovers_dep_edges() {
         .arg("text")
         .output()
         .unwrap();
-    assert!(out.status.success(), "canvas repo failed:\n{}", String::from_utf8_lossy(&out.stderr));
+    assert!(
+        out.status.success(),
+        "canvas repo failed:\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
     let stderr = String::from_utf8(out.stderr).unwrap();
     // stderr line: "wish-world: walked <root> (N crates, M files, K dep edges)"
     assert!(stderr.contains("crates"), "got stderr: {stderr}");

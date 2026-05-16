@@ -67,9 +67,17 @@ pub enum WorldLineError {
 /// Outcome of a provenance-coupled apply.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ApplyOutcome {
-    Applied { event_id: WorldEventId, gate: ApprovalGate },
-    Rejected { reason: String },
-    Pending { event_id: WorldEventId, gate: ApprovalGate },
+    Applied {
+        event_id: WorldEventId,
+        gate: ApprovalGate,
+    },
+    Rejected {
+        reason: String,
+    },
+    Pending {
+        event_id: WorldEventId,
+        gate: ApprovalGate,
+    },
 }
 
 /// Approval gate the patch's risk fell into.
@@ -289,7 +297,9 @@ impl WorldLine {
     /// backing path doesn't exist yet or `Err` if metadata reads
     /// fail. Used by the hot-reload watcher.
     pub fn file_mtime(&self) -> Option<std::time::SystemTime> {
-        std::fs::metadata(&self.path).ok().and_then(|m| m.modified().ok())
+        std::fs::metadata(&self.path)
+            .ok()
+            .and_then(|m| m.modified().ok())
     }
 
     /// Reload from disk if the file is newer than the in-memory state.
@@ -334,7 +344,10 @@ impl WorldLine {
         let affected = patch.affected.clone();
         let intent = patch.intent.clone();
         let actor = patch.author.clone();
-        let event_id = format!("ev_{}", chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0));
+        let event_id = format!(
+            "ev_{}",
+            chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0)
+        );
 
         if auto_ok {
             apply_patch(world, &patch).map_err(|e| WorldLineError::PatchApply(e.to_string()))?;
@@ -346,7 +359,10 @@ impl WorldLine {
                 intent,
                 affected,
                 patch,
-                validation: ValidationResult { ok: true, notes: None },
+                validation: ValidationResult {
+                    ok: true,
+                    notes: None,
+                },
                 approval: ApprovalState::AutoApproved,
                 risk_score: risk,
                 timestamp: Utc::now(),
@@ -363,7 +379,10 @@ impl WorldLine {
                 intent,
                 affected,
                 patch,
-                validation: ValidationResult { ok: false, notes: Some("pending approval".into()) },
+                validation: ValidationResult {
+                    ok: false,
+                    notes: Some("pending approval".into()),
+                },
                 approval: ApprovalState::Pending,
                 risk_score: risk,
                 timestamp: Utc::now(),
@@ -400,7 +419,10 @@ impl WorldLine {
             intent: format!("approve: {}", self.events[idx].intent),
             affected: self.events[idx].affected.clone(),
             patch,
-            validation: ValidationResult { ok: true, notes: Some("approved".into()) },
+            validation: ValidationResult {
+                ok: true,
+                notes: Some("approved".into()),
+            },
             approval: ApprovalState::Approved,
             risk_score: self.events[idx].risk_score,
             timestamp: now,
@@ -510,12 +532,21 @@ pub fn compare_scenarios(line: &WorldLine, left: &str, right: &str) -> ScenarioD
         .collect();
     let left_set: HashSet<&WorldEventId> = left_ids.iter().collect();
     let right_set: HashSet<&WorldEventId> = right_ids.iter().collect();
-    let only_in_left: Vec<WorldEventId> =
-        left_ids.iter().filter(|id| !right_set.contains(id)).cloned().collect();
-    let only_in_right: Vec<WorldEventId> =
-        right_ids.iter().filter(|id| !left_set.contains(id)).cloned().collect();
-    let shared: Vec<WorldEventId> =
-        left_ids.iter().filter(|id| right_set.contains(id)).cloned().collect();
+    let only_in_left: Vec<WorldEventId> = left_ids
+        .iter()
+        .filter(|id| !right_set.contains(id))
+        .cloned()
+        .collect();
+    let only_in_right: Vec<WorldEventId> = right_ids
+        .iter()
+        .filter(|id| !left_set.contains(id))
+        .cloned()
+        .collect();
+    let shared: Vec<WorldEventId> = left_ids
+        .iter()
+        .filter(|id| right_set.contains(id))
+        .cloned()
+        .collect();
     ScenarioDiff {
         left: left.to_string(),
         right: right.to_string(),
@@ -648,7 +679,9 @@ mod tests {
         let id = SemanticId::new(Realm::Scene, "npc", "merchant_liu");
         let entity = WorldEntity::stub(id.clone(), "Merchant Liu", EntityKind::Npc);
         let patch = WorldPatch::new(
-            Actor::Agent { agent_id: "wish-agent-world-architect".into() },
+            Actor::Agent {
+                agent_id: "wish-agent-world-architect".into(),
+            },
             "add merchant liu",
             vec![PatchOp::AddEntity(entity)],
         );
@@ -675,7 +708,9 @@ mod tests {
             )));
         }
         let patch = WorldPatch::new(
-            Actor::Agent { agent_id: "agent".into() },
+            Actor::Agent {
+                agent_id: "agent".into(),
+            },
             "wide-reach refactor",
             ops,
         );
@@ -776,7 +811,9 @@ mod tests {
                     EntityKind::Function,
                 ))],
             );
-            wl_writer.apply_with_provenance(&mut world, patch, 0.30).unwrap();
+            wl_writer
+                .apply_with_provenance(&mut world, patch, 0.30)
+                .unwrap();
         }
         // Some filesystems have low mtime resolution — bump it by
         // sleeping briefly, but use a backoff loop so the test is
@@ -873,12 +910,18 @@ mod tests {
     fn approval_gate_bands() {
         assert_eq!(ApprovalGate::for_risk(0.10), ApprovalGate::Auto);
         assert_eq!(ApprovalGate::for_risk(0.50), ApprovalGate::HumanRequired);
-        assert_eq!(ApprovalGate::for_risk(0.85), ApprovalGate::SimulationRequired);
+        assert_eq!(
+            ApprovalGate::for_risk(0.85),
+            ApprovalGate::SimulationRequired
+        );
     }
 
     #[test]
     fn smoke_open_append_roundtrip() {
-        let tmp = std::env::temp_dir().join(format!("wl_{}", chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0)));
+        let tmp = std::env::temp_dir().join(format!(
+            "wl_{}",
+            chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0)
+        ));
         std::fs::create_dir_all(&tmp).unwrap();
         let mut wl = WorldLine::open_in_world_dir(&tmp).unwrap();
         let patch = WorldPatch::new(Actor::System, "noop", vec![]);

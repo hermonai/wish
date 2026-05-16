@@ -368,7 +368,7 @@ $null = New-Module -Name Warp-Module -ScriptBlock {
         }
 
         # Sets the prompt mode to warp prompt
-        # Is the equivalent of warp_change_prompt_modes_to_warp_prompt in other shells
+        # Is the equivalent of warp_change_prompt_modes_to_wish_prompt in other shells
         Set-PSReadLineKeyHandler -Chord 'Alt+w' -ScriptBlock {
             $env:WARP_HONOR_PS1 = '0'
             Warp-Redraw-Prompt
@@ -888,8 +888,8 @@ $null = New-Module -Name Warp-Module -ScriptBlock {
     # 1. B/c our other bootstrap scripts (bash, zsh, fish) do not.
 
     # If we ever want to call the underlying clear command, we could do so by:
-    # 1. Capturing it with '$_warp_original_clear = (Get-Command Clear-Host).Definition'
-    # 2. Invoking it with 'Invoke-Expression $_warp_original_clear'
+    # 1. Capturing it with '$_wish_original_clear = (Get-Command Clear-Host).Definition'
+    # 2. Invoking it with 'Invoke-Expression $_wish_original_clear'
 
     # TODO(PLAT-781): On windows, these two functions should both clear the visible screen
     # AND the scrollback
@@ -1007,7 +1007,7 @@ $null = New-Module -Name Warp-Module -ScriptBlock {
     Remove-Variable -Name enterHandler, ctrlcHandler, rcStartTime, rcEndTime -Scope global -ErrorAction Ignore
 
     # Restore the process's original execution policy now that the user's RC files have been loaded.
-    if ($global:_warp_PSProcessExecPolicy -ne $null) {
-        Set-ExecutionPolicy -Scope Process -ExecutionPolicy $global:_warp_PSProcessExecPolicy
+    if ($global:_wish_PSProcessExecPolicy -ne $null) {
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy $global:_wish_PSProcessExecPolicy
     }
 }

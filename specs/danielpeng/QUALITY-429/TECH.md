@@ -11,7 +11,7 @@ This required two coordinated changes:
 ## Relevant code
 
 - `crates/wishui_extras/src/user_preferences/toml_backed.rs` — TOML preferences backend (`new()`, `reload_from_disk()`)
-- `app/src/settings/init.rs` — `init_public_user_preferences()`, `init()`, `handle_warp_config_change()`
+- `app/src/settings/init.rs` — `init_public_user_preferences()`, `init()`, `handle_wish_config_change()`
 - `app/src/settings/mod.rs` — `SettingsFileError` enum
 - `crates/settings/src/manager.rs` — `SettingsManager::reload_all_public_settings()`, `validate_all_public_settings()`
 - `app/src/user_config/mod.rs` — `WarpConfigUpdateEvent::SettingsErrors` / `SettingsErrorsCleared`
@@ -56,7 +56,7 @@ pub enum SettingsFileError {
 
 #### Error capture — hot-reload path
 
-`handle_warp_config_change()` in `app/src/settings/init.rs`:
+`handle_wish_config_change()` in `app/src/settings/init.rs`:
 - On `reload_from_disk()` failure → emits `WarpConfigUpdateEvent::SettingsErrors(FileParseFailed(...))`
 - On success → calls `reload_all_public_settings()`. If failed keys returned → emits `SettingsErrors(InvalidSettings(...))`. If empty → emits `SettingsErrorsCleared`.
 
@@ -107,7 +107,7 @@ sequenceDiagram
 sequenceDiagram
     participant FileWatcher
     participant WarpConfig
-    participant Handler as handle_warp_config_change
+    participant Handler as handle_wish_config_change
     participant Workspace
 
     FileWatcher->>WarpConfig: Settings event

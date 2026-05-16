@@ -1,6 +1,6 @@
-# REMOTE-1454: Tech Spec — Cloud Mode setup UI for non-oz harnesses
+# REMOTE-1454: Tech Spec — Cloud Mode setup UI for non-hermon harnesses
 ## Problem
-The `CloudModeSetupV2` setup UI only transitions out of the "setup commands" phase when an Hermon `AppendedExchange` event fires. Non-oz harness runs (claude, gemini) never produce an Hermon exchange — the sandboxed `oz agent run --harness=<name>` invokes the harness CLI (e.g. `claude --session-id … < /tmp/hermon_prompt`) as a shell command in the shared session, and that command is permanently flagged as an environment startup command. See `specs/REMOTE-1454/PRODUCT.md` for the desired UX.
+The `CloudModeSetupV2` setup UI only transitions out of the "setup commands" phase when an Hermon `AppendedExchange` event fires. Non-hermon harness runs (claude, gemini) never produce an Hermon exchange — the sandboxed `hermon agent run --harness=<name>` invokes the harness CLI (e.g. `claude --session-id … < /tmp/hermon_prompt`) as a shell command in the shared session, and that command is permanently flagged as an environment startup command. See `specs/REMOTE-1454/PRODUCT.md` for the desired UX.
 ## Relevant code
 - `crates/wish_features/src/lib.rs:757,826` — `FeatureFlag::AgentHarness`, `FeatureFlag::CloudModeSetupV2`.
 - `app/src/terminal/view/ambient_agent/model.rs:79-151,240-250,384-418,442-488,726-727,886-899` — `AmbientAgentViewModel` (status, `harness` field, `spawn_agent`, `enter_viewing_existing_session`, `AmbientAgentViewModelEvent`, `DispatchedAgent` emission).
@@ -26,7 +26,7 @@ The `CloudModeSetupV2` setup UI only transitions out of the "setup commands" pha
 - `app/src/terminal/view/shared_session/view_impl.rs:1700-1721` — viewer-driven sizing helpers: `restore_pty_to_sharer_size`, `resize_from_viewer_report`, and the new `force_report_viewer_terminal_size` entry point used at harness start.
 - `app/src/terminal/view/ambient_agent/block/setup_command.rs:176-197` — per-command row, currently renders via `with_agent_output_item_spacing`; needs a third-party-harness branch that uses `*terminal::view::PADDING_LEFT` horizontal margins.
 - `app/src/terminal/view/ambient_agent/block/setup_command_text.rs:184-206` — summary row, same story as the per-command row.
-- `app/src/ai/blocklist/block/view_impl.rs:1264-1312` — `CONTENT_HORIZONTAL_PADDING`, `CONTENT_ITEM_VERTICAL_MARGIN`, and the `WithContentItemSpacing::with_agent_output_item_spacing` helper used by the oz setup UI.
+- `app/src/ai/blocklist/block/view_impl.rs:1264-1312` — `CONTENT_HORIZONTAL_PADDING`, `CONTENT_ITEM_VERTICAL_MARGIN`, and the `WithContentItemSpacing::with_agent_output_item_spacing` helper used by the hermon setup UI.
 - `app/src/terminal/view.rs:746-752` — `PADDING_LEFT` (20px, or 16px behind `LessHorizontalTerminalPadding`) — the horizontal padding used by regular terminal command blocks.
 - `app/src/pane_group/mod.rs:3763-3792,5682-5692` — CLI-agent conversation restoration (`FeatureFlag::AgentHarness` gate for replay).
 - `wish_cli::agent::Harness` (`crates/wish_cli/src/agent.rs:120-131`) — `Hermon`, `Claude`, `Gemini`.
@@ -35,7 +35,7 @@ The `CloudModeSetupV2` setup UI only transitions out of the "setup commands" pha
 When the cloud-mode terminal model is created, `is_executing_hermon_environment_startup_commands` is set to `true` unconditionally under `CloudModeSetupV2`. The block-list flag:
 - Marks every new block `is_hermon_environment_startup_command = true` and hides it.
 - Is flipped to `false` only in `ModelEvent::AfterBlockStarted`'s sibling `BlocklistAIHistoryEvent::AppendedExchange` handler (view.rs:5042-5053).
-`is_cloud_agent_pre_first_exchange` is a view-level helper that returns `true` while the active cloud-agent conversation has `exchange_count() == 0`. It gates: the "Setting up environment" warping indicator, the pre-harness input-box hiding, remote-input suppression in `shared_session/viewer/terminal_manager.rs`, and `maybe_insert_setup_command_blocks`. For non-oz there are no exchanges, so this stays `true` forever.
+`is_cloud_agent_pre_first_exchange` is a view-level helper that returns `true` while the active cloud-agent conversation has `exchange_count() == 0`. It gates: the "Setting up environment" warping indicator, the pre-harness input-box hiding, remote-input suppression in `shared_session/viewer/terminal_manager.rs`, and `maybe_insert_setup_command_blocks`. For non-hermon there are no exchanges, so this stays `true` forever.
 `maybe_insert_setup_command_blocks` runs in the `AfterBlockStarted` path and, when pre-first-exchange, inserts the `CloudModeSetupTextBlock` summary row (once) plus a `CloudModeSetupCommandBlock` row for the block. It has no knowledge of whether the block is the harness CLI command.
 `PendingUserQueryBlock::new` currently takes `interruptible: bool` and always renders a close button; the "Send now" button is added only when `interruptible`. `TerminalView::insert_pending_user_query_block` subscribes to `Dismissed`/`SendNow` events; `send_user_query_after_next_conversation_finished` also registers a `queued_prompt_callback` so the prompt is re-submitted when the current conversation finishes.
 ## Proposed changes
@@ -78,7 +78,7 @@ This keeps the wire-up trivial for each call site (pass the two bools) and avoid
 `remove_pending_user_query_block` already clears `queued_prompt_callback` on top of removing the view. It remains the single teardown entry point.
 ### 3. `AmbientAgentViewModel` — resolve harness for viewers, track harness-command-started, new event
 `app/src/terminal/view/ambient_agent/model.rs`
-Add a helper for the non-oz check:
+Add a helper for the non-hermon check:
 ```rust
 impl AmbientAgentViewModel {
     /// True when the run is configured to use a non-Hermon execution harness and the
@@ -105,7 +105,7 @@ Ok(task) => {
     me.set_harness(harness, ctx);
 }
 ```
-`parse_harness_config_name` is a small module-local helper that matches `"claude"` / `"gemini"` / `"oz"` explicitly and falls back to `Harness::Hermon` (with a warn log) on unknown values. `set_harness` is a no-op when unchanged.
+`parse_harness_config_name` is a small module-local helper that matches `"claude"` / `"gemini"` / `"hermon"` explicitly and falls back to `Harness::Hermon` (with a warn log) on unknown values. `set_harness` is a no-op when unchanged.
 Add a harness-command-started tracker:
 ```rust
 pub struct AmbientAgentViewModel {
@@ -137,7 +137,7 @@ pub enum AmbientAgentViewModelEvent {
 ```
 ### 4. `is_cloud_agent_pre_first_exchange` — also honor harness-started
 `app/src/terminal/view/ambient_agent/mod.rs`
-Extend the helper so both Hermon's "first exchange" and non-oz's "harness command started" transitions end the pre-first-exchange phase. At the site that currently returns based on `exchange_count() == 0`:
+Extend the helper so both Hermon's "first exchange" and non-hermon's "harness command started" transitions end the pre-first-exchange phase. At the site that currently returns based on `exchange_count() == 0`:
 ```rust
 if ambient_agent_view_model.as_ref(app).harness_command_started() {
     return false;
@@ -170,7 +170,7 @@ pub(in crate::terminal::view) fn maybe_insert_setup_command_blocks(
         return;
     }
 
-    // For non-oz harness runs, transition out of the setup phase when the
+    // For non-hermon harness runs, transition out of the setup phase when the
     // harness CLI starts. The block becomes a normal CLI-agent session rather
     // than a setup command.
     if self.ambient_agent_view_model.as_ref(ctx).is_third_party_harness()
@@ -254,7 +254,7 @@ pub(in crate::terminal::view) fn force_report_viewer_terminal_size(
 }
 ```
 `refresh_size` already funnels through the standard viewer-driven-sizing eligibility checks (`is_viewer_driven_sizing_eligible`), so this is a no-op for sharers, for multi-viewer shared sessions, and for non-cloud-agent shared sessions. Cloud-agent shared sessions bypass the same-user check (`is_shared_session_for_ambient_agent`), so the viewer will always resize the sandbox PTY on harness start.
-### 7. Route the initial prompt to the queued-prompt UI for non-oz runs
+### 7. Route the initial prompt to the queued-prompt UI for non-hermon runs
 `app/src/terminal/view/ambient_agent/view_impl.rs` — `DispatchedAgent` handler (currently view_impl.rs:106-135)
 Branch on the run's harness:
 ```rust
@@ -293,9 +293,9 @@ self.remove_pending_user_query_block(ctx);
 This covers the product-spec requirement that failing/cancelling/auth-required runs before the harness block starts remove the queued indicator and fall back to the existing error/cancel/auth UI. The fallback UI is already rendered by the existing status-bar and loading-screen code paths under `CloudModeSetupV2`.
 ### 9. Cloud-mode submission-block guard remains harness-agnostic
 `app/src/terminal/input.rs:5725-5734` — `should_block_cloud_mode_setup_submission` currently blocks local input submission during the pre-harness/pre-first-exchange window. Because we updated `is_cloud_agent_pre_first_exchange` to also return false after `HarnessCommandStarted`, this guard already stops firing once the harness block starts, allowing input to flow to the harness TUI normally. No change needed.
-### 10. Setup UI horizontal padding for non-oz harnesses
+### 10. Setup UI horizontal padding for non-hermon harnesses
 `app/src/terminal/view/ambient_agent/block.rs`, `block/setup_command.rs`, `block/setup_command_text.rs`
-The oz setup UI wraps its per-command row and summary row in `WithContentItemSpacing::with_agent_output_item_spacing`, which applies a left margin of `CONTENT_HORIZONTAL_PADDING + icon_size + 16.` so the setup rows line up with other oz agent-output items (reasoning, actions, etc.). For non-oz harness runs, the harness CLI block that takes over after setup is a regular terminal command block and uses `*terminal::view::PADDING_LEFT` (20px, or 16px with `LessHorizontalTerminalPadding`) as its horizontal padding. Using the oz indent for non-oz setup rows causes a visible horizontal jump at harness start.
+The hermon setup UI wraps its per-command row and summary row in `WithContentItemSpacing::with_agent_output_item_spacing`, which applies a left margin of `CONTENT_HORIZONTAL_PADDING + icon_size + 16.` so the setup rows line up with other hermon agent-output items (reasoning, actions, etc.). For non-hermon harness runs, the harness CLI block that takes over after setup is a regular terminal command block and uses `*terminal::view::PADDING_LEFT` (20px, or 16px with `LessHorizontalTerminalPadding`) as its horizontal padding. Using the hermon indent for non-hermon setup rows causes a visible horizontal jump at harness start.
 A shared helper `cloud_mode_setup_row_spacing` in `block.rs` picks the right spacing per harness:
 ```rust
 pub(super) fn cloud_mode_setup_row_spacing(
@@ -321,13 +321,13 @@ pub(super) fn cloud_mode_setup_row_spacing(
 - All new code paths that check `is_third_party_harness` also implicitly depend on `FeatureFlag::AgentHarness` (the helper checks it).
 - The outer `if FeatureFlag::CloudModeSetupV2.is_enabled()` guard in `DispatchedAgent` and `maybe_insert_setup_command_blocks` continues to gate the whole setup-v2 UI; when the flag is off, the legacy loading screen / full-screen overlay path is unchanged.
 - When `AgentHarness` is disabled, `is_third_party_harness` always returns `false`, the Hermon paths are taken for everything, and the spec's new behavior never activates. Replay of CLI-agent conversations is already guarded by the same flag in `pane_group/mod.rs:3763,5682` and `terminal/view/load_ai_conversation.rs:268`.
-## End-to-end flow (non-oz Cloud Mode run)
+## End-to-end flow (non-hermon Cloud Mode run)
 1. User selects claude/gemini in the harness selector and submits a prompt.
-2. `AmbientAgentViewModel::spawn_agent` builds a `SpawnAgentRequest` with `HarnessConfig::from_harness_type`; `self.harness` is non-oz. Stream emits `DispatchedAgent`.
+2. `AmbientAgentViewModel::spawn_agent` builds a `SpawnAgentRequest` with `HarnessConfig::from_harness_type`; `self.harness` is non-hermon. Stream emits `DispatchedAgent`.
 3. `handle_ambient_agent_event` sees `is_third_party_harness()` and calls `insert_cloud_mode_queued_user_query_block(prompt)`. `PendingUserQueryBlock` is rendered with `show_close_button: false` and `show_send_now_button: false`.
 4. Spawn stream progresses to `SessionReady`; the cloud-mode terminal-model viewer is built with `is_executing_hermon_environment_startup_commands = true`.
 5. Environment setup blocks start. `maybe_insert_setup_command_blocks` sees `is_cloud_agent_pre_first_exchange == true` and `active_block_matches_run_harness == false`, so it inserts the `CloudModeSetupTextBlock` summary row and a `CloudModeSetupCommandBlock` per block. Blocks are marked `is_hermon_environment_startup_command` by the existing block-list logic.
-6. Sandbox's `oz agent run` executes `claude --session-id … < /tmp/hermon_prompt` (from `agent_sdk/driver/harness/claude_code.rs`). The viewer sees this as a new long-running block.
+6. Sandbox's `hermon agent run` executes `claude --session-id … < /tmp/hermon_prompt` (from `agent_sdk/driver/harness/claude_code.rs`). The viewer sees this as a new long-running block.
 7. `maybe_insert_setup_command_blocks` detects `CLIAgent::Claude` matches `Harness::Claude`, calls `mark_harness_command_started`, and returns without inserting setup rows for this block.
 8. `HarnessCommandStarted` fires → view arm flips `is_executing_hermon_environment_startup_commands = false`, removes the pending-query block, collapses the setup-commands summary, and calls `force_report_viewer_terminal_size` so the sandbox PTY is resized to our current dimensions before claude's TUI lays out its first frame.
 9. From now on, `is_cloud_agent_pre_first_exchange` returns false. The claude block is a normal CLI-agent session: `detect_cli_agent_from_model` + `CLIAgentSessionsModel::set_session` already run in `view.rs:10343-10378`, so the CLI-agent footer and rich-input UI activate. Setup rows rendered earlier in the run use `PADDING_LEFT` margins so the visible left edge of content does not shift when the harness block takes over.
@@ -335,12 +335,12 @@ pub(super) fn cloud_mode_setup_row_spacing(
 ## Risks and mitigations
 **Missing harness match.** If `CLIAgent::detect` fails to identify the harness (e.g. a future wrapper like `bash -c 'claude …'`), we never transition out of setup and the claude block stays flagged as a setup command. The short-circuit only covers the sandbox's canonical invocation; if detection fails, behavior regresses to the current broken state rather than getting worse. A fallback trigger (e.g. timeout-based transition) can be added as a follow-up if this becomes a problem.
 **Viewer harness resolution races.** `enter_viewing_existing_session` fetches the task asynchronously. If the harness block starts before the fetch completes, `is_third_party_harness()` returns false at the time of detection and we treat the block as a setup command. In practice the task fetch is issued on join and the viewer only sees blocks after the shared session connects, which is later. If needed, we can re-evaluate the harness on task fetch completion and fire `mark_harness_command_started` retroactively.
-**`is_cloud_agent_pre_first_exchange` semantics shift.** Consumers were designed around "conversation has no exchanges yet". After this change, the helper also returns false when a harness command has started. Every caller (`status_bar`, `is_input_box_visible`, `shared_session/viewer/terminal_manager`, `setup_command_text`, `maybe_insert_setup_command_blocks`) behaves correctly under the new semantics for non-oz runs and is a no-op for Hermon runs (since `harness_command_started` is never set on Hermon).
+**`is_cloud_agent_pre_first_exchange` semantics shift.** Consumers were designed around "conversation has no exchanges yet". After this change, the helper also returns false when a harness command has started. Every caller (`status_bar`, `is_input_box_visible`, `shared_session/viewer/terminal_manager`, `setup_command_text`, `maybe_insert_setup_command_blocks`) behaves correctly under the new semantics for non-hermon runs and is a no-op for Hermon runs (since `harness_command_started` is never set on Hermon).
 ## Testing and validation
 Unit coverage:
 - Add a test for `PendingUserQueryBlock` rendering for each `(show_close_button, show_send_now_button)` combination (both-true, close-only, neither).
 - Add a test for `AmbientAgentViewModel::mark_harness_command_started` idempotency and event emission, and for `is_third_party_harness` gating on `AgentHarness` + `harness` field.
-- Add a test that `enter_viewing_existing_session` populates `harness` from the fetched `AmbientAgentTask.agent_config_snapshot.harness` for claude / gemini / oz.
+- Add a test that `enter_viewing_existing_session` populates `harness` from the fetched `AmbientAgentTask.agent_config_snapshot.harness` for claude / gemini / hermon.
 - Extend `is_cloud_agent_pre_first_exchange` tests (or add one) to cover the harness-started early-return.
 - Add a test that `force_report_viewer_terminal_size` clears `last_reported_natural_size` and calls `refresh_size`, and is a no-op for sharers / when viewer-driven sizing is ineligible.
 Integration / manual validation (mirrors the product spec's validation list):
@@ -354,7 +354,7 @@ Integration / manual validation (mirrors the product spec's validation list):
 - Replay a completed claude conversation; confirm no queued block, transcript rendered correctly via the existing CLI-agent block-snapshot path.
 - Re-run all Hermon validation cases from `specs/REMOTE-172/PRODUCT.md` to confirm no regression.
 - Toggle `CloudModeSetupV2` off; confirm legacy cloud-mode behavior restored for all harnesses.
-- Toggle `AgentHarness` off; confirm harness selector hides non-oz options and nothing in this spec activates.
+- Toggle `AgentHarness` off; confirm harness selector hides non-hermon options and nothing in this spec activates.
 ## Follow-ups
 - Consider telemetry for `HarnessCommandStarted` (time from `DispatchedAgent` / `SessionReady` to harness start) so we can monitor setup latency per-harness.
 - If detection proves flaky in practice, add a timeout-based fallback transition (e.g. "still in setup 60s after session ready with no matching CLI agent detection → transition anyway and log a warning").

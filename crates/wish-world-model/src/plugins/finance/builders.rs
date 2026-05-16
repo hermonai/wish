@@ -5,9 +5,7 @@
 //! a vocabulary: every method here matches a real-world financial
 //! concept.
 
-use super::types::{
-    AssetClass, Currency, Money, OrderKind, OrderStatus, PositionSide, Side,
-};
+use super::types::{AssetClass, Currency, Money, OrderKind, OrderStatus, PositionSide, Side};
 use crate::primitives::{Graph, GraphEdge, Object, PropertyValue};
 use crate::semantic_id::{Realm, SemanticId};
 
@@ -18,10 +16,7 @@ pub fn finance_id(kind: &str, key: impl Into<String>) -> SemanticId {
 
 fn money_property(m: &Money) -> PropertyValue {
     let mut map = std::collections::HashMap::new();
-    map.insert(
-        "amount".to_string(),
-        PropertyValue::Number(m.amount),
-    );
+    map.insert("amount".to_string(), PropertyValue::Number(m.amount));
     map.insert(
         "currency".to_string(),
         PropertyValue::Text(m.currency.as_str().to_string()),
@@ -78,10 +73,8 @@ pub fn asset(symbol: &str, name: &str, asset_class: AssetClass) -> Object {
         "symbol".to_string(),
         PropertyValue::Text(symbol.to_string()),
     );
-    o.properties.insert(
-        "asset_class".to_string(),
-        PropertyValue::Text(class_json),
-    );
+    o.properties
+        .insert("asset_class".to_string(), PropertyValue::Text(class_json));
     o
 }
 
@@ -123,7 +116,8 @@ pub fn order(
             Side::Sell => "sell".to_string(),
         }),
     );
-    o.properties.insert("size".to_string(), PropertyValue::Number(size));
+    o.properties
+        .insert("size".to_string(), PropertyValue::Number(size));
     let (kind_str, price_attr) = match &kind {
         OrderKind::Market => ("market", None),
         OrderKind::Limit { price } => ("limit", Some(("limit_price", price.clone()))),
@@ -134,8 +128,10 @@ pub fn order(
             ("stop_limit", Some(("limit_price", price.clone())))
         }
     };
-    o.properties
-        .insert("order_kind".to_string(), PropertyValue::Text(kind_str.into()));
+    o.properties.insert(
+        "order_kind".to_string(),
+        PropertyValue::Text(kind_str.into()),
+    );
     if let Some((key, m)) = price_attr {
         o.properties.insert(key.to_string(), money_property(&m));
     }
@@ -143,10 +139,8 @@ pub fn order(
         "status".to_string(),
         PropertyValue::Text(serialize_status(OrderStatus::Pending)),
     );
-    o.properties.insert(
-        "filled_size".to_string(),
-        PropertyValue::Number(0.0),
-    );
+    o.properties
+        .insert("filled_size".to_string(), PropertyValue::Number(0.0));
     o
 }
 
@@ -186,7 +180,8 @@ pub fn position(
             PositionSide::Short => "short".to_string(),
         }),
     );
-    o.properties.insert("size".to_string(), PropertyValue::Number(size));
+    o.properties
+        .insert("size".to_string(), PropertyValue::Number(size));
     o.properties
         .insert("entry_price".to_string(), money_property(&entry_price));
     o
@@ -216,8 +211,15 @@ pub fn portfolio(id: &str, name: &str, account: &SemanticId, positions: &[Object
 /// **Counterparty graph** — institutions as nodes, exposures as
 /// weighted edges. Edge `kind` = `"exposure"`; `weight` = notional
 /// in USD.
-pub fn counterparty_graph(name: &str, institutions: &[Object], edges: &[(SemanticId, SemanticId, f64)]) -> Graph {
-    let mut g = Graph::new(finance_id("graph", format!("{name}-counterparty")), "counterparty_graph");
+pub fn counterparty_graph(
+    name: &str,
+    institutions: &[Object],
+    edges: &[(SemanticId, SemanticId, f64)],
+) -> Graph {
+    let mut g = Graph::new(
+        finance_id("graph", format!("{name}-counterparty")),
+        "counterparty_graph",
+    );
     for inst in institutions {
         g.add_node(inst.id.clone());
     }
@@ -236,9 +238,16 @@ pub fn counterparty_graph(name: &str, institutions: &[Object], edges: &[(Semanti
 /// size. Useful for "what does this account hold?" + sector
 /// aggregation queries.
 pub fn exposure_graph(name: &str, positions: &[Object]) -> Graph {
-    let mut g = Graph::new(finance_id("graph", format!("{name}-exposure")), "exposure_graph");
+    let mut g = Graph::new(
+        finance_id("graph", format!("{name}-exposure")),
+        "exposure_graph",
+    );
     for p in positions {
-        if let (Some(PropertyValue::Ref(account)), Some(PropertyValue::Ref(asset)), Some(PropertyValue::Number(size))) = (
+        if let (
+            Some(PropertyValue::Ref(account)),
+            Some(PropertyValue::Ref(asset)),
+            Some(PropertyValue::Number(size)),
+        ) = (
             p.properties.get("account"),
             p.properties.get("asset"),
             p.properties.get("size"),
@@ -367,8 +376,22 @@ mod tests {
     fn portfolio_references_positions() {
         let acc = account("a", &alice(), Currency::usd(), 0.0, "margin");
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let pos1 = position("p1", &acc.id, &btc.id, PositionSide::Long, 0.5, Money::usd(67_000.0));
-        let pos2 = position("p2", &acc.id, &btc.id, PositionSide::Long, 0.25, Money::usd(70_000.0));
+        let pos1 = position(
+            "p1",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            0.5,
+            Money::usd(67_000.0),
+        );
+        let pos2 = position(
+            "p2",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            0.25,
+            Money::usd(70_000.0),
+        );
         let port = portfolio("alpha", "Alpha Strategy", &acc.id, &[pos1, pos2]);
         if let Some(PropertyValue::List(refs)) = port.properties.get("positions") {
             assert_eq!(refs.len(), 2);
@@ -393,9 +416,22 @@ mod tests {
     fn exposure_graph_signs_short_positions_negative() {
         let acc = account("a", &alice(), Currency::usd(), 0.0, "margin");
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let long = position("l", &acc.id, &btc.id, PositionSide::Long, 0.5, Money::usd(67_000.0));
-        let short =
-            position("s", &acc.id, &btc.id, PositionSide::Short, 0.3, Money::usd(67_000.0));
+        let long = position(
+            "l",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            0.5,
+            Money::usd(67_000.0),
+        );
+        let short = position(
+            "s",
+            &acc.id,
+            &btc.id,
+            PositionSide::Short,
+            0.3,
+            Money::usd(67_000.0),
+        );
         let g = exposure_graph("p", &[long, short]);
         assert_eq!(g.edges.len(), 2);
         // Sum of edge weights should be 0.5 - 0.3 = 0.2.

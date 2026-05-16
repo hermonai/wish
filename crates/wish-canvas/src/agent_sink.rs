@@ -17,7 +17,10 @@ pub struct AgentSink {
 
 impl AgentSink {
     pub fn new(mode: CanvasMode) -> Self {
-        Self { mode, pending: VecDeque::new() }
+        Self {
+            mode,
+            pending: VecDeque::new(),
+        }
     }
 
     /// Receive a patch from the agent runtime.
@@ -74,7 +77,12 @@ mod tests {
             SemanticId::code_function("a::b"),
             "b",
             CanvasNodeKind::Function,
-            Rect { x: 0.0, y: 0.0, w: 80.0, h: 30.0 },
+            Rect {
+                x: 0.0,
+                y: 0.0,
+                w: 80.0,
+                h: 30.0,
+            },
         );
         CanvasPatch::new(vec![CanvasPatchOp::AddNode(node)])
     }

@@ -4742,7 +4742,7 @@ impl UpdateManager {
             let new_folder = CloudFolderModel {
                 name: new_name,
                 is_open: folder.model().is_open,
-                is_warp_pack: folder.model().is_warp_pack,
+                is_wish_pack: folder.model().is_wish_pack,
             };
             self.update_object(new_folder, folder_id, revision, ctx);
         } else {

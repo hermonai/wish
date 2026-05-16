@@ -243,7 +243,7 @@ impl EditorView {
                         }
                     }
                     // Note that in reality, this case is unreachable because we stop voice input
-                    // if the user is not focused on Warp (since we lose the ability to listen to modifier
+                    // if the user is not focused on Wish (since we lose the ability to listen to modifier
                     // key events). Thus, the user cannot enter a state where we're listening for voice input
                     // but the key is not held already.
                     VoiceInputState::Listening => {

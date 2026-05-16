@@ -135,7 +135,7 @@ where
 }
 
 /// Refresh Wish Drive before executing an operation.
-pub fn refresh_warp_drive(
+pub fn refresh_wish_drive(
     ctx: &AppContext,
 ) -> impl Future<Output = anyhow::Result<()>> + Send + 'static {
     UpdateManager::as_ref(ctx)

@@ -238,7 +238,7 @@ fn missing_args_and_missing_env_return_clear_error() {
     assert!(err
         .to_string()
         .contains("no usable --run-id or --conversation-id was provided"));
-    assert!(err.to_string().contains("OZ_RUN_ID"));
+    assert!(err.to_string().contains("HERMON_RUN_ID"));
 }
 
 #[test]
@@ -247,7 +247,9 @@ fn invalid_env_run_id_returns_clear_error() {
         resolve_upload_association_from_sources(None, None, None, Some("not-a-run-id".to_string()))
             .unwrap_err();
 
-    assert!(err.to_string().contains("Invalid HERMON_RUN_ID 'not-a-run-id'"));
+    assert!(err
+        .to_string()
+        .contains("Invalid HERMON_RUN_ID 'not-a-run-id'"));
 }
 
 #[test]

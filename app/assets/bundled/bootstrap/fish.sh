@@ -21,7 +21,7 @@ set -g DCS_START \u1b\u50\u24
 
 # Appended to $DCS_START to signal that the following message is JSON-encoded.
 # The Rust app also receives non-JSON-encoded DCS's sent from
-# _warp_run_generator_command_internal, which instead end in 'e' (0x65).
+# _wish_run_generator_command_internal, which instead end in 'e' (0x65).
 set -g DCS_JSON_MARKER 'd'
 
 set -g DCS_END \u9c
@@ -71,18 +71,18 @@ end
 # A list of PIDs for running in-band command(s). This is used to kill running
 # in-band commands in preexec for a user command, so they do not interfere with
 # user command output.
-set -g _warp_generator_pids ''
+set -g _wish_generator_pids ''
 
 # Runs the given command in the background, records its PID in
 # _WARP_GENERATOR_PIDS_STARTED_TMP_FILE, and adds its PID from the file when
 # the job is completed.
 #
 # Usage:
-#   _warp_run_generator_command_internal <command_id> '<command>'
+#   _wish_run_generator_command_internal <command_id> '<command>'
 #
 # The first argument is the command's ID, which is included in the DCS string sent
 # to the rust app. The second argument is the command string itself.
-function  _warp_run_generator_command_internal
+function  _wish_run_generator_command_internal
     set -l command_id $argv[1]
     set -l command (string join -- ' ' (string escape $argv[2]))
     # Fish cannot run shell functions in the background, so in order to run
@@ -123,11 +123,11 @@ function  _warp_run_generator_command_internal
         warp_maybe_send_reset_grid_osc" 2> /dev/null &
         
     set -l command_pid $last_pid
-    set -a _warp_generator_pids $command_pid
+    set -a _wish_generator_pids $command_pid
 
-    # Remove the command's PID from _warp_generator_pids when the command exits.
+    # Remove the command's PID from _wish_generator_pids when the command exits.
     function on_command_{$command_pid}_finish --on-process-exit $command_pid --inherit-variable command_pid
-        set -g _warp_generator_pids (string replace $command_pid '' $_warp_generator_pids)
+        set -g _wish_generator_pids (string replace $command_pid '' $_wish_generator_pids)
 
         # Erase this function after the pids list is updated above so we don't create an infinite number of
         # functions that could pollute the user's context (nested functions are still existing in the global
@@ -153,7 +153,7 @@ function warp_run_generator_command
     # Setting this environment variable allows warp_precmd to detect if a generator
     # command or a user command has just completed.
     set -g _WARP_GENERATOR_COMMAND 1
-    _warp_run_generator_command_internal $argv
+    _wish_run_generator_command_internal $argv
 end
 
 # Run before a command is executed.
@@ -164,13 +164,13 @@ function warp_preexec --on-event fish_preexec
 
     # If this preexec is called for user command, kill ongoing generator command jobs.
     if test (! string match -q "warp_run_generator_command*" $argv[1])
-        for pid in $_warp_generator_pids
+        for pid in $_wish_generator_pids
             # Suppress stderr output; kill writes to stderr if any of the given
             # PIDS are not running (which might rarely be the case due to race
             # conditions in checking which PIDS to cancel and this kill command.
             kill -9 $pids >/dev/null 2>/dev/null
         end
-        set -g _warp_generator_pids ''
+        set -g _wish_generator_pids ''
     end
 end
 
@@ -252,7 +252,7 @@ end
 # Changes the WARP_HONOR_PS1 variable to 0, to indicate we want to use the Warp prompt. Saves and clears
 # the fish prompt functions (which we set to empty for Warp prompt) by calling warp_update_prompt_vars
 # to refresh the prompt. We force a repaint of the prompt to ensure the change is reflected immediately.
-function warp_change_prompt_modes_to_warp_prompt
+function warp_change_prompt_modes_to_wish_prompt
   set -x WARP_HONOR_PS1 "0"
 
   # Updates fish_prompt and fish_right_prompt to be empty.
@@ -312,7 +312,7 @@ function warp_precmd --on-event fish_prompt --on-event fish_posterror
     bind \ep warp_change_prompt_modes_to_ps1
 
     # We use the ESC-w bindkey for this ("w" for Warp prompt).
-    bind \ew warp_change_prompt_modes_to_warp_prompt
+    bind \ew warp_change_prompt_modes_to_wish_prompt
 
     bind \ei warp_report_input
 

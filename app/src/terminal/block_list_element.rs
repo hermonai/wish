@@ -1201,7 +1201,7 @@ impl BlockListElement {
             self.ask_ai_assistant_button = Some(element);
         }
 
-        if WarpDriveSettings::is_warp_drive_enabled(app) {
+        if WarpDriveSettings::is_wish_drive_enabled(app) {
             let icon = Container::new(
                 ConstrainedBox::new(
                     ui_components::icons::Icon::Save
@@ -2715,7 +2715,7 @@ impl BlockListElement {
             && block.is_mode_set(TermMode::SHOW_CURSOR)
             // Don't draw the Warp cursor when rich input is hiding
             // the CLI agent's cursor cell — agents like OpenCode and Codex
-            // rely on Warp's cursor, so we suppress it here too.
+            // rely on Wish's cursor, so we suppress it here too.
             && !block_grid_params.grid_render_params.hide_cursor_cell
             {
                 block.output_grid().draw_cursor(

@@ -662,7 +662,7 @@ impl InlineItem {
             override_icon
         } else {
             match skill.provider {
-                SkillProvider::Warp => WarpIcon::Wish,
+                SkillProvider::Wish => WarpIcon::Wish,
                 SkillProvider::Claude => WarpIcon::ClaudeLogo,
                 SkillProvider::Codex => WarpIcon::OpenAILogo,
                 SkillProvider::Gemini => WarpIcon::GeminiLogo,

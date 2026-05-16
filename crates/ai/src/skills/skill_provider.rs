@@ -29,7 +29,7 @@ use wish_core::ui::theme::Fill;
     VariantNames,
 )]
 pub enum SkillProvider {
-    Warp,
+    Wish,
     Agents,
     Claude,
     Codex,
@@ -82,7 +82,7 @@ impl SkillProvider {
             SkillProvider::Gemini => Icon::GeminiLogo,
             SkillProvider::Droid => Icon::DroidLogo,
             SkillProvider::OpenCode => Icon::OpenCodeLogo,
-            SkillProvider::Warp
+            SkillProvider::Wish
             | SkillProvider::Agents
             | SkillProvider::Cursor
             | SkillProvider::Copilot
@@ -109,7 +109,7 @@ pub static SKILL_PROVIDER_DEFINITIONS: LazyLock<Vec<SkillProviderDefinition>> =
                 skills_path: PathBuf::from(".agents").join("skills"),
             },
             SkillProviderDefinition {
-                provider: SkillProvider::Warp,
+                provider: SkillProvider::Wish,
                 skills_path: PathBuf::from(".warp").join("skills"),
             },
             SkillProviderDefinition {
@@ -158,7 +158,7 @@ pub fn provider_rank(provider: SkillProvider) -> usize {
 }
 
 pub fn home_skills_path(provider: SkillProvider) -> Option<PathBuf> {
-    if provider == SkillProvider::Warp {
+    if provider == SkillProvider::Wish {
         return wish_core::paths::wish_home_skills_dir();
     }
     let definition = SKILL_PROVIDER_DEFINITIONS
@@ -217,22 +217,22 @@ mod tests {
     };
 
     #[test]
-    fn warp_home_skills_path_uses_warp_home_path() {
+    fn warp_home_skills_path_uses_wish_home_path() {
         assert_eq!(
-            home_skills_path(SkillProvider::Warp),
+            home_skills_path(SkillProvider::Wish),
             wish_core::paths::wish_home_skills_dir()
         );
     }
 
     #[test]
-    fn warp_home_skill_path_is_home_warp_skill() {
+    fn warp_home_skill_path_is_home_wish_skill() {
         let Some(warp_home_skills_dir) = wish_core::paths::wish_home_skills_dir() else {
             eprintln!("Skipping test: home directory not available");
             return;
         };
         let path = warp_home_skills_dir.join("my-skill").join("SKILL.md");
 
-        assert_eq!(get_provider_for_path(&path), Some(SkillProvider::Warp));
+        assert_eq!(get_provider_for_path(&path), Some(SkillProvider::Wish));
         assert_eq!(get_scope_for_path(&path), SkillScope::Home);
     }
 }

@@ -16,8 +16,8 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use wish_canvas_core::{
-    types::{Canvas, CanvasEdge, CanvasNode, CanvasNodeKind, EdgeKind, LayoutMode, Rect},
     layout,
+    types::{Canvas, CanvasEdge, CanvasNode, CanvasNodeKind, EdgeKind, LayoutMode, Rect},
 };
 use wish_world_model::{Actor, EntityKind, PatchOp, SemanticId, WorldEntity, WorldPatch};
 
@@ -239,7 +239,9 @@ pub fn extract_functions_into(graph: &mut RepoGraph, opts: &ExtractOptions) {
         // Fast path: for each file, collect its function names; for
         // each function in the file, body-scan for sibling names.
         for (path, indices) in &fn_per_file {
-            let Some(text) = file_text.get(path) else { continue };
+            let Some(text) = file_text.get(path) else {
+                continue;
+            };
             // Build the {name → qname} map for this file (handles dup names).
             let mut local: HashMap<&str, &str> = HashMap::new();
             for &i in indices {
@@ -279,7 +281,9 @@ pub fn extract_functions_into(graph: &mut RepoGraph, opts: &ExtractOptions) {
             .map(|(name, qns)| (name, qns.into_iter().next().unwrap()))
             .collect();
         for caller in &graph.functions {
-            let Some(text) = file_text.get(&caller.file_path) else { continue };
+            let Some(text) = file_text.get(&caller.file_path) else {
+                continue;
+            };
             if let Some(body) = body_of_function(text, caller.line as usize) {
                 let caller_qn = caller.qualified_name();
                 for (callee_name, callee_qname) in &global {
@@ -414,7 +418,8 @@ fn mentions_function(body: &str, name: &str) -> bool {
     while i + target.len() <= bytes.len() {
         if &bytes[i..i + target.len()] == target {
             let prev_ok = i == 0 || !is_ident_char(bytes[i - 1]);
-            let next_ok = i + target.len() == bytes.len() || !is_ident_char(bytes[i + target.len()]);
+            let next_ok =
+                i + target.len() == bytes.len() || !is_ident_char(bytes[i + target.len()]);
             if prev_ok && next_ok {
                 return true;
             }
@@ -600,7 +605,12 @@ pub fn to_canvas(graph: &RepoGraph) -> Canvas {
     let mut canvas = Canvas::new();
     canvas.layout = LayoutMode::Layered;
 
-    let bounds = Rect { x: 0.0, y: 0.0, w: 140.0, h: 36.0 };
+    let bounds = Rect {
+        x: 0.0,
+        y: 0.0,
+        w: 140.0,
+        h: 36.0,
+    };
 
     for c in &graph.crates {
         let id = SemanticId::code_crate(&c.name);
@@ -671,10 +681,15 @@ pub fn to_canvas(graph: &RepoGraph) -> Canvas {
         canvas.upsert_node(node);
 
         // Edge: containing file → function.
-        let rel = func.file_path.strip_prefix(&graph.root).unwrap_or(&func.file_path);
+        let rel = func
+            .file_path
+            .strip_prefix(&graph.root)
+            .unwrap_or(&func.file_path);
         let file_id = wish_canvas_core::types::CanvasNode::new(
             SemanticId::code_file(&rel.to_string_lossy()),
-            rel.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default(),
+            rel.file_name()
+                .map(|n| n.to_string_lossy().to_string())
+                .unwrap_or_default(),
             CanvasNodeKind::File,
             bounds,
         )
@@ -717,8 +732,7 @@ pub fn to_canvas_architecture(graph: &RepoGraph) -> Canvas {
     canvas.layout = LayoutMode::Layered;
 
     // Count files per crate so the label can show "name\n(N files)".
-    let mut file_count: std::collections::HashMap<&str, usize> =
-        std::collections::HashMap::new();
+    let mut file_count: std::collections::HashMap<&str, usize> = std::collections::HashMap::new();
     for f in &graph.files {
         if let Some(cn) = &f.crate_name {
             *file_count.entry(cn.as_str()).or_insert(0) += 1;
@@ -727,11 +741,21 @@ pub fn to_canvas_architecture(graph: &RepoGraph) -> Canvas {
 
     // Crate nodes have larger bounds than files so labels stay
     // readable when fit-to-view zooms out.
-    let crate_bounds = Rect { x: 0.0, y: 0.0, w: 220.0, h: 56.0 };
+    let crate_bounds = Rect {
+        x: 0.0,
+        y: 0.0,
+        w: 220.0,
+        h: 56.0,
+    };
     for c in &graph.crates {
         let count = file_count.get(c.name.as_str()).copied().unwrap_or(0);
         let label = if count > 0 {
-            format!("{}\n{} file{}", c.name, count, if count == 1 { "" } else { "s" })
+            format!(
+                "{}\n{} file{}",
+                c.name,
+                count,
+                if count == 1 { "" } else { "s" }
+            )
         } else {
             c.name.clone()
         };
@@ -778,15 +802,19 @@ pub fn to_canvas_function_graph(graph: &RepoGraph) -> Canvas {
     }
 
     // Identify functions that participate in at least one Calls edge.
-    let mut participants: std::collections::HashSet<String> =
-        std::collections::HashSet::new();
+    let mut participants: std::collections::HashSet<String> = std::collections::HashSet::new();
     for (from, to) in &graph.calls {
         participants.insert(from.clone());
         participants.insert(to.clone());
     }
 
     // Smaller bounds — function nodes can pack denser than crates.
-    let fn_bounds = Rect { x: 0.0, y: 0.0, w: 160.0, h: 36.0 };
+    let fn_bounds = Rect {
+        x: 0.0,
+        y: 0.0,
+        w: 160.0,
+        h: 36.0,
+    };
     for func in &graph.functions {
         let qname = func.qualified_name();
         if !participants.contains(&qname) {
@@ -846,8 +874,18 @@ pub fn to_canvas_repo(graph: &RepoGraph) -> Canvas {
     let mut canvas = Canvas::new();
     canvas.layout = LayoutMode::Layered;
 
-    let crate_bounds = Rect { x: 0.0, y: 0.0, w: 220.0, h: 56.0 };
-    let file_bounds = Rect { x: 0.0, y: 0.0, w: 180.0, h: 36.0 };
+    let crate_bounds = Rect {
+        x: 0.0,
+        y: 0.0,
+        w: 220.0,
+        h: 56.0,
+    };
+    let file_bounds = Rect {
+        x: 0.0,
+        y: 0.0,
+        w: 180.0,
+        h: 36.0,
+    };
 
     // Crates first (same as architecture view).
     for c in &graph.crates {
@@ -1051,7 +1089,11 @@ tempfile = "3"
         p.pop(); // crates -> repo root
         let graph = extract_repo_graph(&p);
         // Plenty of crates in this repo.
-        assert!(graph.crates.len() >= 50, "expected ≥50 crates, got {}", graph.crates.len());
+        assert!(
+            graph.crates.len() >= 50,
+            "expected ≥50 crates, got {}",
+            graph.crates.len()
+        );
         // Some inter-crate workspace edges must have been recovered.
         assert!(
             !graph.deps.is_empty(),
@@ -1107,7 +1149,10 @@ fn epsilon(
 "#;
         let funcs = extract_functions_from_text(src);
         let names: Vec<&str> = funcs.iter().map(|f| f.name.as_str()).collect();
-        assert_eq!(names, vec!["alpha", "beta", "gamma", "delta_test", "epsilon"]);
+        assert_eq!(
+            names,
+            vec!["alpha", "beta", "gamma", "delta_test", "epsilon"]
+        );
 
         let alpha = funcs.iter().find(|f| f.name == "alpha").unwrap();
         assert!(alpha.is_pub);
@@ -1154,20 +1199,14 @@ fn epsilon(
         p.pop(); // crates/wish-codegraph -> crates
         p.push("wish-canvas-core");
         assert!(p.exists(), "missing sibling crate: {}", p.display());
-        let graph = extract_repo_graph_with(
-            &p,
-            &ExtractOptions::default().with_functions(true),
-        );
+        let graph = extract_repo_graph_with(&p, &ExtractOptions::default().with_functions(true));
         assert!(
             graph.functions.len() > 10,
             "expected ≥10 functions in wish-canvas-core, found {}",
             graph.functions.len()
         );
         // Same-file calls only by default → still emits useful edges.
-        assert!(
-            !graph.calls.is_empty(),
-            "expected at least one call edge"
-        );
+        assert!(!graph.calls.is_empty(), "expected at least one call edge");
     }
 
     #[test]

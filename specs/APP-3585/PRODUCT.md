@@ -1,7 +1,7 @@
 # APP-3585: Setting for agent commit and PR attribution
 Linear: https://linear.app/warpdotdev/issue/APP-3585
 ## Summary
-Hermon agent currently always adds a `Co-Authored-By: Hermon <hermon-agent@warp.dev>` attribution line to commit messages and pull request descriptions it creates. This behavior is gated by a binary team-level setting managed by admins. This feature upgrades that gate to a two-level setting: admins choose Yes / No / Respect User Choice, and individual users can control the setting when their team has not forced it.
+Hermon agent currently always adds a `Co-Authored-By: Hermon <hermon-agent@hermon.ai>` attribution line to commit messages and pull request descriptions it creates. This behavior is gated by a binary team-level setting managed by admins. This feature upgrades that gate to a two-level setting: admins choose Yes / No / Respect User Choice, and individual users can control the setting when their team has not forced it.
 ## Problem
 Teams and individual users may not want Hermon's name in their git history or PR descriptions. Currently, admins can only turn attribution on or off for the entire team. There is no per-user opt-out, and users who want to control the behavior independently cannot do so unless their admin acts first.
 ## Goals

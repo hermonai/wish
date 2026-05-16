@@ -184,7 +184,7 @@ impl CLIAgent {
     }
 
     /// Returns the [`CLIAgent`] corresponding to a cloud-agent [`Harness`] when it represents a
-    /// third-party agent. Returns `None` for [`Harness::Hermon`] (Warp's built-in harness has no
+    /// third-party agent. Returns `None` for [`Harness::Hermon`] (Wish's built-in harness has no
     /// distinct CLI agent identity).
     pub fn from_harness(harness: Harness) -> Option<Self> {
         match harness {

@@ -92,10 +92,10 @@ mod view_components;
 mod vim_registers;
 mod voice;
 mod voltron;
-mod wish_managed_paths_watcher;
 #[cfg(target_family = "wasm")]
 mod wasm_nux_dialog;
 mod window_settings;
+mod wish_managed_paths_watcher;
 mod word_block_editor;
 mod workspaces;
 
@@ -243,7 +243,7 @@ use crate::terminal::{AudibleBell, History};
 use crate::undo_close::UndoCloseStack;
 use crate::user_config::WarpConfig;
 use crate::vim_registers::VimRegisters;
-use crate::wish_managed_paths_watcher::{ensure_warp_watch_roots_exist, WarpManagedPathsWatcher};
+use crate::wish_managed_paths_watcher::{ensure_wish_watch_roots_exist, WarpManagedPathsWatcher};
 use crate::workflows::aliases::WorkflowAliases;
 use crate::workflows::local_workflows::LocalWorkflows;
 use crate::workspace::{ActiveSession, OneTimeModalModel, ToastStack};
@@ -1141,7 +1141,7 @@ pub(crate) fn initialize_app(
 
     // One-time migration: give Preview its own config directory by
     // symlinking contents from the shared ~/.warp location. Must run
-    // before ensure_warp_watch_roots_exist() creates the new directory.
+    // before ensure_wish_watch_roots_exist() creates the new directory.
     #[cfg(target_os = "macos")]
     preview_config_migration::migrate_preview_config_dir_if_needed();
 
@@ -1175,7 +1175,7 @@ pub(crate) fn initialize_app(
         }
     }
 
-    ensure_warp_watch_roots_exist();
+    ensure_wish_watch_roots_exist();
     ctx.add_singleton_model(WarpManagedPathsWatcher::new);
 
     ctx.add_singleton_model(WarpConfig::new);
@@ -3021,7 +3021,7 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::BundledSkills,
         #[cfg(feature = "hermon_launch_modal")]
         FeatureFlag::HermonLaunchModal,
-        #[cfg(feature = "open_warp_launch_modal")]
+        #[cfg(feature = "open_wish_launch_modal")]
         FeatureFlag::OpenWarpLaunchModal,
         #[cfg(feature = "new_tab_styling")]
         FeatureFlag::NewTabStyling,
@@ -3049,7 +3049,7 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::InlineMenuHeaders,
         #[cfg(feature = "directory_tab_colors")]
         FeatureFlag::DirectoryTabColors,
-        #[cfg(feature = "open_warp_new_settings_modes")]
+        #[cfg(feature = "open_wish_new_settings_modes")]
         FeatureFlag::OpenWarpNewSettingsModes,
         #[cfg(feature = "hoa_code_review")]
         FeatureFlag::HoaCodeReview,

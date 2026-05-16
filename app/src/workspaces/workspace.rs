@@ -560,7 +560,7 @@ impl BillingMetadata {
     }
 
     // Whether the enterprise customer is our Stable Warp Enterprise team (internal team of Warpers).
-    pub fn is_warp_plan(&self) -> bool {
+    pub fn is_wish_plan(&self) -> bool {
         self.tier.name == "Wish Plan"
     }
 
@@ -778,7 +778,7 @@ pub struct WorkspaceSettings {
     /// The team-level agent attribution setting. When `Enable` or `Disable`, the
     /// user toggle is locked. When `RespectUserSetting` (or absent), the user can choose.
     #[serde(default)]
-    pub enable_warp_attribution: AdminEnablementSetting,
+    pub enable_wish_attribution: AdminEnablementSetting,
     #[serde(default)]
     pub default_host_slug: Option<String>,
 }

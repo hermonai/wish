@@ -38,7 +38,11 @@ pub fn build_shanhai_harbor(
     let agent = Actor::Agent {
         agent_id: "wish-agent-world-architect".into(),
     };
-    let architect_id = SemanticId::new(Realm::Agent, "world_architect", "wish-agent-world-architect");
+    let architect_id = SemanticId::new(
+        Realm::Agent,
+        "world_architect",
+        "wish-agent-world-architect",
+    );
 
     let steps_data: Vec<(&str, &str, Vec<PatchOp>)> = vec![
         (
@@ -255,12 +259,7 @@ fn temple() -> WorldEntity {
     }
 }
 
-fn npc(
-    stable_key: &str,
-    display_name: &str,
-    profile: &str,
-    translation: [f32; 3],
-) -> WorldEntity {
+fn npc(stable_key: &str, display_name: &str, profile: &str, translation: [f32; 3]) -> WorldEntity {
     WorldEntity {
         id: SemanticId::new(Realm::Npc, "npc", stable_key),
         kind: EntityKind::Npc,

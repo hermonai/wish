@@ -44,7 +44,7 @@ Figma: none provided.
 - `data_dir()` remains the root for channel-scoped themes, workflows, launch configs, tab configs, and other app-managed files.
 - `config_local_dir()` remains the root for platform-specific config files such as `settings.toml`, `keybindings.yaml`, and `user_preferences.json`.
 ## Success Criteria
-- `oz agent run --skill <name>` can resolve `<warp-home-config-dir>/skills/<name>/SKILL.md` from a cold start.
+- `hermon agent run --skill <name>` can resolve `<warp-home-config-dir>/skills/<name>/SKILL.md` from a cold start.
 - Skill resolution still finds project skills when no matching Warp home skill exists.
 - Warp home skills still take precedence over project skills for unqualified skill names.
 - File-based MCP detection includes `<warp-home-config-dir>/.mcp.json` as a user-scoped Warp provider config when present.
@@ -53,7 +53,7 @@ Figma: none provided.
 - No code path reintroduces a generic recursive watcher rooted at `~/.warp`.
 - `.warp*/worktrees` changes remain excluded from Warp-managed reload behavior.
 ## Validation
-- Add or update unit coverage for `oz --skill` resolving a skill from an explicit Warp home skills directory.
+- Add or update unit coverage for `hermon --skill` resolving a skill from an explicit Warp home skills directory.
 - Add or update unit coverage for Warp home config path helper behavior.
 - Add or update unit coverage for MCP path classification so `<warp-home-config-dir>/.mcp.json` is recognized as a Warp MCP config path.
 - Add or update watcher helper tests to verify managed Skills/MCP helpers return the current environment’s Warp home paths.
@@ -63,7 +63,7 @@ Figma: none provided.
 - Use only hardcoded `~/.warp` for Skills/MCP. Rejected because it loses Dev/Local/Profile environment isolation.
 - Keep using `data_dir()` for Skills/MCP. Rejected because non-macOS app data paths are XDG/AppData paths, not Warp’s home-relative `.warp*` config paths.
 - Use `config_local_dir()` for Skills/MCP. Rejected because non-macOS config-local paths are also platform project directories, not home-relative `.warp*` paths.
-- Add only a resolver fallback for `oz --skill`. Rejected because it fixes cold CLI resolution but leaves app hot reload, skill discovery, and MCP path behavior inconsistent.
+- Add only a resolver fallback for `hermon --skill`. Rejected because it fixes cold CLI resolution but leaves app hot reload, skill discovery, and MCP path behavior inconsistent.
 - Re-add Warp to generic home-provider watchers. Rejected because that watcher shape can recursively watch `.warp*` parents and reintroduce `.warp*/worktrees` churn.
 - Watch all of `~/.warp` recursively and filter in consumers. Rejected because it recreates the broad watcher shape APP-3945 was designed to remove.
 ## Open Questions

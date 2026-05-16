@@ -390,7 +390,7 @@ impl AIContextMenu {
         is_cli_agent_input: bool,
         app: &AppContext,
     ) -> Vec<AIContextMenuCategory> {
-        let show_warp_drive = WarpDriveSettings::is_warp_drive_enabled(app);
+        let show_wish_drive = WarpDriveSettings::is_wish_drive_enabled(app);
 
         // Compute once — used by CLI agent, AI-mode, and terminal-mode branches.
         let is_active_dir_in_git_repo = {
@@ -439,7 +439,7 @@ impl AIContextMenu {
         // For ambient agent sessions, only show limited categories
         if is_in_ambient_agent {
             let mut categories = vec![];
-            if show_warp_drive {
+            if show_wish_drive {
                 if FeatureFlag::DriveObjectsAsContext.is_enabled() {
                     categories.push(AIContextMenuCategory::Workflows);
                     categories.push(AIContextMenuCategory::Notebooks);
@@ -475,7 +475,7 @@ impl AIContextMenu {
             {
                 categories.push(AIContextMenuCategory::Code);
             }
-            if show_warp_drive && FeatureFlag::DriveObjectsAsContext.is_enabled() {
+            if show_wish_drive && FeatureFlag::DriveObjectsAsContext.is_enabled() {
                 categories.push(AIContextMenuCategory::Workflows);
                 categories.push(AIContextMenuCategory::Notebooks);
                 categories.push(AIContextMenuCategory::Plans);
@@ -489,7 +489,7 @@ impl AIContextMenu {
             if FeatureFlag::ConversationsAsContext.is_enabled() {
                 categories.push(AIContextMenuCategory::Conversations);
             }
-            if show_warp_drive {
+            if show_wish_drive {
                 categories.push(AIContextMenuCategory::Rules);
             }
             categories.push(AIContextMenuCategory::Skills);

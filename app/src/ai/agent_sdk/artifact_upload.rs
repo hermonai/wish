@@ -24,7 +24,7 @@ const WISH_RUN_ID_ENV_VAR: &str = "WISH_RUN_ID";
 /// Legacy env var name kept for backward compatibility — set by older agent
 /// harness runs and CI configs that predate the Wish rename. Read as a fallback
 /// when `WISH_RUN_ID` is not set.
-const LEGACY_RUN_ID_ENV_VAR: &str = "OZ_RUN_ID";
+const LEGACY_RUN_ID_ENV_VAR: &str = "HERMON_RUN_ID";
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub(crate) struct FileArtifactUploadRequest {

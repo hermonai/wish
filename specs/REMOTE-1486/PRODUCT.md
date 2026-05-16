@@ -57,11 +57,11 @@ None provided.
 18. If a touched repo's local clone is unreadable, missing, or has a corrupt git state, that repo is captured as a `gather_failed` entry in the snapshot manifest and the rest of the snapshot proceeds. The rehydration prompt tells the cloud agent to fail the apply for that repo and report it.
 19. Modified files outside any `.git` are uploaded as raw file contents (the `kind: file` declaration form in the existing snapshot pipeline) and listed in the manifest with their original paths.
 20. If the user has no environments, the pane still works with no env selected; the cloud agent runs against the platform default image.
-21. If the user is at cloud agent capacity, the cloud agent is created in a queued state — the same behavior as `oz agent run-cloud`. The handoff pane shows the existing "queued / waiting for capacity" UI.
+21. If the user is at cloud agent capacity, the cloud agent is created in a queued state — the same behavior as `hermon agent run-cloud`. The handoff pane shows the existing "queued / waiting for capacity" UI.
 22. If the local pane closes mid-handoff, in-flight uploads abort and no cloud agent is created. The user is not warned in V0 — handoffs are short and rarely interrupted.
 23. The handoff is per-conversation; running it twice produces two independent cloud agents, each forked from the same point.
 ### Permissions and authorization
-24. Handoff requires the user to be logged in and have permission to create cloud agent runs in their workspace — same permissions as `oz agent run-cloud`. The chip is hidden from session viewers.
+24. Handoff requires the user to be logged in and have permission to create cloud agent runs in their workspace — same permissions as `hermon agent run-cloud`. The chip is hidden from session viewers.
 25. The selected environment must be readable by the user; the dropdown only lists envs the user already has view access to (same scoping as the existing cloud-agent setup `EnvironmentSelector`).
 ## Open questions
 - The chip uses an existing icon for V0; design may swap it for a bespoke handoff icon later.

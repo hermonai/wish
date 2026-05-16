@@ -33,7 +33,7 @@ use crate::workspaces::user_profiles::UserProfiles;
 use crate::CloudObjectTypeAndId;
 use cynic::QueryBuilder;
 use wish_graphql::queries::get_oauth_connect_tx_status::OauthConnectTxStatus;
-use wish_graphql::queries::list_warp_dev_images::{
+use wish_graphql::queries::list_wish_dev_images::{
     ListWarpDevImages, ListWarpDevImagesResult, ListWarpDevImagesVariables,
 };
 use wish_graphql::queries::user_repo_auth_status::UserRepoAuthStatusEnum;
@@ -152,7 +152,7 @@ impl EnvironmentCommandRunner {
         let fetch_images = async move { server_api.send_graphql_request(operation, None).await };
 
         ctx.spawn(fetch_images, move |_, result, ctx| match result {
-            Ok(response) => match response.list_warp_dev_images {
+            Ok(response) => match response.list_wish_dev_images {
                 ListWarpDevImagesResult::ListWarpDevImagesOutput(output) => {
                     let image_infos: Vec<_> = output
                         .images
@@ -349,7 +349,7 @@ impl EnvironmentCommandRunner {
         let fetch_images = async move { server_api.send_graphql_request(operation, None).await };
 
         ctx.spawn(fetch_images, move |_, result, ctx| match result {
-            Ok(response) => match response.list_warp_dev_images {
+            Ok(response) => match response.list_wish_dev_images {
                 ListWarpDevImagesResult::ListWarpDevImagesOutput(output) => {
                     if output.images.is_empty() {
                         super::report_fatal_error(
@@ -363,7 +363,7 @@ impl EnvironmentCommandRunner {
                         "No docker image provided, please select a base image.\n"
                     );
                     println!(
-                        "All warpdotdev images contain Python and Node, in addition to language-specific tooling. For more info: {}\n",
+                        "All Wish dev images contain Python and Node, in addition to language-specific tooling. For more info: {}\n",
                         WARP_DEV_ENVIRONMENTS_REPO
                     );
 

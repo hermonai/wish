@@ -246,7 +246,7 @@ fn test_retry_menu_item_logic() {
 }
 
 #[test]
-fn test_warp_drive_navigation_states() {
+fn test_wish_drive_navigation_states() {
     use crate::drive::index::DriveIndexAction;
     App::test((), |mut app| async move {
         initialize_app(&mut app);

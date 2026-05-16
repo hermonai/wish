@@ -81,8 +81,8 @@ fn apply_ui_customization_settings(
 
     WarpDriveSettings::handle(app).update(app, |settings, ctx| {
         report_if_error!(settings
-            .enable_warp_drive
-            .set_value(ui.show_warp_drive, ctx));
+            .enable_wish_drive
+            .set_value(ui.show_wish_drive, ctx));
     });
 
     CodeSettings::handle(app).update(app, |settings, ctx| {

@@ -7,7 +7,7 @@
 #     open for more than 3 days.
 #
 # Expected Output:
-#   - Any open PR whose branch matches the oz-agent-fix/run-* convention and that
+#   - Any open PR whose branch matches the hermon-agent-fix/run-* convention and that
 #     was opened more than 3 days ago will be closed with an explanatory comment.
 #
 # ======================================================================================
@@ -39,7 +39,7 @@ jobs:
             });
 
             const staleFixPRs = openPRs.filter(pr => {
-              const branchMatches = /^oz-agent-fix\/run-/.test(pr.head.ref);
+              const branchMatches = /^hermon-agent-fix\/run-/.test(pr.head.ref);
               const openedAt = new Date(pr.created_at).getTime();
               const isStale = (now - openedAt) > staleCutoffMs;
               return branchMatches && isStale;

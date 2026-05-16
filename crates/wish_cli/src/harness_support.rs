@@ -8,7 +8,7 @@ use clap::{Args, Subcommand, ValueEnum};
 pub struct HarnessSupportArgs {
     /// The run ID to associate with harness-support API calls. Reads
     /// `WISH_RUN_ID` from the environment by default; legacy invocations that
-    /// set `OZ_RUN_ID` are still supported by the `WISH_RUN_ID_ENV_VAR`
+    /// set `HERMON_RUN_ID` are still supported by the `WISH_RUN_ID_ENV_VAR`
     /// fallback chain in `crates/wish_cli` and `app/src/ai/agent_sdk`.
     #[arg(long = "run-id", env = "WISH_RUN_ID")]
     pub run_id: String,

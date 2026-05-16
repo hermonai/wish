@@ -126,7 +126,11 @@ pub fn run_timetravel(
     eframe::run_native(
         &format!("Wish · {title_owned}"),
         options,
-        Box::new(move |_cc| Ok(Box::new(WishApp { state: Arc::new(Mutex::new(state)) }))),
+        Box::new(move |_cc| {
+            Ok(Box::new(WishApp {
+                state: Arc::new(Mutex::new(state)),
+            }))
+        }),
     )
 }
 
@@ -155,7 +159,9 @@ pub fn run_watch(
     state.watch_enabled = true;
     state.watch_poll = poll_interval;
     state.watch_path = Some(wl_path.clone());
-    state.watch_last_mtime = std::fs::metadata(&wl_path).ok().and_then(|m| m.modified().ok());
+    state.watch_last_mtime = std::fs::metadata(&wl_path)
+        .ok()
+        .and_then(|m| m.modified().ok());
     state.watch_last_count = event_count;
     state.timetravel_baseline = Some(reset_to_baseline(&world));
     let options = eframe::NativeOptions {
@@ -168,7 +174,11 @@ pub fn run_watch(
     eframe::run_native(
         &format!("Wish · {title_owned}"),
         options,
-        Box::new(move |_cc| Ok(Box::new(WishApp { state: Arc::new(Mutex::new(state)) }))),
+        Box::new(move |_cc| {
+            Ok(Box::new(WishApp {
+                state: Arc::new(Mutex::new(state)),
+            }))
+        }),
     )
 }
 
@@ -391,7 +401,9 @@ impl AppState {
             return;
         }
         let Some(wl) = &self.worldline else { return };
-        let Some(baseline) = &self.timetravel_baseline else { return };
+        let Some(baseline) = &self.timetravel_baseline else {
+            return;
+        };
         let mut world = baseline.clone();
         if wl.replay_into(&mut world, self.timetravel_position).is_ok() {
             self.canvas = world_to_canvas(&world);
@@ -416,8 +428,12 @@ impl AppState {
             return 0;
         }
         self.watch_last_poll = Some(now);
-        let Some(path) = self.watch_path.clone() else { return 0 };
-        let Some(wl) = self.worldline.as_mut() else { return 0 };
+        let Some(path) = self.watch_path.clone() else {
+            return 0;
+        };
+        let Some(wl) = self.worldline.as_mut() else {
+            return 0;
+        };
         let mut last_seen = self.watch_last_mtime;
         let _ = wl.reload_if_changed(&mut last_seen);
         self.watch_last_mtime = last_seen;
@@ -429,7 +445,9 @@ impl AppState {
         self.watch_last_count = new_count;
 
         // Replay onto the baseline and refresh.
-        let Some(baseline) = &self.timetravel_baseline else { return 0 };
+        let Some(baseline) = &self.timetravel_baseline else {
+            return 0;
+        };
         let mut world = baseline.clone();
         if wl.replay_into(&mut world, new_count).is_ok() {
             self.canvas = world_to_canvas(&world);
@@ -777,79 +795,78 @@ impl eframe::App for WishApp {
             });
         });
 
-        egui::SidePanel::left("entities").min_width(220.0).show(ctx, |ui| {
-            ui.heading("Entities");
-            // Take an owned snapshot so we can release the lock before
-            // entering the scroll-area closure (egui's borrow checker
-            // wants the closure to outlive the lock guard).
-            let (entries, selected): (Vec<CanvasNode>, Option<CanvasNodeId>) = {
-                let s = state.lock().unwrap();
-                let mut v: Vec<CanvasNode> = s.canvas.nodes.values().cloned().collect();
-                v.sort_by(|a, b| a.label.cmp(&b.label));
-                (v, s.selected)
-            };
-            egui::ScrollArea::vertical().show(ui, |ui| {
-                for n in &entries {
-                    let is_sel = selected == Some(n.id);
-                    let mut text = egui::RichText::new(format!(
-                        "{}  {}",
-                        kind_glyph(&n.kind),
-                        n.label
-                    ))
-                    .small();
-                    if is_sel {
-                        text = text.color(Color32::from_rgb(97, 175, 239)).strong();
+        egui::SidePanel::left("entities")
+            .min_width(220.0)
+            .show(ctx, |ui| {
+                ui.heading("Entities");
+                // Take an owned snapshot so we can release the lock before
+                // entering the scroll-area closure (egui's borrow checker
+                // wants the closure to outlive the lock guard).
+                let (entries, selected): (Vec<CanvasNode>, Option<CanvasNodeId>) = {
+                    let s = state.lock().unwrap();
+                    let mut v: Vec<CanvasNode> = s.canvas.nodes.values().cloned().collect();
+                    v.sort_by(|a, b| a.label.cmp(&b.label));
+                    (v, s.selected)
+                };
+                egui::ScrollArea::vertical().show(ui, |ui| {
+                    for n in &entries {
+                        let is_sel = selected == Some(n.id);
+                        let mut text =
+                            egui::RichText::new(format!("{}  {}", kind_glyph(&n.kind), n.label))
+                                .small();
+                        if is_sel {
+                            text = text.color(Color32::from_rgb(97, 175, 239)).strong();
+                        }
+                        if ui
+                            .selectable_label(is_sel, text)
+                            .on_hover_text(n.semantic_id.to_string())
+                            .clicked()
+                        {
+                            let mut s = state.lock().unwrap();
+                            s.selected = Some(n.id);
+                            // Recenter on the selected node.
+                            let bounds = n.bounds;
+                            let cx = bounds.x + bounds.w * 0.5;
+                            let cy = bounds.y + bounds.h * 0.5;
+                            let avail = ctx.screen_rect().size();
+                            s.pan =
+                                Vec2::new(avail.x * 0.5 - cx * s.zoom, avail.y * 0.5 - cy * s.zoom);
+                        }
                     }
-                    if ui
-                        .selectable_label(is_sel, text)
-                        .on_hover_text(n.semantic_id.to_string())
-                        .clicked()
-                    {
-                        let mut s = state.lock().unwrap();
-                        s.selected = Some(n.id);
-                        // Recenter on the selected node.
-                        let bounds = n.bounds;
-                        let cx = bounds.x + bounds.w * 0.5;
-                        let cy = bounds.y + bounds.h * 0.5;
-                        let avail = ctx.screen_rect().size();
-                        s.pan = Vec2::new(
-                            avail.x * 0.5 - cx * s.zoom,
-                            avail.y * 0.5 - cy * s.zoom,
-                        );
-                    }
-                }
+                });
             });
-        });
 
         // Optional world inspector on the right.
         let show_world_panel = state.lock().unwrap().world.is_some();
         if show_world_panel {
-            egui::SidePanel::right("world").min_width(280.0).show(ctx, |ui| {
-                ui.heading("World");
-                let s = state.lock().unwrap();
-                if let Some(w) = &s.world {
-                    ui.label(format!("name:     {}", w.name));
-                    ui.label(format!("id:       {}", w.id));
-                    ui.label(format!("kind:     {:?}", w.kind));
-                    if !w.intent.is_empty() {
-                        ui.add_space(6.0);
-                        ui.label(egui::RichText::new(&w.intent).italics());
-                    }
-                    ui.add_space(8.0);
-                    ui.label(format!("entities: {}", w.entities.len()));
-                    ui.label(format!("scenes:   {}", w.scenes.len()));
-                    ui.label(format!("agents:   {}", w.agents.len()));
-                    ui.label(format!("assets:   {}", w.assets.len()));
-                    if !w.agents.is_empty() {
+            egui::SidePanel::right("world")
+                .min_width(280.0)
+                .show(ctx, |ui| {
+                    ui.heading("World");
+                    let s = state.lock().unwrap();
+                    if let Some(w) = &s.world {
+                        ui.label(format!("name:     {}", w.name));
+                        ui.label(format!("id:       {}", w.id));
+                        ui.label(format!("kind:     {:?}", w.kind));
+                        if !w.intent.is_empty() {
+                            ui.add_space(6.0);
+                            ui.label(egui::RichText::new(&w.intent).italics());
+                        }
                         ui.add_space(8.0);
-                        ui.collapsing("Agents", |ui| {
-                            for a in w.agents.values() {
-                                ui.label(format!("• {}  ({})", a.display_name, a.role));
-                            }
-                        });
+                        ui.label(format!("entities: {}", w.entities.len()));
+                        ui.label(format!("scenes:   {}", w.scenes.len()));
+                        ui.label(format!("agents:   {}", w.agents.len()));
+                        ui.label(format!("assets:   {}", w.assets.len()));
+                        if !w.agents.is_empty() {
+                            ui.add_space(8.0);
+                            ui.collapsing("Agents", |ui| {
+                                for a in w.agents.values() {
+                                    ui.label(format!("• {}  ({})", a.display_name, a.role));
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
         }
 
         // Bottom panel: time-travel slider + watch status.
@@ -857,18 +874,21 @@ impl eframe::App for WishApp {
             let (tt_enabled, watch_enabled, total, position, current_event) = {
                 let s = state.lock().unwrap();
                 let total = s.worldline.as_ref().map(|w| w.len()).unwrap_or(0);
-                let event = s
-                    .worldline
-                    .as_ref()
-                    .and_then(|w| {
-                        let p = s.timetravel_position;
-                        if p > 0 && p <= w.len() {
-                            w.iter().nth(p - 1).cloned()
-                        } else {
-                            None
-                        }
-                    });
-                (s.timetravel_enabled, s.watch_enabled, total, s.timetravel_position, event)
+                let event = s.worldline.as_ref().and_then(|w| {
+                    let p = s.timetravel_position;
+                    if p > 0 && p <= w.len() {
+                        w.iter().nth(p - 1).cloned()
+                    } else {
+                        None
+                    }
+                });
+                (
+                    s.timetravel_enabled,
+                    s.watch_enabled,
+                    total,
+                    s.timetravel_position,
+                    event,
+                )
             };
             if tt_enabled || watch_enabled {
                 egui::TopBottomPanel::bottom("timetravel").show(ctx, |ui| {
@@ -892,7 +912,10 @@ impl eframe::App for WishApp {
                         }
                         if watch_enabled {
                             ui.separator();
-                            ui.label(egui::RichText::new("👁 watching").color(Color32::from_rgb(220, 180, 90)));
+                            ui.label(
+                                egui::RichText::new("👁 watching")
+                                    .color(Color32::from_rgb(220, 180, 90)),
+                            );
                             ui.label(format!("{total} events on disk"));
                         }
                         if let Some(ev) = current_event {
@@ -920,8 +943,7 @@ impl eframe::App for WishApp {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             let avail = ui.available_size();
-            let response =
-                ui.allocate_response(avail, egui::Sense::click_and_drag());
+            let response = ui.allocate_response(avail, egui::Sense::click_and_drag());
             let viewport = response.rect;
 
             // Pan from drag.
@@ -972,7 +994,10 @@ impl eframe::App for WishApp {
 
             // Helper to project a canvas (world) point into screen space.
             let project = |x: f32, y: f32| -> Pos2 {
-                Pos2::new(viewport.min.x + pan.x + x * zoom, viewport.min.y + pan.y + y * zoom)
+                Pos2::new(
+                    viewport.min.x + pan.x + x * zoom,
+                    viewport.min.y + pan.y + y * zoom,
+                )
             };
 
             // Draw edges first so nodes overlap them.
@@ -1004,8 +1029,7 @@ impl eframe::App for WishApp {
                 let perspective = s.perspective;
                 for node in s.canvas.nodes.values() {
                     let tl = project(node.bounds.x, node.bounds.y);
-                    let br =
-                        project(node.bounds.x + node.bounds.w, node.bounds.y + node.bounds.h);
+                    let br = project(node.bounds.x + node.bounds.w, node.bounds.y + node.bounds.h);
                     let rect = Rect::from_two_pos(tl, br);
                     let fill = node_fill_with(node, perspective);
                     let is_selected = selected == Some(node.id);
@@ -1034,8 +1058,10 @@ impl eframe::App for WishApp {
             if response.clicked() {
                 if let Some(click) = response.interact_pointer_pos() {
                     let click_local = click - viewport.min;
-                    let world_pt =
-                        Pos2::new((click_local.x - pan.x) / zoom, (click_local.y - pan.y) / zoom);
+                    let world_pt = Pos2::new(
+                        (click_local.x - pan.x) / zoom,
+                        (click_local.y - pan.y) / zoom,
+                    );
                     let s = state.lock().unwrap();
                     let mut best: Option<(CanvasNodeId, f32)> = None;
                     for n in s.canvas.nodes.values() {
@@ -1100,13 +1126,12 @@ impl WishApp {
             return;
         }
         let screen = ctx.screen_rect();
-        let area_resp =
-            egui::Area::new(egui::Id::new("wish-boot-overlay"))
-                .fixed_pos(screen.left_top())
-                .order(egui::Order::Foreground)
-                .show(ctx, |ui| {
-                    ui.allocate_space(screen.size());
-                });
+        let area_resp = egui::Area::new(egui::Id::new("wish-boot-overlay"))
+            .fixed_pos(screen.left_top())
+            .order(egui::Order::Foreground)
+            .show(ctx, |ui| {
+                ui.allocate_space(screen.size());
+            });
         // The Area allocates the full screen so any pointer event
         // there bubbles to the dismiss check in `update`. We don't
         // actually consume the event.
@@ -1206,8 +1231,7 @@ impl WishApp {
                 if delta.length_sq() > 0.0 {
                     let mut s = state.lock().unwrap();
                     s.camera3d.yaw -= delta.x * 0.008;
-                    s.camera3d.pitch =
-                        (s.camera3d.pitch - delta.y * 0.008).clamp(-1.3, 1.3);
+                    s.camera3d.pitch = (s.camera3d.pitch - delta.y * 0.008).clamp(-1.3, 1.3);
                 }
             }
             let scroll = ui.input(|i| i.smooth_scroll_delta);
@@ -1366,14 +1390,20 @@ fn kind_glyph(kind: &CanvasNodeKind) -> &'static str {
 
 fn edge_color(kind: &EdgeKind) -> Color32 {
     match kind {
-        EdgeKind::Imports | EdgeKind::DependsOn => Color32::from_rgba_unmultiplied(97, 175, 239, 160),
+        EdgeKind::Imports | EdgeKind::DependsOn => {
+            Color32::from_rgba_unmultiplied(97, 175, 239, 160)
+        }
         EdgeKind::Calls => Color32::from_rgba_unmultiplied(140, 200, 130, 160),
-        EdgeKind::Produces | EdgeKind::Triggers => Color32::from_rgba_unmultiplied(220, 180, 110, 160),
+        EdgeKind::Produces | EdgeKind::Triggers => {
+            Color32::from_rgba_unmultiplied(220, 180, 110, 160)
+        }
         EdgeKind::Tests => Color32::from_rgba_unmultiplied(120, 200, 120, 160),
         EdgeKind::Spawned => Color32::from_rgba_unmultiplied(200, 120, 200, 160),
         EdgeKind::SucceededBy => Color32::from_rgba_unmultiplied(100, 200, 100, 160),
         EdgeKind::FailedBy => Color32::from_rgba_unmultiplied(220, 100, 100, 160),
-        EdgeKind::Mentions | EdgeKind::Custom(_) => Color32::from_rgba_unmultiplied(140, 150, 165, 160),
+        EdgeKind::Mentions | EdgeKind::Custom(_) => {
+            Color32::from_rgba_unmultiplied(140, 150, 165, 160)
+        }
     }
 }
 
@@ -1416,7 +1446,12 @@ mod tests {
                 SemanticId::code_function(&format!("f_{i}")),
                 format!("f_{i}"),
                 CanvasNodeKind::Function,
-                CRect { x: 0.0, y: 0.0, w: 80.0, h: 30.0 },
+                CRect {
+                    x: 0.0,
+                    y: 0.0,
+                    w: 80.0,
+                    h: 30.0,
+                },
             ));
         }
         c.layout = LayoutMode::ForceDirected;

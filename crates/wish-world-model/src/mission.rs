@@ -215,13 +215,33 @@ pub enum ArtifactKind {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Evidence {
-    Diff { unified: String },
-    Screenshot { png_path: String, alt: String },
-    Recording { uri: String, duration_ms: u32 },
-    TestOutput { passed: u32, failed: u32, log: String },
-    LogTrace { entries: Vec<String> },
-    RuntimeObservation { source: String, payload: serde_json::Value },
-    External { source: String, payload: serde_json::Value },
+    Diff {
+        unified: String,
+    },
+    Screenshot {
+        png_path: String,
+        alt: String,
+    },
+    Recording {
+        uri: String,
+        duration_ms: u32,
+    },
+    TestOutput {
+        passed: u32,
+        failed: u32,
+        log: String,
+    },
+    LogTrace {
+        entries: Vec<String>,
+    },
+    RuntimeObservation {
+        source: String,
+        payload: serde_json::Value,
+    },
+    External {
+        source: String,
+        payload: serde_json::Value,
+    },
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -285,13 +305,9 @@ mod tests {
 
     #[test]
     fn smoke_artifact_with_evidence_and_signature() {
-        let mut a = VerifiableArtifact::new(
-            "mission_x",
-            ArtifactKind::CodeChange,
-            "event_1",
-            "patch_1",
-        )
-        .with_affected(vec![SemanticId::code_function("a::b")]);
+        let mut a =
+            VerifiableArtifact::new("mission_x", ArtifactKind::CodeChange, "event_1", "patch_1")
+                .with_affected(vec![SemanticId::code_function("a::b")]);
         a.add_evidence(Evidence::Diff {
             unified: "@@ -1 +1 @@\n-a\n+b".into(),
         });

@@ -35,7 +35,11 @@ pub struct Viewport {
 
 impl Default for Viewport {
     fn default() -> Self {
-        Self { pan_x: 0.0, pan_y: 0.0, scale: 1.0 }
+        Self {
+            pan_x: 0.0,
+            pan_y: 0.0,
+            scale: 1.0,
+        }
     }
 }
 
@@ -240,7 +244,11 @@ impl Canvas {
         self.nodes
             .values()
             .filter(|n| n.bounds.contains(point))
-            .max_by(|a, b| (a.bounds.w * a.bounds.h).partial_cmp(&(b.bounds.w * b.bounds.h)).unwrap_or(std::cmp::Ordering::Equal))
+            .max_by(|a, b| {
+                (a.bounds.w * a.bounds.h)
+                    .partial_cmp(&(b.bounds.w * b.bounds.h))
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
             .map(|n| n.id)
     }
 
@@ -255,7 +263,10 @@ impl Canvas {
 
     /// Pan/zoom so that the node bound to `semantic_id` is centered.
     pub fn reveal(&mut self, semantic_id: &SemanticId) -> Option<CanvasNodeId> {
-        let node = self.nodes.values().find(|n| n.semantic_id == *semantic_id)?;
+        let node = self
+            .nodes
+            .values()
+            .find(|n| n.semantic_id == *semantic_id)?;
         let (cx, cy) = node.bounds.center();
         self.viewport.pan_x = -cx;
         self.viewport.pan_y = -cy;

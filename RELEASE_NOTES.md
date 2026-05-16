@@ -100,13 +100,13 @@ Counts of errors/warnings now render next to the LSP indicator in the workspace 
 | Settings feature page search-term | "warp default terminal application" | "wish default terminal application" |
 | Subshell page search-term | "warpify subshell" | "wishify warpify subshell" (kept legacy as alias) |
 | AI harness default display name | "Warp" | "Wish" |
-| Agent git-author for AI-generated commits | `Hermon <oz-agent@warp.dev>` | `Wish <wish-agent@hermon.ai>` |
-| Brand URLs (×2 sites) | `OZ_URL` constants | renamed to `HERMON_URL` (values already pointed at `wish.hermon.ai`) |
+| Agent git-author for AI-generated commits | `Hermon <hermon-agent@hermon.ai>` | `Wish <wish-agent@hermon.ai>` |
+| Brand URLs (×2 sites) | `HERMON_URL` constants | renamed to `HERMON_URL` (values already pointed at `wish.hermon.ai`) |
 
 What deliberately stayed unchanged:
 - Internal type names (`WarpTheme`, `WarpDriveModel`, `Harness::Hermon`, `NotificationSourceAgent::Hermon`) — these serialize to telemetry, persisted settings, cloud agent sessions; renaming them needs a dedicated migration slice with serde aliases.
 - TOML persistence keys (`warpify.ssh.…`) — renaming would silently wipe user settings on upgrade.
-- macOS bundle qualifier `org.warp.dev` — required for OS-level upgrade paths.
+- macOS bundle qualifier `org.hermon.ai` — required for OS-level upgrade paths.
 - Rustdoc comments / variable names — cosmetic only, ride along on the next telemetry-aware variant migration.
 
 ### 🎯 Always-visible tab close (modern editor UX default)
@@ -167,10 +167,10 @@ The rename landed late in the cycle with the wire format preserved for round-tri
 
 - **`Harness::Hermon` → `Harness::Hermon`** across 88 call sites. `#[serde(rename = "oz", alias = "hermon")]` + clap `#[value(name = "hermon", alias = "oz")]` mean every wire format keeps emitting/accepting `"oz"`; the Rust identifier and the CLI value are forward-looking. `Harness::display_name(Harness::Hermon)` returns `"Hermon"`. `Harness::config_name()` keeps returning `"oz"` to preserve `HarnessConfig::harness_type` values in persisted state.
 - **`HarnessKind::Hermon` → `HarnessKind::Hermon`** (internal dispatch enum).
-- **`OZ_*_ENV` constants → `WISH_*_ENV`** in `crates/wish_cli` (cosmetic; values were already `WISH_*`).
-- **`artifact_upload.rs`** now reads `WISH_RUN_ID` from the environment; legacy `OZ_RUN_ID` accepted as a fallback so pre-rename CI configs keep working.
+- **`HERMON_*_ENV` constants → `WISH_*_ENV`** in `crates/wish_cli` (cosmetic; values were already `WISH_*`).
+- **`artifact_upload.rs`** now reads `WISH_RUN_ID` from the environment; legacy `HERMON_RUN_ID` accepted as a fallback so pre-rename CI configs keep working.
 - **GraphQL-bound enums** `AgentHarness::Hermon` (cynic codegen) and `AIAgentHarness::Hermon` (Rust mirror) deliberately kept — renaming requires a coordinated schema change in `hermon-server`. Documented inline.
-- **Outbound URLs**: `https://warp.dev` → `https://www.hermon.ai` (2 sites), `https://oz.warp.dev/agents?new=true` → `https://www.hermon.ai/agents?new=true`.
+- **Outbound URLs**: `https://hermon.ai` → `https://www.hermon.ai` (2 sites), `https://oz.hermon.ai/agents?new=true` → `https://www.hermon.ai/agents?new=true`.
 
 Why it was safe to ship in this release: every Rust-side rename is paired with a serde/clap alias preserving the wire format. A 0.4.0 user with persisted state from a pre-rename build deserializes their stored `harness="oz"` cleanly into `Harness::Hermon` (via serde alias); a 0.3.0 binary still talking to a 0.4.0-authored config sees `harness="oz"` and deserializes into its own `Harness::Hermon`. No coordinated rollout required.
 
@@ -182,7 +182,7 @@ Why it was safe to ship in this release: every Rust-side rename is paired with a
 - User-visible strings: `"Fix with Hermon"` → `"Fix with Hermon"`; `"Introducing Hermon"` → `"Introducing Hermon"`; `"Command from Hermon"` → `"Command from Hermon"`; `"Hermon Web"` source label → `"Hermon Web"`; all install/uninstall toasts now say "Wish CLI/command"; the warpify SSH description and Codex modal copy updated to mention Hermon/Wish instead of Hermon; the `/continue-locally` slash-command error message updated.
 - Outbound URL `https://wish.hermon.ai/oz` (extended-cloud-agents link) → `https://wish.hermon.ai/hermon`.
 - Settings-search keyword strings extended with `hermon` and `wish agent` synonyms next to legacy `oz` / `warp agent` tokens so typing either still finds the right page.
-- GraphQL schema's `enum AgentHarness { OZ }` and `Experiment::OZ_MULTI_HARNESS_*` values retained, annotated inline with the cross-binary contract reasoning.
+- GraphQL schema's `enum AgentHarness { HERMON }` and `Experiment::HERMON_MULTI_HARNESS_*` values retained, annotated inline with the cross-binary contract reasoning.
 
 What remains: roughly 80 `Hermon`-mentioning code comments. Doc-only, not visible to users, swept opportunistically in 0.4.x patch releases.
 
@@ -217,7 +217,7 @@ For language coverage roadmap, see `PRODUCT.md` — short list: Kotlin, Swift, J
 
 - **No data migration required.** Settings, persisted projects, agent conversations all continue to work.
 - **Agent context injection is on in dogfood, off in stable.** To try it on stable: toggle `FeatureFlag::AgentLiveWorkspaceContext` via the runtime flags menu (`/MODEL` → manage features).
-- **Agent commit author has changed** from `Hermon <oz-agent@warp.dev>` to `Wish <wish-agent@hermon.ai>`. Historical commits unaffected; commits authored by the agent going forward use the new identity. Adjust any tooling that filters commits by author.
+- **Agent commit author has changed** from `Hermon <hermon-agent@hermon.ai>` to `Wish <wish-agent@hermon.ai>`. Historical commits unaffected; commits authored by the agent going forward use the new identity. Adjust any tooling that filters commits by author.
 - **`Cmd+W` / tab close** now works without a hover dance — the X is always visible.
 
 ---

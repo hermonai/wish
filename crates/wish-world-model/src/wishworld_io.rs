@@ -201,8 +201,7 @@ pub fn write_world_dir(
     shallow.assets.clear();
     shallow.provenance.clear();
     let manifest_path = dir.join("world.json");
-    let manifest_bytes =
-        serde_json::to_vec_pretty(&shallow).map_err(json_err(&manifest_path))?;
+    let manifest_bytes = serde_json::to_vec_pretty(&shallow).map_err(json_err(&manifest_path))?;
     fs::write(&manifest_path, manifest_bytes).map_err(io_err(&manifest_path))?;
 
     // entities/
@@ -321,8 +320,7 @@ fn sanitize(s: &str) -> String {
 mod tests {
     use super::*;
     use crate::mission::{
-        ArtifactKind, ArtifactValidation, Mission, MissionStep, MissionStatus,
-        VerifiableArtifact,
+        ArtifactKind, ArtifactValidation, Mission, MissionStatus, MissionStep, VerifiableArtifact,
     };
     use crate::semantic_id::SemanticId;
     use crate::world::{EntityKind, WishWorld, WorldEntity, WorldKind};

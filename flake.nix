@@ -236,7 +236,7 @@
 
             meta = {
               description = "Warp is an agentic development environment, born out of the terminal (Experimental Nix Support, Linux-only).";
-              homepage = "https://www.warp.dev";
+              homepage = "https://www.hermon.ai";
               license = lib.licenses.agpl3Only;
               mainProgram = "warp-terminal-experimental";
               platforms = systems;

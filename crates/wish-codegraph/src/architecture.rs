@@ -123,7 +123,13 @@ fn group_of(crate_name: &str) -> String {
 
 fn mermaid_id(s: &str) -> String {
     s.chars()
-        .map(|c| if c.is_alphanumeric() || c == '_' { c } else { '_' })
+        .map(|c| {
+            if c.is_alphanumeric() || c == '_' {
+                c
+            } else {
+                '_'
+            }
+        })
         .collect()
 }
 
@@ -220,7 +226,9 @@ mod tests {
         let cg = s.crates.get("wish-codegraph").unwrap();
         assert_eq!(cg.fn_count, 1);
         assert_eq!(cg.pub_fn_count, 1);
-        assert!(s.edges.contains(&("wish-codegraph".to_string(), "wish-canvas-core".to_string())));
+        assert!(s
+            .edges
+            .contains(&("wish-codegraph".to_string(), "wish-canvas-core".to_string())));
     }
 
     #[test]

@@ -203,7 +203,11 @@ mod tests {
             }
             fn realm_constraints(&self) -> Vec<Constraint> {
                 vec![Constraint::new(
-                    SemanticId::new(Realm::Custom("physics".into()), "law", "energy_conservation"),
+                    SemanticId::new(
+                        Realm::Custom("physics".into()),
+                        "law",
+                        "energy_conservation",
+                    ),
                     "physical_law",
                     ConstraintSeverity::Hard,
                     "energy is conserved in closed systems",

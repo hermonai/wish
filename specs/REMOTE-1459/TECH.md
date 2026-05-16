@@ -2,7 +2,7 @@
 
 ## Problem
 
-When a user opens a non-oz (claude, gemini) cloud agent conversation, the resulting UX depends on which entry point they used: some land in a shared-session viewer, some land in a plain transcript viewer, and none consistently enter the agent view. For 3p harnesses the block snapshot is a single block in the terminal model with no surrounding agent-view chrome (pane header, exit affordance, details panel), so opening a 3p conversation feels unlike every other agent interaction in Warp.
+When a user opens a non-hermon (claude, gemini) cloud agent conversation, the resulting UX depends on which entry point they used: some land in a shared-session viewer, some land in a plain transcript viewer, and none consistently enter the agent view. For 3p harnesses the block snapshot is a single block in the terminal model with no surrounding agent-view chrome (pane header, exit affordance, details panel), so opening a 3p conversation feels unlike every other agent interaction in Warp.
 
 Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1459/fix-agent-view-entry-with-3rd-party-harnesses
 
@@ -56,7 +56,7 @@ The `CloudConversationData::CLIAgent` branch maps `AIAgentHarness` → `wish_cli
 `maybe_enter_agent_view_for_shared_third_party_viewer` is called from the existing `HarnessSelected` arm of `handle_ambient_agent_event`. Guards:
 
 - `!agent_view_state.is_active()` — idempotency; `HarnessSelected` can fire more than once.
-- `is_third_party_harness()` — only 3p runs; oz is unchanged. This implicitly checks `FeatureFlag::AgentHarness`.
+- `is_third_party_harness()` — only 3p runs; hermon is unchanged. This implicitly checks `FeatureFlag::AgentHarness`.
 - `is_shared_ambient_agent_session()` — only the live shared-session context. Load-bearing: `HarnessSelected` also fires on the local spawner's harness selector dropdown, and there the REMOTE-1454 flow handles entry; the transcript viewer path calls the entry directly (§2) so we intentionally do not handle it here.
 
 After entering agent view, it retags non-startup blocks via `attach_non_startup_blocks_to_conversation` and retags pre-existing rich content (setup-commands summary, tombstone, …) via `set_rich_content_agent_view_conversation_id`. Retagging rich content is necessary because items with `agent_view_conversation_id == None` are hidden in fullscreen agent view by `RichContentItem::should_hide_for_agent_view_state`.
@@ -100,7 +100,7 @@ Manual:
 Unit:
 
 - `AgentViewEntryOrigin::ThirdPartyCloudAgent` does not trigger `AmbientAgentViewModel::enter_setup` / `enter_composing_from_setup` when passed to `enter_agent_view_internal`.
-- `maybe_enter_agent_view_for_shared_third_party_viewer` no-ops when agent view is already active, when the harness is oz, and when the context is not a shared ambient agent session.
+- `maybe_enter_agent_view_for_shared_third_party_viewer` no-ops when agent view is already active, when the harness is hermon, and when the context is not a shared ambient agent session.
 - `load_data_into_transcript_viewer` with a `CloudConversationData::CLIAgent` argument leaves the `AgentViewController` in an active state with the restored block still in the terminal block list.
 
 ## Risks and mitigations

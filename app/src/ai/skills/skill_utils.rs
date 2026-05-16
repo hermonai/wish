@@ -166,7 +166,7 @@ pub fn icon_override_for_skill_name(name: &str) -> Option<Icon> {
 
 pub fn skill_path_from_file_path(file_path: &Path) -> Option<PathBuf> {
     for definition in SKILL_PROVIDER_DEFINITIONS.iter() {
-        let home_skill_dirs = if definition.provider == SkillProvider::Warp {
+        let home_skill_dirs = if definition.provider == SkillProvider::Wish {
             warp_managed_skill_dirs()
         } else {
             home_skills_path(definition.provider).into_iter().collect()

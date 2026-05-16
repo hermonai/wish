@@ -374,7 +374,7 @@ impl platform::Delegate for AppDelegate {
     fn show_native_platform_modal(&self, id: ModalId, modal: AlertDialog) {
         let alert = create_native_platform_modal(modal);
         unsafe {
-            let _: () = msg_send![app::get_warp_app(), showModal: alert modalId: id];
+            let _: () = msg_send![app::get_wish_app(), showModal: alert modalId: id];
         }
     }
 

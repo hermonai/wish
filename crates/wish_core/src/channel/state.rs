@@ -121,10 +121,7 @@ impl ChannelState {
         let Ok(url) = Url::parse(Self::server_root_url().as_ref()) else {
             return false;
         };
-        matches!(
-            url.host_str(),
-            Some("staging.warp.dev") | Some("staging.hermon.ai")
-        )
+        matches!(url.host_str(), Some("staging.hermon.ai"))
     }
 
     /// Returns the canonical identifier for the application.

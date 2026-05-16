@@ -56,7 +56,7 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
     _WARP_GENERATOR_PIDS_STARTED_TMP_FILE=""
     _WARP_GENERATOR_PIDS_COMPLETED_TMP_FILE=""
     # Make sure we delete generator PID files when the shell exits, if they exist.
-    __warp_generator_pid_file_cleanup() {
+    __wish_generator_pid_file_cleanup() {
       if [[ -f $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE ]]; then
         command -p rm $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE
       fi
@@ -64,7 +64,7 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
         command -p rm $_WARP_GENERATOR_PIDS_COMPLETED_TMP_FILE
       fi
     }
-    trap __warp_generator_pid_file_cleanup EXIT
+    trap __wish_generator_pid_file_cleanup EXIT
 
     # Writes a hex-encoded JSON message to the pty.
     warp_send_json_message () {
@@ -98,7 +98,7 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
     # Installed after warp_send_json_message is defined so the handler is
     # callable the moment the trap is registered.
     if [[ "$WARP_IS_SSH" == "1" ]]; then
-        __warp_emit_exit_shell() {
+        __wish_emit_exit_shell() {
             if [[ -n "$WARP_SESSION_ID" ]]; then
                 warp_send_json_message \
                     "{\"hook\": \"ExitShell\", \"value\": {\"session_id\": $WARP_SESSION_ID}}"
@@ -107,11 +107,11 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
         # Bash allows only one handler per signal, so compose with the
         # already-installed generator cleanup. Cover both normal exit (exit,
         # logout, Ctrl-D) and SIGHUP (connection drop).
-        __warp_on_exit() {
-            __warp_emit_exit_shell
-            __warp_generator_pid_file_cleanup
+        __wish_on_exit() {
+            __wish_emit_exit_shell
+            __wish_generator_pid_file_cleanup
         }
-        trap __warp_on_exit EXIT HUP
+        trap __wish_on_exit EXIT HUP
     fi
 
     warp_maybe_send_reset_grid_osc () {
@@ -179,7 +179,7 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
     # where command_id is the ID given as the first argument to this function,
     # exit_code is the exit code of the executed command, and command_output is
     # the output itself.
-    _warp_execute_command() {
+    _wish_execute_command() {
       local command_id=$1
       # This is shorthand to slice the 2nd-nth arguments of this function (i.e.
       # the command array) into its own array. The first argument is the
@@ -204,20 +204,20 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
     # Runs the given command in the background, records its PID in
     # _WARP_GENERATOR_PIDS_STARTED_TMP_FILE, and adds its PID from the file when
     # the job is completed.
-    _warp_run_generator_command_internal() {
+    _wish_run_generator_command_internal() {
       # $@ must be double-quoted to prevent word-splitting, which would cause the given command to
       # be split into a bash list on $IFS chars (spaces, tabs, newlines), which could invalidate
       # the syntactical correctness of the command.
-      _warp_execute_command "$@" &
+      _wish_execute_command "$@" &
       # $! contains the PID of the most recently backgrounded command.
       local pid=$!
       echo $pid >> $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE
       wait $pid 2> /dev/null
 
-      # If the exit code of the backgrounded _warp_execute_command process is non-zero,
+      # If the exit code of the backgrounded _wish_execute_command process is non-zero,
       # the call to send the generator output failed (most likely because this is being
       # executed in an old bash version that doesn't support some syntax in
-      # _warp_execute_command function itself). In this case, send empty output with
+      # _wish_execute_command function itself). In this case, send empty output with
       # exit code 1 to indicate generator execution failed.
       if [[ $? -ne 0 ]]; then
           warp_send_generator_output_osc "$1;;1"
@@ -264,7 +264,7 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
       # $@ must be double-quoted to prevent word-splitting, which would cause the given command to
       # be split into a bash list on $IFS chars (spaces, tabs, newlines), which could invalidate
       # the syntactical correctness of the command.
-      (_warp_run_generator_command_internal "$@" &)
+      (_wish_run_generator_command_internal "$@" &)
     }
 
 
@@ -541,7 +541,7 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
         # We remove any existing bindkey for ESC-P ("w" for Wish prompt) and register the bindkey
         # to our custom function. Note that this specific keybinding is arbitrary.
         bind -r '"\ew"'
-        bind -x '"\ew":"warp_change_prompt_modes_to_warp_prompt"'
+        bind -x '"\ew":"warp_change_prompt_modes_to_wish_prompt"'
 
         local escaped_pwd
         if [ "$WARP_IN_MSYS2" = false ]; then
@@ -879,7 +879,7 @@ if [ -z "$WARP_BOOTSTRAPPED" ]; then
     # warp_update_prompt_vars to refresh the prompt (note the PS1 will be unset in this logic).
     # Note that we use an "empty block" workaround to achieve instant prompt switching in bash,
     # since there is no built-in methods to repaint the prompt, unlike Zsh/fish.
-    function warp_change_prompt_modes_to_warp_prompt() {
+    function warp_change_prompt_modes_to_wish_prompt() {
       WARP_HONOR_PS1="0"
 
       warp_update_prompt_vars

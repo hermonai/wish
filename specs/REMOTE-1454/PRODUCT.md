@@ -1,9 +1,9 @@
-# REMOTE-1454: Cloud Mode setup UI for non-oz harnesses
+# REMOTE-1454: Cloud Mode setup UI for non-hermon harnesses
 ## Summary
-`CloudModeSetupV2` currently works end-to-end only for the Hermon harness. For non-oz harnesses (claude, gemini, any future third-party harness) the same UI surfaces, but because the viewer has no Hermon `AppendedExchange` to transition out of the setup phase, the harness command itself (e.g. `claude --session-id … < /tmp/hermon_prompt`) is permanently classified as an environment setup command.
-This spec defines the Cloud Mode setup UX for non-oz harnesses so the experience feels consistent with Hermon: the user's prompt is clearly preserved as a queued user query, real environment startup commands are grouped under a collapsible setup summary, and the harness CLI itself renders as a normal long-running CLI-agent session.
+`CloudModeSetupV2` currently works end-to-end only for the Hermon harness. For non-hermon harnesses (claude, gemini, any future third-party harness) the same UI surfaces, but because the viewer has no Hermon `AppendedExchange` to transition out of the setup phase, the harness command itself (e.g. `claude --session-id … < /tmp/hermon_prompt`) is permanently classified as an environment setup command.
+This spec defines the Cloud Mode setup UX for non-hermon harnesses so the experience feels consistent with Hermon: the user's prompt is clearly preserved as a queued user query, real environment startup commands are grouped under a collapsible setup summary, and the harness CLI itself renders as a normal long-running CLI-agent session.
 ## Problem
-For non-hermon cloud runs today (with `CloudModeSetupV2` enabled), the run is dispatched from Warp and the remote sandbox runs `oz agent run --harness=claude …`, which in turn launches `claude …` as a shell command in the shared session. The viewer sees:
+For non-hermon cloud runs today (with `CloudModeSetupV2` enabled), the run is dispatched from Warp and the remote sandbox runs `hermon agent run --harness=claude …`, which in turn launches `claude …` as a shell command in the shared session. The viewer sees:
 - The user's prompt shown at the top of the agent conversation as `CloudModeInitialUserQuery` (like an Hermon query).
 - Environment setup commands hidden behind the setup-commands summary ("Running setup commands…").
 - The `claude …` block also hidden behind the setup-commands summary, because `is_executing_hermon_environment_startup_commands` only flips off when an Hermon exchange is appended and no such exchange arrives for claude-code runs.
@@ -26,13 +26,13 @@ Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1454/fix-cloud-mode-
 ## Gating
 - Applies when all of the following are true:
   - `CloudModeSetupV2` is enabled.
-  - `AgentHarness` is enabled (this is the multi-harness feature flag that gates third-party harness selection in the cloud-mode harness selector, the harness flag on `oz agent run`, and the CLI-agent conversation restoration paths).
+  - `AgentHarness` is enabled (this is the multi-harness feature flag that gates third-party harness selection in the cloud-mode harness selector, the harness flag on `hermon agent run`, and the CLI-agent conversation restoration paths).
   - The run's selected harness is not Hermon (today: `claude`, `gemini`; applies to any future third-party harness).
 - For Hermon runs the behavior from REMOTE-172 is unchanged. When `AgentHarness` is disabled, third-party harnesses aren't selectable in the first place, so this path cannot be reached.
 - The viewer resolves the run's harness from `AmbientAgentTask.agent_config_snapshot.harness` (see `app/src/ai/ambient_agents/task.rs`), and/or from the locally selected harness in `AmbientAgentViewModel` for the spawner.
 ## User experience
 ### Entry and initial prompt
-- When the user starts a non-oz Cloud Mode run with an initial prompt, the cloud agent view does NOT insert a top-of-conversation `CloudModeInitialUserQuery` block.
+- When the user starts a non-hermon Cloud Mode run with an initial prompt, the cloud agent view does NOT insert a top-of-conversation `CloudModeInitialUserQuery` block.
 - Instead, the view inserts a pending/queued user-query indicator in the conversation, reusing the existing queued prompt visual treatment (`PendingUserQueryBlock` style), showing:
   - The user's avatar / display name.
   - The prompt text.
@@ -44,7 +44,7 @@ Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1454/fix-cloud-mode-
 - Startup progress messages ("Connecting to Host", "Creating Environment", "Starting Environment", "Setting up environment") behave the same as in Hermon setup-v2.
 - Environment startup commands executed before the harness command is launched appear grouped under the collapsible setup-commands summary, with the same running/success/failure affordances and expand/collapse behavior described in REMOTE-172.
 - The summary row copy stays "Running setup commands…" while still before the harness command runs.
-- For non-oz runs, the setup-commands summary row and per-command rows use the same horizontal padding as a regular terminal command block, so that when the harness CLI block takes over there is no horizontal shift between the setup UI and the harness's own terminal content. Hermon runs continue to use the agent-output indent from REMOTE-172 (unchanged).
+- For non-hermon runs, the setup-commands summary row and per-command rows use the same horizontal padding as a regular terminal command block, so that when the harness CLI block takes over there is no horizontal shift between the setup UI and the harness's own terminal content. Hermon runs continue to use the agent-output indent from REMOTE-172 (unchanged).
 ### Harness-start transition
 - The viewer considers the harness command "started" when a block begins executing whose command is detected as the harness's CLI, i.e. `detect_cli_agent_from_model` returns a `CLIAgent` variant matching the run's harness (e.g. `CLIAgent::Claude` for the `claude` harness, `CLIAgent::Gemini` for `gemini`, and analogous for future harnesses).
 - On that transition:
@@ -68,15 +68,15 @@ Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1454/fix-cloud-mode-
 - The harness command block renders as a normal CLI-agent session block.
 - Conversation-ended tombstones and the parent-terminal entry block behavior are unchanged from REMOTE-172.
 ### Parent terminal entry block
-- Same as REMOTE-172. Copy and iconography for running/failed/auth/cancelled states remain meaningful for non-oz runs (e.g. "Agent is working on task" applies while the harness CLI is running).
+- Same as REMOTE-172. Copy and iconography for running/failed/auth/cancelled states remain meaningful for non-hermon runs (e.g. "Agent is working on task" applies while the harness CLI is running).
 ## Edge cases
 1. **No environment startup commands before harness**: the pending user-query indicator still appears, no setup-commands summary is inserted, and the indicator is removed when the harness block starts.
 2. **Setup command fails before harness starts**: the failed command's row shows a failure icon and remains inspectable; the pending user-query indicator stays visible until the run transitions to a terminal state, at which point it is removed along with the fallback error UI.
 3. **User cancels before the harness block starts**: pending indicator is removed, existing cancelled UI is shown.
 4. **GitHub auth required before the harness block starts**: pending indicator is removed, existing auth-required UI is shown.
 5. **Harness command is detected by `CLIAgent::detect` but is not the run's configured harness** (rare / misconfiguration): for safety, the transition should still fire on the first detected third-party CLI-agent block so we never get stuck in "queued" state forever.
-6. **Run is spawned with a non-oz harness but no harness metadata is visible to the client yet** (e.g. `AgentConfigSnapshot.harness` hasn't been fetched): the spawner knows its own selected harness via `AmbientAgentViewModel`; the initial queued indicator uses that. For viewers that don't have harness metadata, they should behave like an Hermon viewer until the harness becomes known — acceptable because viewers don't render the pending indicator anyway.
-7. **Historical replay of a non-oz run**: no pending indicator, setup commands already collapsed, harness block shows as a CLI-agent session.
+6. **Run is spawned with a non-hermon harness but no harness metadata is visible to the client yet** (e.g. `AgentConfigSnapshot.harness` hasn't been fetched): the spawner knows its own selected harness via `AmbientAgentViewModel`; the initial queued indicator uses that. For viewers that don't have harness metadata, they should behave like an Hermon viewer until the harness becomes known — acceptable because viewers don't render the pending indicator anyway.
+7. **Historical replay of a non-hermon run**: no pending indicator, setup commands already collapsed, harness block shows as a CLI-agent session.
 8. **Nested Cloud Mode sessions / empty composing sessions / sibling sessions**: same behavior as REMOTE-172 (this spec layers on top of those flows without changing them).
 ## Success criteria
 - Starting a non-hermon cloud run immediately renders a queued user-query indicator styled like the existing pending prompt UI — not a top-of-conversation user query block.
@@ -95,5 +95,5 @@ Reference issue: https://linear.app/warpdotdev/issue/REMOTE-1454/fix-cloud-mode-
 - Trigger GitHub-auth-required for a claude-code cloud run: confirm the queued indicator is removed and the auth UI is shown.
 - Join an existing claude-code shared session while the harness is running: confirm no queued indicator, setup summary renders collapsed with prior command rows, and the claude TUI is the active CLI-agent block.
 - Replay a completed claude-code conversation: confirm no queued indicator, setup summary renders from persisted data, and the conversation displays the claude transcript.
-- Re-run the first scenario with `CloudModeSetupV2` disabled and confirm legacy behavior is restored for non-oz harnesses.
+- Re-run the first scenario with `CloudModeSetupV2` disabled and confirm legacy behavior is restored for non-hermon harnesses.
 - Re-run all Hermon-harness validation from REMOTE-172 and confirm no regression.

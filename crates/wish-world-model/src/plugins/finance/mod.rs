@@ -74,8 +74,8 @@ impl DomainPlugin for FinancePlugin {
     /// downstream `vibe-finance` project layers per-account /
     /// per-portfolio constraints on top via the constraint builders.
     fn realm_constraints(&self) -> Vec<Constraint> {
-        use constraints::*;
         use crate::semantic_id::SemanticId;
+        use constraints::*;
         let system_account = SemanticId::new(Realm::Finance, "account", "system");
         let global_asset = SemanticId::new(Realm::Finance, "asset", "any");
         vec![
@@ -141,7 +141,13 @@ mod tests {
     #[test]
     fn portfolio_trade_pnl_var_end_to_end() {
         // 1. Alice opens a margin account funded with $100k.
-        let acc = account("alice_margin", &alice(), Currency::usd(), 100_000.0, "margin");
+        let acc = account(
+            "alice_margin",
+            &alice(),
+            Currency::usd(),
+            100_000.0,
+            "margin",
+        );
 
         // 2. Define the asset Alice is trading.
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
@@ -153,7 +159,9 @@ mod tests {
             &btc.id,
             Side::Buy,
             0.5,
-            OrderKind::Limit { price: Money::usd(60_000.0) },
+            OrderKind::Limit {
+                price: Money::usd(60_000.0),
+            },
         );
         // The matching sell side (some other account on the exchange).
         let sell_order = order(
@@ -162,11 +170,20 @@ mod tests {
             &btc.id,
             Side::Sell,
             0.5,
-            OrderKind::Limit { price: Money::usd(60_000.0) },
+            OrderKind::Limit {
+                price: Money::usd(60_000.0),
+            },
         );
 
         // 4. The exchange matches and produces a Trade event.
-        let trade_event = trade("trade_1", &buy_order.id, &sell_order.id, 0.5, Money::usd(60_000.0), 1);
+        let trade_event = trade(
+            "trade_1",
+            &buy_order.id,
+            &sell_order.id,
+            0.5,
+            Money::usd(60_000.0),
+            1,
+        );
 
         // 5. The trade settles next day (T+1).
         let settle_event = settlement("set_1", &trade_event, SettlementState::Settled, 2);
@@ -189,14 +206,23 @@ mod tests {
         // 8. Compute parametric VaR at 95%, 4% daily vol.
         let marks: HashMap<String, f64> = [("BTC".to_string(), 70_000.0)].into_iter().collect();
         let vols: HashMap<String, f64> = [("BTC".to_string(), 0.04)].into_iter().collect();
-        let var_amount = parametric_var_1d(&[position_obj.clone()], &marks, &vols, 0.95, Currency::usd());
+        let var_amount = parametric_var_1d(
+            &[position_obj.clone()],
+            &marks,
+            &vols,
+            0.95,
+            Currency::usd(),
+        );
         // 1.645 * 0.5 * 70000 * 0.04 ≈ 2303.
         assert!((var_amount.amount - 2303.0).abs() < 20.0);
 
         // 9. Check against the account's $1M VaR limit — pass.
         let limit_constraint = var_limit(&acc.id, Money::usd(1_000_000.0), 0.95);
         assert!(var_amount.amount < 1_000_000.0);
-        assert_eq!(limit_constraint.severity, ConstraintSeverity::RequiresApproval);
+        assert_eq!(
+            limit_constraint.severity,
+            ConstraintSeverity::RequiresApproval
+        );
 
         // 10. Wrap as URE primitives — proves the whole flow is
         //     just `Vec<Primitive>` under the hood.
@@ -238,11 +264,7 @@ mod tests {
         // counterparties (gs, citadel).
         assert_eq!(default.causes, vec![leh.id.clone()]);
         // Edge enumeration confirms the exposure chain is graph-traversable.
-        let from_leh: Vec<_> = cp_graph
-            .edges
-            .iter()
-            .filter(|e| e.from == leh.id)
-            .collect();
+        let from_leh: Vec<_> = cp_graph.edges.iter().filter(|e| e.from == leh.id).collect();
         assert_eq!(from_leh.len(), 2);
         let total_at_risk: f32 = from_leh.iter().map(|e| e.weight.unwrap_or(0.0)).sum();
         assert!((total_at_risk - 150_000_000.0).abs() < 1.0);
@@ -252,9 +274,22 @@ mod tests {
     /// breach margin → margin call event.
     #[test]
     fn market_shock_triggers_margin_call() {
-        let acc = account("alice_margin", &alice(), Currency::usd(), 100_000.0, "margin");
+        let acc = account(
+            "alice_margin",
+            &alice(),
+            Currency::usd(),
+            100_000.0,
+            "margin",
+        );
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let pos = position("p", &acc.id, &btc.id, PositionSide::Long, 5.0, Money::usd(70_000.0));
+        let pos = position(
+            "p",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            5.0,
+            Money::usd(70_000.0),
+        );
         // Simulate a -10% crash.
         let crash = market_event("crash", "circuit_breaker", -0.10, 500);
         // P&L at marked-down 63k → 5 * (63k - 70k) = -35k. Equity

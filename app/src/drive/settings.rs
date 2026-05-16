@@ -25,7 +25,7 @@ define_settings_group!(WarpDriveSettings, settings: [
         private: true,
     },
     // Controls whether Wish Drive appears in the tools panel, command palette, and command search.
-    enable_warp_drive: EnableWarpDrive {
+    enable_wish_drive: EnableWarpDrive {
         type: bool,
         default: true,
         supported_platforms: SupportedPlatforms::ALL,
@@ -40,12 +40,12 @@ impl WarpDriveSettings {
     /// Returns whether Wish Drive should be considered enabled.
     /// Returns `false` when the user is anonymous or fully logged out,
     /// regardless of the user setting.
-    pub fn is_warp_drive_enabled(app: &wishui::AppContext) -> bool {
+    pub fn is_wish_drive_enabled(app: &wishui::AppContext) -> bool {
         use wishui::SingletonEntity as _;
         let is_anonymous_or_logged_out = FeatureFlag::SkipFirebaseAnonymousUser.is_enabled()
             && crate::auth::AuthStateProvider::as_ref(app)
                 .get()
                 .is_anonymous_or_logged_out();
-        *Self::as_ref(app).enable_warp_drive && !is_anonymous_or_logged_out
+        *Self::as_ref(app).enable_wish_drive && !is_anonymous_or_logged_out
     }
 }

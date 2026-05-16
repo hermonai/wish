@@ -14,10 +14,10 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: warpdotdev/oz-for-oss/.github/workflows/update-pr-review.yml@main
+    uses: warpdotdev/hermon-for-oss/.github/workflows/update-pr-review.yml@main
     with:
       lookback_days: ${{ github.event.inputs.lookback_days || '7' }}
     secrets:
-      OZ_MGMT_GHA_APP_ID: ${{ secrets.OZ_MGMT_GHA_APP_ID }}
-      OZ_MGMT_GHA_PRIVATE_KEY: ${{ secrets.OZ_MGMT_GHA_PRIVATE_KEY }}
+      HERMON_MGMT_GHA_APP_ID: ${{ secrets.HERMON_MGMT_GHA_APP_ID }}
+      HERMON_MGMT_GHA_PRIVATE_KEY: ${{ secrets.HERMON_MGMT_GHA_PRIVATE_KEY }}
       OSS_WARP_API_KEY: ${{ secrets.OSS_WARP_API_KEY }}

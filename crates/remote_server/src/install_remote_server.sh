@@ -2,7 +2,7 @@
 # Installs the Warp remote server binary on a remote host.
 #
 # Placeholders (substituted at runtime by setup.rs):
-#   {download_base_url}         — e.g. https://app.warp.dev/download/cli
+#   {download_base_url}         — e.g. https://app.hermon.ai/download/cli
 #   {channel}                   — stable | preview | dev
 #   {install_dir}               — e.g. ~/.warp/remote-server
 #   {binary_name}               — e.g. hermon | hermon-dev | hermon-preview

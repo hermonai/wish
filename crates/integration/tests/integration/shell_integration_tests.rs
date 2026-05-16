@@ -43,11 +43,11 @@ integration_tests! {
     // Tests zsh-specific behavior.
     test_auto_title,
     // Tests zsh-specific behavior.
-    test_warp_auto_title_disabled,
+    test_wish_auto_title_disabled,
     // Tests bash-specific behavior.
-    test_warp_honors_user_title_bash,
+    test_wish_honors_user_title_bash,
     // Tests zsh-specific behavior.
-    test_warp_honors_user_title_zsh,
+    test_wish_honors_user_title_zsh,
     // Tests shell-specific "autocd" behavior.
     test_completions_with_autocd,
     // Tests bootstrap reports completable executables.

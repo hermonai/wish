@@ -21,7 +21,7 @@
 //!
 //! Falls back to a **starter empty world** if no template matches.
 
-use crate::builders::{ShanHaiBuild, build_shanhai_harbor};
+use crate::builders::{build_shanhai_harbor, ShanHaiBuild};
 use wish_provenance::WorldLine;
 use wish_world_model::{
     Actor, Component, EntityKind, PatchOp, Realm, SemanticId, Transform, WishWorld, WorldAgent,
@@ -51,7 +51,14 @@ pub fn plan_world(intent: &str) -> WorldPlan {
     let has_any = |words: &[&str]| words.iter().any(|w| lower.contains(w));
 
     if has_any(&[
-        "shanhai", "shan hai", "harbor", "merchant", "stablecoin", "credit", "trade", "risk",
+        "shanhai",
+        "shan hai",
+        "harbor",
+        "merchant",
+        "stablecoin",
+        "credit",
+        "trade",
+        "risk",
     ]) {
         return shanhai(intent);
     }
@@ -108,7 +115,8 @@ fn shanhai(intent: &str) -> WorldPlan {
     // surface the WorldPatches from the worldline.
     let mut world = WishWorld::new("Shan Hai Fintech Harbor", WorldKind::EducationWorld);
     world.intent = if intent.trim().is_empty() {
-        "Ancient Chinese harbor city where AI merchants teach stablecoin, credit, trade, and risk.".into()
+        "Ancient Chinese harbor city where AI merchants teach stablecoin, credit, trade, and risk."
+            .into()
     } else {
         intent.to_string()
     };
@@ -118,8 +126,7 @@ fn shanhai(intent: &str) -> WorldPlan {
         .unwrap_or(0);
     let tmp = std::env::temp_dir().join(format!("wish-intent-shanhai-{nanos}"));
     let _ = std::fs::create_dir_all(&tmp);
-    let mut wl = WorldLine::open_in_world_dir(&tmp)
-        .expect("open temporary worldline");
+    let mut wl = WorldLine::open_in_world_dir(&tmp).expect("open temporary worldline");
     let _: ShanHaiBuild = build_shanhai_harbor(&mut world, &mut wl).expect("plan shanhai");
     let patches: Vec<WorldPatch> = wl.iter().map(|ev| ev.patch.clone()).collect();
     // Reset the world so the caller can re-apply patches against a
@@ -142,9 +149,15 @@ fn mythic_temple(intent: &str) -> WorldPlan {
     } else {
         intent.to_string()
     };
-    let agent = Actor::Agent { agent_id: "wish-agent-world-architect".into() };
+    let agent = Actor::Agent {
+        agent_id: "wish-agent-world-architect".into(),
+    };
     let architect = WorldAgent {
-        id: SemanticId::new(Realm::Agent, "world_architect", "wish-agent-world-architect"),
+        id: SemanticId::new(
+            Realm::Agent,
+            "world_architect",
+            "wish-agent-world-architect",
+        ),
         display_name: "World Architect".into(),
         role: "world_architect".into(),
         tools: vec![
@@ -233,13 +246,20 @@ fn mythic_temple(intent: &str) -> WorldPlan {
 fn service_topology(intent: &str) -> WorldPlan {
     let mut world = WishWorld::new("Service Topology", WorldKind::LiveService);
     world.intent = if intent.trim().is_empty() {
-        "A live-service topology: gateway → API → workers → datastore, with an observer agent.".into()
+        "A live-service topology: gateway → API → workers → datastore, with an observer agent."
+            .into()
     } else {
         intent.to_string()
     };
-    let agent = Actor::Agent { agent_id: "wish-agent-world-architect".into() };
+    let agent = Actor::Agent {
+        agent_id: "wish-agent-world-architect".into(),
+    };
     let architect = WorldAgent {
-        id: SemanticId::new(Realm::Agent, "world_architect", "wish-agent-world-architect"),
+        id: SemanticId::new(
+            Realm::Agent,
+            "world_architect",
+            "wish-agent-world-architect",
+        ),
         display_name: "Topology Architect".into(),
         role: "world_architect".into(),
         tools: vec!["world.patch".into(), "service.observe".into()],
@@ -290,12 +310,18 @@ fn education_world(intent: &str) -> WorldPlan {
     } else {
         intent.to_string()
     };
-    let agent = Actor::Agent { agent_id: "wish-agent-world-architect".into() };
+    let agent = Actor::Agent {
+        agent_id: "wish-agent-world-architect".into(),
+    };
     let teacher = WorldAgent {
         id: SemanticId::new(Realm::Agent, "teacher", "teacher_aurora"),
         display_name: "Teacher Aurora".into(),
         role: "teacher".into(),
-        tools: vec!["world.patch".into(), "lesson.generate".into(), "assessment.score".into()],
+        tools: vec![
+            "world.patch".into(),
+            "lesson.generate".into(),
+            "assessment.score".into(),
+        ],
         runtime_target: Some("hermon".into()),
     };
     let patches = vec![
@@ -380,7 +406,9 @@ fn starter(intent: &str) -> WorldPlan {
         WorldPatch::new(
             agent,
             "Set intent.",
-            vec![PatchOp::SetIntent { intent: world.intent.clone() }],
+            vec![PatchOp::SetIntent {
+                intent: world.intent.clone(),
+            }],
         ),
     ];
     WorldPlan {
@@ -398,10 +426,20 @@ fn sacred_temple(stable_key: &str, display_name: &str, t: [f32; 3]) -> WorldEnti
         kind: EntityKind::SacredArchitecture,
         display_name: display_name.into(),
         components: vec![
-            Component::Transform(Transform { translation: t, rotation: [0.0, 0.0, 0.0, 1.0], scale: [1.0, 1.0, 1.0] }),
-            Component::MaterialSet { reference: "assets/textures/sacred_stone/".into() },
-            Component::LightingProfile { preset: "ancient_sacred".into() },
-            Component::LoreAnchor { reference: format!("memory/lore.md#{stable_key}") },
+            Component::Transform(Transform {
+                translation: t,
+                rotation: [0.0, 0.0, 0.0, 1.0],
+                scale: [1.0, 1.0, 1.0],
+            }),
+            Component::MaterialSet {
+                reference: "assets/textures/sacred_stone/".into(),
+            },
+            Component::LightingProfile {
+                preset: "ancient_sacred".into(),
+            },
+            Component::LoreAnchor {
+                reference: format!("memory/lore.md#{stable_key}"),
+            },
         ],
         source_ref: None,
         agent_ref: None,
@@ -417,8 +455,14 @@ fn prop_entity(stable_key: &str, display_name: &str, t: [f32; 3]) -> WorldEntity
         kind: EntityKind::Asset,
         display_name: display_name.into(),
         components: vec![
-            Component::Transform(Transform { translation: t, rotation: [0.0, 0.0, 0.0, 1.0], scale: [1.0, 1.0, 1.0] }),
-            Component::SoundscapeAnchor { reference: "assets/audio/ritual_bell.ogg".into() },
+            Component::Transform(Transform {
+                translation: t,
+                rotation: [0.0, 0.0, 0.0, 1.0],
+                scale: [1.0, 1.0, 1.0],
+            }),
+            Component::SoundscapeAnchor {
+                reference: "assets/audio/ritual_bell.ogg".into(),
+            },
         ],
         source_ref: None,
         agent_ref: None,
@@ -428,21 +472,26 @@ fn prop_entity(stable_key: &str, display_name: &str, t: [f32; 3]) -> WorldEntity
     }
 }
 
-fn npc_entity(
-    stable_key: &str,
-    display_name: &str,
-    profile: &str,
-    t: [f32; 3],
-) -> WorldEntity {
+fn npc_entity(stable_key: &str, display_name: &str, profile: &str, t: [f32; 3]) -> WorldEntity {
     WorldEntity {
         id: SemanticId::new(Realm::Npc, "npc", stable_key),
         kind: EntityKind::Npc,
         display_name: display_name.into(),
         components: vec![
-            Component::Transform(Transform { translation: t, rotation: [0.0, 0.0, 0.0, 1.0], scale: [1.0, 1.0, 1.0] }),
-            Component::BehaviorScript { reference: format!("scripts/behaviors/{stable_key}.rs") },
-            Component::EconomicActor { profile: profile.into() },
-            Component::LoreAnchor { reference: format!("memory/lore.md#{stable_key}") },
+            Component::Transform(Transform {
+                translation: t,
+                rotation: [0.0, 0.0, 0.0, 1.0],
+                scale: [1.0, 1.0, 1.0],
+            }),
+            Component::BehaviorScript {
+                reference: format!("scripts/behaviors/{stable_key}.rs"),
+            },
+            Component::EconomicActor {
+                profile: profile.into(),
+            },
+            Component::LoreAnchor {
+                reference: format!("memory/lore.md#{stable_key}"),
+            },
         ],
         source_ref: None,
         agent_ref: None,

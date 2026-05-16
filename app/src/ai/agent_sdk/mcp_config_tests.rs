@@ -15,7 +15,7 @@ fn empty_specs_returns_none() {
 }
 
 #[test]
-fn uuid_spec_is_coerced_to_warp_id() {
+fn uuid_spec_is_coerced_to_wish_id() {
     let uuid = uuid::Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000").unwrap();
     let servers = build(vec![MCPSpec::Uuid(uuid)]);
 

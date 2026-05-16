@@ -23,7 +23,7 @@ use crate::util::openable_file_type::{is_supported_image_file, resolve_file_targ
 use crate::{
     drive::OpenWarpDriveObjectArgs,
     terminal::model::session::Session,
-    uri::parse_url_paths::{get_item_data_from_warp_link, WarpWebLink},
+    uri::parse_url_paths::{get_item_data_from_wish_link, WarpWebLink},
     workspace::ActiveSession,
 };
 
@@ -265,9 +265,9 @@ impl NotebookLinks {
     pub fn open(&self, link: LinkTarget, ctx: &mut ModelContext<Self>) {
         match link {
             LinkTarget::Url(url) => {
-                if let Some(WarpWebLink::DriveObject(args)) = get_item_data_from_warp_link(&url) {
+                if let Some(WarpWebLink::DriveObject(args)) = get_item_data_from_wish_link(&url) {
                     return ctx.emit(LinkEvent::OpenWarpDriveLink {
-                        open_warp_drive_args: *args,
+                        open_wish_drive_args: *args,
                     });
                 }
 
@@ -410,7 +410,7 @@ pub enum LinkEvent {
         session: Arc<Session>,
     },
     OpenWarpDriveLink {
-        open_warp_drive_args: OpenWarpDriveObjectArgs,
+        open_wish_drive_args: OpenWarpDriveObjectArgs,
     },
     /// This event tells the parent pane group to open a new terminal session in the given
     /// directory.

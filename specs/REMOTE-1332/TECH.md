@@ -18,10 +18,10 @@ Both features span the agent SDK driver, the server's public API, GCS storage, a
 - `app/src/server/server_api/harness_support.rs` — `SnapshotUploadRequest`, `SnapshotUploadResponse` (a `Vec<UploadTarget>` aligned by index with the request's `files`), `get_snapshot_upload_targets()`, `upload_to_target()` helper.
 
 ### Declarations-file generation and local-dev plumbing
-- `../warp-agent-docker/snapshot-declarations.sh` (new) — bash generator invoked at the start of the snapshot step. Walks `$PWD` (the Rust driver sets this via `Command::current_dir` to the agent's `working_dir`) or colon-separated `OZ_SNAPSHOT_SCAN_ROOTS`, finds `.git` directories with `find -type d -name .git -prune`, and appends JSONL `{\"version\":1,\"kind\":\"repo\",\"path\":\"<abs-path>\"}` lines to `$OZ_SNAPSHOT_DECLARATIONS_FILE`. The file path env var is required so standalone invocations cannot clobber a shared fallback. The file is never truncated; dedup is seeded from matching JSONL repo lines already emitted by the script so repeated invocations within a run stay additive.
-- `../warp-agent-docker/entrypoint.sh:13` — exports `AGENT_INSTALL_ROOT=...` for existing installation-root consumers and `OZ_SNAPSHOT_DECLARATIONS_SCRIPT=$AGENT_INSTALL_ROOT/snapshot-declarations.sh` so child processes (including the warp agent binary) can invoke the helper by explicit path.
+- `../warp-agent-docker/snapshot-declarations.sh` (new) — bash generator invoked at the start of the snapshot step. Walks `$PWD` (the Rust driver sets this via `Command::current_dir` to the agent's `working_dir`) or colon-separated `HERMON_SNAPSHOT_SCAN_ROOTS`, finds `.git` directories with `find -type d -name .git -prune`, and appends JSONL `{\"version\":1,\"kind\":\"repo\",\"path\":\"<abs-path>\"}` lines to `$HERMON_SNAPSHOT_DECLARATIONS_FILE`. The file path env var is required so standalone invocations cannot clobber a shared fallback. The file is never truncated; dedup is seeded from matching JSONL repo lines already emitted by the script so repeated invocations within a run stay additive.
+- `../warp-agent-docker/entrypoint.sh:13` — exports `AGENT_INSTALL_ROOT=...` for existing installation-root consumers and `HERMON_SNAPSHOT_DECLARATIONS_SCRIPT=$AGENT_INSTALL_ROOT/snapshot-declarations.sh` so child processes (including the warp agent binary) can invoke the helper by explicit path.
 - `../warp-agent-docker/Dockerfile` and `../warp-agent-docker/Dockerfile.local` — new `COPY snapshot-declarations.sh /snapshot-declarations.sh` directive next to the existing `COPY entrypoint.sh`.
-- `../warp-server/script/oz-local` — new `--docker-dir <dir>` flag that validates `<dir>/snapshot-declarations.sh` exists, resolves `<dir>` to an absolute path, and appends `OZ_SNAPSHOT_DECLARATIONS_SCRIPT=<abs>/snapshot-declarations.sh` to `WORKER_ENV_FLAGS`, which plumbs through `oz-agent-worker`'s `-e` handling into `DirectBackendConfig.Env` and onto the oz process env.
+- `../warp-server/script/hermon-local` — new `--docker-dir <dir>` flag that validates `<dir>/snapshot-declarations.sh` exists, resolves `<dir>` to an absolute path, and appends `HERMON_SNAPSHOT_DECLARATIONS_SCRIPT=<abs>/snapshot-declarations.sh` to `WORKER_ENV_FLAGS`, which plumbs through `hermon-agent-worker`'s `-e` handling into `DirectBackendConfig.Env` and onto the hermon process env.
 
 ### Client — handoff snapshot attachment download
 - `app/src/ai/agent_sdk/driver/attachments.rs` — `fetch_and_download_handoff_snapshot_attachments()` returns `Option<String>` (the attachments dir iff at least one file landed on disk); per-file outcomes are aggregated into a single INFO/WARN log line. Downloads share the `download_attachment` primitive with `fetch_and_download_attachments`, so both go through the `with_bounded_retry` helper.
@@ -57,7 +57,7 @@ Both features span the agent SDK driver, the server's public API, GCS storage, a
 - `AgentDriver::cleanup()` only tears down cloud providers — there is no workspace snapshot step at end of run.
 - The `harness-support` CLI has `ping` and `report-artifact` subcommands; no workspace snapshot capability exists anywhere in the client.
 - There is no mechanism for generating the declarations file; `entrypoint.sh` computes `AGENT_INSTALL_ROOT` as a shell-local variable and doesn't export a concrete helper path, so downstream processes can't discover Docker-image-bundled helpers.
-- `oz-local` plumbs through `-e KEY=VALUE` flags into `DirectBackendConfig.Env`, but has no dedicated flag for pointing a local-dev run at the `warp-agent-docker` checkout.
+- `hermon-local` plumbs through `-e KEY=VALUE` flags into `DirectBackendConfig.Env`, but has no dedicated flag for pointing a local-dev run at the `warp-agent-docker` checkout.
 - Block snapshots are not uploaded during harness runs.
 - The `SerializedBlock` type exists for local persistence but has no JSON round-trip support for cloud storage.
 - The conversation loader only handles `AIAgentHarness::Hermon` conversations; `ClaudeCode` conversations are logged as warnings and skipped.
@@ -79,8 +79,8 @@ Both features span the agent SDK driver, the server's public API, GCS storage, a
 
 **Pipeline** (`app/src/ai/agent_sdk/driver/snapshot.rs`):
 1. **Gating.** Return early if `FeatureFlag::HermonHandoff` is disabled, if `AgentDriver::task_id` is `None`, or if the run was started with `--no-snapshot`. Snapshots only make sense for cloud task runs and must be operator-disableable. `HermonHandoff` is the scoped flag for snapshot/handoff behavior; it is decoupled from `FeatureFlag::AgentHarness` (which gates third-party harness CLIs independently).
-2. **Generate declarations file.** `run_declarations_script(working_dir, task_id, script_timeout)` resolves `$OZ_SNAPSHOT_DECLARATIONS_SCRIPT`, spawns it via `tokio::task::spawn_blocking(|| Command::new(..).current_dir(working_dir).env(OZ_SNAPSHOT_DECLARATIONS_FILE, resolved_path).output())`, and awaits the result with a timeout via `wishui::r#async::FutureExt::with_timeout`. The timeout defaults to 1 minute and is configurable via `--snapshot-script-timeout <DURATION>`. Setting `current_dir` anchors the bash script's `$PWD` to the agent's workspace even though the driver process's own CWD may have drifted (the macOS startup path in `app/src/terminal/platform.rs:32` `cd`s to `$HOME`). Setting the file path as an env var keeps the script's output and `resolve_declarations_path(task_id)` in sync on one per-run file. Missing script path env var, missing script file, non-zero exit, and timeout are each logged at `log::error!` and return without aborting the upload — if the declarations file already exists from a prior successful invocation the pipeline still reads it; otherwise the upload is a no-op. The helper lives in its own function (independent of `upload_snapshot_from_declarations`) so future code paths can invoke it at other points in the run lifecycle.
-3. **Read declarations file.** `resolve_declarations_path(task_id)` delegates to the pure `resolve_declarations_path_with_override(task_id, override_path)` helper so tests can exercise the logic without racing on the process-wide env var. Precedence: `$OZ_SNAPSHOT_DECLARATIONS_FILE` (operator/test override) wins; otherwise `/tmp/oz/<task-id>/snapshot-declarations.jsonl` when `task_id` is `Some`; otherwise `/tmp/oz/snapshot-declarations.jsonl`. If the file is missing, unreadable, or empty, log at WARN and return. Never fail the run tail.
+2. **Generate declarations file.** `run_declarations_script(working_dir, task_id, script_timeout)` resolves `$HERMON_SNAPSHOT_DECLARATIONS_SCRIPT`, spawns it via `tokio::task::spawn_blocking(|| Command::new(..).current_dir(working_dir).env(HERMON_SNAPSHOT_DECLARATIONS_FILE, resolved_path).output())`, and awaits the result with a timeout via `wishui::r#async::FutureExt::with_timeout`. The timeout defaults to 1 minute and is configurable via `--snapshot-script-timeout <DURATION>`. Setting `current_dir` anchors the bash script's `$PWD` to the agent's workspace even though the driver process's own CWD may have drifted (the macOS startup path in `app/src/terminal/platform.rs:32` `cd`s to `$HOME`). Setting the file path as an env var keeps the script's output and `resolve_declarations_path(task_id)` in sync on one per-run file. Missing script path env var, missing script file, non-zero exit, and timeout are each logged at `log::error!` and return without aborting the upload — if the declarations file already exists from a prior successful invocation the pipeline still reads it; otherwise the upload is a no-op. The helper lives in its own function (independent of `upload_snapshot_from_declarations`) so future code paths can invoke it at other points in the run lifecycle.
+3. **Read declarations file.** `resolve_declarations_path(task_id)` delegates to the pure `resolve_declarations_path_with_override(task_id, override_path)` helper so tests can exercise the logic without racing on the process-wide env var. Precedence: `$HERMON_SNAPSHOT_DECLARATIONS_FILE` (operator/test override) wins; otherwise `/tmp/hermon/<task-id>/snapshot-declarations.jsonl` when `task_id` is `Some`; otherwise `/tmp/hermon/snapshot-declarations.jsonl`. If the file is missing, unreadable, or empty, log at WARN and return. Never fail the run tail.
 4. **Parse declarations.** One JSON object per non-empty line: `{\"version\":1,\"kind\":\"repo\",\"path\":\"/abs/path\"}` or `{\"version\":1,\"kind\":\"file\",\"path\":\"/abs/path\"}`. Malformed lines (invalid JSON, missing fields, missing or unsupported version, unknown kind, non-absolute path) are logged at WARN and skipped without aborting the upload. Duplicate `(kind, path)` pairs are ignored.
 5. **Reserve filenames.** `unique_filename("snapshot_state.json", ...)` reserves the manifest filename up front; patches use `{idx}_{sanitized_repo_name}.patch`; files use their basename. Collisions get numeric suffixes.
 6. **Gather blobs and repo metadata, best-effort.** For each `repo` entry, gather repo metadata (`repo_name` from the path basename, branch via `git symbolic-ref --quiet --short HEAD`, and HEAD SHA via `git rev-parse HEAD`) and run `build_repo_patch()`. Metadata commands are best-effort; failures omit the optional metadata fields without failing patch generation. For each `file` entry, run `std::fs::read`. Per-entry gather/read failures are captured as placeholder results with status `gather_failed` / `read_failed` and do not abort the pipeline.
@@ -139,19 +139,19 @@ Both features span the agent SDK driver, the server's public API, GCS storage, a
 - The manifest upload runs sequentially after the batch completes, so the manifest can reflect the real outcomes.
 - The work runs on the driver's background executor via `ctx.spawn` in `AgentDriver::run()`; no extra threading concerns.
 
-### 2. Declarations-file generation (`warp-agent-docker` and `oz-local`)
+### 2. Declarations-file generation (`warp-agent-docker` and `hermon-local`)
 
 **`snapshot-declarations.sh`** (new, alongside `entrypoint.sh`):
 ```bash
 #!/bin/bash
 set -euo pipefail
-SCAN_ROOTS_RAW="${OZ_SNAPSHOT_SCAN_ROOTS:-$PWD}"
+SCAN_ROOTS_RAW="${HERMON_SNAPSHOT_SCAN_ROOTS:-$PWD}"
 IFS=':' read -r -a SCAN_ROOTS <<< "$SCAN_ROOTS_RAW"
-if [ -z "${OZ_SNAPSHOT_DECLARATIONS_FILE:-}" ]; then
-    echo "OZ_SNAPSHOT_DECLARATIONS_FILE must be set" >&2
+if [ -z "${HERMON_SNAPSHOT_DECLARATIONS_FILE:-}" ]; then
+    echo "HERMON_SNAPSHOT_DECLARATIONS_FILE must be set" >&2
     exit 1
 fi
-DECL_FILE="$OZ_SNAPSHOT_DECLARATIONS_FILE"
+DECL_FILE="$HERMON_SNAPSHOT_DECLARATIONS_FILE"
 mkdir -p "$(dirname "$DECL_FILE")"
 touch "$DECL_FILE"
 SEEN_FILE="$(mktemp)"
@@ -169,12 +169,12 @@ for root in "${SCAN_ROOTS[@]}"; do
     done < <(find "$root" -type d -name .git -prune -print 2>/dev/null)
 done
 ```
-- Scan root defaults to `$PWD`, which the Rust driver sets to the agent's `working_dir` (the initial workspace root) via `Command::current_dir`. The driver's own process CWD can drift during startup (e.g. `app/src/terminal/platform.rs:32` `cd`s to `$HOME` on macOS), so relying on `current_dir` rather than the inherited CWD is what keeps the scan anchored to the workspace across all run modes (`/workspace` in containers, `/tmp/oz-workspaces/<task-id>` in direct-backend local dev, `--cwd`-specified dirs for local `warp agent run`).
-- `OZ_SNAPSHOT_SCAN_ROOTS` is a colon-separated override for unusual operator setups.
+- Scan root defaults to `$PWD`, which the Rust driver sets to the agent's `working_dir` (the initial workspace root) via `Command::current_dir`. The driver's own process CWD can drift during startup (e.g. `app/src/terminal/platform.rs:32` `cd`s to `$HOME` on macOS), so relying on `current_dir` rather than the inherited CWD is what keeps the scan anchored to the workspace across all run modes (`/workspace` in containers, `/tmp/hermon-workspaces/<task-id>` in direct-backend local dev, `--cwd`-specified dirs for local `warp agent run`).
+- `HERMON_SNAPSHOT_SCAN_ROOTS` is a colon-separated override for unusual operator setups.
 - The script appends to the declarations file, seeding its dedup set from JSONL repo declarations already emitted by this script so a re-invocation within the same run doesn't re-emit repos it already discovered. This keeps the pipeline additive as future callers trigger mid-run snapshot refreshes. Scripted `repo` entries do not overlap with operator-authored `file` entries, so hand-editing flows stay composable.
-- The Rust driver passes `OZ_SNAPSHOT_DECLARATIONS_FILE=/tmp/oz/<task-id>/snapshot-declarations.jsonl` to the script via `Command::env` so concurrent runs don't clobber each other. The script fails if the env var is absent.
+- The Rust driver passes `HERMON_SNAPSHOT_DECLARATIONS_FILE=/tmp/hermon/<task-id>/snapshot-declarations.jsonl` to the script via `Command::env` so concurrent runs don't clobber each other. The script fails if the env var is absent.
 
-**`entrypoint.sh:13`** — `AGENT_INSTALL_ROOT` assignment remains exported for existing install-root consumers, and `OZ_SNAPSHOT_DECLARATIONS_SCRIPT=$AGENT_INSTALL_ROOT/snapshot-declarations.sh` is exported so the child warp process sees the concrete script path. In containerized runs this resolves to `/snapshot-declarations.sh`.
+**`entrypoint.sh:13`** — `AGENT_INSTALL_ROOT` assignment remains exported for existing install-root consumers, and `HERMON_SNAPSHOT_DECLARATIONS_SCRIPT=$AGENT_INSTALL_ROOT/snapshot-declarations.sh` is exported so the child warp process sees the concrete script path. In containerized runs this resolves to `/snapshot-declarations.sh`.
 
 **`Dockerfile` and `Dockerfile.local`** — both gain:
 ```
@@ -182,11 +182,11 @@ COPY snapshot-declarations.sh /snapshot-declarations.sh
 ```
 placed next to the existing `COPY entrypoint.sh /entrypoint.sh`.
 
-**`oz-local --docker-dir <dir>`** — new optional flag in `warp-server/script/oz-local`:
+**`hermon-local --docker-dir <dir>`** — new optional flag in `warp-server/script/hermon-local`:
 - Validates `<dir>/snapshot-declarations.sh` exists, fails loudly if not.
 - Resolves `<dir>` to an absolute path via `cd ... && pwd`.
-- Appends `OZ_SNAPSHOT_DECLARATIONS_SCRIPT=<abs>/snapshot-declarations.sh` to the existing `WORKER_ENV_FLAGS` array.
-- The worker's `parseEnvFlags` (`oz-agent-worker/main.go:299`) plumbs it into `DirectBackendConfig.Env`, which `direct.go:140-142` merges onto the oz process env.
+- Appends `HERMON_SNAPSHOT_DECLARATIONS_SCRIPT=<abs>/snapshot-declarations.sh` to the existing `WORKER_ENV_FLAGS` array.
+- The worker's `parseEnvFlags` (`hermon-agent-worker/main.go:299`) plumbs it into `DirectBackendConfig.Env`, which `direct.go:140-142` merges onto the hermon process env.
 - Not required: if the flag is omitted, the snapshot step's script-invocation fails gracefully with an ERROR log and the rest of the cleanup continues.
 
 ### 3. Server API: snapshot upload targets
@@ -271,11 +271,11 @@ sequenceDiagram
     participant GCS as GCS
 
     Note over Driver: Gate on HermonHandoff flag + task_id + --no-snapshot
-    Driver->>Script: Resolve $OZ_SNAPSHOT_DECLARATIONS_SCRIPT, spawn w/ configured script timeout
-    Script->>FS: find .git dirs under $PWD (or OZ_SNAPSHOT_SCAN_ROOTS)
-    Script->>FS: Write JSONL repo declarations to $OZ_SNAPSHOT_DECLARATIONS_FILE
+    Driver->>Script: Resolve $HERMON_SNAPSHOT_DECLARATIONS_SCRIPT, spawn w/ configured script timeout
+    Script->>FS: find .git dirs under $PWD (or HERMON_SNAPSHOT_SCAN_ROOTS)
+    Script->>FS: Write JSONL repo declarations to $HERMON_SNAPSHOT_DECLARATIONS_FILE
     Note over Driver: Missing env/script/exec error/timeout → log::error, continue
-    Driver->>FS: Read OZ_SNAPSHOT_DECLARATIONS_FILE (default /tmp/oz/<task-id>/snapshot-declarations.jsonl)
+    Driver->>FS: Read HERMON_SNAPSHOT_DECLARATIONS_FILE (default /tmp/hermon/<task-id>/snapshot-declarations.jsonl)
     FS-->>Driver: JSONL repo/file entries (or missing → WARN and return)
     Driver->>Driver: Parse entries, reserve filenames incl. snapshot_state.json
     Driver->>FS: Gather repo metadata + blobs (git diff, file reads) — soft failures
@@ -389,7 +389,7 @@ Mitigation:
 ### Unit tests
 - `serialized_block_tests.rs` — round-trip fidelity for `to_json()`/`from_json()` with various block states.
 - `snapshot_tests.rs` at `app/src/ai/agent_sdk/driver/snapshot_tests.rs` — end-to-end pipeline coverage via `mockito::Server` + real `http_client::Client` (no mocks below the trait boundary): happy path including repo metadata in the manifest, clean/dirty/gather_failed repos, read_failed files, 5xx retry → success, permanent 4xx fails fast, retry exhaustion, manifest-upload failure, `get_snapshot_upload_targets` failure, missing-target `skipped`, multi-repo mixed, per-run cap drops excess blobs as `skipped` across chunked presigned-URL calls.
-  - Declarations-file coverage: missing file returns early with WARN, empty file returns early, blank lines are skipped, malformed JSONL lines are skipped with WARN (without aborting the rest), missing or unsupported declaration versions are skipped, duplicate entries are deduped, `OZ_SNAPSHOT_DECLARATIONS_FILE` override is honored.
+  - Declarations-file coverage: missing file returns early with WARN, empty file returns early, blank lines are skipped, malformed JSONL lines are skipped with WARN (without aborting the rest), missing or unsupported declaration versions are skipped, duplicate entries are deduped, `HERMON_SNAPSHOT_DECLARATIONS_FILE` override is honored.
 - `attachments_tests.rs` — end-to-end handoff download coverage mirroring the upload-side pattern: happy path, transient 5xx retry → success, permanent 4xx fails fast, retry exhaustion, partial success (mix of OK + failure), empty attachment list, `get_handoff_snapshot_attachments` failure.
 
 ### Server tests

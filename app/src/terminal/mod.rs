@@ -79,8 +79,8 @@ pub mod ssh;
 pub mod terminal_manager;
 mod terminal_size_element;
 pub mod view;
-pub mod wishify;
 mod waterfall_gap_element;
+pub mod wishify;
 mod writeable_pty;
 #[cfg(windows)]
 pub mod wsl;

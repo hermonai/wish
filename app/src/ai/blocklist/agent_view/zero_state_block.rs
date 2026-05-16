@@ -58,7 +58,7 @@ const CLOUD_AGENT_DOCS_URL: &str =
 const HERMON_UPDATES_SECTION_HEADER: &str = "What's new in Hermon Agent";
 
 // The maximum number of Hermon Agent updates from the changelog rendered in-line in the 'What's new in Hermon Agent section'.
-const MAX_OZ_UPDATE_COUNT: usize = 4;
+const MAX_HERMON_UPDATE_COUNT: usize = 4;
 
 const MAX_RECENT_CONVERSATION_COUNT: usize = 3;
 
@@ -222,7 +222,7 @@ impl AgentViewZeroStateBlock {
                     .as_ref(ctx)
                     .hermon_updates
                     .len()
-                    .min(MAX_OZ_UPDATE_COUNT);
+                    .min(MAX_HERMON_UPDATE_COUNT);
                 if hermon_mon_update_count != me.state_handles.update_hyperlinks.len() {
                     me.state_handles
                         .update_hyperlinks
@@ -249,7 +249,7 @@ impl AgentViewZeroStateBlock {
                 .as_ref(ctx)
                 .hermon_updates
                 .len()
-                .min(MAX_OZ_UPDATE_COUNT),
+                .min(MAX_HERMON_UPDATE_COUNT),
             Default::default(),
         );
         let current_working_directory = {
@@ -277,7 +277,9 @@ impl AgentViewZeroStateBlock {
             has_parent_terminal,
             state_handles,
             is_hermon_updates_expanded: !origin.is_cloud_agent()
-                && *AISettings::handle(ctx).as_ref(ctx).should_expand_hermon_updates,
+                && *AISettings::handle(ctx)
+                    .as_ref(ctx)
+                    .should_expand_hermon_updates,
         }
     }
 
@@ -1001,7 +1003,10 @@ fn should_render_hermon_updates_section(
     is_hermon_changelog_updates_enabled && should_show_hermon_updates && has_hermon_updates
 }
 
-fn render_hermon_updates(props: HermonUpdatesProps<'_>, app: &AppContext) -> Option<Box<dyn Element>> {
+fn render_hermon_updates(
+    props: HermonUpdatesProps<'_>,
+    app: &AppContext,
+) -> Option<Box<dyn Element>> {
     let changelog_model = ChangelogModel::as_ref(app);
     let should_show_hermon_updates = *AISettings::as_ref(app)
         .should_show_hermon_updates_in_zero_state
@@ -1077,7 +1082,7 @@ fn render_hermon_updates(props: HermonUpdatesProps<'_>, app: &AppContext) -> Opt
                                             changelog_model
                                                 .hermon_updates
                                                 .len()
-                                                .min(MAX_OZ_UPDATE_COUNT)
+                                                .min(MAX_HERMON_UPDATE_COUNT)
                                         )
                                     },
                                     appearance.ui_font_family(),
@@ -1171,7 +1176,7 @@ fn render_hermon_updates(props: HermonUpdatesProps<'_>, app: &AppContext) -> Opt
             .hermon_updates
             .iter()
             .enumerate()
-            .take(MAX_OZ_UPDATE_COUNT)
+            .take(MAX_HERMON_UPDATE_COUNT)
         {
             let mut text = FormattedTextElement::new(
                 update.clone(),
@@ -1193,7 +1198,12 @@ fn render_hermon_updates(props: HermonUpdatesProps<'_>, app: &AppContext) -> Opt
             .with_line_height_ratio(1.2)
             .finish();
 
-            if i < changelog_model.hermon_updates.len().min(MAX_OZ_UPDATE_COUNT) - 1 {
+            if i < changelog_model
+                .hermon_updates
+                .len()
+                .min(MAX_HERMON_UPDATE_COUNT)
+                - 1
+            {
                 text = Container::new(text).with_margin_bottom(8.).finish();
             }
             body.add_child(text);

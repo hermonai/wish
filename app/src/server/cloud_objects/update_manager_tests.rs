@@ -327,7 +327,7 @@ fn mock_server_folder(id: FolderId, owner: Owner, metadata: ServerMetadata) -> S
         model: CloudFolderModel {
             name: format!("f{id}"),
             is_open: false,
-            is_warp_pack: false,
+            is_wish_pack: false,
         },
     }
 }

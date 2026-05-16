@@ -220,15 +220,15 @@ fn make_new_app_menu(ctx: &AppContext) -> Menu {
         "Set Wish as Default Terminal",
         move |ctx| {
             DefaultTerminal::handle(ctx).update(ctx, |default_terminal, ctx| {
-                default_terminal.make_warp_default(ctx)
+                default_terminal.make_wish_default(ctx)
             });
         },
         move |_props, ctx| {
             let default_terminal = DefaultTerminal::handle(ctx).as_ref(ctx);
             MenuItemPropertyChanges {
                 disabled: Some(
-                    !DefaultTerminal::can_warp_become_default()
-                        || default_terminal.is_warp_default(),
+                    !DefaultTerminal::can_wish_become_default()
+                        || default_terminal.is_wish_default(),
                 ),
                 ..Default::default()
             }

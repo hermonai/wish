@@ -184,7 +184,7 @@ use wish::{
 };
 use wish::{
     integration_testing::wish_drive::{
-        assert_is_left_panel_open, assert_warp_drive_is_closed, assert_warp_drive_is_open,
+        assert_is_left_panel_open, assert_wish_drive_is_closed, assert_wish_drive_is_open,
     },
     settings::CompletionsOpenWhileTyping,
 };
@@ -269,7 +269,7 @@ fn new_builder() -> Builder {
 
 /// Adds a workflow file, containing two workflows, to the mocked out warp
 /// config directory and verifies that the workflows appear in the workflow menu.
-pub fn test_add_workflows_to_warp_config() -> Builder {
+pub fn test_add_workflows_to_wish_config() -> Builder {
     new_builder()
         .with_setup(move |utils| {
             utils.set_env("WARP_CONFIG_WATCHER_DELAY_MS", Some((10).to_string()));
@@ -339,7 +339,7 @@ pub fn test_launch_wish_with_theme_in_wish_config() -> Builder {
 
 /// Adds a theme to the mocked out warp config directory and verifies that
 /// the theme appears in the theme picker.
-pub fn test_add_theme_to_warp_config() -> Builder {
+pub fn test_add_theme_to_wish_config() -> Builder {
     new_builder()
         .with_setup(move |utils| {
             utils.set_env("WARP_CONFIG_WATCHER_DELAY_MS", Some((10).to_string()));
@@ -3408,7 +3408,7 @@ pub fn test_auto_title() -> Builder {
 }
 
 /// Validate that disabling Wish's auto title feature will not mess with oh-my-zsh settings.
-pub fn test_warp_auto_title_disabled() -> Builder {
+pub fn test_wish_auto_title_disabled() -> Builder {
     new_builder()
         .set_should_run_test(|| {
             // Only run this one on bash and zsh
@@ -3450,7 +3450,7 @@ WARP_DISABLE_AUTO_TITLE="true"
 
 /// Checks that the tab title set by the user takes precedence over the Wish's default title and
 /// doesn't require any additional setting from the user's POV. This is bash-specific test.
-pub fn test_warp_honors_user_title_bash() -> Builder {
+pub fn test_wish_honors_user_title_bash() -> Builder {
     new_builder()
         .set_should_run_test(|| {
             // Only run this one on bash
@@ -3482,7 +3482,7 @@ PROMPT_COMMAND='echo -en "\033]0;TEST_TAB_TITLE\a"'
 
 /// Checks that the tab title set by the user takes precedence over the Wish's default title and
 /// doesn't require any additional setting from the user's POV. This is zsh-specific test.
-pub fn test_warp_honors_user_title_zsh() -> Builder {
+pub fn test_wish_honors_user_title_zsh() -> Builder {
     new_builder()
         .set_should_run_test(|| {
             // Only run this one on bash
@@ -6675,20 +6675,20 @@ pub fn test_create_folder_from_command_palette() -> Builder {
         .with_step(go_offline())
         .with_steps(
             open_command_palette_and_run_action("Create a New Team Folder")
-                .add_assertion(assert_warp_drive_is_closed()),
+                .add_assertion(assert_wish_drive_is_closed()),
         )
         .with_steps(
             open_command_palette_and_run_action("Create a New Personal Folder")
-                .add_assertion(assert_warp_drive_is_closed()),
+                .add_assertion(assert_wish_drive_is_closed()),
         )
         .with_step(go_online())
         .with_steps(
             open_command_palette_and_run_action("Create a New Team Folder")
-                .add_assertion(assert_warp_drive_is_open()),
+                .add_assertion(assert_wish_drive_is_open()),
         )
         .with_steps(
             open_command_palette_and_run_action("Create a New Personal Folder")
-                .add_assertion(assert_warp_drive_is_open()),
+                .add_assertion(assert_wish_drive_is_open()),
         )
 }
 

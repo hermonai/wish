@@ -282,17 +282,17 @@ impl Asset for ImageType {
         }
 
         if data.starts_with(b"warp-img:") {
-            let (custom_warp_header, data) = match CustomImageHeader::try_from_bytes(data) {
-                Ok((custom_warp_header, data)) => (custom_warp_header, data),
+            let (custom_wish_header, data) = match CustomImageHeader::try_from_bytes(data) {
+                Ok((custom_wish_header, data)) => (custom_wish_header, data),
                 Err(err) => return Err(anyhow!(err.to_string())),
             };
 
             let data = data.into();
-            let Some(img) = (match custom_warp_header.image_format {
+            let Some(img) = (match custom_wish_header.image_format {
                 CustomImageFormat::Rgb => {
                     let dynamic_image = ImageBuffer::from_raw(
-                        custom_warp_header.width,
-                        custom_warp_header.height,
+                        custom_wish_header.width,
+                        custom_wish_header.height,
                         data,
                     )
                     .map(DynamicImage::ImageRgb8);
@@ -300,8 +300,8 @@ impl Asset for ImageType {
                 }
                 CustomImageFormat::Rgba => {
                     let dynamic_image = ImageBuffer::from_raw(
-                        custom_warp_header.width,
-                        custom_warp_header.height,
+                        custom_wish_header.width,
+                        custom_wish_header.height,
                         data,
                     )
                     .map(DynamicImage::ImageRgba8);

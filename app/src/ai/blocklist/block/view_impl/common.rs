@@ -77,7 +77,7 @@ use crate::{
                 TableSectionHandles,
             },
             code_block::{
-                render_code_block_plain, render_code_block_with_warp_text, CodeBlockOptions,
+                render_code_block_plain, render_code_block_with_wish_text, CodeBlockOptions,
                 CodeSnippetButtonHandles,
             },
             inline_action::{
@@ -560,7 +560,7 @@ pub fn render_warping_indicator_base(
 
     let appearance = Appearance::as_ref(app);
 
-    let should_indent_tip_for_warp_glyph = matches!(
+    let should_indent_tip_for_wish_glyph = matches!(
         warping_indicator_text,
         MaybeShimmeringText::Shimmering { .. }
     );
@@ -591,7 +591,7 @@ pub fn render_warping_indicator_base(
         // Our warping indicator text prepends the Warp glyph (and a space) to the label.
         // If we render the tip directly underneath, it will align to the glyph instead of
         // the start of the actual warping text.
-        let sub_element = if should_indent_tip_for_warp_glyph {
+        let sub_element = if should_indent_tip_for_wish_glyph {
             let font_size = appearance.monospace_font_size() - 3.;
             let glyph_indent = Text::new_inline(
                 format!("{WARP_GLYPH} "),
@@ -2740,7 +2740,7 @@ pub fn render_code_output_section<A: Action>(
     let allow_execution = props.language.is_none_or(|lang| lang.is_shell());
 
     match props.editor_view {
-        Some(view) => render_code_block_with_warp_text(
+        Some(view) => render_code_block_with_wish_text(
             CodeBlockOptions {
                 on_open: match (props.open_code_block_action_factory, open_source.clone()) {
                     #[allow(unused)]

@@ -83,11 +83,11 @@ impl TryFrom<ITermThemeType> for ThemeType {
         let (default_light, default_dark) = default_iterm_themes();
         match theme_type {
             ITermThemeType::LightAndDark { light, dark } => Ok(ThemeType::LightAndDark {
-                light: light.into_warp_theme(" (Light)", &default_light)?,
-                dark: dark.into_warp_theme(" (Dark)", &default_dark)?,
+                light: light.into_wish_theme(" (Light)", &default_light)?,
+                dark: dark.into_wish_theme(" (Dark)", &default_dark)?,
             }),
             ITermThemeType::Single(normal) => Ok(ThemeType::Single(
-                normal.into_warp_theme("", &default_dark)?,
+                normal.into_wish_theme("", &default_dark)?,
             )),
         }
     }
@@ -122,7 +122,7 @@ impl ITermTheme {
         }
     }
 
-    fn into_warp_theme(
+    fn into_wish_theme(
         mut self,
         suffix: &'static str,
         default_theme: &ITermTheme,

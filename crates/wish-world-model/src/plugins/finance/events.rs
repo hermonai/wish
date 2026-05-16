@@ -97,8 +97,10 @@ pub fn margin_call(id: &str, account: &SemanticId, shortfall: Money, at_step: u6
     e.causes.push(account.clone());
     e.payload
         .insert("shortfall".to_string(), money_property(&shortfall));
-    e.payload
-        .insert("severity".to_string(), PropertyValue::Text("high".to_string()));
+    e.payload.insert(
+        "severity".to_string(),
+        PropertyValue::Text("high".to_string()),
+    );
     e
 }
 
@@ -120,10 +122,8 @@ pub fn default_event(id: &str, account: &SemanticId, amount_owed: Money, at_step
 /// listing the MarketEvent's id in their causes.
 pub fn market_event(id: &str, kind: &str, magnitude: f64, at_step: u64) -> Event {
     let mut e = Event::new(finance_id("market_event", id), "market_event", at_step);
-    e.payload.insert(
-        "kind".to_string(),
-        PropertyValue::Text(kind.to_string()),
-    );
+    e.payload
+        .insert("kind".to_string(), PropertyValue::Text(kind.to_string()));
     e.payload
         .insert("magnitude".to_string(), PropertyValue::Number(magnitude));
     e
@@ -175,7 +175,13 @@ mod tests {
         let h1 = finance_id("account", "h1");
         let h2 = finance_id("account", "h2");
         let h3 = finance_id("account", "h3");
-        let d = dividend("d1", &aapl, &[h1.clone(), h2.clone(), h3.clone()], Money::usd(0.25), 10);
+        let d = dividend(
+            "d1",
+            &aapl,
+            &[h1.clone(), h2.clone(), h3.clone()],
+            Money::usd(0.25),
+            10,
+        );
         assert_eq!(d.causes, vec![aapl]);
         assert_eq!(d.effects, vec![h1, h2, h3]);
     }

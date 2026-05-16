@@ -9,8 +9,8 @@ On macOS, `macos_config_dir_name()` returns `.warp` for both Stable and Preview 
 - `crates/wish_core/src/paths.rs:42-51` — `macos_config_dir_name()` maps channels to directory names. The `Channel::Preview` arm currently returns `WARP_CONFIG_DIR` (`.warp`).
 - `crates/wish_core/src/paths.rs:57-67` — `data_dir()` uses `macos_config_dir_name()` on macOS.
 - `crates/wish_core/src/paths.rs:71-83` — `config_local_dir()` also uses `macos_config_dir_name()` on macOS. On macOS, `data_dir()` and `config_local_dir()` return the same path.
-- `app/src/warp_data_directory_watcher.rs:28-46` — `ensure_warp_watch_roots_exist()` creates the data and config directories at startup.
-- `app/src/lib.rs:966` — calls `ensure_warp_watch_roots_exist()` during `initialize_app()`.
+- `app/src/warp_data_directory_watcher.rs:28-46` — `ensure_wish_watch_roots_exist()` creates the data and config directories at startup.
+- `app/src/lib.rs:966` — calls `ensure_wish_watch_roots_exist()` during `initialize_app()`.
 - `app/src/persistence/sqlite.rs:350-389` — existing migration precedent: migrates the SQLite database from `state_dir()` to `secure_state_dir()` on first launch.
 - `crates/wish_core/src/channel/mod.rs:8-15` — `Channel` enum definition.
 
@@ -67,8 +67,8 @@ The directory's existence is the migration marker — no separate marker file is
 
 ### 3. Call migration before directory creation — `app/src/lib.rs`
 
-Call the migration directly in `initialize_app()`, before `ensure_warp_watch_roots_exist()`. This placement ensures the migration runs:
-- Before `ensure_warp_watch_roots_exist()` would `create_dir_all` on `~/.warp-preview` (which would make the `new_dir.exists()` check true and skip migration).
+Call the migration directly in `initialize_app()`, before `ensure_wish_watch_roots_exist()`. This placement ensures the migration runs:
+- Before `ensure_wish_watch_roots_exist()` would `create_dir_all` on `~/.warp-preview` (which would make the `new_dir.exists()` check true and skip migration).
 - After `ChannelState` is initialized (it is — `initialize_app` runs after `ChannelState::set()`).
 - Exactly once per launch.
 
@@ -84,7 +84,7 @@ sequenceDiagram
     participant CS as ChannelState::set()
     participant Init as initialize_app()
     participant Migrate as migrate_preview_config_dir_if_needed()
-    participant Ensure as ensure_warp_watch_roots_exist()
+    participant Ensure as ensure_wish_watch_roots_exist()
     participant FS as Filesystem
 
     Main->>CS: Set channel to Preview
@@ -105,7 +105,7 @@ sequenceDiagram
             end
         end
     end
-    Init->>Ensure: ensure_warp_watch_roots_exist()
+    Init->>Ensure: ensure_wish_watch_roots_exist()
     Ensure->>FS: create_dir_all(~/.warp-preview) [no-op if exists]
     Init->>Init: Continue startup (WarpConfig, settings, etc.)
 ```
@@ -113,7 +113,7 @@ sequenceDiagram
 ## Risks and Mitigations
 
 ### Symlink breakage if `~/.warp` is deleted
-If a user deletes `~/.warp` after migration, all symlinks in `~/.warp-preview` become dangling. Warp's existing directory-creation logic (`ensure_warp_watch_roots_exist`) will recreate `~/.warp-preview` subdirectories as needed, and missing files will be treated as defaults. This is the same behavior as a fresh install.
+If a user deletes `~/.warp` after migration, all symlinks in `~/.warp-preview` become dangling. Warp's existing directory-creation logic (`ensure_wish_watch_roots_exist`) will recreate `~/.warp-preview` subdirectories as needed, and missing files will be treated as defaults. This is the same behavior as a fresh install.
 
 **Mitigation**: Acceptable degradation. No action needed.
 

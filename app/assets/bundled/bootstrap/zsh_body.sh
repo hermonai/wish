@@ -66,7 +66,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   # compatibility with `setopt nounset`.
   _WARP_GENERATOR_COMMAND=""
   # Make sure we delete generator PID files when the shell exits, if they exist.
-  __warp_generator_pid_file_cleanup() {
+  __wish_generator_pid_file_cleanup() {
     if [[ -f $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE ]]; then
       command -p rm $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE
     fi
@@ -74,7 +74,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
       command -p rm $_WARP_GENERATOR_PIDS_COMPLETED_TMP_FILE
     fi
   }
-  trap __warp_generator_pid_file_cleanup EXIT
+  trap __wish_generator_pid_file_cleanup EXIT
 
   # Writes a hex-encoded JSON message to the pty.
   warp_send_json_message () {
@@ -107,7 +107,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   # Installed after warp_send_json_message is defined so the handler is
   # callable the moment the hook is registered.
   if [[ "$WARP_IS_SSH" == "1" ]]; then
-      __warp_emit_exit_shell() {
+      __wish_emit_exit_shell() {
           if [[ -n "$WARP_SESSION_ID" ]]; then
               warp_send_json_message \
                   "{\"hook\": \"ExitShell\", \"value\": {\"session_id\": $WARP_SESSION_ID}}"
@@ -116,7 +116,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
       # zshexit_functions is zsh's idiomatic exit-hook mechanism. We prefer
       # it over `trap ... EXIT` for a few reasons:
       #   1. It is additive: appending to the array composes with the
-      #      existing `trap __warp_generator_pid_file_cleanup EXIT` above.
+      #      existing `trap __wish_generator_pid_file_cleanup EXIT` above.
       #      Using `trap ... EXIT` here would replace that handler (zsh, like
       #      bash, only allows one trap per signal) and we would have to
       #      manually re-invoke the generator cleanup.
@@ -127,7 +127,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
       #   3. It also fires on SIGHUP-triggered exits, so a single
       #      registration covers both normal exit (exit, logout, Ctrl-D) and
       #      connection-drop cases.
-      zshexit_functions+=(__warp_emit_exit_shell)
+      zshexit_functions+=(__wish_emit_exit_shell)
   fi
 
   warp_maybe_send_reset_grid_osc() {
@@ -159,7 +159,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   # where command_id is the ID given as the first argument to this function,
   # exit_code is the exit code of the executed command, and command_output is
   # the output itself.
-  _warp_execute_command() {
+  _wish_execute_command() {
     local command_id=$1
     # This is shorthand to slice the 2nd-nth arguments of this function (i.e.
     # the command array) into its own array. The first argument is the
@@ -185,17 +185,17 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   # Runs the given command in the background, records its PID in
   # _WARP_GENERATOR_PIDS_STARTED_TMP_FILE, and adds its PID from the file when
   # the job is completed.
-  _warp_run_generator_command_internal() {
-    _warp_execute_command "$@" &
+  _wish_run_generator_command_internal() {
+    _wish_execute_command "$@" &
     # $! contains the PID of the most recently backgrounded command.
     local pid=$!
     echo $pid >> $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE
     wait $pid 2> /dev/null
 
-    # If the exit code of the backgrounded _warp_execute_command process is non-zero,
+    # If the exit code of the backgrounded _wish_execute_command process is non-zero,
     # the call to send the generator output failed (most likely because this is being
     # executed in an old zsh version that doesn't support some syntax in
-    # _warp_execute_command function itself). In this case, send empty output with
+    # _wish_execute_command function itself). In this case, send empty output with
     # exit code 1 to indicate generator execution failed.
     if [[ $? -ne 0 ]]; then
         warp_send_generator_output_osc "$1;;1"
@@ -241,11 +241,11 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
     # not know when it finishes, which causes a variety of undesirable side-effects.
     precmd_functions=(${(M)precmd_functions:#*(warp|p9k)*})
 
-    (_warp_run_generator_command_internal "$@" &)
+    (_wish_run_generator_command_internal "$@" &)
   }
 
   # Returns exit code 1 if the given argument starts with 'warp_run_generator_command'.
-  _is_warp_generator_command() {
+  _is_wish_generator_command() {
     [[ "$1" != *"warp_run_generator_command"* ]]
   }
 
@@ -258,7 +258,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
 
       # If this preexec is called for user command, kill ongoing generator command jobs and clean
       # up the bookkeeping temp files used to bookkeep.
-      if _is_warp_generator_command "$1" && [[ -f $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE ]] && [[ -f $_WARP_GENERATOR_PIDS_COMPLETED_TMP_FILE ]]
+      if _is_wish_generator_command "$1" && [[ -f $_WARP_GENERATOR_PIDS_STARTED_TMP_FILE ]] && [[ -f $_WARP_GENERATOR_PIDS_COMPLETED_TMP_FILE ]]
         then
         # Read PIDs from the started generators tmp file that are not present in
         # the completed generators tmp file into a zsh array.
@@ -364,7 +364,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
       # This is arbitrarily bound to ESC-w in all supported shells ("w" for Wish prompt),
       # and we can change it to any other keybinding if needed.
       bindkey -r '\ew'
-      bindkey '\ew' warp_change_prompt_modes_to_warp_prompt
+      bindkey '\ew' warp_change_prompt_modes_to_wish_prompt
 
       local escaped_pwd
       if [ -n "${WSL_DISTRO_NAME:-}" ]; then
@@ -812,7 +812,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
   # Switches to Wish prompt by flipping WARP_HONOR_PS1 to "0", which will result
   # in unsetting the PROMPT variables to avoid a double prompt. Resets the prompt, forcing
   # a re-print.
-  function warp_change_prompt_modes_to_warp_prompt() {
+  function warp_change_prompt_modes_to_wish_prompt() {
     WARP_HONOR_PS1=0
 
     warp_update_prompt_vars
@@ -821,7 +821,7 @@ if [[ -z $WARP_BOOTSTRAPPED ]]; then
 
   # The following line creates a new widget with ZLE (the Zsh line editor) with the custom function above,
   # so we can reference this when we register it with a bindkey.
-  zle -N warp_change_prompt_modes_to_warp_prompt
+  zle -N warp_change_prompt_modes_to_wish_prompt
 
   # The SSH logic only applies to local sessions, because we don't yet have support for bootstrapping
   # recursive SSH sessions.
@@ -1075,14 +1075,14 @@ esac
   #
   # See https://zsh.sourceforge.io/Doc/Release/Functions.html for more context
   # on the zshaddhistory hook.
-  _warp_zshaddhistory() {
-    _is_warp_generator_command "$1"
+  _wish_zshaddhistory() {
+    _is_wish_generator_command "$1"
   }
 
   # Register this zshaddhistory hook after the user's RC files have been sourced,
   # to ensure that it gets added (the user's RC files could entirely reset the
   # hook function array).
-  zshaddhistory_functions+=(_warp_zshaddhistory)
+  zshaddhistory_functions+=(_wish_zshaddhistory)
 
   # Append additional PATH entries if provided via WARP_PATH_APPEND. This is after the user's RC
   # files are sourced in case they reset PATH (/etc/profile on Debian does this, for example).

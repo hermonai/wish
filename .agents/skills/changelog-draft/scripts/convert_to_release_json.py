@@ -27,7 +27,7 @@ CATEGORY_MAP = {
     "NEW-FEATURE": "newFeatures",
     "IMPROVEMENT": "improvements",
     "BUG-FIX": "bugFixes",
-    "OZ": "hermon_updates",
+    "HERMON": "hermon_updates",
     "IMAGE": "images",
 }
 

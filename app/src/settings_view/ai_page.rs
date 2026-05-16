@@ -172,8 +172,8 @@ const GIT_OPERATIONS_AUTOGEN_DESCRIPTION: &str =
     "Let AI generate commit messages and pull request titles and descriptions.";
 const WISPR_FLOW_URL: &str = "https://wisprflow.ai/";
 const CUSTOM_INFERENCE_LEARN_MORE_URL: &str =
-    "https://docs.warp.dev/support-and-community/plans-and-billing/bring-your-own-api-key/";
-const CUSTOM_INFERENCE_TERMS_URL: &str = "https://www.warp.dev/legal/terms-of-service";
+    "https://docs.hermon.ai/support-and-community/plans-and-billing/bring-your-own-api-key/";
+const CUSTOM_INFERENCE_TERMS_URL: &str = "https://www.hermon.ai/legal/terms-of-service";
 const CUSTOM_INFERENCE_INFO_TOOLTIP_MAX_WIDTH: f32 = 320.;
 
 pub fn init_actions_from_parent_view<T: Action + Clone>(
@@ -299,10 +299,10 @@ pub fn init_actions_from_parent_view<T: Action + Clone>(
             SettingActionPairContexts::new(
                 context.clone()
                     & id!(flags::IS_ANY_AI_ENABLED)
-                    & !id!(flags::SHOW_OZ_UPDATES_IN_ZERO_STATE_FLAG),
+                    & !id!(flags::SHOW_HERMON_UPDATES_IN_ZERO_STATE_FLAG),
                 context.clone()
                     & id!(flags::IS_ANY_AI_ENABLED)
-                    & id!(flags::SHOW_OZ_UPDATES_IN_ZERO_STATE_FLAG),
+                    & id!(flags::SHOW_HERMON_UPDATES_IN_ZERO_STATE_FLAG),
             ),
             None,
         )
@@ -3021,7 +3021,7 @@ impl TypedActionView for AISettingsPageView {
             AISettingsPageAction::ToggleCanUseWarpCreditsWithByok => {
                 AISettings::handle(ctx).update(ctx, |settings, ctx| {
                     report_if_error!(settings
-                        .can_use_warp_credits_with_byok
+                        .can_use_wish_credits_with_byok
                         .toggle_and_save_value(ctx));
                 });
                 ctx.notify();
@@ -5867,7 +5867,7 @@ impl AIFactWidget {
             .finish()
     }
 
-    fn render_warp_drive_context_toggle(
+    fn render_wish_drive_context_toggle(
         &self,
         view: &AISettingsPageView,
         ai_settings: &AISettings,
@@ -5942,7 +5942,7 @@ impl SettingsWidget for AIFactWidget {
 
         column
             .with_child(button)
-            .with_child(self.render_warp_drive_context_toggle(view, ai_settings, app))
+            .with_child(self.render_wish_drive_context_toggle(view, ai_settings, app))
             .finish()
     }
 }
@@ -6873,7 +6873,7 @@ struct ApiKeysWidget {
     anthropic_api_key_editor: ViewHandle<EditorView>,
     google_api_key_editor: ViewHandle<EditorView>,
 
-    can_use_warp_credits_with_byok: SwitchStateHandle,
+    can_use_wish_credits_with_byok: SwitchStateHandle,
     upgrade_highlight_index: HighlightedHyperlink,
 
     custom_inference_info_tooltip: MouseStateHandle,
@@ -6985,7 +6985,7 @@ impl ApiKeysWidget {
             anthropic_api_key_editor,
             google_api_key_editor,
 
-            can_use_warp_credits_with_byok: Default::default(),
+            can_use_wish_credits_with_byok: Default::default(),
             upgrade_highlight_index: Default::default(),
 
             custom_inference_info_tooltip: Default::default(),
@@ -7232,7 +7232,7 @@ impl ApiKeysWidget {
         list.finish()
     }
 
-    fn render_can_use_warp_credits_with_byok_toggle(
+    fn render_can_use_wish_credits_with_byok_toggle(
         &self,
         view: &AISettingsPageView,
         app: &AppContext,
@@ -7242,9 +7242,9 @@ impl ApiKeysWidget {
         let toggle = render_ai_setting_toggle::<CanUseWarpCreditsWithByok>(
             "Wish credit fallback",
             AISettingsPageAction::ToggleCanUseWarpCreditsWithByok,
-            *ai_settings.can_use_warp_credits_with_byok,
+            *ai_settings.can_use_wish_credits_with_byok,
             ai_settings.is_any_ai_enabled(app),
-            self.can_use_warp_credits_with_byok.clone(),
+            self.can_use_wish_credits_with_byok.clone(),
             &view.local_only_icon_tooltip_states,
             app,
         );
@@ -7372,7 +7372,7 @@ impl SettingsWidget for ApiKeysWidget {
         // Warp credit fallback toggle (shown when BYO is enabled)
         if is_byo_enabled {
             column.add_child(
-                Container::new(self.render_can_use_warp_credits_with_byok_toggle(view, app))
+                Container::new(self.render_can_use_wish_credits_with_byok_toggle(view, app))
                     .with_margin_top(16.)
                     .finish(),
             );

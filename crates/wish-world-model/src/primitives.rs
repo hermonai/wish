@@ -442,11 +442,7 @@ pub fn primitives_from_world(world: &crate::WishWorld) -> Vec<Primitive> {
         out.push(Primitive::Object(obj));
     }
     for agent in world.agents.values() {
-        let a = Agent::new(
-            agent.id.clone(),
-            "world_agent",
-            agent.display_name.clone(),
-        );
+        let a = Agent::new(agent.id.clone(), "world_agent", agent.display_name.clone());
         out.push(Primitive::Agent(a));
     }
     // Events are sourced from the `WorldLine` (provenance ledger),
@@ -570,17 +566,23 @@ mod tests {
     #[test]
     fn event_carries_causal_chain() {
         let trigger = SemanticId::new(Realm::Custom("finance".into()), "event", "fed_hike");
-        let derived =
-            SemanticId::new(Realm::Custom("finance".into()), "event", "yield_curve_invert");
-        let e = Event::new(derived.clone(), "rate_move", 1_700_000_000)
-            .caused_by(trigger.clone());
+        let derived = SemanticId::new(
+            Realm::Custom("finance".into()),
+            "event",
+            "yield_curve_invert",
+        );
+        let e = Event::new(derived.clone(), "rate_move", 1_700_000_000).caused_by(trigger.clone());
         assert_eq!(e.causes, vec![trigger]);
         assert_eq!(e.at, 1_700_000_000);
     }
 
     #[test]
     fn constraint_severity_serializes_snake_case() {
-        let id = SemanticId::new(Realm::Custom("biology".into()), "constraint", "no_germline_edit");
+        let id = SemanticId::new(
+            Realm::Custom("biology".into()),
+            "constraint",
+            "no_germline_edit",
+        );
         let c = Constraint::new(
             id,
             "regulation",
@@ -610,11 +612,7 @@ mod tests {
                 SemanticId::new(Realm::Code, "graph", "deps"),
                 "crate_deps",
             )),
-            Primitive::Agent(Agent::new(
-                SemanticId::agent_run("a"),
-                "ai",
-                "Wish Agent",
-            )),
+            Primitive::Agent(Agent::new(SemanticId::agent_run("a"), "ai", "Wish Agent")),
             Primitive::Event(Event::new(
                 SemanticId::new(Realm::Code, "event", "edit"),
                 "file_edit",

@@ -1160,7 +1160,7 @@ impl ansi::Handler for HeaderGrid {
 
                 // We synchronize the state of our `honor_ps1` setting with the value passed from the shell.
                 // Note that we ALWAYS want this to be synced properly since the shell determines the prompt
-                // to be emitted. This may be de-synced from Warp settings in particular niche cases (which are
+                // to be emitted. This may be de-synced from Wish settings in particular niche cases (which are
                 // bugs), however, we still want consistent behavior for the prompt in the blocklist (we want to
                 // avoid double prompt or empty prompt issues).
                 self.honor_ps1 = honor_ps1;

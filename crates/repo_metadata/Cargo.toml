@@ -3,7 +3,7 @@ name = "repo_metadata"
 authors = ["Hermon AI <support@hermon.ai>"]
 version = "0.1.0"
 edition = "2021"
-description = "Repository metadata utilities for Warp"
+description = "Repository metadata utilities for Wish"
 publish.workspace = true
 license.workspace = true
 

@@ -94,7 +94,7 @@ impl Command {
     /// Sets the [process creation flags][1] to be passed to `CreateProcess`.
     ///
     /// These will always be ORed with `CREATE_UNICODE_ENVIRONMENT` and `CREATE_NO_WINDOW`.
-    /// The latter is needed to avoid a console window temporarily popping up in Warp.
+    /// The latter is needed to avoid a console window temporarily popping up in Wish.
     ///
     /// [1]: https://msdn.microsoft.com/en-us/library/windows/desktop/ms684863(v=vs.85).aspx
     pub fn creation_flags(&mut self, flags: u32) -> &mut Self {

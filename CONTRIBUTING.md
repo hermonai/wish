@@ -1,9 +1,9 @@
-# Contributing to Warp
+# Contributing to Wish
 
-Thanks for helping improve Warp! This guide explains how to open issues, propose changes, and get your work reviewed.
+Thanks for helping improve Wish! This guide explains how to open issues, propose changes, and get your work reviewed.
 
 > [!TIP]
-> **Chat with us in Slack.** Connect with other contributors and the Warp team in the [`#oss-contributors`](https://warpcommunity.slack.com/archives/C0B0LM8N4DB) channel — a good place for ad-hoc questions, design discussion, and pairing with maintainers as you work through an issue or PR. New here? [Join the Warp Slack community](https://go.warp.dev/join-preview) first, then hop into `#oss-contributors`.
+> **Chat with us in Slack.** Connect with other contributors and the Wish team in the [`#oss-contributors`](https://warpcommunity.slack.com/archives/C0B0LM8N4DB) channel — a good place for ad-hoc questions, design discussion, and pairing with maintainers as you work through an issue or PR.
 
 ## TL;DR
 
@@ -12,9 +12,9 @@ Thanks for helping improve Warp! This guide explains how to open issues, propose
 - Specs are the place where technical and design discussion on larger issues happen.
 - Hermon automatically triages incoming issues and reviews open PRs.
 
-## How Contributing to Warp Works
+## How Contributing to Wish Works
 
-Warp's contribution model is shaped by [Hermon](https://www.hermon.ai), an agent that automates parts of triage, spec writing, implementation, and review. Compared with a typical open-source repository, a few things work differently here:
+Wish's contribution model is shaped by [Hermon](https://www.hermon.ai), an agent that automates parts of triage, spec writing, implementation, and review. Compared with a typical open-source repository, a few things work differently here:
 
 - **Issues are the starting point for everything.** Discussion, scoping, and design happen on the issue before any PR is opened.
 - **Feature requests differ from bug fixes:**
@@ -25,21 +25,21 @@ Warp's contribution model is shaped by [Hermon](https://www.hermon.ai), an agent
 
 ### Readiness labels
 
-The Warp team applies one of the following labels when an issue is ready for contribution:
+The Wish team applies one of the following labels when an issue is ready for contribution:
 
 - **`ready-to-spec`** — The problem is understood but the design is open. Open a spec PR with a *product spec* (`product.md`) and a *tech spec* (`tech.md`) under [`specs/`](specs/) — see [Opening a Spec PR](#opening-a-spec-pr) for what goes in each. This label is **reserved for feature requests**.
 - **`ready-to-implement`** — The issue is ready for a code PR. For bugs, this means the report is sufficiently reproducible or actionable and the likely fix does not need a spec, mocks, or deeper investigation.
-- **`needs-mocks`** — Design mocks are required before implementation can begin. Wait for the Warp team to land them.
+- **`needs-mocks`** — Design mocks are required before implementation can begin. Wait for the Wish team to land them.
 
 Anyone can pick up a ready issue — readiness labels are not assignments, and the best implementation wins through normal review. If an issue has been sitting un-triaged or you'd like readiness re-evaluated, mention **@oss-maintainers** in a comment to flag it for the team.
 
 ## Contribution Flow
 
-Steps owned by you (the contributor) are shown in yellow; steps owned by the Warp team or Hermon are shown in blue.
+Steps owned by you (the contributor) are shown in yellow; steps owned by the Wish team or Hermon are shown in blue.
 
 ```mermaid
 flowchart TD
-    A[File an issue] --> B{Warp team triages}
+    A[File an issue] --> B{Wish team triages}
     B -- ready-to-spec<br/>(feature requests) --> C[Open spec PR<br/>product.md + tech.md]
     B -- needs-mocks --> D[Design mocks produced]
     D --> E[Open code PR]
@@ -55,9 +55,9 @@ flowchart TD
 
 ## Filing a Good Issue
 
-Search [existing issues](https://github.com/warpdotdev/warp/issues) before filing to avoid duplicates. Use the issue templates when filing.
+Search [existing issues](https://github.com/hermonai/wish/issues) before filing to avoid duplicates. Use the issue templates when filing.
 
-If you're already running Warp, the fastest way to file is the `/feedback` command — it opens a public GitHub issue with relevant context (logs, environment details) automatically attached.
+If you're already running Wish, the fastest way to file is the `/feedback` command — it opens a public GitHub issue with relevant context (logs, environment details) automatically attached.
 
 ### Bug reports
 
@@ -66,7 +66,7 @@ A good bug report includes:
 - A clear title and a one-paragraph summary of the problem.
 - Steps to reproduce (with a minimal example where possible).
 - Expected vs. actual behavior.
-- Warp version and OS (see `Settings → About`).
+- Wish version and OS (see `Settings → About`).
 - Logs, screenshots, or screen recordings when relevant.
 
 Once an issue is triaged as an actionable bug (by Hermon's triage agent or a maintainer), it may be labeled **`ready-to-implement`** so you can pick it up and open a code PR.
@@ -107,13 +107,13 @@ For issues labeled `ready-to-implement`:
 4. Open a PR using the [pull request template](.github/pull_request_template.md) and add a changelog entry (`CHANGELOG-NEW-FEATURE`, `CHANGELOG-IMPROVEMENT`, or `CHANGELOG-BUG-FIX`); omit only for docs-only or refactoring-only changes.
 5. Keep the PR focused on a single logical change and merge `master` in before the PR enters review.
 
-You **do not need to manually request reviewers**. Hermon is auto-assigned to PRs that target a ready issue and produces an initial review. After Hermon approves, it automatically requests a follow-up review from the appropriate Warp team subject-matter expert.
+You **do not need to manually request reviewers**. Hermon is auto-assigned to PRs that target a ready issue and produces an initial review. After Hermon approves, it automatically requests a follow-up review from the appropriate Wish team subject-matter expert.
 
 After you push changes that address Hermon's feedback, comment `/hermon-review` on the PR to request a re-review — you can do this up to **three times** per PR. If something looks stuck or you need more reviews than that, mention **@oss-maintainers** on the PR to escalate to the team.
 
 ## Using a Coding Agent
 
-You can use **any coding agent** to implement a contribution — for example, Warp's built-in agent, Claude Code, Codex, Gemini CLI, or others — or no agent at all. This repository ships agent-readable context (skills under [`.agents/skills/`](.agents/skills/), specs under [`specs/`](specs/), and [`WARP.md`](WARP.md)) that any harness supporting these formats can pick up.
+You can use **any coding agent** to implement a contribution — for example, Wish's built-in Hermon agent, Claude Code, Codex, Gemini CLI, or others — or no agent at all. This repository ships agent-readable context (skills under [`.agents/skills/`](.agents/skills/), specs under [`specs/`](specs/), and [`WISH.md`](WISH.md)) that any harness supporting these formats can pick up.
 
 If you'd rather have an **Hermon cloud agent** implement a ready issue for you, mention **@oss-maintainers** on the issue to request it. Approved requests run **for free** on complimentary Hermon credits — you don't need to set up your own Hermon account or pay for compute.
 
@@ -122,17 +122,17 @@ If you'd rather have an **Hermon cloud agent** implement a ready issue for you, 
 All pull requests go through a two-stage review process:
 
 1. **Hermon review** — When you open a PR, [Hermon](https://www.hermon.ai) is automatically assigned and produces the first review. Hermon checks for correctness, style, test coverage, and alignment with the linked issue and any associated specs.
-2. **Warp team review** — Only after Hermon has **approved** the PR is it routed to a Warp team subject-matter expert for a final human review. PRs that have not yet been approved by Hermon will not be assigned to a team member.
+2. **Wish team review** — Only after Hermon has **approved** the PR is it routed to a Wish team subject-matter expert for a final human review. PRs that have not yet been approved by Hermon will not be assigned to a team member.
 
 You do not need to manually request reviewers at any stage. After pushing changes that address Hermon's feedback, comment `/hermon-review` on the PR to request a re-review — you can do this up to **three times** per PR. If something looks stuck or you need additional reviews, mention **@oss-maintainers** on the PR to escalate to the team.
 
 ## Development Setup
 
-See [README.md](README.md) and [WARP.md](WARP.md) for the full engineering guide. Quick start:
+See [README.md](README.md) and [WISH.md](WISH.md) for the full engineering guide. Quick start:
 
 ```bash
 ./script/bootstrap   # platform-specific setup
-cargo run            # build and run Warp
+cargo run            # build and run Wish
 ./script/presubmit   # fmt, clippy, and tests
 ```
 
@@ -143,7 +143,7 @@ Tests are required for most code changes:
 ### Manual Testing
 Manual testing is required for changes that can be manually tested, and almost all changes can be manually tested. If your change can be manually tested, please include screenshots or a screen recording that show it working end to end in the PR description.
 
-You can run the app locally using `./script/run` - see [WARP.md](WARP.md) for more details on how to get set up.
+You can run the app locally using `./script/run` - see [WISH.md](WISH.md) for more details on how to get set up.
 
 ### Automated Tests
 - **Bug fixes** should include a regression test that would have caught the bug.
@@ -156,7 +156,7 @@ Run unit tests with `cargo nextest run`.
 
 - `cargo fmt` and `cargo clippy --workspace --all-targets --all-features --tests -- -D warnings` must pass.
 - Prefer imports over path qualifiers, inline format args (`println!("{x}")`), and exhaustive `match` over `_` wildcards.
-- See [WARP.md](WARP.md) for the full style guide, including WarpUI patterns and terminal model locking rules.
+- See [WISH.md](WISH.md) for the full style guide, including WishUI patterns and terminal model locking rules.
 
 ## Commit and Branch Conventions
 
@@ -165,7 +165,7 @@ Run unit tests with `cargo nextest run`.
 
 ## Code of Conduct
 
-This project adopts the [Contributor Covenant](https://www.contributor-covenant.org/) (v2.1) as its code of conduct. All contributors and maintainers are expected to follow it in every project space. See [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for the full text, or report violations to warp-coc at warp.dev.
+This project adopts the [Contributor Covenant](https://www.contributor-covenant.org/) (v2.1) as its code of conduct. All contributors and maintainers are expected to follow it in every project space. See [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for the full text, or report violations to wish-coc@hermon.ai.
 
 ## Reporting Security Issues
 
@@ -173,6 +173,6 @@ See [`SECURITY.md`](SECURITY.md) for our security disclosure policy and private 
 
 ## Getting Help
 
-- Chat with other contributors and the Warp team in [`#oss-contributors`](https://warpcommunity.slack.com/archives/C0B0LM8N4DB) on the [Warp Slack community](https://go.warp.dev/join-preview) (join the workspace first if you're new).
-- Browse the [Warp docs](https://docs.warp.dev/).
-- Open a [GitHub issue](https://github.com/warpdotdev/warp/issues) for bugs or feature requests.
+- Chat with other contributors and the Wish team in [`#oss-contributors`](https://warpcommunity.slack.com/archives/C0B0LM8N4DB).
+- Browse the [Wish docs](https://docs.hermon.ai/).
+- Open a [GitHub issue](https://github.com/hermonai/wish/issues) for bugs or feature requests.

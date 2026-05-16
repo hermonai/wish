@@ -111,11 +111,7 @@ pub struct ParseSemanticIdError {
 
 impl fmt::Display for ParseSemanticIdError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "invalid SemanticId {:?}: {}",
-            self.input, self.reason
-        )
+        write!(f, "invalid SemanticId {:?}: {}", self.input, self.reason)
     }
 }
 
@@ -142,9 +138,7 @@ impl FromStr for SemanticId {
         let mut parts = body.splitn(3, ':');
         let realm_str = parts.next().ok_or_else(|| err("missing realm"))?;
         let kind = parts.next().ok_or_else(|| err("missing kind"))?;
-        let stable_key = parts
-            .next()
-            .ok_or_else(|| err("missing stable_key"))?;
+        let stable_key = parts.next().ok_or_else(|| err("missing stable_key"))?;
         if realm_str.is_empty() || kind.is_empty() || stable_key.is_empty() {
             return Err(err("empty component"));
         }

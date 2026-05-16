@@ -1,4 +1,4 @@
-//! Context chips built into Warp
+//! Context chips built into Wish
 
 use chrono::Local;
 use wish_util::path::user_friendly_path;

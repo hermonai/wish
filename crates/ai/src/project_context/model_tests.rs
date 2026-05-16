@@ -366,7 +366,7 @@ fn test_global_rule_layered_with_project_warp() {
 }
 
 #[test]
-fn test_in_dir_warp_shadows_agents_with_global() {
+fn test_in_dir_wish_shadows_agents_with_global() {
     let mut model = ProjectContextModel::default();
     insert_global_rule(&mut model, Path::new("/home/u/.agents/AGENTS.md"), "global");
     // Both WARP.md and AGENTS.md in the same project directory: WARP.md should

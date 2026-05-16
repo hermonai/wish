@@ -184,9 +184,9 @@ pub(super) fn subscribe_to_link_model(
             })
         }
         LinkEvent::OpenWarpDriveLink {
-            open_warp_drive_args,
+            open_wish_drive_args,
         } => ctx.emit(crate::pane_group::Event::OpenWarpDriveLink {
-            open_warp_drive_args: open_warp_drive_args.clone(),
+            open_wish_drive_args: open_wish_drive_args.clone(),
         }),
         LinkEvent::StartLocalSession { path } => {
             pane_group.add_session_in_directory(
@@ -230,7 +230,7 @@ fn handle_notebook_event(
         NotebookEvent::EditWorkflow(id) => {
             ctx.emit(crate::pane_group::Event::OpenCloudWorkflowForEdit(*id))
         }
-        NotebookEvent::ViewInWarpDrive(id) => view_in_warp_drive(*id, ctx),
+        NotebookEvent::ViewInWarpDrive(id) => view_in_wish_drive(*id, ctx),
         NotebookEvent::MoveToSpace {
             cloud_object_type_and_id,
             new_space,
@@ -270,7 +270,7 @@ fn run_notebook_workflow(
     });
 }
 
-fn view_in_warp_drive(id: WarpDriveItemId, ctx: &mut ViewContext<PaneGroup>) {
+fn view_in_wish_drive(id: WarpDriveItemId, ctx: &mut ViewContext<PaneGroup>) {
     ctx.emit(crate::pane_group::Event::ViewInWarpDrive(id))
 }
 

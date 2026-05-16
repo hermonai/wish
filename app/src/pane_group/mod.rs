@@ -270,7 +270,7 @@ fn resolve_tab_config_shell(name: &str, ctx: &AppContext) -> Option<AvailableShe
     AvailableShell::try_from(name).ok()
 }
 const WARP_SHELL_COMPATIBILITY_DOCS: &str =
-    "https://docs.warp.dev/getting-started/supported-shells";
+    "https://docs.hermon.ai/getting-started/supported-shells";
 // Default minimum width for a newly created Agent Mode pane so that it is legible. Called "default"
 // because this value may be too large for small windows. In that case, we fall back to 50% of the
 // window width.
@@ -545,7 +545,7 @@ pub enum Event {
         session: Arc<Session>,
     },
     OpenWarpDriveLink {
-        open_warp_drive_args: OpenWarpDriveObjectArgs,
+        open_wish_drive_args: OpenWarpDriveObjectArgs,
     },
     #[cfg(feature = "local_fs")]
     OpenCodeInWish {
@@ -2468,7 +2468,7 @@ impl PaneGroup {
                                 if honor_ps1 {
                                     manager.send_switch_to_ps1_bindkey(ctx);
                                 } else {
-                                    manager.send_switch_to_warp_prompt_bindkey(ctx);
+                                    manager.send_switch_to_wish_prompt_bindkey(ctx);
                                 }
                             }
                         });

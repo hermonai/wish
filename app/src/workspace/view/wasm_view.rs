@@ -25,7 +25,7 @@ use crate::BlocklistAIHistoryModel;
 
 const TRANSCRIPT_PANEL_WIDTH: f32 = 280.0;
 
-/// Builds the OZ runs URL for viewing all cloud runs.
+/// Builds the HERMON runs URL for viewing all cloud runs.
 fn build_hermon_runs_url() -> String {
     format!("{}/runs", ChannelState::hermon_root_url())
 }

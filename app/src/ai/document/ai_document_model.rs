@@ -63,13 +63,13 @@ struct AIDocumentSaveRequest {
     document_id: AIDocumentId,
 }
 
-/// The status of saving an AI Document to Warp Drive
+/// The status of saving an AI Document to Wish Drive
 pub enum AIDocumentSaveStatus {
-    /// Not being synced with Warp Drive at all
+    /// Not being synced with Wish Drive at all
     NotSaved,
-    /// Is being saved to Warp Drive, but has not finished yet
+    /// Is being saved to Wish Drive, but has not finished yet
     Saving,
-    /// Has been saved to Warp Drive
+    /// Has been saved to Wish Drive
     Saved,
 }
 
@@ -97,7 +97,7 @@ impl AIDocumentUserEditStatus {
 
 const PLAN_FOLDER_NAME: &str = "Plans";
 
-/// Represents a document queued for creation in Warp Drive.
+/// Represents a document queued for creation in Wish Drive.
 #[derive(Debug, Clone)]
 struct PendingDocument {
     id: AIDocumentId,
@@ -117,7 +117,7 @@ pub struct AIDocumentEarlierVersion {
 #[derive(Debug, Clone)]
 pub struct AIDocument {
     /// ID to sync with a cloud model with the server.
-    /// Set when a document is saved to Warp Drive.
+    /// Set when a document is saved to Wish Drive.
     pub sync_id: Option<SyncId>,
     pub title: String,
     pub version: AIDocumentVersion,
@@ -251,7 +251,7 @@ impl AIDocumentModel {
     /// Sends a request to create a new cloud notebook with the document's contents.
     /// Returns true if the create document request was sent successfully (or if there was already a notebook entry).
     /// Actually creating the notebook is done asynchronously in the background.
-    pub fn sync_to_warp_drive(&mut self, id: AIDocumentId, ctx: &mut ModelContext<Self>) -> bool {
+    pub fn sync_to_wish_drive(&mut self, id: AIDocumentId, ctx: &mut ModelContext<Self>) -> bool {
         let Some(document) = self.documents.get(&id) else {
             return false;
         };
@@ -319,7 +319,7 @@ impl AIDocumentModel {
         // If we're waiting on a Plans folder to complete creation, ensure the Plans folder exists
         // (creating it if needed) and if it has a ServerId, process the pending document queue.
         //
-        // NOTE: this handler runs for *all* Warp Drive object creations, so we must only create the
+        // NOTE: this handler runs for *all* Wish Drive object creations, so we must only create the
         // Plans folder when we actually have a plan notebook waiting to be created.
         if !self.pending_document_queue.is_empty() {
             if let Some(owner) = Self::get_plan_owner(ctx) {
@@ -395,7 +395,7 @@ impl AIDocumentModel {
         id
     }
 
-    /// Create a document from an existing Warp Drive notebook.
+    /// Create a document from an existing Wish Drive notebook.
     pub fn create_document_from_notebook(
         &mut self,
         ai_document_id: AIDocumentId,
@@ -707,7 +707,7 @@ impl AIDocumentModel {
         }
     }
 
-    pub fn get_document_warp_drive_object_link(
+    pub fn get_document_wish_drive_object_link(
         &self,
         id: &AIDocumentId,
         ctx: &AppContext,
@@ -929,7 +929,7 @@ impl AIDocumentModel {
             ctx,
         );
 
-        // Update the sync status of a document by checking if it exists in Warp Drive.
+        // Update the sync status of a document by checking if it exists in Wish Drive.
         let Some(doc) = self.documents.get(&id) else {
             return;
         };

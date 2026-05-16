@@ -208,7 +208,7 @@ fn parse_preinstall_unsupported_non_glibc() {
 ///      in the replacement as the matched pattern, so a `$HOME`
 ///      containing `&` resolves to a `~`-substituted path.
 ///
-/// Both bugs surface as the install binary landing somewhere Warp's
+/// Both bugs surface as the install binary landing somewhere Wish's
 /// launch step doesn't look, producing a misleading "Response channel
 /// closed before receiving a reply".
 ///
@@ -221,7 +221,7 @@ fn parse_preinstall_unsupported_non_glibc() {
 ///
 /// Gated to Unix because the test invokes `/bin/bash` (or `bash` from
 /// PATH) directly. The bug only matters on Unix remotes anyway —
-/// Warp's remote-server SSH wrapper doesn't target Windows hosts.
+/// Wish's remote-server SSH wrapper doesn't target Windows hosts.
 #[cfg(unix)]
 #[test]
 fn install_script_tilde_expansion_resolves_correctly() {

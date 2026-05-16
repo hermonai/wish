@@ -1,4 +1,4 @@
-# Tech Spec: `--jq` filter flag for `oz run get` and `oz run list`
+# Tech Spec: `--jq` filter flag for `hermon run get` and `hermon run list`
 
 See `specs/REMOTE-1393/PRODUCT.md` for the product spec.
 
@@ -11,7 +11,7 @@ Two guiding constraints beyond the product spec:
 
 ## Context
 
-The JSON output path for `oz run list` and `oz run get` is already in place. The relevant code after REMOTE-1374:
+The JSON output path for `hermon run list` and `hermon run get` is already in place. The relevant code after REMOTE-1374:
 
 - `crates/wish_cli/src/task.rs:101` — `ListTasksArgs` (all existing filter flags).
 - `crates/wish_cli/src/task.rs:281` — `TaskGetArgs`.
@@ -134,7 +134,7 @@ pub struct TaskGetArgs {
 }
 ```
 
-Because `JsonFilter` is a single-field `Args` struct with `long = "jq"`, both commands expose `--jq <FILTER>` in help output without needing per-command duplication of the doc comment. Adding `--jq` to a third command later (e.g. `oz run conversation get`) is a single `#[command(flatten)] pub json_filter: JsonFilter,` line.
+Because `JsonFilter` is a single-field `Args` struct with `long = "jq"`, both commands expose `--jq <FILTER>` in help output without needing per-command duplication of the doc comment. Adding `--jq` to a third command later (e.g. `hermon run conversation get`) is a single `#[command(flatten)] pub json_filter: JsonFilter,` line.
 
 ### 4. Filter plumbing in `print_raw_json` (`app/src/ai/agent_sdk/output.rs`)
 
@@ -205,7 +205,7 @@ Runtime failures propagate as `anyhow::Error` through the existing `spawn_comman
 Unit tests on `JsonFilter` and `parse_jq_filter` in `crates/wish_cli/src/json_filter_tests.rs` (new):
 
 - **Invariants 1, 5, 6 (fail-fast):** `parse_jq_filter(".foo")` returns `Ok`; `parse_jq_filter("@")` and `parse_jq_filter("")` return `Err` whose `Display` contains the filter source. This is the regression guard for fail-fast: if this test passes at the `parse_jq_filter` layer, clap's own invocation guarantees failure happens in `Args::from_env()`.
-- **Invariants 1, 5 (end-to-end clap):** calling `Args::try_parse_from(["oz", "run", "list", "--jq", "@"])` returns `Err` with `clap::error::ErrorKind::ValueValidation`. Repeat for `oz run get ID --jq @`.
+- **Invariants 1, 5 (end-to-end clap):** calling `Args::try_parse_from(["hermon", "run", "list", "--jq", "@"])` returns `Err` with `clap::error::ErrorKind::ValueValidation`. Repeat for `hermon run get ID --jq @`.
 
 Unit tests on `print_raw_json` in `app/src/ai/agent_sdk/output_tests.rs` (existing file). These use `parse_jq_filter` to produce a `JqFilter` and then call a crate-private variant of `run_jq_filter` that writes to a `Vec<u8>` instead of stdout. Each test maps back to a numbered invariant in `PRODUCT.md`:
 
@@ -220,8 +220,8 @@ Unit tests on `print_raw_json` in `app/src/ai/agent_sdk/output_tests.rs` (existi
 
 Clap parsing tests in `crates/wish_cli/src/task_tests.rs`:
 
-- Parsing `oz run list --jq ".foo"` populates `ListTasksArgs.json_filter.filter` with `Some(_)` (we don't assert deep structural equality on the compiled filter; the `parse_jq_filter`-level tests above already cover the compile happy path).
-- Parsing `oz run get ID --jq ".foo"` populates `TaskGetArgs.json_filter.filter` with `Some(_)`.
+- Parsing `hermon run list --jq ".foo"` populates `ListTasksArgs.json_filter.filter` with `Some(_)` (we don't assert deep structural equality on the compiled filter; the `parse_jq_filter`-level tests above already cover the compile happy path).
+- Parsing `hermon run get ID --jq ".foo"` populates `TaskGetArgs.json_filter.filter` with `Some(_)`.
 
 Runner-level tests in `app/src/ai/agent_sdk/ambient_tests.rs` (existing file):
 
@@ -229,12 +229,12 @@ Runner-level tests in `app/src/ai/agent_sdk/ambient_tests.rs` (existing file):
 
 Manual validation against staging covering invariants 2, 3, 4, 5, 6, 7, and 8:
 
-- `oz run list --jq '.runs | length'` and `oz run get <id> --jq '.state'` on a run that exists.
-- `oz run list --source CLI --jq '.runs[].task_id'` (composition with existing filters, invariant 7).
-- `oz run list --jq '.runs[].bogus | .x'` (runtime error, invariant 5).
-- `oz run list --jq '@'` (parse error, invariants 5 and 6 — confirm via `-v`/traffic inspection that no HTTP request is made).
-- `oz run list --jq empty` (empty output, invariant 4).
-- `oz run list --help` and `oz run get --help` to confirm flag documentation per invariant 8.
+- `hermon run list --jq '.runs | length'` and `hermon run get <id> --jq '.state'` on a run that exists.
+- `hermon run list --source CLI --jq '.runs[].task_id'` (composition with existing filters, invariant 7).
+- `hermon run list --jq '.runs[].bogus | .x'` (runtime error, invariant 5).
+- `hermon run list --jq '@'` (parse error, invariants 5 and 6 — confirm via `-v`/traffic inspection that no HTTP request is made).
+- `hermon run list --jq empty` (empty output, invariant 4).
+- `hermon run list --help` and `hermon run get --help` to confirm flag documentation per invariant 8.
 
 Presubmit: `./script/presubmit` (fmt, clippy `-D warnings`, test suite). The touched crates are `wish_cli` (minor) and `warp` (app).
 
@@ -247,7 +247,7 @@ Presubmit: `./script/presubmit` (fmt, clippy `-D warnings`, test suite). The tou
 
 ## Follow-ups
 
-- Apply `--jq` to `oz run conversation get` (and `oz run get --conversation`). Mechanical once this lands — the conversation emitter also goes through JSON.
+- Apply `--jq` to `hermon run conversation get` (and `hermon run get --conversation`). Mechanical once this lands — the conversation emitter also goes through JSON.
 - Add `--jq` to any other command that already uses `print_raw_json` (currently only the two in this PR).
 - TTY-aware colorization of non-scalar output ([cli/cli#7236](https://github.com/cli/cli/pull/7236)), ideally shared with the existing `--output-format json` path.
 - `--template` as a Go-template (or handlebars) alternative to `--jq` ([gh formatting docs](https://cli.github.com/manual/gh_help_formatting)), if there's user demand.

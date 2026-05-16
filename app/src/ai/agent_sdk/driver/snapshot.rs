@@ -62,7 +62,7 @@ const DECLARATIONS_PATH_ENV_VAR: &str = "HERMON_SNAPSHOT_DECLARATIONS_FILE";
 
 /// Env var pointing directly at the declarations-generator script.
 /// Set by `entrypoint.sh` in containerized runs and by `hermon-local --docker-dir` in local dev.
-const DECLARATIONS_SCRIPT_PATH_ENV_VAR: &str = "OZ_SNAPSHOT_DECLARATIONS_SCRIPT";
+const DECLARATIONS_SCRIPT_PATH_ENV_VAR: &str = "HERMON_SNAPSHOT_DECLARATIONS_SCRIPT";
 
 /// Upper bound on declarations-script runtime. If the script takes longer we log an error and
 /// move on; the upload step then reads whatever the file already contains (possibly nothing).
@@ -119,7 +119,7 @@ struct FileDeclaration<'a> {
 /// Invoke `snapshot-declarations.sh` to (re)generate the declarations file consumed by the
 /// rest of the upload pipeline.
 ///
-/// The script path resolves from `$OZ_SNAPSHOT_DECLARATIONS_SCRIPT`, the scan root defaults to
+/// The script path resolves from `$HERMON_SNAPSHOT_DECLARATIONS_SCRIPT`, the scan root defaults to
 /// `working_dir` (the agent's workspace), and writes to the per-run declarations file resolved
 /// from `task_id`. The script appends to the file if it already exists, so
 /// repeated invocations within a single run accumulate repos instead of clobbering.

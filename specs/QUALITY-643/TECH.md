@@ -149,7 +149,7 @@ Addresses behaviors 17 (remote), 18 (remote).
 - `populate_model_picker_for_harness` with harness="claude": "Default model" entry at top, then harness-specific models from `HarnessAvailabilityModel`. (Behavior 7)
 - `populate_model_picker_for_harness` with harness="codex", cloud mode: "Default model" entry at top, then Codex models. (Behavior 8)
 - `populate_model_picker_for_harness` with harness="codex", local mode: only "Default model" entry. (Behavior 8)
-- `populate_model_picker_for_harness` with harness="oz": Warp LLM catalog (existing behavior). (Behavior 6)
+- `populate_model_picker_for_harness` with harness="hermon": Warp LLM catalog (existing behavior). (Behavior 6)
 - `is_model_in_filtered_choices` returns false for Warp IDs when harness is non-Hermon, true for empty string ("Default model"). (Behavior 12)
 - `first_filtered_model_id` returns empty string for non-Hermon harness. (Behavior 11)
 - Harness change from Claude (model="opus") to Hermon: model resets to first Warp LLM. (Behavior 12)

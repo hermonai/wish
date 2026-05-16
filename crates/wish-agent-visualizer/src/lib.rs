@@ -61,14 +61,22 @@ pub enum AgentStepStatus {
 #[derive(Debug, Clone)]
 pub enum VisualizerEvent {
     Canvas(CanvasPatch),
-    Status { step_id: String, status: AgentStepStatus },
+    Status {
+        step_id: String,
+        status: AgentStepStatus,
+    },
 }
 
 /// Build an `AgentDag` canvas from a recorded run.
 pub fn build_dag(run: &AgentRun) -> Canvas {
     let mut canvas = Canvas::new();
     canvas.layout = LayoutMode::Layered;
-    let bounds = Rect { x: 0.0, y: 0.0, w: 200.0, h: 40.0 };
+    let bounds = Rect {
+        x: 0.0,
+        y: 0.0,
+        w: 200.0,
+        h: 40.0,
+    };
 
     // Root node for the run itself.
     let root_id = SemanticId::new(Realm::Agent, "run", &run.session_id);

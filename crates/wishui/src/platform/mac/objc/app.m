@@ -479,7 +479,7 @@ NSUInteger activeScreenId() {
 
 @end
 
-WarpApplication *get_warp_app() {
+WarpApplication *get_wish_app() {
     // Set up the delegate (once).
     // The delegate is deliberately leaked.
     WarpApplication *app = [WarpApplication sharedApplication];
@@ -521,7 +521,7 @@ NSMenuItem *make_services_menu_item() {
 // \return a new menu item that wraps the given context pointer.
 // The pointer will be provided back to Warp in the callbacks (see menus.h).
 // The result is autoreleased.
-NSMenuItem *make_warp_custom_menu_item(void *context) {
+NSMenuItem *make_wish_custom_menu_item(void *context) {
     WarpCustomMenuItemHandler *handler =
         [[[WarpCustomMenuItemHandler alloc] initWithContext:context] autorelease];
 

@@ -183,7 +183,7 @@ pub trait CloudObject: Debug {
     fn update_object_queue_item(&self, revision_ts: Option<Revision>) -> QueueItem;
 
     /// Returns whether this model type should render as a warp drive item.
-    fn renders_in_warp_drive(&self) -> bool;
+    fn renders_in_wish_drive(&self) -> bool;
 
     /// Returns whether this model type should show update toasts in the UI.
     fn should_show_activity_toasts(&self) -> bool {
@@ -192,7 +192,7 @@ pub trait CloudObject: Debug {
 
     /// Creates a new Wish Drive item for this object.  Returns None if this
     /// object is not rendered in Wish Drive.
-    fn to_warp_drive_item(&self, appearance: &Appearance) -> Option<Box<dyn WarpDriveItem>>;
+    fn to_wish_drive_item(&self, appearance: &Appearance) -> Option<Box<dyn WarpDriveItem>>;
 
     /// Returns the web link of this object. Will return none if we do not support web links
     /// for this particular object (i.e. if it's not yet sync'd to the server, or if we don't
@@ -464,7 +464,7 @@ pub trait CloudModelType: Debug + Clone + Send + Sync {
     fn object_type(&self) -> ObjectType;
 
     /// Returns whether this model type should render as a warp drive item.
-    fn renders_in_warp_drive(&self) -> bool;
+    fn renders_in_wish_drive(&self) -> bool;
 
     /// Returns whether this model type should show update toasts in the UI.
     fn should_show_activity_toasts(&self) -> bool {
@@ -479,7 +479,7 @@ pub trait CloudModelType: Debug + Clone + Send + Sync {
 
     /// Creates a new warp drive item for this model type. Returns None
     /// if this object does not render in Wish Drive.
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         id: SyncId,
         appearance: &Appearance,
@@ -791,12 +791,12 @@ where
         self.model.update_object_queue_item(revision_ts, self)
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
-        self.model.renders_in_warp_drive()
+    fn renders_in_wish_drive(&self) -> bool {
+        self.model.renders_in_wish_drive()
     }
 
-    fn to_warp_drive_item(&self, appearance: &Appearance) -> Option<Box<dyn WarpDriveItem>> {
-        self.model.to_warp_drive_item(self.id, appearance, self)
+    fn to_wish_drive_item(&self, appearance: &Appearance) -> Option<Box<dyn WarpDriveItem>> {
+        self.model.to_wish_drive_item(self.id, appearance, self)
     }
 
     fn can_export(&self) -> bool {
@@ -933,7 +933,7 @@ where
 /// Extracts the server id and object type from a (caller validated) Drive link.
 /// Intended use is deriving metadata from links such that Warp objects
 /// can be opened natively in Wish with no web interaction.
-pub fn extract_server_id_and_object_type_from_warp_drive_link(
+pub fn extract_server_id_and_object_type_from_wish_drive_link(
     url: &Url,
 ) -> Option<OpenWarpDriveObjectArgs> {
     let server_id = url
@@ -944,7 +944,7 @@ pub fn extract_server_id_and_object_type_from_warp_drive_link(
 
     let object_type = url.path_segments().and_then(|mut segments| segments.nth(1));
 
-    // Parse the object portion of the path segment (warp.dev/drive/{object})
+    // Parse the object portion of the path segment (hermon.ai/drive/{object})
     // into an object type
     let object_type = match object_type {
         Some("notebook") => ObjectType::Notebook,
@@ -1436,12 +1436,12 @@ impl ServerFolder {
         name: Option<String>,
         metadata: ServerMetadata,
         permissions: ServerPermissions,
-        is_warp_pack: bool,
+        is_wish_pack: bool,
     ) -> Result<Self> {
         match name {
             Some(name) => Ok(Self {
                 id: SyncId::ServerId(uid),
-                model: CloudFolderModel::new(&name, is_warp_pack),
+                model: CloudFolderModel::new(&name, is_wish_pack),
                 metadata,
                 permissions,
             }),

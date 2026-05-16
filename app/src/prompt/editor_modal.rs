@@ -86,7 +86,7 @@ pub enum EditorModalEvent {
 struct MouseStateHandles {
     cancel_button_handle: MouseStateHandle,
     save_button_handle: MouseStateHandle,
-    restore_default_warp_prompt_handle: MouseStateHandle,
+    restore_default_wish_prompt_handle: MouseStateHandle,
     warp_prompt_mouse_state_handle: MouseStateHandle,
     ps1_mouse_state_handle: MouseStateHandle,
     same_line_prompt_checkbox_state_handle: MouseStateHandle,
@@ -128,17 +128,17 @@ pub struct EditorModal {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum PromptType {
     PS1,
-    Warp,
-    WarpDefault,
+    Wish,
+    WishDefault,
 }
 
 impl PromptType {
     fn warp_prompt_from_settings(app: &AppContext) -> PromptType {
         let session_settings = SessionSettings::as_ref(app);
         if matches!(*session_settings.saved_prompt, PromptSelection::Default) {
-            PromptType::WarpDefault
+            PromptType::WishDefault
         } else {
-            PromptType::Warp
+            PromptType::Wish
         }
     }
 
@@ -293,7 +293,7 @@ impl EditorModal {
     }
 
     /// Updates the state of the Wish prompt separator dropdown to be enabled/disabled based on the current state of the modal.
-    fn update_warp_separator_dropdown_state(&mut self, ctx: &mut ViewContext<Self>) {
+    fn update_wish_separator_dropdown_state(&mut self, ctx: &mut ViewContext<Self>) {
         // If we are using the Wish prompt and SLP is enabled, then we enable the dropdown. Otherwise, disable it.
         if self.prompt_type != PromptType::PS1 && self.same_line_prompt_enabled {
             self.warp_prompt_separator_dropdown
@@ -317,12 +317,12 @@ impl EditorModal {
                         report_if_error!(settings.honor_ps1.set_value(true, ctx));
                     });
                 }
-                PromptType::WarpDefault => {
+                PromptType::WishDefault => {
                     Prompt::handle(ctx).update(ctx, |prompt, ctx| {
                         report_if_error!(prompt.reset(ctx));
                     });
                 }
-                PromptType::Warp => {
+                PromptType::Wish => {
                     let new_setup = self
                         .chip_configurator
                         .used_chips
@@ -355,8 +355,8 @@ impl EditorModal {
 
             let prompt_info = match self.prompt_type {
                 PromptType::PS1 => PromptChoice::PS1,
-                PromptType::WarpDefault => PromptChoice::Default,
-                PromptType::Warp => PromptChoice::Custom {
+                PromptType::WishDefault => PromptChoice::Default,
+                PromptType::Wish => PromptChoice::Custom {
                     builtin_chips: self
                         .chip_configurator
                         .used_chips
@@ -403,7 +403,7 @@ impl TypedActionView for EditorModal {
                 let mutated = self.chip_configurator.handle_action(chip_action, ctx);
                 if mutated {
                     self.is_dirty = true;
-                    self.prompt_type = PromptType::Warp;
+                    self.prompt_type = PromptType::Wish;
                 }
                 ctx.notify();
             }
@@ -411,25 +411,25 @@ impl TypedActionView for EditorModal {
                 self.is_dirty = true;
                 self.prompt_type = PromptType::PS1;
                 // Disable the Warp separator dropdown (only applies to Wish prompt).
-                self.update_warp_separator_dropdown_state(ctx);
+                self.update_wish_separator_dropdown_state(ctx);
                 ctx.notify();
             }
             Self::Action::UseWarpPrompt => {
                 self.is_dirty = true;
                 self.prompt_type = PromptType::warp_prompt_from_settings(ctx);
                 // Enable the Warp separator dropdown, if SLP is on.
-                self.update_warp_separator_dropdown_state(ctx);
+                self.update_wish_separator_dropdown_state(ctx);
                 ctx.notify();
             }
             Self::Action::ResetWarpPrompt => {
                 self.is_dirty = true;
-                self.prompt_type = PromptType::WarpDefault;
+                self.prompt_type = PromptType::WishDefault;
 
                 let default_prompt = PromptConfiguration::default_prompt();
                 self.same_line_prompt_enabled = default_prompt.same_line_prompt_enabled();
                 self.warp_prompt_separator = default_prompt.separator();
                 // Disable the Warp separator dropdown, since SLP is off for the default Wish prompt.
-                self.update_warp_separator_dropdown_state(ctx);
+                self.update_wish_separator_dropdown_state(ctx);
                 let restored_chips = default_prompt.chip_kinds();
                 self.update_used_chips(restored_chips, ctx);
                 ctx.notify();
@@ -440,9 +440,9 @@ impl TypedActionView for EditorModal {
 
                 // In case we had previously picked default Wish prompt, but now the user toggled
                 // same line prompt - it's no longer the default prompt.
-                self.prompt_type = PromptType::Warp;
+                self.prompt_type = PromptType::Wish;
 
-                self.update_warp_separator_dropdown_state(ctx);
+                self.update_wish_separator_dropdown_state(ctx);
                 ctx.notify();
             }
             Self::Action::SetWarpPromptSeparator { separator } => {
@@ -564,13 +564,13 @@ impl EditorModal {
         .finish()
     }
 
-    fn render_restore_default_warp_prompt_button(
+    fn render_restore_default_wish_prompt_button(
         &self,
         appearance: &Appearance,
     ) -> Box<dyn Element> {
         let button = Hoverable::new(
             self.mouse_state_handles
-                .restore_default_warp_prompt_handle
+                .restore_default_wish_prompt_handle
                 .clone(),
             |_state| {
                 appearance
@@ -587,7 +587,7 @@ impl EditorModal {
         .on_click(|ctx, _, _| ctx.dispatch_typed_action(EditorModalAction::ResetWarpPrompt))
         .with_cursor(Cursor::PointingHand);
 
-        if matches!(self.prompt_type, PromptType::WarpDefault) && !self.is_dirty {
+        if matches!(self.prompt_type, PromptType::WishDefault) && !self.is_dirty {
             button.disable().finish()
         } else {
             button.finish()
@@ -657,7 +657,7 @@ impl EditorModal {
             .finish()
     }
 
-    fn render_warp_prompt_section(&self, appearance: &Appearance) -> Box<dyn Element> {
+    fn render_wish_prompt_section(&self, appearance: &Appearance) -> Box<dyn Element> {
         let body = Flex::column()
             .with_child(
                 Container::new(self.render_unused_chips(appearance))
@@ -684,14 +684,14 @@ impl EditorModal {
                     .build()
                     .finish(),
             )
-            .with_child(self.render_restore_default_warp_prompt_button(appearance))
+            .with_child(self.render_restore_default_wish_prompt_button(appearance))
             .with_main_axis_alignment(MainAxisAlignment::SpaceBetween)
             .with_main_axis_size(MainAxisSize::Max)
             .finish();
 
         self.render_prompt_section(
             appearance,
-            matches!(self.prompt_type, PromptType::Warp | PromptType::WarpDefault),
+            matches!(self.prompt_type, PromptType::Wish | PromptType::WishDefault),
             header_row,
             None,
             body,
@@ -796,7 +796,7 @@ impl EditorModal {
         // - there are no changes
         // - the Wish prompt is used but there are no chips selected
         let save_disabled = !self.is_dirty
-            || (matches!(self.prompt_type, PromptType::Warp)
+            || (matches!(self.prompt_type, PromptType::Wish)
                 && self.chip_configurator.used_chips.is_empty());
         let save_button = self.render_primary_button(
             "Save changes".to_string(),
@@ -845,7 +845,7 @@ impl View for EditorModal {
             ConstrainedBox::new(
                 column
                     .with_child(
-                        Container::new(self.render_warp_prompt_section(appearance))
+                        Container::new(self.render_wish_prompt_section(appearance))
                             .with_margin_bottom(MARGIN_BETWEEN_MODAL_SECTIONS)
                             .finish(),
                     )

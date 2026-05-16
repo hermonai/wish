@@ -770,9 +770,7 @@ fn fetch_auth_tokens(
                 }
             },
             Err(error) => {
-                log::debug!(
-                    "Failed to make response to firebase to fetch access token: {error:?}"
-                );
+                log::debug!("Failed to make response to firebase to fetch access token: {error:?}");
 
                 fetch_access_token_via_proxy(client, &request_body, proxy_url).await
             }

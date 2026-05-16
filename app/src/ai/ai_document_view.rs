@@ -396,7 +396,7 @@ impl AIDocumentView {
             pane_config.refresh_pane_header_overflow_menu_items(ctx)
         });
 
-        // Create sync button mouse state (for Warp Drive syncing)
+        // Create sync button mouse state (for Wish Drive syncing)
         let sync_button_mouse_state = MouseStateHandle::default();
 
         // Create Update Agent button
@@ -998,9 +998,9 @@ impl AIDocumentView {
         });
     }
 
-    fn create_warp_drive_notebook(&self, ctx: &mut ViewContext<Self>) {
+    fn create_wish_drive_notebook(&self, ctx: &mut ViewContext<Self>) {
         let success = AIDocumentModel::handle(ctx).update(ctx, |model, ctx| {
-            model.sync_to_warp_drive(self.document_id, ctx)
+            model.sync_to_wish_drive(self.document_id, ctx)
         });
         if !success {
             log::error!("Failed to create Wish Drive notebook");
@@ -1133,7 +1133,7 @@ impl TypedActionView for AIDocumentView {
                 self.refresh(ctx);
             }
             AIDocumentAction::Export => self.export(ctx),
-            AIDocumentAction::CreateWarpDriveNotebook => self.create_warp_drive_notebook(ctx),
+            AIDocumentAction::CreateWarpDriveNotebook => self.create_wish_drive_notebook(ctx),
             AIDocumentAction::CopyLink(link) => {
                 send_telemetry_from_ctx!(
                     TelemetryEvent::ObjectLinkCopied { link: link.clone() },
@@ -1303,9 +1303,9 @@ impl BackingView for AIDocumentView {
     ) -> Vec<MenuItem<Self::PaneHeaderOverflowMenuAction>> {
         let mut menu_items = vec![];
 
-        // Only show shareable link when the document is synced to Warp Drive
+        // Only show shareable link when the document is synced to Wish Drive
         if let Some(link) =
-            AIDocumentModel::as_ref(ctx).get_document_warp_drive_object_link(&self.document_id, ctx)
+            AIDocumentModel::as_ref(ctx).get_document_wish_drive_object_link(&self.document_id, ctx)
         {
             menu_items.push(
                 MenuItemFields::new("Copy link")

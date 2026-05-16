@@ -566,7 +566,7 @@ fn test_new_moved_messages_subtask_preserves_messages() {
 // =============================================================================
 
 #[test]
-fn test_is_warp_documentation_search_subagent() {
+fn test_is_wish_documentation_search_subagent() {
     let parent_id = "parent";
     let subtask_id = "subtask";
     let parent_api_task = create_api_task(
@@ -581,6 +581,6 @@ fn test_is_warp_documentation_search_subagent() {
     let subtask_api_task = create_api_subtask(subtask_id, parent_id, vec![]);
     let subtask = Task::new_restored_subtask(subtask_api_task, &parent_api_task, vec![]);
 
-    assert!(subtask.is_warp_documentation_search_subagent());
+    assert!(subtask.is_wish_documentation_search_subagent());
     assert!(!subtask.is_conversation_search_subagent());
 }

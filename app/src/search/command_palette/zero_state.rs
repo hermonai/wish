@@ -81,10 +81,10 @@ impl ZeroState {
         app: &AppContext,
         window_id: WindowId,
     ) -> impl Iterator<Item = QueryFilter> {
-        let show_warp_drive = WarpDriveSettings::is_warp_drive_enabled(app);
+        let show_wish_drive = WarpDriveSettings::is_wish_drive_enabled(app);
 
         let mut valid_filters = vec![];
-        if show_warp_drive {
+        if show_wish_drive {
             valid_filters.push(QueryFilter::Workflows);
             if FeatureFlag::AgentModeWorkflows.is_enabled()
                 && AISettings::as_ref(app).is_any_ai_enabled(app)
@@ -109,7 +109,7 @@ impl ZeroState {
             }
         }
 
-        if show_warp_drive {
+        if show_wish_drive {
             valid_filters.push(QueryFilter::Drive);
         }
         valid_filters.extend([QueryFilter::Actions, QueryFilter::Sessions]);

@@ -28,7 +28,12 @@ mod tests {
             SemanticId::code_function("a::b"),
             "b",
             CanvasNodeKind::Function,
-            Rect { x: 0.0, y: 0.0, w: 100.0, h: 40.0 },
+            Rect {
+                x: 0.0,
+                y: 0.0,
+                w: 100.0,
+                h: 40.0,
+            },
         );
         let node_id = node.id;
         let patch = CanvasPatch::new(vec![CanvasPatchOp::AddNode(node)]);
@@ -46,7 +51,12 @@ mod tests {
                 SemanticId::code_function(&format!("g_{i}")),
                 format!("g_{i}"),
                 CanvasNodeKind::Function,
-                Rect { x: 0.0, y: 0.0, w: 80.0, h: 30.0 },
+                Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    w: 80.0,
+                    h: 30.0,
+                },
             ));
         }
         c.layout = LayoutMode::ForceDirected;
@@ -72,7 +82,12 @@ mod tests {
                 SemanticId::code_function(&format!("fn_{i}")),
                 format!("fn_{i}"),
                 CanvasNodeKind::Function,
-                Rect { x: 0.0, y: 0.0, w: 80.0, h: 30.0 },
+                Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    w: 80.0,
+                    h: 30.0,
+                },
             ));
         }
         c.layout = LayoutMode::Layered;

@@ -152,7 +152,7 @@ pub struct Args {
 /// along with their own flags, or convert their flags into an `AppArgs` value.
 #[derive(Debug, Default, clap::Args, Clone)]
 pub struct AppArgs {
-    /// True if this instance of Warp was launched at the end of the auto-update process.
+    /// True if this instance of Wish was launched at the end of the auto-update process.
     #[arg(long = "finish-update", hide = true)]
     pub finish_update: bool,
 
@@ -161,11 +161,11 @@ pub struct AppArgs {
     #[arg(long = "crash-recovery-mechanism", value_enum, requires = "ParentOpts")]
     pub crash_recovery_mechanism: Option<RecoveryMechanism>,
 
-    /// Options related to the parent process that spawned this Warp instance.
+    /// Options related to the parent process that spawned this Wish instance.
     #[clap(flatten)]
     pub parent: ParentOpts,
 
-    /// URLs to open in Warp.
+    /// URLs to open in Wish.
     #[arg(hide = true)]
     pub urls: Vec<Url>,
 
@@ -610,12 +610,12 @@ impl Args {
         self.command.as_ref()
     }
 
-    /// Args for the main Warp application, if not running a subcommand.
+    /// Args for the main Wish application, if not running a subcommand.
     pub fn app_args(&self) -> &AppArgs {
         &self.args
     }
 
-    /// Extract the main Warp application args.
+    /// Extract the main Wish application args.
     pub fn into_app_args(self) -> AppArgs {
         self.args
     }
@@ -792,13 +792,13 @@ pub enum CliCommand {
     Artifact(crate::artifact::ArtifactCommand),
 }
 
-/// A subcommand of the main Warp application. This includes all [`WorkerCommand`]s as well as app-specific debugging tools.
+/// A subcommand of the main Wish application. This includes all [`WorkerCommand`]s as well as app-specific debugging tools.
 #[derive(Debug, Clone, Subcommand)]
 pub enum Command {
     #[clap(flatten)]
     Worker(WorkerCommand),
 
-    /// Commands that make up the Warp CLI.
+    /// Commands that make up the Wish CLI.
     #[clap(flatten)]
     CommandLine(Box<CliCommand>),
 
@@ -806,18 +806,18 @@ pub enum Command {
     ///
     ///
     /// For bash, add the following to ~/.bashrc:
-    ///     source <(path/to/warp completions bash)
+    ///     source <(path/to/wish completions bash)
     ///
     /// For zsh, add the following to ~/.zshrc:
-    ///     source <(path/to/warp completions zsh)
+    ///     source <(path/to/wish completions zsh)
     ///
     /// For fish, add the following to ~/.config/fish/config.fish:
-    ///     path/to/warp completions fish | source
+    ///     path/to/wish completions fish | source
     ///
     /// For Powershell, add the following to $PROFILE:
-    ///     path\to\warp | Out-String | Invoke-Expression
+    ///     path\to\wish | Out-String | Invoke-Expression
     ///
-    /// If no shell is provided, this defaults to the shell that Warp was run from.
+    /// If no shell is provided, this defaults to the shell that Wish was run from.
     #[command(verbatim_doc_comment)]
     Completions {
         /// Shell to generate completions for.

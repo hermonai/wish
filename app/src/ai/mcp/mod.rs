@@ -48,7 +48,7 @@ cfg_if::cfg_if! {
 
 pub(crate) fn home_config_file_path(provider: MCPProvider) -> Option<PathBuf> {
     match provider {
-        MCPProvider::Warp => wish_core::paths::wish_home_mcp_config_file_path(),
+        MCPProvider::Wish => wish_core::paths::wish_home_mcp_config_file_path(),
         _ => dirs::home_dir().map(|home_dir| home_dir.join(provider.home_config_path())),
     }
 }
@@ -64,7 +64,7 @@ cfg_if::cfg_if! {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter)]
 pub enum MCPProvider {
-    Warp,
+    Wish,
     Claude,
     Codex,
     Agents,
@@ -73,7 +73,7 @@ pub enum MCPProvider {
 impl MCPProvider {
     pub fn display_name(&self) -> &str {
         match self {
-            MCPProvider::Warp => "Wish",
+            MCPProvider::Wish => "Wish",
             MCPProvider::Claude => "Claude",
             MCPProvider::Codex => "Codex",
             MCPProvider::Agents => "Other Agents",
@@ -82,7 +82,7 @@ impl MCPProvider {
 
     pub fn icon(&self) -> Icon {
         match self {
-            MCPProvider::Warp => Icon::Wish,
+            MCPProvider::Wish => Icon::Wish,
             MCPProvider::Claude => Icon::ClaudeLogo,
             MCPProvider::Codex => Icon::OpenAILogo,
             MCPProvider::Agents => Icon::Wish,
@@ -92,7 +92,7 @@ impl MCPProvider {
     /// Returns the path of the provider's config file relative to the home directory.
     pub fn home_config_path(&self) -> &'static Path {
         match self {
-            MCPProvider::Warp => Path::new(".wish/.mcp.json"),
+            MCPProvider::Wish => Path::new(".wish/.mcp.json"),
             MCPProvider::Claude => Path::new(".claude.json"),
             MCPProvider::Codex => Path::new(".codex/config.toml"),
             MCPProvider::Agents => Path::new(".agents/.mcp.json"),
@@ -102,7 +102,7 @@ impl MCPProvider {
     /// Returns the path of the provider's config file relative to a project root.
     pub fn project_config_path(&self) -> &'static Path {
         match self {
-            MCPProvider::Warp => Path::new(".wish/.mcp.json"),
+            MCPProvider::Wish => Path::new(".wish/.mcp.json"),
             MCPProvider::Claude => Path::new(".mcp.json"),
             MCPProvider::Codex => Path::new(".codex/config.toml"),
             MCPProvider::Agents => Path::new(".agents/.mcp.json"),
@@ -149,7 +149,7 @@ mod tests {
         if let Some(wish_mcp_config_path) = wish_core::paths::wish_home_mcp_config_file_path() {
             assert_eq!(
                 mcp_provider_from_file_path(&wish_mcp_config_path),
-                Some(MCPProvider::Warp)
+                Some(MCPProvider::Wish)
             );
         }
     }
@@ -337,11 +337,11 @@ impl StringModel for MCPServer {
         None
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
+    fn renders_in_wish_drive(&self) -> bool {
         false
     }
 
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         id: SyncId,
         _appearance: &Appearance,

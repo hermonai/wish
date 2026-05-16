@@ -21,7 +21,7 @@ runs:
   using: composite
   steps:
     - name: Setup Warp CLI
-      uses: ./.github/actions/setup_warp_cli
+      uses: ./.github/actions/setup_wish_cli
       with:
         warp_channel: ${{ inputs.warp_channel }}
     - name: Clone Warp GitBook repository
@@ -121,7 +121,7 @@ runs:
       run: |
         set -euo pipefail
         git config user.name "Warp Agent"
-        git config user.email "agent@warp.dev"
+        git config user.email "agent@hermon.ai"
     
     - name: Run Warp agent
       shell: bash

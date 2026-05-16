@@ -1443,7 +1443,7 @@ impl SettingsWidget for AppAnalyticsWidget {
     }
 
     fn should_render(&self, app: &AppContext) -> bool {
-        // Builds without a telemetry config (e.g. OpenWarp) cannot ship
+        // Builds without a telemetry config (e.g. OpenWish) cannot ship
         // telemetry, so the toggle would be a no-op. Hide it in that case.
         if !ChannelState::is_telemetry_available() {
             return false;
@@ -1611,7 +1611,7 @@ impl SettingsWidget for CrashReportsWidget {
     }
 
     fn should_render(&self, app: &AppContext) -> bool {
-        // Builds without a crash reporting config (e.g. OpenWarp) cannot ship
+        // Builds without a crash reporting config (e.g. OpenWish) cannot ship
         // crash reports, so the toggle would be a no-op. Hide it in that case.
         if !ChannelState::is_crash_reporting_available() {
             return false;

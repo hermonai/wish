@@ -478,7 +478,7 @@ User-reported: "many locations still have old Warp logo / 'Wishing…' for AI th
 What deliberately stayed `Warp`:
 - Internal type names (`WarpTheme`, `WarpDriveModel`, `WarpAgent` settings variant) — these are stable identifiers; the `to_string()` representations already render `"Wish *"`.
 - Persistence keys (`warpify.ssh.…` TOML paths) — renaming would silently wipe user settings on upgrade.
-- macOS bundle qualifier `org.warp.dev` — required for OS-level compatibility / upgrade paths.
+- macOS bundle qualifier `org.hermon.ai` — required for OS-level compatibility / upgrade paths.
 - ANSI OSC marker debug logs ("Warp OSC marker…") — internal diagnostic strings, not user-facing.
 - Telemetry event documentation strings — internal.
 - `warp_default_settings.csv` file name — would orphan existing user configs on upgrade.
@@ -636,14 +636,14 @@ After Phase 1, every subsequent phase (terminal, LSP, git, fs) follows the same 
 
 #### Hermon → Hermon: rebranding work — landed in 0.4.0
 
-Original triage estimated 691 "oz" hits across 179 files. By release cut:
+Original triage estimated 691 "hermon" hits across 179 files. By release cut:
 
-- **User-visible UI strings** — all fixed: "Cloud Hermon" → "Hermon Cloud", "Fix with Hermon" → "Fix with Hermon", "Introducing Hermon" tab → "Introducing Hermon", "Hermon Web" source label → "Hermon Web", install/uninstall toasts → Wish CLI / Wish command, CLI examples in cloud-setup guide → `wish environment create …`, warpify SSH description, Codex modal copy, `/continue-locally` error message all updated. `OZ_URL` constants → `HERMON_URL`. URL `https://wish.hermon.ai/oz` → `…/hermon`.
+- **User-visible UI strings** — all fixed: "Cloud Hermon" → "Hermon Cloud", "Fix with Hermon" → "Fix with Hermon", "Introducing Hermon" tab → "Introducing Hermon", "Hermon Web" source label → "Hermon Web", install/uninstall toasts → Wish CLI / Wish command, CLI examples in cloud-setup guide → `wish environment create …`, warpify SSH description, Codex modal copy, `/continue-locally` error message all updated. `HERMON_URL` constants → `HERMON_URL`. URL `https://wish.hermon.ai/hermon` → `…/hermon`.
 - **Internal enum variants** — landed with serde aliases for wire-format compat:
-  - `Harness::Hermon` → `Hermon` (88 sites; `#[serde(rename = "oz", alias = "hermon")]` + clap alias)
+  - `Harness::Hermon` → `Hermon` (88 sites; `#[serde(rename = "hermon", alias = "hermon")]` + clap alias)
   - `HarnessKind::Hermon` → `Hermon` (internal dispatch)
   - `NotificationSourceAgent::Hermon` → `Hermon`
-  - `NotificationAgentVariant::Hermon` → `Hermon` (`#[serde(rename = "oz")]`)
+  - `NotificationAgentVariant::Hermon` → `Hermon` (`#[serde(rename = "hermon")]`)
   - `Icon::Hermon` → `Hermon`
   - `IconWithStatusVariant::HermonAgent` → `HermonAgent`
   - `SummaryPaneKind::HermonAgent` → `HermonAgent`
@@ -652,18 +652,18 @@ Original triage estimated 691 "oz" hits across 179 files. By release cut:
   - `FeatureFlag::Hermon*` (5 variants, ~98 call sites) → `Hermon*`
   - `HermonLaunchSlide` → `HermonLaunchSlide`
   - `SessionType::Hermon` → `Hermon`
-  - `GuidedModalSessionType::Hermon` → `Hermon` (`#[serde(rename = "oz")]`)
+  - `GuidedModalSessionType::Hermon` → `Hermon` (`#[serde(rename = "hermon")]`)
   - `ModelSelection::Hermon` → `Hermon`
   - `ResumeOptions::Hermon` → `Hermon`
-- **Variable names** — `hermon_binary_path` / `hermon_binary_display` → `wish_binary_path` / `wish_binary_display`; `visit_hermon_button` → `visit_hermon_button`; `show_oz` → `show_hermon`.
+- **Variable names** — `hermon_binary_path` / `hermon_binary_display` → `wish_binary_path` / `wish_binary_display`; `visit_hermon_button` → `visit_hermon_button`; `show_hermon` → `show_hermon`.
 - **Comments + doc strings** — bulk-renamed `Hermon` → `Hermon` in all `//`, `///`, `//!` lines.
 - **Wire-bound surfaces retained, documented inline:**
-  - GraphQL `enum AgentHarness { OZ }`, `Experiment::OZ_MULTI_HARNESS_*` — bound to `hermon-server` schema
+  - GraphQL `enum AgentHarness { HERMON }`, `Experiment::HERMON_MULTI_HARNESS_*` — bound to `hermon-server` schema
   - `AIAgentHarness::Hermon`, `AgentHarnessInput::Hermon` — Rust mirrors of GraphQL enums
   - `api::harness::Variant::Hermon` — gRPC proto wire variant
   - `X-Hermon-Api-Source` HTTP request header
   - `did_check_to_trigger_hermon_launch_modal` persisted setting key
-  - `Harness::config_name()` returning `"oz"`
+  - `Harness::config_name()` returning `"hermon"`
   - Settings-section parser strings `"Hermon"` and `"Hermon Cloud API Keys"` — legacy aliases for users migrating from older config
 
 The retained tokens are *wire format only*, all documented in code where they appear. Forward-rolling consumers see `hermon` aliases. A coordinated `hermon-server` schema change is the next step for `enum AgentHarness` to migrate; that ships separately from the wish client.
@@ -675,7 +675,7 @@ Dogfooder reported four issues. Three are fixed in this slice; one is documented
 **1. The Warp brand glyph still appears next to "Wishing..." and as the Wish Drive icon.**
 
 Root cause was twofold:
-- `WARP_GLYPH = "\u{E500}"` (two sites: [shimmering_warp_loading_text.rs](../../app/src/ai/loading/shimmering_warp_loading_text.rs) and [view_impl/common.rs](../../app/src/ai/blocklist/block/view_impl/common.rs)) is a private-use-area Unicode codepoint embedded as the Warp brand mark in the bundled Roboto font. Renders as the Warp logo glyph wherever the font is rendered.
+- `WARP_GLYPH = "\u{E500}"` (two sites: [shimmering_wish_loading_text.rs](../../app/src/ai/loading/shimmering_wish_loading_text.rs) and [view_impl/common.rs](../../app/src/ai/blocklist/block/view_impl/common.rs)) is a private-use-area Unicode codepoint embedded as the Warp brand mark in the bundled Roboto font. Renders as the Warp logo glyph wherever the font is rendered.
 - `app/assets/bundled/svg/wish-drive.svg` was *named* Wish but its *content* was the upstream Warp Drive double-rectangle shape.
 
 Fix:

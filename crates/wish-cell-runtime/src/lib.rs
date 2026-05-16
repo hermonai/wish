@@ -55,7 +55,8 @@ impl Capabilities {
     /// Cell A is a subset of Cell B's capabilities? Used to enforce
     /// "child cannot exceed parent" rules.
     pub fn is_subset_of(&self, other: &Capabilities) -> bool {
-        let scope_subset = |a: &[String], b: &[String]| a.iter().all(|p| b.iter().any(|q| p.starts_with(q)));
+        let scope_subset =
+            |a: &[String], b: &[String]| a.iter().all(|p| b.iter().any(|q| p.starts_with(q)));
         scope_subset(&self.fs_read, &other.fs_read)
             && scope_subset(&self.fs_write, &other.fs_write)
             && (!self.net_fetch || other.net_fetch)

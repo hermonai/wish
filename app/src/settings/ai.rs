@@ -1221,13 +1221,13 @@ define_settings_group!(AISettings, settings: [
 
     // Whether or not the user has enabled the ability to use Wish credits even when providing
     // their own LLM provider API key.
-    can_use_warp_credits_with_byok: CanUseWarpCreditsWithByok {
+    can_use_wish_credits_with_byok: CanUseWarpCreditsWithByok {
         type: bool,
         default: false,
         supported_platforms: SupportedPlatforms::ALL,
         sync_to_cloud: SyncToCloud::Globally(RespectUserSyncSetting::Yes),
         private: false,
-        toml_path: "cloud_platform.third_party_api_keys.can_use_warp_credits_with_byok",
+        toml_path: "cloud_platform.third_party_api_keys.can_use_wish_credits_with_byok",
         description: "Whether Wish credits can be used even when providing your own API key.",
     }
 
@@ -1476,7 +1476,7 @@ define_settings_group!(AISettings, settings: [
 
     // Whether Hermon should add attribution (co-author line) to commit messages and PRs.
     // This is the user-level preference; it may be overridden by the team-level
-    // `enable_warp_attribution` AdminEnablementSetting (see
+    // `enable_wish_attribution` AdminEnablementSetting (see
     // `UserWorkspaces::get_agent_attribution_setting`).
     agent_attribution_enabled: AgentAttributionEnabled {
         type: bool,
@@ -1664,7 +1664,7 @@ impl AISettings {
         self.is_any_ai_enabled(app) && *self.memory_enabled
     }
 
-    pub fn is_warp_drive_context_enabled(&self, app: &wishui::AppContext) -> bool {
+    pub fn is_wish_drive_context_enabled(&self, app: &wishui::AppContext) -> bool {
         self.is_any_ai_enabled(app) && *self.warp_drive_context_enabled
     }
 

@@ -1,6 +1,6 @@
 [package]
 name = "wish_util"
-authors = ["Warp Team <dev@warp.dev>"]
+authors = ["Warp Team <dev@hermon.ai>"]
 version = "0.1.0"
 edition = "2021"
 description = "General utilities and helpers used across warp crates"

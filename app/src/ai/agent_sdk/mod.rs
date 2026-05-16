@@ -591,7 +591,7 @@ impl AgentDriverRunner {
         // prompt resolution (SavedPrompt -> workflow lookup) and environment
         // resolution (CloudAmbientAgentEnvironment lookup) depend on it.
         if foreground
-            .spawn(|_, ctx| common::refresh_warp_drive(ctx))
+            .spawn(|_, ctx| common::refresh_wish_drive(ctx))
             .await?
             .await
             .is_err()

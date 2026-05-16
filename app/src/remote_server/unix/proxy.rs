@@ -45,7 +45,7 @@ fn daemon_dir(identity_key: &str) -> PathBuf {
 /// from previous daemon versions.
 ///
 /// Old daemons are **not** killed — they may still be serving active
-/// connections from an older Warp client. Removing their socket file
+/// connections from an older Wish client. Removing their socket file
 /// prevents new proxies from accidentally connecting to them, and the
 /// daemon's built-in grace timer (10 min with no connections) will shut
 /// it down naturally after the last client disconnects.

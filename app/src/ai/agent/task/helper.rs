@@ -37,7 +37,7 @@ pub trait SubagentExt {
     fn is_computer_use(&self) -> bool;
     fn is_summarization(&self) -> bool;
     fn is_conversation_search(&self) -> bool;
-    fn is_warp_documentation_search(&self) -> bool;
+    fn is_wish_documentation_search(&self) -> bool;
     fn type_name(&self) -> &'static str;
 }
 
@@ -190,7 +190,7 @@ impl SubagentExt for api::message::tool_call::Subagent {
         })
     }
 
-    fn is_warp_documentation_search(&self) -> bool {
+    fn is_wish_documentation_search(&self) -> bool {
         self.metadata.as_ref().is_some_and(|metadata| {
             matches!(
                 metadata,

@@ -141,8 +141,8 @@ fn test_resolve_bare_url() {
             url("http://google.com")
         );
         assert_eq!(
-            resolve(&app, &links, "warp.dev").await,
-            url("http://warp.dev")
+            resolve(&app, &links, "hermon.ai").await,
+            url("http://hermon.ai")
         );
         assert_eq!(
             resolve(&app, &links, "bbc.co.uk").await,

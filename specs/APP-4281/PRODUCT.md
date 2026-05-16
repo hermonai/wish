@@ -12,7 +12,7 @@ Figma: none provided. This feature is primarily about *suppressing* UI surfaces;
 
 ## Problem
 
-The prebuilt Linux `oz` binary that powers Warp's remote-server SSH integration requires a recent glibc. When it lands on a host with an older glibc (RHEL/CentOS 7/8, Amazon Linux 2, Ubuntu 18.04, Debian 10, etc.) or a non-glibc libc (Alpine/musl, Termux/bionic), the dynamic loader refuses to launch it with errors like:
+The prebuilt Linux `hermon` binary that powers Warp's remote-server SSH integration requires a recent glibc. When it lands on a host with an older glibc (RHEL/CentOS 7/8, Amazon Linux 2, Ubuntu 18.04, Debian 10, etc.) or a non-glibc libc (Alpine/musl, Termux/bionic), the dynamic loader refuses to launch it with errors like:
 
 ```
 /lib64/libm.so.6: version `GLIBC_2.29' not found

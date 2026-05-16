@@ -104,14 +104,14 @@ define_settings_group!(GeneralSettings, settings: [
         sync_to_cloud: SyncToCloud::Globally(RespectUserSyncSetting::Yes),
         private: true,
     },
-    open_in_warp_banner_dismissed_for_markdown: OpenInWishBannerDismissedMarkdown {
+    open_in_wish_banner_dismissed_for_markdown: OpenInWishBannerDismissedMarkdown {
         type: bool,
         default: false,
         supported_platforms: SupportedPlatforms::ALL,
         sync_to_cloud: SyncToCloud::Never,
         private: true,
     },
-    open_in_warp_banner_dismissed_for_code_and_text: OpenInWishBannerDismissedCode {
+    open_in_wish_banner_dismissed_for_code_and_text: OpenInWishBannerDismissedCode {
         type: bool,
         default: false,
         supported_platforms: SupportedPlatforms::ALL,
@@ -139,7 +139,7 @@ define_settings_group!(GeneralSettings, settings: [
         sync_to_cloud: SyncToCloud::Globally(RespectUserSyncSetting::Yes),
         private: true,
     },
-    // One-time flag tracking whether the OpenWarp launch modal has already been
+    // One-time flag tracking whether the OpenWish launch modal has already been
     // shown to the user. Not user-visible; modeled as a setting so it's only
     // shown once per user regardless of the number of devices they use.
     did_check_to_trigger_openwarp_launch_modal: DidShowOpenWarpLaunchModal {

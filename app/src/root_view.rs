@@ -378,11 +378,11 @@ pub fn init(app: &mut AppContext) {
     );
     app.add_global_action(
         "root_view:open_drive_object_new_window",
-        open_warp_drive_object,
+        open_wish_drive_object,
     );
     app.add_action(
         "root_view:open_drive_object_existing_window",
-        RootView::open_warp_drive_object_in_existing_window,
+        RootView::open_wish_drive_object_in_existing_window,
     );
 
     app.add_global_action(
@@ -1051,7 +1051,7 @@ fn open_linear_issue_work_in_new_window(args: &LinearIssueWork, ctx: &mut AppCon
     });
 }
 
-fn open_warp_drive_object(arg: &OpenWarpDriveObjectArgs, ctx: &mut AppContext) {
+fn open_wish_drive_object(arg: &OpenWarpDriveObjectArgs, ctx: &mut AppContext) {
     match arg.object_type {
         ObjectType::Notebook => open_new_workspace_with_notebook_open(
             SyncId::ServerId(arg.server_id),
@@ -1438,11 +1438,11 @@ fn toggle_quake_mode_window(global_resource_handles: &GlobalResourceHandles, ctx
     };
 }
 
-/// This action will show or hide all of Warp's windows except the quake window
+/// This action will show or hide all of Wish's windows except the quake window
 ///
-/// - If Warp is active and has any windows, hide those windows.
-/// - If Warp is hidden, show all windows.
-/// - If Warp is active but has 0 normal windows, create a new window with a new session.
+/// - If Wish is active and has any windows, hide those windows.
+/// - If Wish is hidden, show all windows.
+/// - If Wish is active but has 0 normal windows, create a new window with a new session.
 fn show_or_hide_non_quake_mode_windows(_: &(), ctx: &mut AppContext) {
     let quake_window_id = get_quake_mode_state(ctx).map(|state| state.window_id);
     let non_quake_mode_window_ids = ctx
@@ -2182,9 +2182,9 @@ impl RootView {
 
                 let is_logged_in = AuthStateProvider::as_ref(ctx).get().is_logged_in();
                 // If the user isn't logged in, only require login if the applied
-                // settings need an account (AI or Warp Drive enabled).
+                // settings need an account (AI or Wish Drive enabled).
                 let ai_enabled = selected_settings.is_ai_enabled();
-                let warp_drive_enabled = selected_settings.is_warp_drive_enabled();
+                let warp_drive_enabled = selected_settings.is_wish_drive_enabled();
                 // With old onboarding, we ask user to log in before onboarding, so don't do it after onboarding completes.
                 let requires_login = !is_logged_in
                     && (ai_enabled || warp_drive_enabled)
@@ -2544,7 +2544,7 @@ impl RootView {
         false
     }
 
-    pub fn open_warp_drive_object_in_existing_window(
+    pub fn open_wish_drive_object_in_existing_window(
         &mut self,
         arg: &OpenWarpDriveObjectArgs,
         ctx: &mut ViewContext<Self>,
@@ -2556,7 +2556,7 @@ impl RootView {
                 ObjectType::Notebook => {
                     handle.update(ctx, |workspace, ctx| {
                         let initialized_section_states =
-                            workspace.has_warp_drive_initialized_sections(ctx);
+                            workspace.has_wish_drive_initialized_sections(ctx);
                         let notebook_id = SyncId::ServerId(arg.server_id);
                         let settings = arg.settings.clone();
                         let _ = ctx.spawn(initialized_section_states, move |workspace, _, ctx| {
@@ -2572,7 +2572,7 @@ impl RootView {
                 ObjectType::Workflow => {
                     handle.update(ctx, |workspace, ctx| {
                         let initialized_section_states =
-                            workspace.has_warp_drive_initialized_sections(ctx);
+                            workspace.has_wish_drive_initialized_sections(ctx);
                         let workflow_id = SyncId::ServerId(arg.server_id);
                         let settings = arg.settings.clone();
                         let _ = ctx.spawn(initialized_section_states, move |workspace, _, ctx| {
@@ -2596,9 +2596,9 @@ impl RootView {
 
                     handle.update(ctx, |workspace, ctx| {
                         let initialized_section_states =
-                            workspace.has_warp_drive_initialized_sections(ctx);
+                            workspace.has_wish_drive_initialized_sections(ctx);
                         let _ = ctx.spawn(initialized_section_states, move |workspace, _, ctx| {
-                            workspace.view_in_and_focus_warp_drive(item_id, ctx);
+                            workspace.view_in_and_focus_wish_drive(item_id, ctx);
                         });
                     });
                 }
@@ -2613,9 +2613,9 @@ impl RootView {
                     ));
                     handle.update(ctx, |workspace, ctx| {
                         let initialized_section_states =
-                            workspace.has_warp_drive_initialized_sections(ctx);
+                            workspace.has_wish_drive_initialized_sections(ctx);
                         let _ = ctx.spawn(initialized_section_states, move |workspace, _, ctx| {
-                            workspace.view_in_and_focus_warp_drive(item_id, ctx);
+                            workspace.view_in_and_focus_wish_drive(item_id, ctx);
                         });
                     });
                 }
@@ -3074,7 +3074,7 @@ impl RootView {
                 }
             }
             AuthOverrideWarningModalEvent::BulkExport => {
-                self.export_all_warp_drive_objects(ctx);
+                self.export_all_wish_drive_objects(ctx);
             }
         }
     }
@@ -3094,7 +3094,7 @@ impl RootView {
         ctx.notify();
     }
 
-    fn export_all_warp_drive_objects(&mut self, ctx: &mut ViewContext<Self>) {
+    fn export_all_wish_drive_objects(&mut self, ctx: &mut ViewContext<Self>) {
         let window_id = ctx.window_id();
         let cloud_model = CloudModel::as_ref(ctx);
         let exportable_objects = cloud_model.get_all_exportable_object_ids();

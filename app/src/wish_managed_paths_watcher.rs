@@ -23,10 +23,10 @@ pub(crate) fn wish_data_dir() -> PathBuf {
 }
 
 #[cfg(target_family = "wasm")]
-pub(crate) fn ensure_warp_watch_roots_exist() {}
+pub(crate) fn ensure_wish_watch_roots_exist() {}
 
 #[cfg(not(target_family = "wasm"))]
-pub(crate) fn ensure_warp_watch_roots_exist() {
+pub(crate) fn ensure_wish_watch_roots_exist() {
     let data_dir = wish_data_dir();
     if let Err(err) = fs::create_dir_all(&data_dir) {
         log::warn!(

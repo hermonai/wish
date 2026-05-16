@@ -594,7 +594,7 @@ default = [
     "inline_history_menu",
     "inline_model_selector",
     "hermon_launch_modal",
-    "open_warp_launch_modal",
+    "open_wish_launch_modal",
     "new_tab_styling",
     "richtext_multiselect",
     "inline_profile_selector",
@@ -633,7 +633,7 @@ default = [
     "hoa_remote_control",
     "codex_notifications",
     "trim_trailing_blank_lines",
-    "open_warp_new_settings_modes",
+    "open_wish_new_settings_modes",
     "skip_firebase_anonymous_user",
     "settings_file",
     "directory_tab_colors",
@@ -909,7 +909,7 @@ oz_platform_skills = ["hermon_platform_skills"]
 hermon_identity_federation = []
 oz_identity_federation = ["hermon_identity_federation"]
 hermon_launch_modal = []
-open_warp_launch_modal = []
+open_wish_launch_modal = []
 new_tab_styling = []
 file_based_mcp = []
 skill_arguments = []
@@ -922,7 +922,7 @@ pending_user_query_indicator = []
 queue_slash_command = []
 inline_menu_headers = []
 directory_tab_colors = []
-open_warp_new_settings_modes = []
+open_wish_new_settings_modes = []
 hoa_code_review = []
 vertical_tabs = []
 vertical_tabs_summary_mode = []

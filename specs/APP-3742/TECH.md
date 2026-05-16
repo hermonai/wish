@@ -42,7 +42,7 @@ The vertical tabs panel currently renders each pane row with a small 12px inline
 - `app/src/ai/conversation_status_ui.rs:14` — `render_status_element()` helper
 
 **CLI agent icons:**
-- `vertical_tabs.rs:1918` — `cli_agent_warp_icon()` maps `CLIAgent` to branded `WarpIcon`
+- `vertical_tabs.rs:1918` — `cli_agent_wish_icon()` maps `CLIAgent` to branded `WarpIcon`
 
 **Language file icons:**
 - `app/src/code/mod.rs` — `icon_from_file_path()` returns language-specific icon element

@@ -235,7 +235,7 @@ impl FileBasedMCPManager {
     /// config location.
     ///
     /// "Global" means the installation was detected outside of a user repository:
-    /// - For `MCPProvider::Warp`: the logical root for `~/.warp*/.mcp.json`.
+    /// - For `MCPProvider::Wish`: the logical root for `~/.warp*/.mcp.json`.
     /// - For any other provider: the user's home directory (e.g. `~/.claude.json`).
     ///
     /// Project-scoped installations (those detected inside a repo) are not considered
@@ -251,7 +251,7 @@ impl FileBasedMCPManager {
                         return false;
                     }
                     match provider {
-                        MCPProvider::Warp => Self::is_global_warp_root(root_path),
+                        MCPProvider::Wish => Self::is_global_wish_root(root_path),
                         MCPProvider::Claude | MCPProvider::Codex | MCPProvider::Agents => {
                             home_dir.as_ref().is_some_and(|home| root_path == home)
                         }
@@ -262,18 +262,18 @@ impl FileBasedMCPManager {
 
     /// Returns `true` if the server identified by `hash` is referenced from the global
     /// Warp config (`~/.warp/.mcp.json`). Global Warp servers always auto-spawn.
-    fn is_global_warp_server(&self, hash: u64) -> bool {
+    fn is_global_wish_server(&self, hash: u64) -> bool {
         self.file_based_servers_by_root
             .iter()
             .any(|(root_path, provider_map)| {
-                Self::is_global_warp_root(root_path)
+                Self::is_global_wish_root(root_path)
                     && provider_map
-                        .get(&MCPProvider::Warp)
+                        .get(&MCPProvider::Wish)
                         .is_some_and(|hashes| hashes.contains(&hash))
             })
     }
 
-    fn is_global_warp_root(root_path: &Path) -> bool {
+    fn is_global_wish_root(root_path: &Path) -> bool {
         warp_managed_mcp_config_path().is_some_and(|path| root_path == path.root_path.as_path())
     }
 
@@ -297,7 +297,7 @@ impl FileBasedMCPManager {
             let Some(hash) = installation.hash() else {
                 continue;
             };
-            if self.is_global_warp_server(hash) || (self.is_global_server(hash) && mcp_enabled) {
+            if self.is_global_wish_server(hash) || (self.is_global_server(hash) && mcp_enabled) {
                 to_spawn.push(installation);
             }
 
@@ -347,7 +347,7 @@ impl FileBasedMCPManager {
             .file_based_servers
             .iter()
             .filter(|(hash, _)| {
-                self.is_global_server(**hash) && !self.is_global_warp_server(**hash)
+                self.is_global_server(**hash) && !self.is_global_wish_server(**hash)
             })
             .map(|(_, server)| server.clone())
             .collect();
@@ -439,7 +439,7 @@ impl FileBasedMCPManager {
         // state rather than a meaningful working directory. Map them to the
         // home dir so all global installs (Warp and third-party) share a
         // consistent cwd.
-        if self.is_global_warp_server(hash) {
+        if self.is_global_wish_server(hash) {
             return dirs::home_dir().or(Some(discovery_root));
         }
         Some(discovery_root)

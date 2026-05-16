@@ -43,7 +43,7 @@ workarounds = [
 # Excluded crates (same as deny.toml exceptions):
 #   - command-corrections
 #   - session-sharing-protocol
-#   - warp-command-signatures
-#   - warp-completion-metadata
-#   - warp-workflows
-#   - warp-workflows-types
+#   - wish-command-signatures
+#   - wish-completion-metadata
+#   - wish-workflows
+#   - wish-workflows-types

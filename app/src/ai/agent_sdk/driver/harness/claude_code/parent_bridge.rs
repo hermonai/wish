@@ -33,13 +33,13 @@ use crate::server::server_api::ai::AIClient;
 use crate::server::server_api::ai::AgentRunEvent;
 use crate::server::server_api::ServerApi;
 
-const LEGACY_MESSAGE_LISTENER_STATE_ROOT_ENV: &str = "OZ_PARENT_STATE_ROOT";
+const LEGACY_MESSAGE_LISTENER_STATE_ROOT_ENV: &str = "HERMON_PARENT_STATE_ROOT";
 const PARENT_BRIDGE_DEFAULT_STATE_ROOT: &str = ".claude-code/hermon-parent-bridge";
 const PARENT_BRIDGE_SURFACED_DIR_NAME: &str = "surfaced";
 const PARENT_BRIDGE_EVENT_CURSOR_FILE_NAME: &str = "event-cursor.json";
 const PARENT_BRIDGE_HOOK_OUTPUT_FILE_NAME: &str = "pending-hook-output.json";
 const PARENT_BRIDGE_HOOK_OUTPUT_ACK_FILE_NAME: &str = "pending-hook-output.ack";
-const PARENT_BRIDGE_MAX_CONTEXT_CHARS_ENV: &str = "OZ_PARENT_MAX_CONTEXT_CHARS";
+const PARENT_BRIDGE_MAX_CONTEXT_CHARS_ENV: &str = "HERMON_PARENT_MAX_CONTEXT_CHARS";
 const PARENT_BRIDGE_DEFAULT_MAX_CONTEXT_CHARS: usize = 6000;
 pub(super) const MESSAGE_BRIDGE_CONTEXT_PREAMBLE: &str = "Lead-agent updates arrived from Hermon. Treat the latest lead-agent instructions below as authoritative.\n";
 const PARENT_BRIDGE_REMAINING_MESSAGES_NOTE: &str =

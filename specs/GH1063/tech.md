@@ -58,7 +58,7 @@ Out-of-scope references that must be preserved as "Hermon" (verified by grep):
    - In `GlobalAIWidget::render`, replace `Text::new_inline("Hermon", ...)` with
      `Text::new_inline("Warp Agent", ...)`. Keep every other argument, style,
      alignment, and layout constant.
-   - In `GlobalAIWidget::search_terms`, keep existing terms (including `"oz"`
+   - In `GlobalAIWidget::search_terms`, keep existing terms (including `"hermon"`
      for legacy muscle memory, allowed by Behavior #7) and keep `"warp agent"`
      so the new label is directly searchable.
    - Replace all remaining user-visible description strings that referenced
@@ -79,7 +79,7 @@ Out-of-scope references that must be preserved as "Hermon" (verified by grep):
      `"Disable Warp Agent"`. Keep styling, spacing, `disable_hermon_mouse` state
      handle, and the dispatched `AgentSlideAction::ToggleDisableHermon` action
      unchanged.
-   - Internal identifiers (`disable_hermon_mouse`, `disable_oz` field on
+   - Internal identifiers (`disable_hermon_mouse`, `disable_hermon` field on
      `AgentDevelopmentSettings`, `AgentSlideAction::ToggleDisableHermon`,
      `render_disable_hermon_section` function name) are kept as-is to avoid
      migration risk for persisted settings and telemetry.
@@ -136,7 +136,7 @@ Behavior-to-verification mapping (from `product.md`):
   existing onboarding test fixtures) and confirm the title, subtitle, disable
   checkbox label, autonomy options, and step progress are all correct.
 - Behavior #7: search within the settings modal using each of
-  `"warp agent"`, `"ai"`, `"agent"`, `"oz"` (should still reach the subpage) and
+  `"warp agent"`, `"ai"`, `"agent"`, `"hermon"` (should still reach the subpage) and
   `"hermon cloud"` (should reach the cloud subpage only).
 - Behavior #8: confirm both `"Hermon"` and `"Warp Agent"` resolve to
   `SettingsSection::WarpAgent` via the `FromStr` round-trip test.
@@ -159,22 +159,22 @@ Manual verification artifacts:
 
 - Risk: external deep links or persisted telemetry strings reference `"Hermon"` and
   break. Mitigation: `FromStr` accepts both `"Hermon"` and `"Warp Agent"` mapping to
-  `SettingsSection::WarpAgent`, and the legacy `"oz"` search term is preserved so
-  `oz`-based search still lands on the subpage.
+  `SettingsSection::WarpAgent`, and the legacy `"hermon"` search term is preserved so
+  `hermon`-based search still lands on the subpage.
 - Risk: accidentally renaming cloud Hermon surfaces. Mitigation: grep for `"Hermon"`
   literals confirms `harness_selector.rs`, `zero_state_block.rs`, and
   `HermonCloudAPIKeys` are untouched. The "Hermon Agent changelog" toggle labels are
   explicitly preserved.
 - Risk: stale comments inside `agent_slide.rs` that still reference the old built-in agent disable label
   mislead future readers. Mitigation: internal identifiers (`disable_hermon_mouse`,
-  `AgentSlideAction::ToggleDisableHermon`, etc.) intentionally retain the `oz` name;
+  `AgentSlideAction::ToggleDisableHermon`, etc.) intentionally retain the `hermon` name;
   comments describing them are acceptable to leave as-is per `WARP.md`.
 
 ## Follow-ups
 
 - `SettingsSection::Hermon` and `AISubpage::Hermon` enum variant renames have been
   completed as part of this implementation.
-- Internal identifiers (`disable_oz` setting field,
+- Internal identifiers (`disable_hermon` setting field,
   `AgentSlideAction::ToggleDisableHermon`, `render_disable_hermon_section`,
   `disable_hermon_mouse`, and related settings/telemetry keys) are intentionally
   kept as-is. They require more care around persisted settings, telemetry event

@@ -203,9 +203,9 @@ fn register_tests() -> HashMap<&'static str, BoxedBuilderFn> {
     register_test!(test_custom_ps1_expansion_bash);
     register_test!(test_completions_with_autocd);
     register_test!(test_auto_title);
-    register_test!(test_warp_auto_title_disabled);
-    register_test!(test_warp_honors_user_title_bash);
-    register_test!(test_warp_honors_user_title_zsh);
+    register_test!(test_wish_auto_title_disabled);
+    register_test!(test_wish_honors_user_title_bash);
+    register_test!(test_wish_honors_user_title_zsh);
     register_test!(test_input_focused_after_executing_command);
     register_test!(test_new_session_focuses_input);
     register_test!(test_executable_completions);
@@ -227,13 +227,13 @@ fn register_tests() -> HashMap<&'static str, BoxedBuilderFn> {
     register_test!(test_accepting_completion_inserts_space);
     register_test!(test_create_session_with_split_pane_while_bootstrapping);
     register_test!(test_create_session_with_new_tab_while_bootstrapping);
-    register_test!(test_add_theme_to_warp_config);
+    register_test!(test_add_theme_to_wish_config);
     register_test!(test_palette_opens_when_theme_chooser_is_open);
     #[cfg(target_os = "macos")]
     register_test!(test_preview_config_dir_migration);
     register_test!(test_launch_wish_with_theme_in_wish_config);
-    register_test!(test_add_launch_config_to_warp_config);
-    register_test!(test_add_workflows_to_warp_config);
+    register_test!(test_add_launch_config_to_wish_config);
+    register_test!(test_add_workflows_to_wish_config);
     register_test!(test_loading_project_workflows);
     register_test!(test_cmd_enter);
     register_test!(test_alias_expansion_has_limit);

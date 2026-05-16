@@ -7,7 +7,7 @@ pub struct ListWarpDevImagesVariables {}
 #[cynic(graphql_type = "RootQuery", variables = "ListWarpDevImagesVariables")]
 pub struct ListWarpDevImages {
     #[cynic(rename = "listWarpDevImages")]
-    pub list_warp_dev_images: ListWarpDevImagesResult,
+    pub list_wish_dev_images: ListWarpDevImagesResult,
 }
 
 #[derive(cynic::QueryFragment, Debug, Clone)]

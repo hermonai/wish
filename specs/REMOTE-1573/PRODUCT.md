@@ -66,6 +66,6 @@ Figma: none provided
 
 19. If the user disables cloud conversation storage while a local-to-cloud handoff is in progress (fork + snapshot upload already in flight), the in-flight operation completes. The setting change takes effect on the next handoff attempt.
 
-20. The setting does not affect the SDK/CLI `oz` agent path.
+20. The setting does not affect the SDK/CLI `hermon` agent path.
 
 21. Anonymous and logged-out users never see the handoff setting (AI settings are hidden when AI is disabled, and AI is disabled for anonymous/logged-out users).

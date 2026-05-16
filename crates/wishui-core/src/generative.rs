@@ -51,7 +51,9 @@ pub struct UiDescriptor {
 
 impl UiDescriptor {
     pub fn empty() -> Self {
-        Self { primitives: Vec::new() }
+        Self {
+            primitives: Vec::new(),
+        }
     }
 
     pub fn from_primitives(primitives: Vec<UiPrimitive>) -> Self {
@@ -448,7 +450,10 @@ fn paint_primitive(scene: &mut Scene, prim: &UiPrimitive, offset: Vector2F, opac
                 with_op(color),
             );
         }
-        UiPrimitive::Group { offset: o, primitives } => {
+        UiPrimitive::Group {
+            offset: o,
+            primitives,
+        } => {
             let new_offset = vec2f(offset.x() + o[0], offset.y() + o[1]);
             for child in primitives {
                 paint_primitive(scene, child, new_offset, opacity);
@@ -478,7 +483,10 @@ mod tests {
     #[test]
     fn parse_hex_3_digit() {
         assert_eq!(parse_hex_color("#f00"), Some(ColorU::new(255, 0, 0, 255)));
-        assert_eq!(parse_hex_color("#abc"), Some(ColorU::new(170, 187, 204, 255)));
+        assert_eq!(
+            parse_hex_color("#abc"),
+            Some(ColorU::new(170, 187, 204, 255))
+        );
     }
 
     #[test]
@@ -487,7 +495,10 @@ mod tests {
             parse_hex_color("#4a9eff"),
             Some(ColorU::new(0x4a, 0x9e, 0xff, 255))
         );
-        assert_eq!(parse_hex_color("4a9eff"), Some(ColorU::new(0x4a, 0x9e, 0xff, 255)));
+        assert_eq!(
+            parse_hex_color("4a9eff"),
+            Some(ColorU::new(0x4a, 0x9e, 0xff, 255))
+        );
     }
 
     #[test]
@@ -675,7 +686,11 @@ mod tests {
         let r = &scene.layers().next().unwrap().rects[0];
         // Read back the alpha from the Fill — fade applied.
         if let crate::elements::Fill::Solid(c) = &r.background {
-            assert!(c.a > 120 && c.a < 135, "overlay should fade alpha to ~128, got {}", c.a);
+            assert!(
+                c.a > 120 && c.a < 135,
+                "overlay should fade alpha to ~128, got {}",
+                c.a
+            );
         } else {
             panic!("expected solid fill");
         }
@@ -708,7 +723,11 @@ mod tests {
         paint_descriptor(&mut scene, &d);
         let r = &scene.layers().next().unwrap().rects[0];
         if let crate::elements::Fill::Solid(c) = &r.background {
-            assert!(c.a > 55 && c.a < 75, "nested overlay should multiply: 0.25 * 255 ≈ 64, got {}", c.a);
+            assert!(
+                c.a > 55 && c.a < 75,
+                "nested overlay should multiply: 0.25 * 255 ≈ 64, got {}",
+                c.a
+            );
         }
     }
 
@@ -762,6 +781,9 @@ mod tests {
         // Should emit substantial draw commands (grid alone is dozens
         // of stippled lines).
         let n = scene.layers().next().unwrap().rects.len();
-        assert!(n > 200, "doc-example descriptor should emit >200 rects, got {n}");
+        assert!(
+            n > 200,
+            "doc-example descriptor should emit >200 rects, got {n}"
+        );
     }
 }

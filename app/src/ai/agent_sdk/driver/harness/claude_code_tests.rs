@@ -703,7 +703,10 @@ fn prepare_local_wake_command_rehydrates_transcript_with_self_managed_listener()
 
     std::env::set_var("HOME", home_dir.path());
     std::env::set_var("CLAUDE_CONFIG_DIR", claude_config_dir.path());
-    std::env::set_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV, bridge_state_root.path());
+    std::env::set_var(
+        HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
+        bridge_state_root.path(),
+    );
 
     let session_id = Uuid::new_v4();
     let remote = ClaudeWakeRemoteContext {
@@ -747,7 +750,7 @@ fn prepare_local_wake_command_rehydrates_transcript_with_self_managed_listener()
     )));
     assert!(command.contains(&format!("{WISH_HARNESS_ENV}={}", shell_quote("claude"))));
     assert!(!command.contains(HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV));
-    assert!(!command.contains("OZ_PARENT_LISTENER_MANAGED_EXTERNALLY"));
+    assert!(!command.contains("HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY"));
     assert_eq!(
         fs::read_to_string(&prompt_path).unwrap(),
         "resume prompt\n\nwake prompt"

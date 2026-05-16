@@ -167,7 +167,7 @@ pub fn test_open_in_wish_banner() -> Builder {
             new_step_with_default_assertions("Click Open in Wish banner")
                 .with_click_on_saved_position_fn(|app, window_id| {
                     let view = terminal_view(app, window_id, 0, 0);
-                    format!("open_in_warp_banner_button_{}", view.id())
+                    format!("open_in_wish_banner_button_{}", view.id())
                 }),
         )
         .with_step(

@@ -36,7 +36,7 @@ const ALERT_ACTION_BUTTON_HEIGHT: f32 = 24.;
 const FOOTER_ICON_SIZE: f32 = 16.;
 /// Size of the Hermon Agent brand mark inside the "Fix with Hermon Agent" button. Matches the
 /// Figma spec and the workspace banner's secondary-button icon sizing.
-const ALERT_OZ_ICON_SIZE: f32 = 14.;
+const ALERT_HERMON_ICON_SIZE: f32 = 14.;
 /// Horizontal padding inside the "Open file" / "Fix with Hermon Agent" action buttons.
 /// Matches the workspace banner's secondary button pad.
 const ALERT_BUTTON_HORIZONTAL_PADDING: f32 = 8.;
@@ -333,8 +333,8 @@ fn render_alert_action_button(
             row.add_child(
                 Container::new(
                     ConstrainedBox::new(icon.to_wishui_icon(Fill::Solid(text_color)).finish())
-                        .with_width(ALERT_OZ_ICON_SIZE)
-                        .with_height(ALERT_OZ_ICON_SIZE)
+                        .with_width(ALERT_HERMON_ICON_SIZE)
+                        .with_height(ALERT_HERMON_ICON_SIZE)
                         .finish(),
                 )
                 .with_margin_right(4.)

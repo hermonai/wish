@@ -666,7 +666,7 @@ pub fn render_citation(
         AIAgentCitation::WarpDriveObject { uid } => {
             let item = CloudModel::as_ref(app)
                 .get_by_uid(uid)?
-                .to_warp_drive_item(appearance)?;
+                .to_wish_drive_item(appearance)?;
             (
                 item.icon(appearance, Some(theme.active_ui_text_color())),
                 item.display_name().unwrap_or(String::from("Untitled")),

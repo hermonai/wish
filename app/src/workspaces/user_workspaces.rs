@@ -256,7 +256,7 @@ impl UserWorkspaces {
         }
     }
 
-    pub fn is_at_tier_limit_for_some_warp_drive_objects(
+    pub fn is_at_tier_limit_for_some_wish_drive_objects(
         team_uid: ServerId,
         ctx: &AppContext,
     ) -> bool {
@@ -412,7 +412,7 @@ impl UserWorkspaces {
             .is_some_and(|team| team.billing_metadata.customer_type == CustomerType::Enterprise)
             || self
                 .current_team()
-                .is_some_and(|team| team.billing_metadata.is_warp_plan())
+                .is_some_and(|team| team.billing_metadata.is_wish_plan())
             || ChannelState::channel().is_dogfood()
     }
 
@@ -1507,7 +1507,7 @@ impl UserWorkspaces {
     /// (`Enable`/`Disable`) or editable (`RespectUserSetting`).
     pub fn get_agent_attribution_setting(&self) -> AdminEnablementSetting {
         self.current_team()
-            .map(|team| team.organization_settings.enable_warp_attribution.clone())
+            .map(|team| team.organization_settings.enable_wish_attribution.clone())
             .unwrap_or_default()
     }
 

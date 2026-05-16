@@ -17,14 +17,14 @@ import sys
 
 def resolve_version_file() -> Path:
     # This script lives at:
-    #   <root>/bundled/skills/feedback/scripts/resolve_warp_version.py
+    #   <root>/bundled/skills/feedback/scripts/resolve_wish_version.py
     # Bundled version metadata lives at:
     #   <root>/bundled/metadata/version.json
     script_dir = Path(__file__).resolve().parent
     return script_dir.parent.parent.parent / "metadata" / "version.json"
 
 
-def read_warp_version(path: Path) -> str | None:
+def read_wish_version(path: Path) -> str | None:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -38,7 +38,7 @@ def read_warp_version(path: Path) -> str | None:
 
 
 def main() -> int:
-    version = read_warp_version(resolve_version_file())
+    version = read_wish_version(resolve_version_file())
     payload: dict[str, str] = {}
     if version:
         payload["warp_version"] = version

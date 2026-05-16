@@ -274,7 +274,7 @@ fn render_badge(appearance: &Appearance) -> Box<dyn Element> {
 Always use `https://`, not `http://`:
 
 ```rust
-const LEARN_MORE_URL: &str = "https://warp.dev/your-blog-link";
+const LEARN_MORE_URL: &str = "https://hermon.ai/your-blog-link";
 ```
 
 ---

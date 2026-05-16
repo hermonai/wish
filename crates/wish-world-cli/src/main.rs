@@ -114,11 +114,15 @@ fn run() -> Result<()> {
             Ok(())
         }
         Some("inspect") => {
-            let dir = args.next().ok_or_else(|| anyhow!("usage: wish-world inspect <world-dir>"))?;
+            let dir = args
+                .next()
+                .ok_or_else(|| anyhow!("usage: wish-world inspect <world-dir>"))?;
             cmd_inspect(Path::new(&dir))
         }
         Some("canvas") => {
-            let sub = args.next().ok_or_else(|| anyhow!("usage: wish-world canvas repo|world <path>"))?;
+            let sub = args
+                .next()
+                .ok_or_else(|| anyhow!("usage: wish-world canvas repo|world <path>"))?;
             let path = args
                 .next()
                 .ok_or_else(|| anyhow!("usage: wish-world canvas {sub} <path>"))?;
@@ -131,11 +135,15 @@ fn run() -> Result<()> {
             }
         }
         Some("worldline") => {
-            let dir = args.next().ok_or_else(|| anyhow!("usage: wish-world worldline <world-dir>"))?;
+            let dir = args
+                .next()
+                .ok_or_else(|| anyhow!("usage: wish-world worldline <world-dir>"))?;
             cmd_worldline(Path::new(&dir))
         }
         Some("demo") => {
-            let sub = args.next().ok_or_else(|| anyhow!("usage: wish-world demo shanhai <out-dir>"))?;
+            let sub = args
+                .next()
+                .ok_or_else(|| anyhow!("usage: wish-world demo shanhai <out-dir>"))?;
             let out = args
                 .next()
                 .ok_or_else(|| anyhow!("usage: wish-world demo {sub} <out-dir>"))?;
@@ -145,14 +153,16 @@ fn run() -> Result<()> {
             }
         }
         Some("agent-dag") => {
-            let path = args.next().ok_or_else(|| anyhow!("usage: wish-world agent-dag <run-json>"))?;
+            let path = args
+                .next()
+                .ok_or_else(|| anyhow!("usage: wish-world agent-dag <run-json>"))?;
             let format = parse_format_flag(&mut args)?;
             cmd_agent_dag(Path::new(&path), format)
         }
         Some("view") => {
-            let dir = args
-                .next()
-                .ok_or_else(|| anyhow!("usage: wish-world view <world-dir> [--out <path>] [--no-open]"))?;
+            let dir = args.next().ok_or_else(|| {
+                anyhow!("usage: wish-world view <world-dir> [--out <path>] [--no-open]")
+            })?;
             let (out, open) = parse_view_flags(&mut args)?;
             cmd_view(Path::new(&dir), out, open)
         }
@@ -161,9 +171,11 @@ fn run() -> Result<()> {
             cmd_tour(out, open)
         }
         Some("build") => {
-            let intent = args
-                .next()
-                .ok_or_else(|| anyhow!("usage: wish-world build \"<intent>\" [--live] [--out <dir>] [--step-ms <n>]"))?;
+            let intent = args.next().ok_or_else(|| {
+                anyhow!(
+                    "usage: wish-world build \"<intent>\" [--live] [--out <dir>] [--step-ms <n>]"
+                )
+            })?;
             let (live, out, step_ms) = parse_build_flags(&mut args)?;
             cmd_build(&intent, live, out, step_ms)
         }
@@ -174,15 +186,16 @@ fn run() -> Result<()> {
             cmd_timetravel(Path::new(&dir))
         }
         Some("block") => {
-            let cmd_str = args
-                .next()
-                .ok_or_else(|| anyhow!("usage: wish-world block \"<shell-cmd>\" --target <world-dir>"))?;
+            let cmd_str = args.next().ok_or_else(|| {
+                anyhow!("usage: wish-world block \"<shell-cmd>\" --target <world-dir>")
+            })?;
             let mut target: Option<PathBuf> = None;
             while let Some(arg) = args.next() {
                 match arg.as_str() {
                     "--target" => {
                         target = Some(PathBuf::from(
-                            args.next().ok_or_else(|| anyhow!("--target needs a path"))?,
+                            args.next()
+                                .ok_or_else(|| anyhow!("--target needs a path"))?,
                         ));
                     }
                     s if s.starts_with("--target=") => {
@@ -191,7 +204,8 @@ fn run() -> Result<()> {
                     other => bail!("unknown flag: {other}"),
                 }
             }
-            let target = target.ok_or_else(|| anyhow!("block: --target <world-dir> is required"))?;
+            let target =
+                target.ok_or_else(|| anyhow!("block: --target <world-dir> is required"))?;
             cmd_block(&cmd_str, &target)
         }
         Some("repo-watch") => {
@@ -205,25 +219,31 @@ fn run() -> Result<()> {
                 match arg.as_str() {
                     "--target" => {
                         target = Some(PathBuf::from(
-                            args.next().ok_or_else(|| anyhow!("--target needs a path"))?,
+                            args.next()
+                                .ok_or_else(|| anyhow!("--target needs a path"))?,
                         ));
                     }
                     s if s.starts_with("--target=") => {
                         target = Some(PathBuf::from(s.trim_start_matches("--target=")));
                     }
                     "--poll-ms" => {
-                        let v = args.next().ok_or_else(|| anyhow!("--poll-ms needs a value"))?;
+                        let v = args
+                            .next()
+                            .ok_or_else(|| anyhow!("--poll-ms needs a value"))?;
                         poll_ms = v.parse().map_err(|e| anyhow!("--poll-ms: {e}"))?;
                     }
                     s if s.starts_with("--poll-ms=") => {
-                        poll_ms = s.trim_start_matches("--poll-ms=").parse()
+                        poll_ms = s
+                            .trim_start_matches("--poll-ms=")
+                            .parse()
                             .map_err(|e| anyhow!("--poll-ms: {e}"))?;
                     }
                     "--functions" => functions = true,
                     other => bail!("unknown flag: {other}"),
                 }
             }
-            let target = target.ok_or_else(|| anyhow!("repo-watch: --target <world-dir> is required"))?;
+            let target =
+                target.ok_or_else(|| anyhow!("repo-watch: --target <world-dir> is required"))?;
             cmd_repo_watch(Path::new(&root), &target, poll_ms, functions)
         }
         Some("branches") => {
@@ -233,12 +253,12 @@ fn run() -> Result<()> {
             cmd_branches(Path::new(&dir))
         }
         Some("branch") => {
-            let dir = args
-                .next()
-                .ok_or_else(|| anyhow!("usage: wish-world branch <world-dir> <new-branch> [--from <event-id>]"))?;
-            let new_branch = args
-                .next()
-                .ok_or_else(|| anyhow!("usage: wish-world branch <world-dir> <new-branch> [--from <event-id>]"))?;
+            let dir = args.next().ok_or_else(|| {
+                anyhow!("usage: wish-world branch <world-dir> <new-branch> [--from <event-id>]")
+            })?;
+            let new_branch = args.next().ok_or_else(|| {
+                anyhow!("usage: wish-world branch <world-dir> <new-branch> [--from <event-id>]")
+            })?;
             let mut from: Option<String> = None;
             while let Some(arg) = args.next() {
                 match arg.as_str() {
@@ -264,25 +284,31 @@ fn run() -> Result<()> {
                 match arg.as_str() {
                     "--target" => {
                         target = Some(PathBuf::from(
-                            args.next().ok_or_else(|| anyhow!("--target needs a path"))?,
+                            args.next()
+                                .ok_or_else(|| anyhow!("--target needs a path"))?,
                         ));
                     }
                     s if s.starts_with("--target=") => {
                         target = Some(PathBuf::from(s.trim_start_matches("--target=")));
                     }
                     "--step-ms" => {
-                        let v = args.next().ok_or_else(|| anyhow!("--step-ms needs a value"))?;
+                        let v = args
+                            .next()
+                            .ok_or_else(|| anyhow!("--step-ms needs a value"))?;
                         step_ms = v.parse().map_err(|e| anyhow!("--step-ms: {e}"))?;
                     }
                     s if s.starts_with("--step-ms=") => {
-                        step_ms = s.trim_start_matches("--step-ms=").parse()
+                        step_ms = s
+                            .trim_start_matches("--step-ms=")
+                            .parse()
                             .map_err(|e| anyhow!("--step-ms: {e}"))?;
                     }
                     "--fresh" => fresh = true,
                     other => bail!("unknown flag: {other}"),
                 }
             }
-            let target = target.ok_or_else(|| anyhow!("agent: --target <world-dir> is required"))?;
+            let target =
+                target.ok_or_else(|| anyhow!("agent: --target <world-dir> is required"))?;
             cmd_agent(&intent, &target, step_ms, fresh)
         }
         Some("swarm") => {
@@ -297,33 +323,43 @@ fn run() -> Result<()> {
                 match arg.as_str() {
                     "--target" => {
                         target = Some(PathBuf::from(
-                            args.next().ok_or_else(|| anyhow!("--target needs a path"))?,
+                            args.next()
+                                .ok_or_else(|| anyhow!("--target needs a path"))?,
                         ));
                     }
                     s if s.starts_with("--target=") => {
                         target = Some(PathBuf::from(s.trim_start_matches("--target=")));
                     }
                     "--count" => {
-                        let v = args.next().ok_or_else(|| anyhow!("--count needs a value"))?;
+                        let v = args
+                            .next()
+                            .ok_or_else(|| anyhow!("--count needs a value"))?;
                         count = v.parse().map_err(|e| anyhow!("--count: {e}"))?;
                     }
                     s if s.starts_with("--count=") => {
-                        count = s.trim_start_matches("--count=").parse()
+                        count = s
+                            .trim_start_matches("--count=")
+                            .parse()
                             .map_err(|e| anyhow!("--count: {e}"))?;
                     }
                     "--step-ms" => {
-                        let v = args.next().ok_or_else(|| anyhow!("--step-ms needs a value"))?;
+                        let v = args
+                            .next()
+                            .ok_or_else(|| anyhow!("--step-ms needs a value"))?;
                         step_ms = v.parse().map_err(|e| anyhow!("--step-ms: {e}"))?;
                     }
                     s if s.starts_with("--step-ms=") => {
-                        step_ms = s.trim_start_matches("--step-ms=").parse()
+                        step_ms = s
+                            .trim_start_matches("--step-ms=")
+                            .parse()
                             .map_err(|e| anyhow!("--step-ms: {e}"))?;
                     }
                     "--fresh" => fresh = true,
                     other => bail!("unknown flag: {other}"),
                 }
             }
-            let target = target.ok_or_else(|| anyhow!("swarm: --target <world-dir> is required"))?;
+            let target =
+                target.ok_or_else(|| anyhow!("swarm: --target <world-dir> is required"))?;
             if count == 0 {
                 bail!("swarm: --count must be ≥ 1");
             }
@@ -337,7 +373,9 @@ fn run() -> Result<()> {
             while let Some(arg) = args.next() {
                 match arg.as_str() {
                     "--poll-ms" => {
-                        let v = args.next().ok_or_else(|| anyhow!("--poll-ms needs a value"))?;
+                        let v = args
+                            .next()
+                            .ok_or_else(|| anyhow!("--poll-ms needs a value"))?;
                         poll_ms = v.parse().map_err(|e| anyhow!("--poll-ms: {e}"))?;
                     }
                     s if s.starts_with("--poll-ms=") => {
@@ -388,9 +426,8 @@ fn run() -> Result<()> {
                     }
                     s if s.starts_with("--perspective=") => {
                         let v = s.trim_start_matches("--perspective=");
-                        perspective = wish_render::Perspective::from_slug(v).ok_or_else(|| {
-                            anyhow!("unknown perspective: {v}")
-                        })?;
+                        perspective = wish_render::Perspective::from_slug(v)
+                            .ok_or_else(|| anyhow!("unknown perspective: {v}"))?;
                     }
                     "--reveal" => {
                         let v = args
@@ -450,7 +487,9 @@ fn parse_format_flag(args: &mut impl Iterator<Item = String>) -> Result<Format> 
         if let Some(val) = arg.strip_prefix("--format=") {
             fmt = parse_format(val)?;
         } else if arg == "--format" {
-            let val = args.next().ok_or_else(|| anyhow!("--format needs a value"))?;
+            let val = args
+                .next()
+                .ok_or_else(|| anyhow!("--format needs a value"))?;
             fmt = parse_format(&val)?;
         } else {
             bail!("unknown flag: {arg}");
@@ -470,7 +509,9 @@ fn parse_format_and_extras(
         if let Some(val) = arg.strip_prefix("--format=") {
             fmt = parse_format(val)?;
         } else if arg == "--format" {
-            let val = args.next().ok_or_else(|| anyhow!("--format needs a value"))?;
+            let val = args
+                .next()
+                .ok_or_else(|| anyhow!("--format needs a value"))?;
             fmt = parse_format(&val)?;
         } else if arg == "--functions" {
             flags.insert("functions".into());
@@ -487,7 +528,9 @@ fn parse_format(v: &str) -> Result<Format> {
         "mermaid" => Format::Mermaid,
         "json" => Format::Json,
         "text" => Format::Text,
-        "architecture" | "arch" | "architecture-mermaid" | "arch-mermaid" => Format::ArchitectureMermaid,
+        "architecture" | "arch" | "architecture-mermaid" | "arch-mermaid" => {
+            Format::ArchitectureMermaid
+        }
         _ => bail!("unknown format: {v}"),
     })
 }
@@ -522,7 +565,12 @@ fn cmd_inspect(dir: &Path) -> Result<()> {
     if !w.agents.is_empty() {
         println!("\nAgents:");
         for a in w.agents.values() {
-            println!("  • {:<24} role={} tools={}", a.display_name, a.role, a.tools.len());
+            println!(
+                "  • {:<24} role={} tools={}",
+                a.display_name,
+                a.role,
+                a.tools.len()
+            );
         }
     }
 
@@ -532,7 +580,10 @@ fn cmd_inspect(dir: &Path) -> Result<()> {
         let wl = WorldLine::open(wl_path).context("open worldline")?;
         println!("\nWorldLine:");
         println!("  events:        {}", wl.len());
-        println!("  merkle (main): {}", hex_lower(&wl.merkle_root(DEFAULT_BRANCH)));
+        println!(
+            "  merkle (main): {}",
+            hex_lower(&wl.merkle_root(DEFAULT_BRANCH))
+        );
     }
     Ok(())
 }
@@ -823,10 +874,7 @@ fn cmd_worldline(dir: &Path) -> Result<()> {
     for (i, ev) in wl.iter().enumerate() {
         println!(
             "  [{:>3}] {} risk={:.2} approval={:?}",
-            i,
-            ev.id,
-            ev.risk_score,
-            ev.approval
+            i, ev.id, ev.risk_score, ev.approval
         );
         println!("        intent: {}", ev.intent);
         let actor = match &ev.actor {
@@ -932,7 +980,13 @@ fn cmd_view(dir: &Path, out: Option<PathBuf>, open: bool) -> Result<()> {
     eprintln!("wish-world: viewer written to {}", out_path.display());
 
     if open {
-        let url = format!("file://{}", out_path.canonicalize().unwrap_or(out_path.clone()).display());
+        let url = format!(
+            "file://{}",
+            out_path
+                .canonicalize()
+                .unwrap_or(out_path.clone())
+                .display()
+        );
         if let Err(e) = open_in_browser(&url) {
             eprintln!("wish-world: could not auto-open browser ({e}). Open manually: {url}");
         } else {
@@ -962,11 +1016,15 @@ fn cmd_tour(out: Option<PathBuf>, open: bool) -> Result<()> {
     println!("   World:    {}", world_dir.display());
     println!("   Viewer:   {}", root.join("view.html").display());
     println!("\nTry next:");
-    println!("   cargo run --bin wish-world -- worldline {}", world_dir.display());
-    println!("   cargo run --bin wish-world -- inspect {}", world_dir.display());
     println!(
-        "   cargo run --bin wish-world -- canvas repo $(pwd) --format text | head -40"
+        "   cargo run --bin wish-world -- worldline {}",
+        world_dir.display()
     );
+    println!(
+        "   cargo run --bin wish-world -- inspect {}",
+        world_dir.display()
+    );
+    println!("   cargo run --bin wish-world -- canvas repo $(pwd) --format text | head -40");
     Ok(())
 }
 
@@ -1100,7 +1158,10 @@ fn cmd_agent(intent: &str, target: &Path, step_ms: u64, fresh: bool) -> Result<(
     use wish_provenance::WorldLine;
 
     if fresh && target.exists() {
-        eprintln!("wish-world agent: clearing {} for a fresh run", target.display());
+        eprintln!(
+            "wish-world agent: clearing {} for a fresh run",
+            target.display()
+        );
         std::fs::remove_dir_all(target).context("clear target")?;
     }
     std::fs::create_dir_all(target).context("create target")?;
@@ -1181,20 +1242,17 @@ fn cmd_agent(intent: &str, target: &Path, step_ms: u64, fresh: bool) -> Result<(
 ///
 /// Pair with `wish-world watch <world-dir>` in another terminal to see
 /// the swarm collaborate live.
-fn cmd_swarm(
-    intent: &str,
-    target: &Path,
-    count: usize,
-    step_ms: u64,
-    fresh: bool,
-) -> Result<()> {
+fn cmd_swarm(intent: &str, target: &Path, count: usize, step_ms: u64, fresh: bool) -> Result<()> {
     use std::sync::{Arc, Mutex};
     use std::thread;
     use std::time::Duration;
     use wish_provenance::WorldLine;
 
     if fresh && target.exists() {
-        eprintln!("wish-world swarm: clearing {} for a fresh run", target.display());
+        eprintln!(
+            "wish-world swarm: clearing {} for a fresh run",
+            target.display()
+        );
         std::fs::remove_dir_all(target).context("clear target")?;
     }
     std::fs::create_dir_all(target).context("create target")?;
@@ -1332,7 +1390,11 @@ fn cmd_branch(dir: &Path, new_branch: &str, from: Option<&str>) -> Result<()> {
     let marker_id = wl
         .branch_from(new_branch, from)
         .map_err(|e| anyhow!("branch_from: {e}"))?;
-    println!("✓ created branch '{}' (current: {})", new_branch, wl.current_branch());
+    println!(
+        "✓ created branch '{}' (current: {})",
+        new_branch,
+        wl.current_branch()
+    );
     println!("  marker event: {}", marker_id);
     if let Some(parent) = from {
         println!("  parent event: {}", parent);
@@ -1357,7 +1419,10 @@ fn cmd_timetravel(dir: &Path) -> Result<()> {
     let bundle = read_world_dir(dir).context("read world dir")?;
     let wl_path = dir.join("provenance").join("worldline.jsonl");
     let title = format!("{}  ·  time travel", bundle.world.name);
-    eprintln!("wish-world: opening time-travel viewer for {}", dir.display());
+    eprintln!(
+        "wish-world: opening time-travel viewer for {}",
+        dir.display()
+    );
     wish_render::run_timetravel(&title, bundle.world, wl_path)
         .map_err(|e| anyhow!("wish-render exited: {e}"))?;
     Ok(())
@@ -1373,8 +1438,12 @@ fn cmd_watch(dir: &Path, poll_ms: u64) -> Result<()> {
         dir.join("provenance/worldline.jsonl").display(),
         poll_ms
     );
-    wish_render::run_watch(&title, dir.to_path_buf(), std::time::Duration::from_millis(poll_ms))
-        .map_err(|e| anyhow!("wish-render exited: {e}"))?;
+    wish_render::run_watch(
+        &title,
+        dir.to_path_buf(),
+        std::time::Duration::from_millis(poll_ms),
+    )
+    .map_err(|e| anyhow!("wish-render exited: {e}"))?;
     Ok(())
 }
 
@@ -1395,20 +1464,13 @@ fn wish_splash(active_perspective: wish_render::Perspective) {
     const C_BOLD: &str = "\x1b[1m";
 
     eprintln!();
-    eprintln!(
-        "{C_ACCENT}{C_BOLD}  ✦  W I S H{C_RESET}    {C_WARM}the World Model IDE{C_RESET}"
-    );
-    eprintln!(
-        "{C_MUTED}      v0.5.0 · 15 perspectives · The Tensorium{C_RESET}"
-    );
+    eprintln!("{C_ACCENT}{C_BOLD}  ✦  W I S H{C_RESET}    {C_WARM}the World Model IDE{C_RESET}");
+    eprintln!("{C_MUTED}      v0.5.0 · 15 perspectives · The Tensorium{C_RESET}");
     eprintln!(
         "{C_MUTED}      domain: {}  ·  science (tensorium): {}{C_RESET}",
-        "🛠 🏛 🌐 💰 📚 🧪 🎨 📊",
-        "∑ △ ⚗ ⚛ 🗣 🪨 🧬"
+        "🛠 🏛 🌐 💰 📚 🧪 🎨 📊", "∑ △ ⚗ ⚛ 🗣 🪨 🧬"
     );
-    eprintln!(
-        "{C_MUTED}      ─────────────────────────────────────────────────{C_RESET}"
-    );
+    eprintln!("{C_MUTED}      ─────────────────────────────────────────────────{C_RESET}");
     eprintln!(
         "{C_ACCENT}      lens:{C_RESET} {} {C_MUTED}— {}{C_RESET}",
         active_perspective.label(),
@@ -1471,7 +1533,11 @@ fn cmd_render_repo(
         graph.files.len(),
         graph.deps.len(),
         if want_functions {
-            format!(", {} fns, {} calls", graph.functions.len(), graph.calls.len())
+            format!(
+                ", {} fns, {} calls",
+                graph.functions.len(),
+                graph.calls.len()
+            )
         } else {
             String::new()
         }
@@ -1571,7 +1637,11 @@ fn open_in_browser(url: &str) -> Result<()> {
 fn _viewer_lives_in_world_studio_now() {}
 
 #[cfg(any())]
-fn _old_render_html_unused(world: &wish_world_model::WishWorld, svg: &str, world_dir: &Path) -> String {
+fn _old_render_html_unused(
+    world: &wish_world_model::WishWorld,
+    svg: &str,
+    world_dir: &Path,
+) -> String {
     let mut entity_rows = String::new();
     let mut entries: Vec<_> = world.entities.values().collect();
     entries.sort_by(|a, b| a.display_name.cmp(&b.display_name));
@@ -1598,25 +1668,25 @@ fn _old_render_html_unused(world: &wish_world_model::WishWorld, svg: &str, world
     let wl_path = world_dir.join("provenance").join("worldline.jsonl");
     if wl_path.is_file() {
         if let Ok(wl) = WorldLine::open(wl_path.clone()) {
-                worldline_html.push_str(&format!(
+            worldline_html.push_str(&format!(
                     r#"<details open><summary>WorldLine ({} events · merkle {})</summary><ol class="wl">"#,
                     wl.len(),
                     short_hex(&wl.merkle_root(DEFAULT_BRANCH))
                 ));
-                for ev in wl.iter() {
-                    let actor = match &ev.actor {
-                        wish_world_model::Actor::Agent { agent_id } => format!("agent:{agent_id}"),
-                        wish_world_model::Actor::Human { user_id } => format!("human:{user_id}"),
-                        wish_world_model::Actor::System => "system".into(),
-                    };
-                    worldline_html.push_str(&format!(
+            for ev in wl.iter() {
+                let actor = match &ev.actor {
+                    wish_world_model::Actor::Agent { agent_id } => format!("agent:{agent_id}"),
+                    wish_world_model::Actor::Human { user_id } => format!("human:{user_id}"),
+                    wish_world_model::Actor::System => "system".into(),
+                };
+                worldline_html.push_str(&format!(
                         r#"<li><span class="risk">risk={:.2}</span> <span class="approval">{:?}</span> <span class="actor">{}</span><br><span class="intent">{}</span></li>"#,
                         ev.risk_score,
                         ev.approval,
                         escape_html(&actor),
                         escape_html(&ev.intent),
                     ));
-                }
+            }
             worldline_html.push_str("</ol></details>");
         }
     }
@@ -1777,14 +1847,15 @@ fn emit_canvas(canvas: &Canvas, format: Format) -> Result<()> {
             print!("{json}");
         }
         Format::Text => {
-            println!("Canvas: {} nodes, {} edges", canvas.nodes.len(), canvas.edges.len());
+            println!(
+                "Canvas: {} nodes, {} edges",
+                canvas.nodes.len(),
+                canvas.edges.len()
+            );
             let mut entries: Vec<_> = canvas.nodes.values().collect();
             entries.sort_by(|a, b| a.label.cmp(&b.label));
             for n in entries {
-                println!(
-                    "  • {:<32} [{:?}] {}",
-                    n.label, n.kind, n.semantic_id
-                );
+                println!("  • {:<32} [{:?}] {}", n.label, n.kind, n.semantic_id);
             }
         }
         Format::ArchitectureMermaid => {

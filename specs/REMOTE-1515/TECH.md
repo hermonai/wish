@@ -37,11 +37,11 @@ Express PRODUCT.md invariant 2 as a runtime filter, mirroring `/orchestrate` and
 ```rust path=null start=null
 .filter(|(_, command)| {
     command.name != commands::CONTINUE_LOCALLY.name
-        || self.active_conversation_is_cloud_oz(ctx)
+        || self.active_conversation_is_cloud_hermon(ctx)
 })
 ```
 
-Add a private helper `fn active_conversation_is_cloud_oz(&self, ctx: &AppContext) -> bool` that, in order:
+Add a private helper `fn active_conversation_is_cloud_hermon(&self, ctx: &AppContext) -> bool` that, in order:
 
 1. Reads the active conversation id from `agent_view_controller.agent_view_state().active_conversation_id()` (returns false if `None`).
 2. Looks up the `AIConversation` in `BlocklistAIHistoryModel`. Reads `conversation.task_id()`; returns false if `None` (local conversation).
@@ -70,7 +70,7 @@ continue_locally if command.name == commands::CONTINUE_LOCALLY.name => {
         return true;
     };
 
-    if !active_conversation_is_cloud_oz(conversation_id, ctx) {
+    if !active_conversation_is_cloud_hermon(conversation_id, ctx) {
         show_error_toast(
             "/continue-locally requires an active cloud Hermon Agent conversation".to_owned(),
             ctx,
@@ -100,7 +100,7 @@ continue_locally if command.name == commands::CONTINUE_LOCALLY.name => {
 }
 ```
 
-`active_conversation_is_cloud_oz(conversation_id, ctx)` is a small private free function in the same module that performs the same harness lookup as the data source helper, factored to take an explicit `conversation_id` (the data source uses the agent view's active id; the handler already has it from `selected_conversation_id`). It is the defensive runtime gate from PRODUCT.md invariant 8.
+`active_conversation_is_cloud_hermon(conversation_id, ctx)` is a small private free function in the same module that performs the same harness lookup as the data source helper, factored to take an explicit `conversation_id` (the data source uses the agent view's active id; the handler already has it from `selected_conversation_id`). It is the defensive runtime gate from PRODUCT.md invariant 8.
 
 The handler is gated `cfg(not(target_family = "wasm"))`. Empty/whitespace `argument` is normalized to `None` by `ForkAIConversation`'s downstream `fork_ai_conversation` (`app/src/workspace/view.rs:11483-11490`), so PRODUCT.md invariant 4 is satisfied without further work here.
 

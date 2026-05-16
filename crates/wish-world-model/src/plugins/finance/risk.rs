@@ -83,7 +83,11 @@ pub fn gross_notional(positions: &[Object], mark_prices: &HashMap<String, f64>) 
 
 /// **Leverage** = gross notional / equity. Equity is the account's
 /// balance Money amount. Returns `None` if equity is non-positive.
-pub fn leverage(positions: &[Object], mark_prices: &HashMap<String, f64>, equity: f64) -> Option<f64> {
+pub fn leverage(
+    positions: &[Object],
+    mark_prices: &HashMap<String, f64>,
+    equity: f64,
+) -> Option<f64> {
     if equity <= 0.0 {
         return None;
     }
@@ -224,9 +228,9 @@ fn money_prop(o: &Object, key: &str) -> Option<Money> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::builders::{account, asset, position};
     use super::super::types::{AssetClass, Currency, PositionSide};
+    use super::*;
     use crate::semantic_id::{Realm, SemanticId};
 
     fn alice() -> SemanticId {
@@ -237,7 +241,14 @@ mod tests {
     fn unrealized_pnl_long_profitable() {
         let acc = account("a", &alice(), Currency::usd(), 0.0, "margin");
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let p = position("p1", &acc.id, &btc.id, PositionSide::Long, 0.5, Money::usd(60_000.0));
+        let p = position(
+            "p1",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            0.5,
+            Money::usd(60_000.0),
+        );
         // Mark at 70k → P&L = 0.5 * (70k - 60k) = +5,000.
         let pnl = unrealized_pnl(&p, &Money::usd(70_000.0)).unwrap();
         assert!((pnl.amount - 5_000.0).abs() < 1e-5);
@@ -247,7 +258,14 @@ mod tests {
     fn unrealized_pnl_short_profitable_when_price_falls() {
         let acc = account("a", &alice(), Currency::usd(), 0.0, "margin");
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let p = position("p1", &acc.id, &btc.id, PositionSide::Short, 0.5, Money::usd(70_000.0));
+        let p = position(
+            "p1",
+            &acc.id,
+            &btc.id,
+            PositionSide::Short,
+            0.5,
+            Money::usd(70_000.0),
+        );
         // Mark at 60k → short profit = -1 * 0.5 * (60k - 70k) = +5,000.
         let pnl = unrealized_pnl(&p, &Money::usd(60_000.0)).unwrap();
         assert!((pnl.amount - 5_000.0).abs() < 1e-5);
@@ -257,7 +275,14 @@ mod tests {
     fn unrealized_pnl_cross_currency_returns_none() {
         let acc = account("a", &alice(), Currency::usd(), 0.0, "margin");
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let p = position("p1", &acc.id, &btc.id, PositionSide::Long, 0.5, Money::usd(60_000.0));
+        let p = position(
+            "p1",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            0.5,
+            Money::usd(60_000.0),
+        );
         // Mark is in EUR → no FX conversion → return None.
         assert!(unrealized_pnl(&p, &Money::eur(55_000.0)).is_none());
     }
@@ -266,8 +291,22 @@ mod tests {
     fn aggregate_exposure_nets_long_and_short() {
         let acc = account("a", &alice(), Currency::usd(), 0.0, "margin");
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let long = position("l", &acc.id, &btc.id, PositionSide::Long, 0.7, Money::usd(65_000.0));
-        let short = position("s", &acc.id, &btc.id, PositionSide::Short, 0.3, Money::usd(65_000.0));
+        let long = position(
+            "l",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            0.7,
+            Money::usd(65_000.0),
+        );
+        let short = position(
+            "s",
+            &acc.id,
+            &btc.id,
+            PositionSide::Short,
+            0.3,
+            Money::usd(65_000.0),
+        );
         let agg = aggregate_exposure(&[long, short]);
         let net = agg.get("BTC").copied().unwrap_or(0.0);
         assert!((net - 0.4).abs() < 1e-6);
@@ -283,7 +322,14 @@ mod tests {
     fn parametric_var_scales_with_size_and_vol() {
         let acc = account("a", &alice(), Currency::usd(), 0.0, "margin");
         let btc = asset("BTC", "Bitcoin", AssetClass::Crypto);
-        let p = position("p1", &acc.id, &btc.id, PositionSide::Long, 1.0, Money::usd(60_000.0));
+        let p = position(
+            "p1",
+            &acc.id,
+            &btc.id,
+            PositionSide::Long,
+            1.0,
+            Money::usd(60_000.0),
+        );
         let marks: HashMap<String, f64> = [("BTC".to_string(), 65_000.0)].into_iter().collect();
         let vols: HashMap<String, f64> = [("BTC".to_string(), 0.04)].into_iter().collect();
         // VaR(95%) = 1.645 * 1 * 65000 * 0.04 = 4_277.

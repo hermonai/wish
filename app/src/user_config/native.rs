@@ -64,7 +64,7 @@ impl super::WarpConfig {
         );
         ctx.subscribe_to_model(
             &WarpManagedPathsWatcher::handle(ctx),
-            Self::handle_warp_managed_paths_event,
+            Self::handle_wish_managed_paths_event,
         );
 
         Self {
@@ -73,7 +73,7 @@ impl super::WarpConfig {
         }
     }
 
-    fn handle_warp_managed_paths_event(
+    fn handle_wish_managed_paths_event(
         &mut self,
         event: &WarpManagedPathsWatcherEvent,
         ctx: &mut ModelContext<Self>,

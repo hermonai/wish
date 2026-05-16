@@ -274,7 +274,7 @@ mod tests {
 
     #[test]
     #[cfg(feature = "local_fs")]
-    fn test_resolve_file_target_warp_uses_default_layout() {
+    fn test_resolve_file_target_wish_uses_default_layout() {
         let target = resolve_file_target_with_editor_choice(
             Path::new("data.txt"),
             EditorChoice::Wish,

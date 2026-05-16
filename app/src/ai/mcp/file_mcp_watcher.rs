@@ -174,7 +174,7 @@ impl FileMCPWatcher {
             me.handle_home_directory_watcher_event(event, ctx);
         });
         ctx.subscribe_to_model(&WarpManagedPathsWatcher::handle(ctx), |me, event, ctx| {
-            me.handle_warp_managed_paths_event(event, ctx);
+            me.handle_wish_managed_paths_event(event, ctx);
         });
 
         let mut home_provider_watchers = HashMap::new();
@@ -182,14 +182,14 @@ impl FileMCPWatcher {
             Self::spawn_config_parse(
                 mcp_config_path.config_path,
                 mcp_config_path.root_path,
-                MCPProvider::Warp,
+                MCPProvider::Wish,
                 ctx,
             );
         }
 
         if let Some(home_dir) = dirs::home_dir() {
             for provider in MCPProvider::iter() {
-                if provider == MCPProvider::Warp {
+                if provider == MCPProvider::Wish {
                     continue;
                 }
                 match home_subdir_to_watch(provider) {
@@ -347,7 +347,7 @@ impl FileMCPWatcher {
         };
 
         for provider in MCPProvider::iter() {
-            if provider == MCPProvider::Warp {
+            if provider == MCPProvider::Wish {
                 continue;
             }
             match home_subdir_to_watch(provider) {
@@ -416,7 +416,7 @@ impl FileMCPWatcher {
         }
     }
 
-    fn handle_warp_managed_paths_event(
+    fn handle_wish_managed_paths_event(
         &mut self,
         event: &WarpManagedPathsWatcherEvent,
         ctx: &mut ModelContext<Self>,
@@ -440,7 +440,7 @@ impl FileMCPWatcher {
             || update.moved.keys().any(|target| target.path == config_path);
         self.handle_single_config_update(
             mcp_config_path.root_path,
-            MCPProvider::Warp,
+            MCPProvider::Wish,
             config_path,
             was_deleted,
             was_added,
@@ -679,7 +679,7 @@ async fn parse_mcp_config_file(
                 return vec![];
             }
         },
-        MCPProvider::Claude | MCPProvider::Warp | MCPProvider::Agents => file_contents,
+        MCPProvider::Claude | MCPProvider::Wish | MCPProvider::Agents => file_contents,
     };
 
     let resolved_contents = match substitute_env_vars(&json) {

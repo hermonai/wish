@@ -36,7 +36,10 @@ pub struct CanvasPatch {
 impl CanvasPatch {
     pub fn new(ops: Vec<CanvasPatchOp>) -> Self {
         Self {
-            id: format!("cpatch_{}", chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0)),
+            id: format!(
+                "cpatch_{}",
+                chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0)
+            ),
             ops,
         }
     }

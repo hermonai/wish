@@ -8,14 +8,14 @@ sequenceDiagram
     participant User
     participant CLI as warp CLI
     participant Srv as warp-server
-    participant Wrk as oz-agent-worker
+    participant Wrk as hermon-agent-worker
     participant Sand as Sandbox CLI
     participant GCS
     participant Cld as claude
     User->>CLI: warp agent run --harness claude --conversation X
     CLI->>Srv: list_ai_conversation_metadata([X]) → CLAUDE_CODE
     Note over Wrk,Sand: Cloud-to-cloud followups (Slack/Linear) reach the sandbox via the existing\nworker→sandbox path; this PR only changes how the sandbox CLI consumes the id.
-    Wrk->>Sand: oz agent run --task-id <t> --harness claude --conversation X --sandboxed
+    Wrk->>Sand: hermon agent run --task-id <t> --harness claude --conversation X --sandboxed
     Sand->>Srv: GET /harness-support/transcript (workload token → task.AgentConversationID) → signed URL
     Sand->>GCS: GET claude_code.json → ClaudeTranscriptEnvelope
     Sand->>Sand: write_envelope(cwd=<sandbox_cwd>) + sessions-index entry → ~/.claude/projects/...
@@ -84,7 +84,7 @@ pub(crate) enum ResumePayload {
 - `logic/ai/multi_agent/runtime/interceptors/input.go` passes `RehydrationForHermon` so the Hermon runtime keeps its softer UserQuery-style body.
 - `logic/ai/ambient_agents/workers/selfhosted/websocket.go` drops the redundant `ConversationID` field from `TaskAssignmentMessage`; the worker now reads `task.AgentConversationID` directly off the embedded `*types.Task` (already serialized as `agent_conversation_id`).
 - `test/integration/external_conversation_test.go` includes `TestGetConversationRawTranscriptDownloadURL_HermonRejected` (referenced from the new handler's doc comment) covering the Hermon 400 path that the handler relies on.
-### Worker — `oz-agent-worker`
+### Worker — `hermon-agent-worker`
 - `internal/types/messages.go` adds `AgentConversationID *string \`json:"agent_conversation_id,omitempty"\`` on `Task`. This replaces the removed `TaskAssignmentMessage.ConversationID` as the canonical conversation-id source for resumed runs.
 - `internal/common/task_utils.go`'s `AugmentArgsForTask` appends `--conversation <id>` from `task.AgentConversationID` when set, so the embedded warp CLI can resume the conversation's state (Hermon or Claude Code). The CLI accepts `--task-id` + `--conversation` together while the deferred `conflicts_with` migration is outstanding (see follow-ups); when both are present, the CLI's runtime merge prefers the explicit `--conversation`.
 - `internal/worker/worker.go` stops reading the removed `assignment.ConversationID`; the CLI args are built entirely off `task.AgentConversationID` via `AugmentArgsForTask`.
@@ -109,7 +109,7 @@ pub(crate) enum ResumePayload {
 - `mod.rs`: harness-mismatch pre-spawn (both directions), `HarnessKind::ThirdParty` populates `resume_payload`.
 ### Integration tests
 - warp-server: `TestResolvePromptHandler_HandoffRehydrationNoPriorExecution` pins empty `prompt` / `system_prompt` / `resumption_prompt` when no prior ended execution exists; `TestGetConversationRawTranscriptDownloadURL_HermonRejected` covers the Hermon 400 path that the new `GET /harness-support/transcript` handler relies on; existing tests cover the upload side.
-- oz-agent-worker: `AugmentArgsForTask` forwards `--conversation <id>` to the embedded CLI when `task.AgentConversationID` is set, and omits the flag otherwise.
+- hermon-agent-worker: `AugmentArgsForTask` forwards `--conversation <id>` to the embedded CLI when `task.AgentConversationID` is set, and omits the flag otherwise.
 ### Manual
 1. Short Claude cloud agent → note `<id>`.
 2. `agent run --harness claude --conversation <id>` locally → jsonl grows, Claude `/resume` lists the session.
@@ -118,6 +118,6 @@ pub(crate) enum ResumePayload {
 - Wire up cloud spawn-with-resume from the Rust CLI: add `conversation_id: Option<String>` to `SpawnAgentRequest`, forward `args.conversation` from `run-cloud --conversation` (with the up-front `fetch_and_validate_conversation_harness` call inside `spawn_future`), and ship as part of the broader local→cloud handoff design. The server already accepts the field and the worker already forwards `task.AgentConversationID`, so the wiring is small; deferring keeps this PR focused on local resume + the worker/server transcript path.
 - Add `conflicts_with = "conversation"` to `--task-id` in `RunAgentArgs` once the worker stops appending `--conversation` alongside `--task-id` for Slack/Linear followups. Until then, both flags can be passed; the runtime merge prefers the explicit `--conversation`.
 - Add a second `ResumePayload` variant + per-harness `fetch_transcript` deserializer when another CLI harness (Gemini / Codex / opencode) gains resume support. The generic surface (raw-bytes fetch on `HarnessSupportClient`, harness-decided `resumption_prompt` injection) is already in place.
-- Reconcile the duplicated `types.Task` fields between warp-server and oz-agent-worker.
+- Reconcile the duplicated `types.Task` fields between warp-server and hermon-agent-worker.
 - Retry/fallback semantics on `write_envelope` failure (today: hard error).
 - Auto-detect `--harness` from metadata once harness reading moves below the conversation-fetch step in `build_merged_config_and_task` and `ambient.rs`.

@@ -1,5 +1,5 @@
 //! This module should houses all horizontal/cross-cutting AI functionality throughout
-//! Warp (including Agent Mode).
+//! Wish (including Agent Mode).
 //!
 //! The side panel Wish AI implementation lives in `super::ai_assistant`.
 pub(crate) mod active_agent_views_model;

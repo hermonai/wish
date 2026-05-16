@@ -1,4 +1,6 @@
-use super::{display_working_directory, format_session_location, should_render_hermon_updates_section};
+use super::{
+    display_working_directory, format_session_location, should_render_hermon_updates_section,
+};
 use crate::ai::blocklist::agent_view::zero_state_block::current_working_directory_for_zero_state;
 use crate::terminal::model::ansi::{Handler, InitShellValue, PrecmdValue, SSHValue};
 use crate::terminal::model::test_utils::block_size;

@@ -638,20 +638,20 @@ impl DrivePanel {
         });
     }
 
-    pub fn has_warp_drive_initialized_sections(
+    pub fn has_wish_drive_initialized_sections(
         &self,
         app: &AppContext,
     ) -> impl Future<Output = ()> {
         self.index_view.as_ref(app).has_initialized_sections()
     }
 
-    pub fn reset_focused_index_in_warp_drive(
+    pub fn reset_focused_index_in_wish_drive(
         &mut self,
         should_scroll: bool,
         ctx: &mut ViewContext<Self>,
     ) {
         self.index_view.update(ctx, |index, ctx| {
-            index.reset_focused_index_in_warp_drive(should_scroll, ctx);
+            index.reset_focused_index_in_wish_drive(should_scroll, ctx);
         })
     }
 
@@ -723,7 +723,7 @@ impl TypedActionView for DrivePanel {
             DrivePanelAction::FocusDriveIndex => {
                 ctx.focus(&self.index_view);
                 // should_scroll is set to false here in order to not let menu clicks autoscroll WD index
-                self.reset_focused_index_in_warp_drive(false, ctx);
+                self.reset_focused_index_in_wish_drive(false, ctx);
             }
         }
     }

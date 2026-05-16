@@ -69,7 +69,7 @@ This is the single chokepoint where `SuggestionChipView::new_rule_chip` instance
 - Add `RuleSuggestionsEnabled` to the `use crate::settings::{…}` import block.
 - Add `ToggleRuleSuggestions` variant to `AISettingsPageAction`.
 - Add a handler for `ToggleRuleSuggestions` in `handle_action` that calls `settings.rule_suggestions_enabled_internal.toggle_and_save_value(ctx)`.
-- Add a `render_rule_suggestions_toggle` method to `AIFactWidget` following the same structure as `render_warp_drive_context_toggle`.
+- Add a `render_rule_suggestions_toggle` method to `AIFactWidget` following the same structure as `render_wish_drive_context_toggle`.
 - In `AIFactWidget::render`, call `render_rule_suggestions_toggle` conditionally:
   ```rust
   if FeatureFlag::SuggestedRules.is_enabled() {

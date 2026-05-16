@@ -182,7 +182,7 @@ const OFFLINE_BANNER_TEXT: &str = "You are offline. Some files will be read only
 
 pub const DRIVE_INDEX_VIEW_POSITION_ID: &str = "drive_index_view_id";
 
-// Sets the speed of the autoscroll that occurs when you drag an item near the Warp Drive border.
+// Sets the speed of the autoscroll that occurs when you drag an item near the Wish Drive border.
 pub const AUTOSCROLL_SPEED_MULTIPLIER: f32 = 10.;
 // Sets the distance from a border at which scroll events start to occur.
 pub const AUTOSCROLL_DETECTION_DISTANCE: f32 = 30.0;
@@ -350,10 +350,10 @@ pub enum DriveIndexAction {
     CloseTrashIndex,
     FocusPreviousItem,
     FocusNextItem,
-    /// Hitting one of the l/r arrow keys on a Warp Drive item.
+    /// Hitting one of the l/r arrow keys on a Wish Drive item.
     LeftArrowKey,
     RightArrowKey,
-    /// Hitting enter key on a Warp Drive item.
+    /// Hitting enter key on a Wish Drive item.
     EnterKey,
     /// Hitting escape key from trash index returns to main drive index.
     EscapeKey,
@@ -507,10 +507,10 @@ struct SpaceMenuState {
     offset: Vector2F,
 }
 
-/// The main view for the Warp Drive sidebar.
+/// The main view for the Wish Drive sidebar.
 /// `DriveIndex` is different from `DrivePanel` in that it is responsible for
-/// all the logic within Warp Drive, whereas `DrivePanel` is responsible for
-/// how Warp Drive interacts with the workspace and the rest of the app.
+/// all the logic within Wish Drive, whereas `DrivePanel` is responsible for
+/// how Wish Drive interacts with the workspace and the rest of the app.
 #[derive(Clone)]
 pub struct DriveIndex {
     window_id: WindowId,
@@ -519,7 +519,7 @@ pub struct DriveIndex {
     menu: ViewHandle<Menu<DriveIndexAction>>,
 
     sharing_dialog: ViewHandle<SharingDialog>,
-    /// Variant of the index, determines whether base Warp Drive or trash is viewed.
+    /// Variant of the index, determines whether base Wish Drive or trash is viewed.
     index_variant: DriveIndexVariant,
     /// If None, the context menu is closed. Otherwise, this contains the ID of the object it's open on.
     menu_object_id_if_open: Option<WarpDriveItemId>,
@@ -542,12 +542,12 @@ pub struct DriveIndex {
     sorting_choice: DriveSortOrder,
     auth_state: Arc<AuthState>,
     space_menu_open_for_space: Option<SpaceMenuState>,
-    show_warp_drive_loading_icon: bool,
+    show_wish_drive_loading_icon: bool,
     should_show_personal_object_limit_status: bool,
     /// A hashmap of location (space/folder) to a list of hashed IDs of objects inside
     /// the space/folder, used for rendering our objects
     sorted_orders_by_location: HashMap<CloudObjectLocation, Vec<ObjectUid>>,
-    /// A sorted list of all the items (spaces + objects) in Warp Drive
+    /// A sorted list of all the items (spaces + objects) in Wish Drive
     /// Unlike sorted_orders_by_location, this is not used for rendering
     /// This is used for object focusing and WD keyboard navigation
     ordered_items: Vec<WarpDriveItemId>,
@@ -557,7 +557,7 @@ pub struct DriveIndex {
     /// from links before everything has been set up.
     has_initialized_sections: Condition,
 
-    /// The number of objects in Warp Drive that have errored.
+    /// The number of objects in Wish Drive that have errored.
     /// This value is cached so that we can determine whether to render the "retry all"
     /// objects button in the case of syncing failures.
     num_errored_objects: usize,
@@ -742,7 +742,7 @@ impl DriveIndex {
                 cloud_model
                     .active_cloud_objects_in_location_without_descendents(location, app)
                     .filter(move |cloud_object| {
-                        cloud_object.renders_in_warp_drive()
+                        cloud_object.renders_in_wish_drive()
                             && user_uid.is_some_and(|uid| {
                                 cloud_object.permissions().has_direct_user_access(uid)
                             })
@@ -755,7 +755,7 @@ impl DriveIndex {
             }
             (DriveIndexVariant::MainIndex, _) => cloud_model
                 .active_cloud_objects_in_location_without_descendents(location, app)
-                .filter(|cloud_object| cloud_object.renders_in_warp_drive())
+                .filter(|cloud_object| cloud_object.renders_in_wish_drive())
                 .sorted_by(self.sorting_choice.sort_by(
                     cloud_view_model,
                     UpdateTimestamp::Revision,
@@ -949,10 +949,10 @@ impl DriveIndex {
 
         let sorting_choice = *WarpDriveSettings::as_ref(ctx).sorting_choice.value();
 
-        // Hide Warp Drive loading icon once initial load is complete
+        // Hide Wish Drive loading icon once initial load is complete
         let initial_load_complete = UpdateManager::as_ref(ctx).initial_load_complete();
         ctx.spawn(initial_load_complete, |me, _, ctx| {
-            me.show_warp_drive_loading_icon = false;
+            me.show_wish_drive_loading_icon = false;
             me.initialize_section_states(ctx);
             me.has_initialized_sections.set();
             ctx.notify();
@@ -1024,7 +1024,7 @@ impl DriveIndex {
             sorting_choice,
             auth_state: AuthStateProvider::as_ref(ctx).get().clone(),
             space_menu_open_for_space: None,
-            show_warp_drive_loading_icon: true,
+            show_wish_drive_loading_icon: true,
             sorted_orders_by_location: Default::default(),
             ordered_items: Default::default(),
             has_initialized_sections: Default::default(),
@@ -1074,7 +1074,7 @@ impl DriveIndex {
     }
 
     /// Sets focused to the index of either the selected object or the first item in WD
-    pub fn reset_focused_index_in_warp_drive(
+    pub fn reset_focused_index_in_wish_drive(
         &mut self,
         should_scroll: bool,
         ctx: &mut ViewContext<Self>,
@@ -1176,7 +1176,7 @@ impl DriveIndex {
             self.reset_menus(ctx);
             if !*via_select_item {
                 ctx.emit(DriveIndexEvent::FocusWarpDrive);
-                self.reset_focused_index_in_warp_drive(false, ctx);
+                self.reset_focused_index_in_wish_drive(false, ctx);
             }
         }
     }
@@ -2506,8 +2506,8 @@ impl DriveIndex {
 
         let mut title_right_side = Flex::row();
 
-        if self.show_warp_drive_loading_icon && self.is_online(app) {
-            title_right_side.add_child(self.render_warp_drive_loading_icon(appearance));
+        if self.show_wish_drive_loading_icon && self.is_online(app) {
+            title_right_side.add_child(self.render_wish_drive_loading_icon(appearance));
         }
 
         // Only show the global retry button if there are errored objects
@@ -2663,7 +2663,7 @@ impl DriveIndex {
         appearance: &Appearance,
         app: &AppContext,
     ) -> Option<RenderedWarpDriveItemAndChildren> {
-        if !object.renders_in_warp_drive() {
+        if !object.renders_in_wish_drive() {
             return None;
         }
 
@@ -2947,7 +2947,7 @@ impl DriveIndex {
         .finish()
     }
 
-    fn render_warp_drive_loading_icon(&self, appearance: &Appearance) -> Box<dyn wishui::Element> {
+    fn render_wish_drive_loading_icon(&self, appearance: &Appearance) -> Box<dyn wishui::Element> {
         // Use same padding as icon_button (4px) to center the icon within ICON_DIMENSIONS
         let icon_button_padding = (ICON_DIMENSIONS - LOADING_ICON_WIDTH) / 2.;
         let loading_icon = Container::new(
@@ -3213,7 +3213,7 @@ impl DriveIndex {
             if let DriveIndexSection::Space(space) = *section {
                 self.set_focused_item(WarpDriveItemId::Space(space), true, ctx);
             }
-            // Need to re-render focused index in Warp Drive after a space has been toggled
+            // Need to re-render focused index in Wish Drive after a space has been toggled
             if let Some(focused_index) = self.focused_index {
                 self.update_focused_params(focused_index, CloudModel::as_ref(ctx));
             }
@@ -4773,7 +4773,7 @@ impl DriveIndex {
         menu_items
     }
 
-    /// Builder for a menu item to open a Warp Drive object in a pane. The icon and label depend
+    /// Builder for a menu item to open a Wish Drive object in a pane. The icon and label depend
     /// on whether the object is editable or not.
     ///
     /// If `prefer_open` is `true`, the item defaults to view/open mode rather than edit mode.

@@ -261,7 +261,7 @@ unsafe fn init_logging() {
             // According to the docs, this error means that the database file was moved (or deleted),
             // so SQLite can't safely modify it and the rollback journal:
             //     https://www.sqlite.org/rescode.html#readonly_dbmoved
-            // This is mostly outside of Warp's control (e.g. the user or some system program is
+            // This is mostly outside of Wish's control (e.g. the user or some system program is
             // moving around files in the user data directory), so downgrade to a warning.
             (_, sqlite3::SQLITE_READONLY_DBMOVED) => log::Level::Warn,
             _ => log::Level::Error,
@@ -2369,7 +2369,7 @@ fn upsert_folders(
             let folder_clone = cloud_folder.clone();
             let folder_name = cloud_folder.model().name.clone();
             let folder_is_open = cloud_folder.model().is_open;
-            let folder_is_warp_pack = cloud_folder.model().is_warp_pack;
+            let folder_is_wish_pack = cloud_folder.model().is_wish_pack;
             upsert_cloud_object(
                 conn,
                 ObjectType::Folder,
@@ -2380,7 +2380,7 @@ fn upsert_folders(
                     let new_folder = NewFolder {
                         name: folder_name,
                         is_open: folder_is_open,
-                        is_warp_pack: folder_is_warp_pack,
+                        is_wish_pack: folder_is_wish_pack,
                     };
                     diesel::insert_into(schema::folders::dsl::folders)
                         .values(new_folder)
@@ -2396,7 +2396,7 @@ fn upsert_folders(
                         .set((
                             name.eq(folder_clone.model().name.clone()),
                             is_open.eq(folder_clone.model().is_open),
-                            is_warp_pack.eq(folder_clone.model().is_warp_pack),
+                            is_wish_pack.eq(folder_clone.model().is_wish_pack),
                         ))
                         .execute(conn)?;
                     Ok(())
@@ -2983,7 +2983,7 @@ fn read_sqlite_data(
                                 CloudFolderModel {
                                     name: folder.name.clone(),
                                     is_open: folder.is_open,
-                                    is_warp_pack: folder.is_warp_pack,
+                                    is_wish_pack: folder.is_wish_pack,
                                 },
                                 to_cloud_object_metadata(metadata),
                                 cloud_object_permissions,

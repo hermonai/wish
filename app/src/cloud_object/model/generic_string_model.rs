@@ -71,7 +71,7 @@ pub trait StringModel: Clone + Debug + PartialEq + Send + Sync + 'static {
     fn display_name(&self) -> String;
 
     /// Returns whether to render this model as a WarpDriveItem.
-    fn renders_in_warp_drive(&self) -> bool {
+    fn renders_in_wish_drive(&self) -> bool {
         false
     }
 
@@ -90,7 +90,7 @@ pub trait StringModel: Clone + Debug + PartialEq + Send + Sync + 'static {
 
     /// Creates a new warp drive item for this model type. Returns None
     /// if this object does not render in Wish Drive.
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         _id: SyncId,
         _appearance: &Appearance,
@@ -336,17 +336,17 @@ where
         })
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
-        self.string_model.renders_in_warp_drive()
+    fn renders_in_wish_drive(&self) -> bool {
+        self.string_model.renders_in_wish_drive()
     }
 
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         id: SyncId,
         appearance: &Appearance,
         object: &GenericCloudObject<GenericStringObjectId, Self>,
     ) -> Option<Box<dyn WarpDriveItem>> {
-        self.string_model.to_warp_drive_item(id, appearance, object)
+        self.string_model.to_wish_drive_item(id, appearance, object)
     }
 }
 

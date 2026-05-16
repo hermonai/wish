@@ -9,7 +9,7 @@ define_settings_group!(CodeSettings, settings: [
         supported_platforms: SupportedPlatforms::ALL,
         sync_to_cloud: SyncToCloud::Never,
         private: false,
-        toml_path: "code.editor.use_warp_as_default_editor",
+        toml_path: "code.editor.use_wish_as_default_editor",
         description: "Whether Wish is used as the default code editor.",
     }
     codebase_context_enabled: CodebaseContextEnabled {

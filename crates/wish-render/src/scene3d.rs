@@ -161,18 +161,21 @@ pub fn render(
     }
 
     // Sort projected entities far-to-near for correct overdraw.
-    projected.sort_by(|a, b| b.depth.partial_cmp(&a.depth).unwrap_or(std::cmp::Ordering::Equal));
+    projected.sort_by(|a, b| {
+        b.depth
+            .partial_cmp(&a.depth)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
     for p in &projected {
-        let Some(node) = canvas_nodes.get(&p.canvas_id) else { continue };
+        let Some(node) = canvas_nodes.get(&p.canvas_id) else {
+            continue;
+        };
 
         // Vertical "stake" from the ground projection up to the node.
         painter.line_segment(
             [p.ground_screen, p.screen],
-            Stroke::new(
-                1.0,
-                Color32::from_rgba_unmultiplied(140, 150, 165, 90),
-            ),
+            Stroke::new(1.0, Color32::from_rgba_unmultiplied(140, 150, 165, 90)),
         );
         // Ground dot.
         painter.circle_filled(
@@ -378,10 +381,12 @@ pub fn world_centroid_and_extent(world: &WishWorld) -> ([f32; 3], f32) {
     if count == 0 {
         return ([0.0, 0.0, 0.0], 20.0);
     }
-    let c = [sum[0] / count as f32, sum[1] / count as f32, sum[2] / count as f32];
-    let extent = (mx[0] - mn[0])
-        .max(mx[2] - mn[2])
-        .max(2.0);
+    let c = [
+        sum[0] / count as f32,
+        sum[1] / count as f32,
+        sum[2] / count as f32,
+    ];
+    let extent = (mx[0] - mn[0]).max(mx[2] - mn[2]).max(2.0);
     (c, extent.max(8.0) * 1.5)
 }
 

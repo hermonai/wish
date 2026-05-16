@@ -195,7 +195,7 @@ impl RemoteServerClient {
     /// The caller retains ownership of the `Child` itself. Typically the
     /// caller spawns the `Command` with `kill_on_drop(true)` and stashes
     /// the returned `Child` somewhere whose lifetime matches the
-    /// session's (in Warp, on the `RemoteServerManager`'s
+    /// session's (in Wish, on the `RemoteServerManager`'s
     /// `RemoteSessionState`). Dropping the `Child` there triggers
     /// SIGKILL on the subprocess, regardless of how many
     /// `Arc<RemoteServerClient>` clones are still alive.

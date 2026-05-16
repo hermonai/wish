@@ -105,9 +105,9 @@ fn test_color_dictionary_to_coloru() {
 }
 
 #[test]
-fn test_into_warp_theme_valid() {
+fn test_into_wish_theme_valid() {
     let theme: WarpTheme = solarized_dark_theme()
-        .into_warp_theme("", &default_dark_theme())
+        .into_wish_theme("", &default_dark_theme())
         .expect("Should be able to convert into WarpTheme");
     assert_eq!(
         theme.accent(),
@@ -139,9 +139,9 @@ fn test_into_warp_theme_valid() {
 }
 
 #[test]
-fn test_into_warp_theme_invalid() {
+fn test_into_wish_theme_invalid() {
     default_dark_theme()
-        .into_warp_theme("", &default_dark_theme())
+        .into_wish_theme("", &default_dark_theme())
         .expect_err("Should return an error if the theme is not sufficiently configured.");
 }
 

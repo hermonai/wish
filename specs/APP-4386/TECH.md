@@ -25,7 +25,7 @@ Modify `install_remote_server.sh` to detect which HTTP client is available and u
 Replace the current `curl` invocation (lines 43-44):
 ```bash
 curl -fSL "{download_base_url}?package=tar&os=$os_name&arch=$arch_name&channel={channel}{version_query}" \
-  -o "$tmpdir/oz.tar.gz"
+  -o "$tmpdir/hermon.tar.gz"
 ```
 
 With a detection block:
@@ -33,9 +33,9 @@ With a detection block:
 url="{download_base_url}?package=tar&os=$os_name&arch=$arch_name&channel={channel}{version_query}"
 
 if command -v curl >/dev/null 2>&1; then
-  curl -fSL "$url" -o "$tmpdir/oz.tar.gz"
+  curl -fSL "$url" -o "$tmpdir/hermon.tar.gz"
 elif command -v wget >/dev/null 2>&1; then
-  wget -q -O "$tmpdir/oz.tar.gz" "$url"
+  wget -q -O "$tmpdir/hermon.tar.gz" "$url"
 else
   echo "error: neither curl nor wget is available" >&2
   exit 3
@@ -83,7 +83,7 @@ pub fn download_tarball_url(platform: &RemotePlatform) -> String {
 /// Returns the remote path where the tarball should be uploaded
 /// before the extraction script runs.
 pub fn remote_tarball_staging_path() -> String {
-    format!("{}/oz-upload.tar.gz", remote_server_dir())
+    format!("{}/hermon-upload.tar.gz", remote_server_dir())
 }
 ```
 
@@ -141,14 +141,14 @@ Rather than maintaining two scripts with duplicated extraction code, refactor `i
 if [ -n "$1" ]; then
   # SCP fallback: tarball already uploaded by the client.
   tarball_src="$1"
-  mv "$tarball_src" "$tmpdir/oz.tar.gz"
+  mv "$tarball_src" "$tmpdir/hermon.tar.gz"
 else
   # Normal path: download via curl or wget.
   url="{download_base_url}?package=tar&os=$os_name&arch=$arch_name&channel={channel}{version_query}"
   if command -v curl >/dev/null 2>&1; then
-    curl -fSL "$url" -o "$tmpdir/oz.tar.gz"
+    curl -fSL "$url" -o "$tmpdir/hermon.tar.gz"
   elif command -v wget >/dev/null 2>&1; then
-    wget -q -O "$tmpdir/oz.tar.gz" "$url"
+    wget -q -O "$tmpdir/hermon.tar.gz" "$url"
   else
     echo "error: neither curl nor wget is available" >&2
     exit {no_http_client_exit_code}
@@ -156,8 +156,8 @@ else
 fi
 
 # Shared extraction tail (unchanged from today's lines 45-50).
-tar -xzf "$tmpdir/oz.tar.gz" -C "$tmpdir"
-bin=$(find "$tmpdir" -type f -name 'oz*' ! -name '*.tar.gz' | head -n1)
+tar -xzf "$tmpdir/hermon.tar.gz" -C "$tmpdir"
+bin=$(find "$tmpdir" -type f -name 'hermon*' ! -name '*.tar.gz' | head -n1)
 if [ -z "$bin" ]; then echo "no binary found in tarball" >&2; exit 1; fi
 chmod +x "$bin"
 mv "$bin" "$install_dir/{binary_name}{version_suffix}"

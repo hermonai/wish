@@ -158,7 +158,7 @@ One parameterized test (`every_canonical_state_produces_consistent_icon_across_s
 #### 12.3 Spot tests
 - `cli_agent_from_harness_maps_known_harnesses` covers Hermon/Claude/Gemini/OpenCode.
 - `local_claude_vs_cloud_claude_differ_only_by_is_ambient` asserts a locally-registered Claude CLI session and an ambient Claude run produce the same `CLIAgent { Claude, .. }` variant differing only by `is_ambient`.
-- `task_with_hermon_or_unknown_harness_renders_as_oz` asserts both Hermon and Unknown harnesses fall back to the Hermon variant on task cards.
+- `task_with_hermon_or_unknown_harness_renders_as_hermon` asserts both Hermon and Unknown harnesses fall back to the Hermon variant on task cards.
 - `summary_pane_kind_icons_distinguish_ambient_claude_from_local_claude` in `vertical_tabs_tests.rs` stays as-is. Existing `notifications/item_tests.rs` tests are extended with `is_ambient: true` and `false` cases for each variant.
 ## End-to-end flow (Claude cloud run)
 1. User selects Claude in harness selector. `AmbientAgentViewModel::set_harness(Harness::Claude, ctx)` fires `HarnessSelected`.
@@ -183,7 +183,7 @@ Unit coverage:
 - Extend `vertical_tabs_tests.rs` (or add `ui_components/agent_icon_tests.rs`) with the cross-surface equivalence suite described in §12.
 - Test `conversation_or_task_agent_icon_variant` with:
   - A `ConversationOrTask::Task` whose `agent_config_snapshot.harness` is `"claude"` → `CLIAgent::Claude` + `is_ambient: true`.
-  - A `ConversationOrTask::Task` whose harness is `"oz"` or missing → `HermonAgent` + `is_ambient: true`.
+  - A `ConversationOrTask::Task` whose harness is `"hermon"` or missing → `HermonAgent` + `is_ambient: true`.
   - A `ConversationOrTask::Conversation` → `HermonAgent` + `is_ambient: false`.
 - Test that `terminal_view_agent_icon_variant` returns `CLIAgent { Claude, ... is_ambient: true }` when the view-model's selected harness is Claude and no CLIAgent session exists yet.
 - Test idempotency of `NotificationSourceAgent` schema: old tests in `notifications/item_tests.rs` need updates for the new `is_ambient` field; add one new test case asserting the cloud-lobe path is taken when `is_ambient: true`.

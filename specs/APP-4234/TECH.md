@@ -26,7 +26,7 @@ Key config: `SshExtensionInstallMode::AlwaysInstall` (setting in `app/src/termin
 
 ### Binary deployment problem
 
-The production install script (`crates/remote_server/src/install_remote_server.sh`) downloads from the CDN (`app.warp.dev/download/cli`). This fetches a published binary, not one built from the developer's branch. For integration tests, the binary must come from the current codebase so that changes to the remote-server protocol or logic are tested. The existing `script/deploy_remote_server` already solves this for local development — it cross-compiles for `x86_64-unknown-linux-musl` and uploads via rsync.
+The production install script (`crates/remote_server/src/install_remote_server.sh`) downloads from the CDN (`app.hermon.ai/download/cli`). This fetches a published binary, not one built from the developer's branch. For integration tests, the binary must come from the current codebase so that changes to the remote-server protocol or logic are tested. The existing `script/deploy_remote_server` already solves this for local development — it cross-compiles for `x86_64-unknown-linux-musl` and uploads via rsync.
 
 ## Proposed changes
 
@@ -42,7 +42,7 @@ Add `script/deploy_remote_server_to_test_vm` that:
    ```
    Same build command as `script/deploy_remote_server`.
 
-2. Uploads the binary to `ubuntu-14-04` at `~/.warp-dev/remote-server/oz-dev` via `sshpass` + `scp` through the GCP IAP tunnel (the test VM uses password auth; `sshpass` provides it non-interactively). Uses the same proxy command as the SSH integration tests (`app/src/integration_testing/subshell/util.rs:2`).
+2. Uploads the binary to `ubuntu-14-04` at `~/.warp-dev/remote-server/hermon-dev` via `sshpass` + `scp` through the GCP IAP tunnel (the test VM uses password auth; `sshpass` provides it non-interactively). Uses the same proxy command as the SSH integration tests (`app/src/integration_testing/subshell/util.rs:2`).
 
 CI calls this script once before launching the integration test suite. Since `check_binary` will find the binary already present, the `RemoteServerController` flow becomes `check_binary → Ok(true) → connect_session`, skipping the CDN-based install.
 

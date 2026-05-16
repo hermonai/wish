@@ -151,7 +151,7 @@ use wish_graphql::{
         },
     },
     subscriptions::{
-        get_warp_drive_updates::GetWarpDriveUpdates, start_graphql_streaming_operation,
+        get_wish_drive_updates::GetWarpDriveUpdates, start_graphql_streaming_operation,
     },
 };
 
@@ -238,7 +238,7 @@ pub trait ObjectClient: 'static + Send + Sync {
         -> Result<ServerMetadata>;
 
     /// Gets updates for all Wish Drive actions.
-    async fn get_warp_drive_updates(
+    async fn get_wish_drive_updates(
         &self,
         message_sender: Sender<ObjectUpdateMessage>,
         stream_ready_sender: Sender<()>,
@@ -827,7 +827,7 @@ impl ObjectClient for ServerApi {
     /// Messages received over the socket are sent over the `message_sender`.
     /// Once the websocket is live, a one-shot message is sent over `stream_ready_sender`
     /// to indicate so. This is because this method only returns once the websocket is closed.
-    async fn get_warp_drive_updates(
+    async fn get_wish_drive_updates(
         &self,
         message_sender: Sender<ObjectUpdateMessage>,
         stream_ready_sender: Sender<()>,
@@ -864,7 +864,7 @@ impl ObjectClient for ServerApi {
             subscription,
             |res| {
                 res.ok_or_else(|| {
-                    anyhow!("missing response data for message in get_warp_drive_updates")
+                    anyhow!("missing response data for message in get_wish_drive_updates")
                 })
                 .and_then(|data| data.warp_drive_updates.try_into())
             },
@@ -949,7 +949,7 @@ impl ObjectClient for ServerApi {
                                     Some(folder.name),
                                     folder.metadata.try_into().ok()?,
                                     folder.permissions.try_into().ok()?,
-                                    folder.is_warp_pack,
+                                    folder.is_wish_pack,
                                 )
                                 .ok()
                             })

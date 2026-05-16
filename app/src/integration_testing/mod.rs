@@ -35,8 +35,8 @@ pub mod terminal;
 pub mod themes;
 pub mod type_getters;
 pub mod view_getters;
-pub mod wish_drive;
 pub mod window;
+pub mod wish_drive;
 pub mod workflow;
 pub mod workspace;
 

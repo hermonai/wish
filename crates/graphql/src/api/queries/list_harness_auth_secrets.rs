@@ -8,8 +8,8 @@ use crate::{
 #[derive(cynic::Enum, Clone, Copy, Debug, PartialEq)]
 #[cynic(graphql_type = "AgentHarness")]
 pub enum AgentHarnessInput {
-    /// Wire format `OZ` (preserved for server-schema back-compat).
-    #[cynic(rename = "OZ")]
+    /// Wire format `HERMON` (preserved for server-schema back-compat).
+    #[cynic(rename = "HERMON")]
     Hermon,
     ClaudeCode,
     Gemini,

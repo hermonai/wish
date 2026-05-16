@@ -218,8 +218,8 @@ impl Perspective {
             Perspective::Chemistry => LayoutMode::ForceDirected, // bond-aware later
             Perspective::Physics => LayoutMode::ForceDirected,
             Perspective::Linguistic => LayoutMode::Layered, // turns as a stack
-            Perspective::Geologic => LayoutMode::Layered, // strata are layered by definition
-            Perspective::Biologic => LayoutMode::Layered, // taxonomic tree
+            Perspective::Geologic => LayoutMode::Layered,   // strata are layered by definition
+            Perspective::Biologic => LayoutMode::Layered,   // taxonomic tree
         }
     }
 
@@ -242,7 +242,11 @@ impl Perspective {
             Perspective::Spatial => &[EdgeKind::Mentions, EdgeKind::Spawned],
             Perspective::Financial => &[EdgeKind::Produces, EdgeKind::Triggers],
             Perspective::Education => &[EdgeKind::Mentions, EdgeKind::Spawned, EdgeKind::Tests],
-            Perspective::Scientific => &[EdgeKind::Produces, EdgeKind::SucceededBy, EdgeKind::FailedBy],
+            Perspective::Scientific => &[
+                EdgeKind::Produces,
+                EdgeKind::SucceededBy,
+                EdgeKind::FailedBy,
+            ],
             Perspective::Design => &[EdgeKind::DependsOn, EdgeKind::Imports],
             Perspective::Analytic => &[EdgeKind::Produces, EdgeKind::Triggers],
             // Scientific lenses default to structural edges plus
@@ -253,7 +257,11 @@ impl Perspective {
             // Chemistry: bond as DependsOn.
             Perspective::Chemistry => &[EdgeKind::DependsOn],
             // Physics: causal edges.
-            Perspective::Physics => &[EdgeKind::Triggers, EdgeKind::Produces, EdgeKind::SucceededBy],
+            Perspective::Physics => &[
+                EdgeKind::Triggers,
+                EdgeKind::Produces,
+                EdgeKind::SucceededBy,
+            ],
             // Linguistic: reply chain via SucceededBy + reference via Mentions.
             Perspective::Linguistic => &[EdgeKind::Mentions, EdgeKind::SucceededBy],
             // Geologic: depositional sequence as SucceededBy.
@@ -271,7 +279,9 @@ impl Perspective {
             Perspective::Engineering => base,
             Perspective::Architecture => match kind {
                 CanvasNodeKind::Crate => Color32::from_rgb(180, 130, 70),
-                CanvasNodeKind::Package | CanvasNodeKind::Module => Color32::from_rgb(140, 110, 160),
+                CanvasNodeKind::Package | CanvasNodeKind::Module => {
+                    Color32::from_rgb(140, 110, 160)
+                }
                 _ => fade(base, 0.5),
             },
             Perspective::Spatial => match kind {
@@ -332,9 +342,7 @@ impl Perspective {
                 CanvasNodeKind::Custom(s) if s.contains("atom") => {
                     Color32::from_rgb(200, 90, 90) // red-ish atoms by default
                 }
-                CanvasNodeKind::Custom(s) if s.contains("bond") => {
-                    Color32::from_rgb(140, 140, 160)
-                }
+                CanvasNodeKind::Custom(s) if s.contains("bond") => Color32::from_rgb(140, 140, 160),
                 CanvasNodeKind::Custom(s) if s.contains("molecule") => {
                     Color32::from_rgb(110, 180, 110)
                 }
@@ -344,18 +352,12 @@ impl Perspective {
                 CanvasNodeKind::Custom(s) if s.contains("particle") => {
                     Color32::from_rgb(220, 200, 80)
                 }
-                CanvasNodeKind::Custom(s) if s.contains("field") => {
-                    Color32::from_rgb(80, 160, 200)
-                }
-                CanvasNodeKind::Custom(s) if s.contains("force") => {
-                    Color32::from_rgb(200, 110, 80)
-                }
+                CanvasNodeKind::Custom(s) if s.contains("field") => Color32::from_rgb(80, 160, 200),
+                CanvasNodeKind::Custom(s) if s.contains("force") => Color32::from_rgb(200, 110, 80),
                 _ => fade(base, 0.6),
             },
             Perspective::Linguistic => match kind {
-                CanvasNodeKind::Custom(s) if s.contains("turn") => {
-                    Color32::from_rgb(120, 180, 220)
-                }
+                CanvasNodeKind::Custom(s) if s.contains("turn") => Color32::from_rgb(120, 180, 220),
                 CanvasNodeKind::Custom(s) if s.contains("speaker") => {
                     Color32::from_rgb(220, 160, 200)
                 }
@@ -431,9 +433,18 @@ mod tests {
 
     #[test]
     fn from_slug_accepts_aliases() {
-        assert_eq!(Perspective::from_slug("eng"), Some(Perspective::Engineering));
-        assert_eq!(Perspective::from_slug("arch"), Some(Perspective::Architecture));
-        assert_eq!(Perspective::from_slug("finance"), Some(Perspective::Financial));
+        assert_eq!(
+            Perspective::from_slug("eng"),
+            Some(Perspective::Engineering)
+        );
+        assert_eq!(
+            Perspective::from_slug("arch"),
+            Some(Perspective::Architecture)
+        );
+        assert_eq!(
+            Perspective::from_slug("finance"),
+            Some(Perspective::Financial)
+        );
         assert_eq!(Perspective::from_slug("ux"), Some(Perspective::Design));
         assert_eq!(Perspective::from_slug("data"), Some(Perspective::Analytic));
     }
@@ -513,11 +524,23 @@ mod tests {
 
     #[test]
     fn scientific_aliases_parse() {
-        assert_eq!(Perspective::from_slug("mathematics"), Some(Perspective::Math));
+        assert_eq!(
+            Perspective::from_slug("mathematics"),
+            Some(Perspective::Math)
+        );
         assert_eq!(Perspective::from_slug("chem"), Some(Perspective::Chemistry));
         assert_eq!(Perspective::from_slug("phys"), Some(Perspective::Physics));
-        assert_eq!(Perspective::from_slug("chat"), Some(Perspective::Linguistic));
-        assert_eq!(Perspective::from_slug("strata"), Some(Perspective::Geologic));
-        assert_eq!(Perspective::from_slug("ecology"), Some(Perspective::Biologic));
+        assert_eq!(
+            Perspective::from_slug("chat"),
+            Some(Perspective::Linguistic)
+        );
+        assert_eq!(
+            Perspective::from_slug("strata"),
+            Some(Perspective::Geologic)
+        );
+        assert_eq!(
+            Perspective::from_slug("ecology"),
+            Some(Perspective::Biologic)
+        );
     }
 }

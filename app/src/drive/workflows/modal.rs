@@ -614,7 +614,7 @@ impl WorkflowModal {
         title_is_empty && description_is_empty && content_is_empty
     }
 
-    fn view_in_warp_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
+    fn view_in_wish_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
         ctx.emit(WorkflowModalEvent::ViewInWarpDrive(id));
         self.close(false /* force */, ctx);
         self.clicked_breadcrumb = None;
@@ -1927,7 +1927,7 @@ impl TypedActionView for WorkflowModal {
             WorkflowModalAction::ForceClose => {
                 self.close(true, ctx);
                 if let Some(id) = self.clicked_breadcrumb {
-                    self.view_in_warp_drive(id, ctx);
+                    self.view_in_wish_drive(id, ctx);
                 }
             }
             WorkflowModalAction::AiAssist => self.issue_request(ctx),
@@ -1937,7 +1937,7 @@ impl TypedActionView for WorkflowModal {
                     self.show_unsaved_changes_dialog(ctx);
                     return;
                 }
-                self.view_in_warp_drive(*id, ctx)
+                self.view_in_wish_drive(*id, ctx)
             }
             WorkflowModalAction::OpenOverflowMenu => self.open_overflow_menu(ctx),
             WorkflowModalAction::CopyObjectToClipboard => self.copy_object_to_clipboard(ctx),

@@ -154,9 +154,7 @@ fn extract_python(text: &str) -> Vec<ParsedFn> {
             }
             continue;
         }
-        if let Some(parsed) =
-            parse_python_signature(line, idx as u32, last_was_test_decorator)
-        {
+        if let Some(parsed) = parse_python_signature(line, idx as u32, last_was_test_decorator) {
             out.push(parsed);
             last_was_test_decorator = false;
         } else if !line.is_empty() && !line.starts_with('#') {
@@ -254,8 +252,15 @@ fn parse_ts_signature(line: &str, line_no: u32) -> Option<ParsedFn> {
             .unwrap_or(rest.len());
         let name = rest[..name_end].to_string();
         if !name.is_empty() {
-            let is_test = name.starts_with("test") || name.starts_with("it") || name.starts_with("describe");
-            return Some(ParsedFn { name, line: line_no + 1, is_test, is_pub: is_pub || !line.contains("private "), is_async });
+            let is_test =
+                name.starts_with("test") || name.starts_with("it") || name.starts_with("describe");
+            return Some(ParsedFn {
+                name,
+                line: line_no + 1,
+                is_test,
+                is_pub: is_pub || !line.contains("private "),
+                is_async,
+            });
         }
     }
     // `class name`, `interface name`, `type name`
@@ -355,7 +360,11 @@ fn parse_go_signature(line: &str, line_no: u32) -> Option<ParsedFn> {
             return None;
         }
         // Go convention: an uppercase first letter means exported (pub).
-        let is_pub = name.chars().next().map(|c| c.is_ascii_uppercase()).unwrap_or(false);
+        let is_pub = name
+            .chars()
+            .next()
+            .map(|c| c.is_ascii_uppercase())
+            .unwrap_or(false);
         let is_test = name.starts_with("Test") || name.starts_with("Benchmark");
         return Some(ParsedFn {
             name,
@@ -377,7 +386,11 @@ fn parse_go_signature(line: &str, line_no: u32) -> Option<ParsedFn> {
         }
         let after = rest[name_end..].trim_start();
         if after.starts_with("struct") || after.starts_with("interface") {
-            let is_pub = name.chars().next().map(|c| c.is_ascii_uppercase()).unwrap_or(false);
+            let is_pub = name
+                .chars()
+                .next()
+                .map(|c| c.is_ascii_uppercase())
+                .unwrap_or(false);
             return Some(ParsedFn {
                 name,
                 line: line_no + 1,
@@ -429,7 +442,18 @@ def epsilon(x):
 ";
         let f = extract_functions(Language::Python, src);
         let names: Vec<&str> = f.iter().map(|p| p.name.as_str()).collect();
-        assert_eq!(names, vec!["alpha", "beta", "Gamma", "method", "test_delta", "_private", "epsilon"]);
+        assert_eq!(
+            names,
+            vec![
+                "alpha",
+                "beta",
+                "Gamma",
+                "method",
+                "test_delta",
+                "_private",
+                "epsilon"
+            ]
+        );
 
         let beta = f.iter().find(|p| p.name == "beta").unwrap();
         assert!(beta.is_async);
@@ -458,7 +482,17 @@ function test_thing() {}
         let names: Vec<&str> = f.iter().map(|p| p.name.as_str()).collect();
         assert_eq!(
             names,
-            vec!["alpha", "beta", "gamma", "delta", "Epsilon", "Zeta", "Eta", "_internal", "test_thing"]
+            vec![
+                "alpha",
+                "beta",
+                "gamma",
+                "delta",
+                "Epsilon",
+                "Zeta",
+                "Eta",
+                "_internal",
+                "test_thing"
+            ]
         );
         assert!(f.iter().find(|p| p.name == "beta").unwrap().is_async);
         assert!(f.iter().find(|p| p.name == "delta").unwrap().is_async);
@@ -479,7 +513,10 @@ func TestZeta(t *testing.T) {}
 ";
         let f = extract_functions(Language::Go, src);
         let names: Vec<&str> = f.iter().map(|p| p.name.as_str()).collect();
-        assert_eq!(names, vec!["Alpha", "Beta", "gamma", "Delta", "Epsilon", "TestZeta"]);
+        assert_eq!(
+            names,
+            vec!["Alpha", "Beta", "gamma", "Delta", "Epsilon", "TestZeta"]
+        );
         assert!(f.iter().find(|p| p.name == "Alpha").unwrap().is_pub);
         assert!(!f.iter().find(|p| p.name == "gamma").unwrap().is_pub);
         assert!(f.iter().find(|p| p.name == "TestZeta").unwrap().is_test);
@@ -487,13 +524,34 @@ func TestZeta(t *testing.T) {}
 
     #[test]
     fn language_from_path_covers_common_extensions() {
-        assert_eq!(Language::from_path(std::path::Path::new("a.rs")), Some(Language::Rust));
-        assert_eq!(Language::from_path(std::path::Path::new("a.py")), Some(Language::Python));
-        assert_eq!(Language::from_path(std::path::Path::new("a.pyi")), Some(Language::Python));
-        assert_eq!(Language::from_path(std::path::Path::new("a.ts")), Some(Language::TypeScript));
-        assert_eq!(Language::from_path(std::path::Path::new("a.tsx")), Some(Language::TypeScript));
-        assert_eq!(Language::from_path(std::path::Path::new("a.js")), Some(Language::JavaScript));
-        assert_eq!(Language::from_path(std::path::Path::new("a.go")), Some(Language::Go));
+        assert_eq!(
+            Language::from_path(std::path::Path::new("a.rs")),
+            Some(Language::Rust)
+        );
+        assert_eq!(
+            Language::from_path(std::path::Path::new("a.py")),
+            Some(Language::Python)
+        );
+        assert_eq!(
+            Language::from_path(std::path::Path::new("a.pyi")),
+            Some(Language::Python)
+        );
+        assert_eq!(
+            Language::from_path(std::path::Path::new("a.ts")),
+            Some(Language::TypeScript)
+        );
+        assert_eq!(
+            Language::from_path(std::path::Path::new("a.tsx")),
+            Some(Language::TypeScript)
+        );
+        assert_eq!(
+            Language::from_path(std::path::Path::new("a.js")),
+            Some(Language::JavaScript)
+        );
+        assert_eq!(
+            Language::from_path(std::path::Path::new("a.go")),
+            Some(Language::Go)
+        );
         assert_eq!(Language::from_path(std::path::Path::new("a.txt")), None);
     }
 }

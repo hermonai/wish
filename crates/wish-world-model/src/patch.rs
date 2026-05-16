@@ -1,7 +1,9 @@
 //! `WorldPatch` — the single mutation primitive.
 
 use crate::semantic_id::SemanticId;
-use crate::world::{Component, WishWorld, WorldAgent, WorldAsset, WorldEntity, WorldRule, WorldScene};
+use crate::world::{
+    Component, WishWorld, WorldAgent, WorldAsset, WorldEntity, WorldRule, WorldScene,
+};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -22,13 +24,20 @@ pub enum Actor {
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum PatchOp {
     AddEntity(WorldEntity),
-    RemoveEntity { id: SemanticId },
-    UpdateComponent { entity: SemanticId, component: Component },
+    RemoveEntity {
+        id: SemanticId,
+    },
+    UpdateComponent {
+        entity: SemanticId,
+        component: Component,
+    },
     AddScene(WorldScene),
     AddAgent(WorldAgent),
     AddAsset(WorldAsset),
     AddRule(WorldRule),
-    SetIntent { intent: String },
+    SetIntent {
+        intent: String,
+    },
     Custom(serde_json::Value),
 }
 
@@ -181,11 +190,7 @@ mod tests {
     fn remove_missing_errors() {
         let mut w = WishWorld::new("t", WorldKind::GenericProject);
         let id = SemanticId::code_function("nope");
-        let rm = WorldPatch::new(
-            Actor::System,
-            "rm",
-            vec![PatchOp::RemoveEntity { id }],
-        );
+        let rm = WorldPatch::new(Actor::System, "rm", vec![PatchOp::RemoveEntity { id }]);
         assert!(matches!(
             apply_patch(&mut w, &rm),
             Err(PatchError::EntityNotFound(_))

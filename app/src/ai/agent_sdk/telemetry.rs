@@ -403,7 +403,7 @@ impl TelemetryEventDesc for CliTelemetryEventDiscriminants {
                 "Reported task completion via harness-support from the Wish CLI"
             }
             CliTelemetryEventDiscriminants::HarnessSupportReportShutdown => {
-                "Reported agent shutdown via harness-support from the Warp CLI"
+                "Reported agent shutdown via harness-support from the Wish CLI"
             }
         }
     }

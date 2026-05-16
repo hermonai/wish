@@ -192,7 +192,8 @@ impl Element for WishCanvasElement {
             let (bcx, bcy) = b.bounds.center();
             let p0 = origin + self.project(acx, acy);
             let p1 = origin + self.project(bcx, bcy);
-            ctx.scene.draw_arrow(p0, p1, edge_width, edge_color(&edge.kind), head_size);
+            ctx.scene
+                .draw_arrow(p0, p1, edge_width, edge_color(&edge.kind), head_size);
         }
 
         // Draw nodes.

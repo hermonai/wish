@@ -51,13 +51,13 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::str::FromStr;
 use teams_page::{TeamsPageView, TeamsPageViewEvent};
-use wishify_page::{WishifyPageAction, WishifyPageView};
 use wish_core::send_telemetry_from_ctx;
 use wish_core::{
     channel::ChannelState, context_flag::ContextFlag, features::FeatureFlag,
     settings::ToggleableSetting as _, ui::theme::color::internal_colors,
 };
 use wish_editor::editor::NavigationKey;
+use wishify_page::{WishifyPageAction, WishifyPageView};
 use wishui::Element;
 use wishui::{
     elements::{
@@ -381,7 +381,7 @@ impl FromStr for SettingsSection {
             "Wishify" => Ok(Self::Wishify),
             "WarpDrive" | "Wish Drive" => Ok(Self::WarpDrive),
             // This page was called "Hermon" at one point, keep for backward compatibility.
-            "Hermon" | "Hermon" | "Wish Agent" => Ok(Self::WarpAgent),
+            "Hermon" | "Wish Agent" => Ok(Self::WarpAgent),
             "Profiles" | "AgentProfiles" => Ok(Self::AgentProfiles),
             "MCP servers" | "AgentMCPServers" => Ok(Self::AgentMCPServers),
             "Knowledge" => Ok(Self::Knowledge),
@@ -478,7 +478,7 @@ pub mod flags {
     pub const USE_AUDIBLE_BELL_CONTEXT_FLAG: &str = "Use_Audible_Terminal_Bell";
     pub const SHOW_INPUT_HINT_TEXT_CONTEXT_FLAG: &str = "Show_Input_Hint_text";
     pub const SHOW_AGENT_TIPS_FLAG: &str = "Show_Agent_Tips";
-    pub const SHOW_OZ_UPDATES_IN_ZERO_STATE_FLAG: &str = "Show_Hermon_Updates_In_Zero_State";
+    pub const SHOW_HERMON_UPDATES_IN_ZERO_STATE_FLAG: &str = "Show_Hermon_Updates_In_Zero_State";
     pub const USE_AGENT_FOOTER_FLAG: &str = "Use_Agent_Footer";
     pub const THINKING_DISPLAY_SHOW_AND_COLLAPSE: &str = "Thinking_Display_ShowAndCollapse";
     pub const THINKING_DISPLAY_ALWAYS_SHOW: &str = "Thinking_Display_AlwaysShow";
@@ -1189,7 +1189,7 @@ impl SettingsView {
         let warp_drive_page_handle =
             ctx.add_typed_action_view(wish_drive_page::WarpDriveSettingsPageView::new);
         ctx.subscribe_to_view(&warp_drive_page_handle, |me, _, event, ctx| {
-            me.handle_warp_drive_page_event(event, ctx);
+            me.handle_wish_drive_page_event(event, ctx);
         });
 
         let platform_page_handle = ctx.add_typed_action_view(platform_page::PlatformPageView::new);
@@ -1842,7 +1842,7 @@ impl SettingsView {
         }
     }
 
-    fn handle_warp_drive_page_event(
+    fn handle_wish_drive_page_event(
         &mut self,
         event: &wish_drive_page::WarpDriveSettingsPageEvent,
         ctx: &mut ViewContext<Self>,

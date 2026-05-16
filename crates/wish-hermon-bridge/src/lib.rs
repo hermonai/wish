@@ -59,7 +59,10 @@ mod tests {
     #[test]
     fn smoke_routing_long() {
         let w = WishWorld::new("t", WorldKind::FintechDemo);
-        let h = routing_hint(&w, "build a Shan Hai education world that teaches stablecoin and credit.");
+        let h = routing_hint(
+            &w,
+            "build a Shan Hai education world that teaches stablecoin and credit.",
+        );
         assert_eq!(h.model, "claude-opus-4-7");
     }
 }

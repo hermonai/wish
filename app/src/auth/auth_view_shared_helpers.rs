@@ -558,7 +558,7 @@ pub fn render_privacy_settings_toggles<A: Action + Clone + 'static>(
 
     let mut col = Flex::column().with_cross_axis_alignment(CrossAxisAlignment::Stretch);
 
-    // Builds without a telemetry/crash reporting config (e.g. OpenWarp) cannot
+    // Builds without a telemetry/crash reporting config (e.g. OpenWish) cannot
     // ship the corresponding events, so the toggles would be no-ops. Hide each
     // one independently based on whether its backing config is present.
     if ChannelState::is_telemetry_available() && !FeatureFlag::GlobalAIAnalyticsBanner.is_enabled()

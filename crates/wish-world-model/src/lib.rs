@@ -30,20 +30,20 @@ pub use mission::{
     Evidence, MerkleProof, Mission, MissionId, MissionStatus, MissionStep, Signature, SignatureId,
     Signer, VerifiableArtifact, VerifiableArtifactId, DEFAULT_BRANCH,
 };
-pub use patch::{Actor, PatchId, PatchOp, WorldPatch, apply_patch, risk_score};
+pub use patch::{apply_patch, risk_score, Actor, PatchId, PatchOp, WorldPatch};
 pub use plugin::{DomainPlugin, PluginRegistry};
 pub use plugins::{ChemistryPlugin, EngineeringPlugin, FinancePlugin};
 pub use primitives::{
-    Agent as PrimitiveAgent, Constraint, ConstraintSeverity, Event as PrimitiveEvent, Field,
-    Graph, GraphEdge, Object, Primitive, PropertyValue,
+    Agent as PrimitiveAgent, Constraint, ConstraintSeverity, Event as PrimitiveEvent, Field, Graph,
+    GraphEdge, Object, Primitive, PropertyValue,
 };
 pub use semantic_id::{ParseSemanticIdError, Realm, SemanticId};
 pub use tensorium::{TensorAxis, TensorAxisKind, Tensorium};
 pub use wishworld_io::{read_world_dir, write_world_dir, WishWorldBundle, WishWorldIoError};
 pub use world::{
-    Component, EntityKind, EntityStatus, SourceRef, AgentRef, Transform,
-    WishWorld, WorldAgent, WorldAsset, WorldEntity, WorldEvent, WorldEventId,
-    WorldId, WorldKind, WorldMemory, WorldRule, WorldScene,
+    AgentRef, Component, EntityKind, EntityStatus, SourceRef, Transform, WishWorld, WorldAgent,
+    WorldAsset, WorldEntity, WorldEvent, WorldEventId, WorldId, WorldKind, WorldMemory, WorldRule,
+    WorldScene,
 };
 
 /// Schema version emitted in `.wishworld/world.json`.
@@ -78,11 +78,8 @@ mod tests {
     #[test]
     fn smoke_roundtrip_json() {
         let mut world = WishWorld::new("rt", WorldKind::GenericProject);
-        let entity = WorldEntity::stub(
-            SemanticId::code_function("a::b"),
-            "b",
-            EntityKind::Function,
-        );
+        let entity =
+            WorldEntity::stub(SemanticId::code_function("a::b"), "b", EntityKind::Function);
         world.upsert_entity(entity);
         let json = serde_json::to_string(&world).expect("ser");
         let parsed: WishWorld = serde_json::from_str(&json).expect("de");

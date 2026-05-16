@@ -411,7 +411,7 @@ impl PrivacySettings {
             }
         }
 
-        self.maybe_sync_with_warp_drive_prefs(ctx);
+        self.maybe_sync_with_wish_drive_prefs(ctx);
     }
 
     fn overwrite_local_settings_if_cloud_disabled(
@@ -696,17 +696,17 @@ impl PrivacySettings {
     ///    values are set in warp drive, or
     /// 2) update the warp drive prefs to match the values from the legacy user_settings endpoint so
     ///    that we can use warp drive prefs going forward.
-    pub fn maybe_sync_with_warp_drive_prefs(&mut self, ctx: &mut ModelContext<Self>) {
+    pub fn maybe_sync_with_wish_drive_prefs(&mut self, ctx: &mut ModelContext<Self>) {
         // Wait for cloud objects to load, and, if telemetry & crash reporting are synced to warp drive
         // initialize from the warp drive values.
         let update_manager = UpdateManager::as_ref(ctx);
         ctx.spawn(
             update_manager.initial_load_complete(),
-            Self::handle_warp_drive_objects_loaded,
+            Self::handle_wish_drive_objects_loaded,
         );
     }
 
-    fn handle_warp_drive_objects_loaded(&mut self, _: (), ctx: &mut ModelContext<Self>) {
+    fn handle_wish_drive_objects_loaded(&mut self, _: (), ctx: &mut ModelContext<Self>) {
         self.initialize_default_regexes_once(ctx);
         // Check if the warp drive preferences are set. If they are, and telemetry and crash reporting
         // are set as warp drive prefs, then use those.  Otherwise, update the warp drive prefs to match

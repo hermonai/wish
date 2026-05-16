@@ -681,7 +681,7 @@ impl RuleView {
             return None;
         }
 
-        let item = ai_row.fact.to_warp_drive_item(appearance)?;
+        let item = ai_row.fact.to_wish_drive_item(appearance)?;
         let icon = item.sync_status_icon(
             SyncQueue::as_ref(app).is_dequeueing(),
             ai_row.mouse_states.sync_status_icon.clone(),

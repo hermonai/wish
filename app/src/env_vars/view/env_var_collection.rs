@@ -1104,7 +1104,7 @@ impl EnvVarCollectionView {
             });
     }
 
-    fn view_in_warp_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
+    fn view_in_wish_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
         ctx.emit(EnvVarCollectionEvent::ViewInWarpDrive(id));
     }
 
@@ -1545,7 +1545,7 @@ impl TypedActionView for EnvVarCollectionView {
                 self.update_open_modal_state(ctx);
                 ctx.notify();
             }
-            EnvVarCollectionAction::ViewInWarpDrive(id) => self.view_in_warp_drive(*id, ctx),
+            EnvVarCollectionAction::ViewInWarpDrive(id) => self.view_in_wish_drive(*id, ctx),
         }
     }
 }

@@ -222,7 +222,7 @@ impl GeneratorContext for SessionContext {
     ) -> Result<CommandOutput> {
         let mut env_vars = session_env_vars.unwrap_or_default();
         // We need to run the command with the PATH var set explicitly even if we have session env vars
-        // because if the user opened Warp through a parent process that didn't have the PATH var set
+        // because if the user opened Wish through a parent process that didn't have the PATH var set
         // (i.e. outside of a shell, for example opening the app via Finder),
         // the subshell won't inherit the PATH var, but we need the PATH var
         // to reference executables we might run as part of generators.

@@ -35,7 +35,7 @@ jobs:
           echo "analyzed_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Find old feature flags
-        uses: warpdotdev/oz-agent-action@main
+        uses: warpdotdev/hermon-agent-action@main
         with:
           prompt: |
             Your task is to find and list any feature flags which have been enabled by default for more than 3 months.
@@ -100,7 +100,7 @@ jobs:
               continue
             fi
 
-            candidate_branch="oz-agent/cleanup-feature-flag-$candidate_flag"
+            candidate_branch="hermon-agent/cleanup-feature-flag-$candidate_flag"
             existing_pr="$(gh pr list --state open --head "$candidate_branch" --json number --jq '.[0].number')"
             if [ -n "$existing_pr" ] && [ "$existing_pr" != "null" ]; then
               echo "Skipping $candidate_flag: open cleanup PR #$existing_pr already exists on $candidate_branch"
@@ -167,7 +167,7 @@ jobs:
 
       - name: Clean up the unused feature flag
         id: cleanup_agent
-        uses: warpdotdev/oz-agent-action@main
+        uses: warpdotdev/hermon-agent-action@main
         with:
           prompt: |
             The feature flag ${{ needs.analyze.outputs.flag_name }} is now enabled by default.
@@ -234,8 +234,8 @@ jobs:
           token: ${{ github.token }}
           base: ${{ github.event.repository.default_branch }}
           commit-message: "Clean up ${{ needs.analyze.outputs.flag_name }} feature flag"
-          branch: "oz-agent/cleanup-feature-flag-${{ needs.analyze.outputs.flag_name }}"
-          author: "Hermon Agent <oz-agent@hermon.ai>"
+          branch: "hermon-agent/cleanup-feature-flag-${{ needs.analyze.outputs.flag_name }}"
+          author: "Hermon Agent <hermon-agent@hermon.ai>"
           delete-branch: true
           reviewers: ${{ needs.analyze.outputs.reviewers }}
           title: "Clean up ${{ needs.analyze.outputs.flag_name }} feature flag"

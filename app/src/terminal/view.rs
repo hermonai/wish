@@ -674,15 +674,15 @@ const BOOTSTRAP_FAILED_DURATION: Duration = Duration::from_secs(7);
 /// during the bootstrap period.
 const ENV_VAR_BOOTSTRAP_FAILED_DURATION: Duration = Duration::from_secs(60);
 const KNOWN_ISSUES_URL: &str =
-    "https://docs.warp.dev/support-and-community/troubleshooting-and-support/known-issues";
+    "https://docs.hermon.ai/support-and-community/troubleshooting-and-support/known-issues";
 
 /// Link to supported custom prompts.
 const PROMPT_COMPATIBILITY_URL: &str =
-    "https://docs.warp.dev/terminal/appearance/prompt#custom-prompt-compatibility-table";
+    "https://docs.hermon.ai/terminal/appearance/prompt#custom-prompt-compatibility-table";
 
 /// Link to troubleshooting steps for ControlMaster errors.
 const CONTROLMASTER_ISSUES_URL: &str =
-    "https://docs.warp.dev/terminal/warpify/ssh-legacy#troubleshooting";
+    "https://docs.hermon.ai/terminal/warpify/ssh-legacy#troubleshooting";
 
 /// Link to instructions on how to update p10k.
 const P10K_UPDATE_INSTRUCTIONS_URL: &str =
@@ -698,9 +698,9 @@ const MIN_DELTA_FOR_TEXT_SELECTION: f32 = 0.5;
 /// Notifications-specific info
 /// TODO (suraj): add documentation for notifications in gitbook
 const NOTIFICATIONS_LEARN_MORE_URL: &str =
-    "https://docs.warp.dev/terminal/more-features/notifications";
+    "https://docs.hermon.ai/terminal/more-features/notifications";
 pub const NOTIFICATIONS_TROUBLESHOOT_URL: &str =
-    "https://docs.warp.dev/terminal/more-features/notifications#troubleshooting-notifications";
+    "https://docs.hermon.ai/terminal/more-features/notifications#troubleshooting-notifications";
 
 const DEBOUNCE_PERIOD: Duration = Duration::from_millis(40);
 
@@ -811,16 +811,16 @@ impl NotificationsTrigger {
     pub fn discovery_banner_copy(&self) -> &'static str {
         match self {
             NotificationsTrigger::LongRunningCommand(..) => {
-                "Warp can notify you when long-running commands finish."
+                "Wish can notify you when long-running commands finish."
             }
             NotificationsTrigger::AgentTaskCompleted(..) => {
-                "Warp can notify you when an agent finishes responding."
+                "Wish can notify you when an agent finishes responding."
             }
             NotificationsTrigger::NeedsAttention => {
-                "Warp can notify you when a command or agent needs your attention."
+                "Wish can notify you when a command or agent needs your attention."
             }
             NotificationsTrigger::PasswordPrompt => {
-                "Warp can notify you when you're prompted to enter a password."
+                "Wish can notify you when you're prompted to enter a password."
             }
         }
     }
@@ -2405,7 +2405,7 @@ impl Default for TerminalViewStateChange {
 }
 
 /// Whether or not this is the active terminal session. The active session for a pane group
-/// is the one used for executing workflows, Warp AI suggestions, etc.
+/// is the one used for executing workflows, Wish AI suggestions, etc.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ActiveSessionState {
     Active,
@@ -3849,7 +3849,7 @@ impl TerminalView {
         let incompatible_configuration_banner = ctx.add_typed_action_view(|_| {
             Banner::new(BannerTextContent::formatted_text(vec![
                 FormattedTextFragment::plain_text(
-                    "Your shell configuration is incompatible with Warp...  ",
+                    "Your shell configuration is incompatible with Wish...  ",
                 ),
                 FormattedTextFragment::hyperlink("More info", KNOWN_ISSUES_URL),
             ]))
@@ -4841,9 +4841,9 @@ impl TerminalView {
         // Terminal prompt path: the Warp prompt is active when honor_ps1 is
         // off, or when UDI overrides PS1. GitDiffStats must also be in the
         // configured chip list.
-        let is_using_warp_prompt = !*SessionSettings::as_ref(ctx).honor_ps1
+        let is_using_wish_prompt = !*SessionSettings::as_ref(ctx).honor_ps1
             || InputSettings::as_ref(ctx).is_universal_developer_input_enabled(ctx);
-        is_using_warp_prompt
+        is_using_wish_prompt
             && Prompt::as_ref(ctx)
                 .chip_kinds()
                 .contains(&ContextChipKind::GitDiffStats)
@@ -6478,7 +6478,7 @@ impl TerminalView {
                     .unwrap_or(false);
 
                 if maybe_modified_files {
-                    self.refresh_warp_prompt(ctx);
+                    self.refresh_wish_prompt(ctx);
                     ctx.notify();
                 }
 
@@ -7371,7 +7371,8 @@ impl TerminalView {
 
         let active_command_block = model.block_list().active_block();
         let is_active_and_long_running = active_command_block.is_active_and_long_running();
-        let is_hermon_env_startup_command = active_command_block.is_hermon_environment_startup_command();
+        let is_hermon_env_startup_command =
+            active_command_block.is_hermon_environment_startup_command();
         let is_running_in_band_command =
             model.block_list().is_writing_or_executing_in_band_command();
 
@@ -8961,7 +8962,7 @@ impl TerminalView {
             });
         let active_session_id = self.active_block_session_id();
         self.wishify_state.on_wishify_start(active_session_id);
-        self.refresh_warp_prompt(ctx);
+        self.refresh_wish_prompt(ctx);
     }
 
     fn handle_ssh_wishify_block_event(
@@ -9315,7 +9316,7 @@ impl TerminalView {
 
         let a11y_content = AccessibilityContent::new(
             banner_title,
-            "Make sure you have enabled access for Warp notifications in System Preferences.",
+            "Make sure you have enabled access for Wish notifications in System Preferences.",
             WarpA11yRole::TextRole,
         );
         ctx.emit_a11y_content(a11y_content);
@@ -10269,7 +10270,7 @@ impl TerminalView {
     }
 
     /// Recomputes the chip values for the Warp prompt (i.e. _not_ PS1).
-    fn refresh_warp_prompt(&mut self, ctx: &mut ViewContext<Self>) {
+    fn refresh_wish_prompt(&mut self, ctx: &mut ViewContext<Self>) {
         // Ask the per-repo sub-model to re-fetch metadata so the chip values
         // reflect the latest git state (branch, diff stats, etc.).
         #[cfg(feature = "local_fs")]
@@ -10346,7 +10347,7 @@ impl TerminalView {
         {
             self.model
                 .lock()
-                .clear_pending_warp_initiated_control_mode();
+                .clear_pending_wish_initiated_control_mode();
         }
         self.model.lock().end_notify_on_ssh_login_complete();
 
@@ -11222,7 +11223,7 @@ impl TerminalView {
                         .block_list()
                         .is_bootstrapping_precmd_done()
                 {
-                    self.refresh_warp_prompt(ctx);
+                    self.refresh_wish_prompt(ctx);
                 }
 
                 if let BlockType::User(block_completed) = block_type {
@@ -12567,7 +12568,7 @@ impl TerminalView {
                         ctx,
                     );
                 });
-                me.refresh_warp_prompt(ctx);
+                me.refresh_wish_prompt(ctx);
             },
         );
 
@@ -12654,7 +12655,7 @@ impl TerminalView {
             }
         }
 
-        self.refresh_warp_prompt(ctx);
+        self.refresh_wish_prompt(ctx);
         ctx.emit(Event::SessionBootstrapped);
     }
 
@@ -14924,7 +14925,7 @@ impl TerminalView {
     }
 
     /// Shared logic for sending a desktop notification (or showing a discovery banner)
-    /// for any agent status change (both Warp's agent and any CLI agent).
+    /// for any agent status change (both Wish's agent and any CLI agent).
     fn send_agent_desktop_notification_or_show_banner(
         &mut self,
         trigger: NotificationsTrigger,
@@ -15643,7 +15644,7 @@ impl TerminalView {
                                         .with_on_select_action(TerminalAction::OpenFileInWish(path))
                                         .into_item(),
                                 );
-                                // Because the default for cmd-click is to open in Warp, we also
+                                // Because the default for cmd-click is to open in Wish, we also
                                 // have an open-in-editor option.
                                 items.push(
                                     MenuItemFields::new("Open in editor")
@@ -15822,7 +15823,7 @@ impl TerminalView {
                     );
                 }
 
-                if WarpDriveSettings::is_warp_drive_enabled(ctx) {
+                if WarpDriveSettings::is_wish_drive_enabled(ctx) {
                     items.push(MenuItem::Separator);
                     items.push(
                         MenuItemFields::new("Save as workflow")
@@ -16449,7 +16450,7 @@ impl TerminalView {
             items.extend(self.session_sharing_context_menu_items(&model, false));
         }
 
-        // Section 2: AI Command Search, Ask Warp AI
+        // Section 2: AI Command Search, Ask Wish AI
         items.extend([
             MenuItem::Separator,
             MenuItemFields::new("Command search")
@@ -16490,7 +16491,7 @@ impl TerminalView {
         }
 
         // Section 3: Teams related
-        if !all_current_input_text.is_empty() && WarpDriveSettings::is_warp_drive_enabled(ctx) {
+        if !all_current_input_text.is_empty() && WarpDriveSettings::is_wish_drive_enabled(ctx) {
             items.extend([
                 MenuItem::Separator,
                 MenuItemFields::new("Save as workflow")
@@ -19169,7 +19170,7 @@ impl TerminalView {
                     ctx.emit(Event::OpenWarpDriveObjectInPane(uid.clone()));
                 }
                 AIAgentCitation::WarpDocumentation { path } => {
-                    ctx.open_url(&format!("https://docs.warp.dev/{path}"));
+                    ctx.open_url(&format!("https://docs.hermon.ai/{path}"));
                 }
                 AIAgentCitation::WebPage { url } => {
                     ctx.open_url(url);
@@ -20968,7 +20969,7 @@ impl TerminalView {
         let show_banner = if honor_ps1 {
             let banner_content = if shell_plugins.contains("p10k_unsupported") {
                 Some(BannerTextContent::formatted_text(vec![
-                    FormattedTextFragment::bold("Powerlevel10k now supports Warp!  "),
+                    FormattedTextFragment::bold("Powerlevel10k now supports Wish!  "),
                     FormattedTextFragment::plain_text(
                         "You seem to be running an older (unsupported) version, please follow ",
                     ),
@@ -23741,7 +23742,7 @@ impl TerminalView {
 
         match action {
             LearnMore => {
-                ctx.open_url("https://docs.warp.dev/terminal/warpify/ssh-legacy#implementation");
+                ctx.open_url("https://docs.hermon.ai/terminal/warpify/ssh-legacy#implementation");
             }
             Settings => {
                 if FeatureFlag::SSHTmuxWrapper.is_enabled() {
@@ -24321,7 +24322,7 @@ impl TerminalView {
         ctx: &mut ViewContext<Self>,
     ) {
         self.wishify_state.set_shell_type(&shell_type);
-        self.model.lock().set_pending_warp_initiated_control_mode();
+        self.model.lock().set_pending_wish_initiated_control_mode();
         if let Some(script) = wishify_ssh_session_command(uname, shell_type, ctx) {
             self.clear_line_editor_and_write_to_pty_with_mac_workaround_hack(
                 convert_script_to_one_line(&script).into_bytes(),
@@ -24346,7 +24347,7 @@ impl TerminalView {
         let install_script = &install_method.script;
         self.model
             .lock()
-            .set_pending_warp_initiated_control_mode_with_install_tmux(install_with_root_method);
+            .set_pending_wish_initiated_control_mode_with_install_tmux(install_with_root_method);
         self.clear_line_editor_and_write_to_pty(
             convert_script_to_one_line(install_script).into_bytes(),
             ctx,

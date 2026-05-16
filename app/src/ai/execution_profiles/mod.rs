@@ -261,7 +261,7 @@ pub struct AIExecutionProfile {
     pub context_window_limit: Option<u32>,
 
     /// Whether plans created by the agent should be automatically synced to Wish Drive
-    pub autosync_plans_to_warp_drive: bool,
+    pub autosync_plans_to_wish_drive: bool,
 
     /// Whether the agent may use web search when helpful for completing tasks
     pub web_search_enabled: bool,
@@ -289,7 +289,7 @@ impl Default for AIExecutionProfile {
             cli_agent_model: None,
             computer_use_model: None,
             context_window_limit: None,
-            autosync_plans_to_warp_drive: true,
+            autosync_plans_to_wish_drive: true,
             web_search_enabled: true,
         }
     }
@@ -341,7 +341,7 @@ impl AIExecutionProfile {
             cli_agent_model: None,
             computer_use_model: None,
             context_window_limit: None,
-            autosync_plans_to_warp_drive: false,
+            autosync_plans_to_wish_drive: false,
             web_search_enabled: true,
         }
     }
@@ -396,7 +396,7 @@ impl AIExecutionProfile {
             cli_agent_model: None,
             computer_use_model: None,
             context_window_limit: None,
-            autosync_plans_to_warp_drive: FeatureFlag::SyncAmbientPlans.is_enabled(),
+            autosync_plans_to_wish_drive: FeatureFlag::SyncAmbientPlans.is_enabled(),
             web_search_enabled: true,
         }
     }
@@ -497,7 +497,7 @@ impl StringModel for AIExecutionProfile {
             })
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
+    fn renders_in_wish_drive(&self) -> bool {
         false
     }
 }

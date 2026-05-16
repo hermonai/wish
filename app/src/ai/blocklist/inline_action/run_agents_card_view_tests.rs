@@ -333,8 +333,10 @@ mod override_from_approved_config_tests {
 
     #[test]
     fn overrides_model_and_harness_unconditionally() {
-        let mut state =
-            RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
+        let mut state = RunAgentsEditState::from_request(&make_request(
+            "hermon",
+            RunAgentsExecutionMode::Local,
+        ));
         assert_eq!(state.orch.model_id, "auto");
         assert_eq!(state.orch.harness_type, "hermon");
 
@@ -360,8 +362,10 @@ mod override_from_approved_config_tests {
 
     #[test]
     fn overrides_local_to_remote() {
-        let mut state =
-            RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
+        let mut state = RunAgentsEditState::from_request(&make_request(
+            "hermon",
+            RunAgentsExecutionMode::Local,
+        ));
         state
             .orch
             .override_from_approved_config(&remote_config("auto", "hermon", "env-1"));
@@ -426,8 +430,10 @@ mod override_from_approved_config_tests {
 
     #[test]
     fn does_not_carry_computer_use_from_local_to_remote() {
-        let mut state =
-            RunAgentsEditState::from_request(&make_request("hermon", RunAgentsExecutionMode::Local));
+        let mut state = RunAgentsEditState::from_request(&make_request(
+            "hermon",
+            RunAgentsExecutionMode::Local,
+        ));
         state
             .orch
             .override_from_approved_config(&remote_config("auto", "hermon", "env-1"));

@@ -203,7 +203,7 @@ impl StringModel for EnvVarCollection {
         true
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
+    fn renders_in_wish_drive(&self) -> bool {
         true
     }
 
@@ -215,7 +215,7 @@ impl StringModel for EnvVarCollection {
         true
     }
 
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         id: SyncId,
         _appearance: &Appearance,

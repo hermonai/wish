@@ -259,7 +259,7 @@ fn test_update_file_based_servers_removes_unreferenced_servers() {
 /// watcher uses the home directory as its logical root and still always
 /// auto-spawns.
 #[test]
-fn test_global_warp_server_from_managed_home_root_always_spawns() {
+fn test_global_wish_server_from_managed_home_root_always_spawns() {
     let _flag_guard = FeatureFlag::FileBasedMcp.override_enabled(true);
     let Some(warp_mcp_config_path) = warp_managed_mcp_config_path() else {
         return;
@@ -275,7 +275,7 @@ fn test_global_warp_server_from_managed_home_root_always_spawns() {
         manager.update(&mut app, |m, ctx| {
             m.apply_parsed_servers(
                 warp_mcp_config_path.root_path.clone(),
-                MCPProvider::Warp,
+                MCPProvider::Wish,
                 parsed,
                 ctx,
             );
@@ -304,7 +304,7 @@ fn test_global_warp_server_from_managed_home_root_always_spawns() {
 }
 /// A globally-scoped non-Warp installation only auto-spawns when the toggle is on.
 #[test]
-fn test_global_non_warp_server_respects_toggle() {
+fn test_global_non_wish_server_respects_toggle() {
     let _flag_guard = FeatureFlag::FileBasedMcp.override_enabled(true);
     let Some(home_dir) = dirs::home_dir() else {
         // Skip on platforms where a home dir isn't available (shouldn't happen on
@@ -373,7 +373,7 @@ fn test_project_scoped_servers_never_auto_spawn() {
 
         manager.update(&mut app, |m, ctx| {
             m.apply_parsed_servers(repo_path.clone(), MCPProvider::Claude, claude_parsed, ctx);
-            m.apply_parsed_servers(repo_path.clone(), MCPProvider::Warp, warp_parsed, ctx);
+            m.apply_parsed_servers(repo_path.clone(), MCPProvider::Wish, warp_parsed, ctx);
         });
 
         // Neither detection should emit a spawn event.

@@ -286,11 +286,11 @@ impl StringModel for TemplatableMCPServer {
         })
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
+    fn renders_in_wish_drive(&self) -> bool {
         false
     }
 
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         _id: SyncId,
         _appearance: &Appearance,

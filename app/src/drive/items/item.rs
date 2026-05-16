@@ -262,7 +262,7 @@ impl<'a> WarpDriveRow<'a> {
         menu_direction: MenuDirection,
         appearance: &'a Appearance,
     ) -> Option<Self> {
-        let item = object.to_warp_drive_item(appearance)?;
+        let item = object.to_wish_drive_item(appearance)?;
         Self::new(
             item,
             item_states,

@@ -120,10 +120,10 @@ impl TerminalView {
         let general_settings = GeneralSettings::as_ref(ctx);
         match file_type {
             OpenableFileType::Markdown => {
-                *general_settings.open_in_warp_banner_dismissed_for_markdown
+                *general_settings.open_in_wish_banner_dismissed_for_markdown
             }
             OpenableFileType::Code | OpenableFileType::Text => {
-                *general_settings.open_in_warp_banner_dismissed_for_code_and_text
+                *general_settings.open_in_wish_banner_dismissed_for_code_and_text
             }
         }
     }
@@ -210,14 +210,14 @@ impl TerminalView {
                         OpenableFileType::Markdown => {
                             GeneralSettings::handle(ctx).update(ctx, |settings, ctx| {
                                 report_if_error!(settings
-                                    .open_in_warp_banner_dismissed_for_markdown
+                                    .open_in_wish_banner_dismissed_for_markdown
                                     .set_value(true, ctx));
                             });
                         }
                         OpenableFileType::Code | OpenableFileType::Text => {
                             GeneralSettings::handle(ctx).update(ctx, |settings, ctx| {
                                 report_if_error!(settings
-                                    .open_in_warp_banner_dismissed_for_code_and_text
+                                    .open_in_wish_banner_dismissed_for_code_and_text
                                     .set_value(true, ctx));
                             });
                         }

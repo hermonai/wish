@@ -364,7 +364,7 @@ impl View for ExecutionProfileView {
                             render_bool_permission_line_with_icon(
                                 Icon::Compass,
                                 "Auto-sync plans to Wish Drive:",
-                                profile.autosync_plans_to_warp_drive,
+                                profile.autosync_plans_to_wish_drive,
                                 appearance,
                                 is_any_ai_enabled,
                             ),

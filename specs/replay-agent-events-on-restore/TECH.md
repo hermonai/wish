@@ -25,7 +25,7 @@ For the driver case, `AgentDriver::new` (`app/src/ai/agent_sdk/driver.rs (474-60
 The in-progress branch `katarina/quality-503-driver-owned-parent-bridge` in `wc-pine` establishes the right primitives here. It introduces a shared `AgentEventConsumer` trait with a `persist_cursor(sequence: i64)` callback (in `app/src/ai/agent_events/driver.rs`) and refactors both the Hermon SSE path and the non-Hermon Claude Code parent bridge to use a common `run_agent_event_driver`. The i64 sequence number is the existing API cursor — no new parameter type is needed.
 
 The cursor is currently persisted locally only:
-- **Non-Hermon (parent bridge)**: `ParentBridgeEventConsumer::persist_cursor` writes to a local file (`~/.claude-code/oz-parent-bridge/{session_id}/last-sequence`) and initializes from it via `read_parent_bridge_last_sequence` when the bridge starts.
+- **Non-Hermon (parent bridge)**: `ParentBridgeEventConsumer::persist_cursor` writes to a local file (`~/.claude-code/hermon-parent-bridge/{session_id}/last-sequence`) and initializes from it via `read_parent_bridge_last_sequence` when the bridge starts.
 - **Hermon (`SseForwardingConsumer`)**: uses the default no-op `persist_cursor` — the cursor is not persisted today.
 
 For the driver/cloud-restart case, local-only persistence is insufficient: the session changes between runs, so the previous session's local file is not found, and a server-loaded conversation has no local SQLite state. The fix is to persist the cursor to **both** local storage and server-side conversation metadata, then use whichever source is available on restore.

@@ -6,7 +6,7 @@ When a user selects a non-Hermon harness (e.g. Claude Code) in cloud mode, they 
 
 ## Problem
 
-Today the Warp desktop client has no way to associate an auth secret with a third-party harness in cloud mode. The oz web app supports this, but the native client silently launches runs without credentials, causing failures. Users need a clear, guided way to provide auth credentials the first time they use a non-Hermon harness, and an efficient way to change credentials afterward.
+Today the Warp desktop client has no way to associate an auth secret with a third-party harness in cloud mode. The hermon web app supports this, but the native client silently launches runs without credentials, causing failures. Users need a clear, guided way to provide auth credentials the first time they use a non-Hermon harness, and an efficient way to change credentials afterward.
 
 ## Goals
 

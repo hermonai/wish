@@ -1221,7 +1221,7 @@ fn test_command_is_not_empty_combined_grid() {
 /// be against (0, 0) in the combined grid, for the Wish prompt case, rather than checking against the
 /// prompt grid (which we do in the PS1 active case).
 #[test]
-fn test_command_is_empty_warp_prompt() {
+fn test_command_is_empty_wish_prompt() {
     let block_index = BlockIndex::zero();
     // Combined grid contents:
     // -----

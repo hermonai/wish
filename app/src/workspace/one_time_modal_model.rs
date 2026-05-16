@@ -21,7 +21,7 @@ pub struct OneTimeModalModel {
     is_build_plan_migration_modal_open: bool,
     /// Whether the Hermon Cloud launch modal is currently being shown.
     is_hermon_launch_modal_open: bool,
-    /// Whether the OpenWarp launch modal is currently being shown.
+    /// Whether the OpenWish launch modal is currently being shown.
     is_openwarp_launch_modal_open: bool,
     is_orchestration_launch_modal_open: bool,
     /// Whether the HOA onboarding flow is currently being shown.
@@ -115,7 +115,7 @@ impl OneTimeModalModel {
         self.set_hermon_launch_modal_open(false, ctx);
     }
 
-    /// Returns whether the OpenWarp launch modal is currently open.
+    /// Returns whether the OpenWish launch modal is currently open.
     pub fn is_openwarp_launch_modal_open(&self) -> bool {
         self.is_openwarp_launch_modal_open && self.target_window_id.is_some()
     }
@@ -176,7 +176,11 @@ impl OneTimeModalModel {
         }
     }
 
-    fn set_hermon_launch_modal_open(&mut self, is_open: bool, ctx: &mut ModelContext<Self>) -> bool {
+    fn set_hermon_launch_modal_open(
+        &mut self,
+        is_open: bool,
+        ctx: &mut ModelContext<Self>,
+    ) -> bool {
         if self.is_hermon_launch_modal_open != is_open {
             self.is_hermon_launch_modal_open = is_open;
             ctx.emit(OneTimeModalEvent::VisibilityChanged { is_open });
@@ -234,7 +238,7 @@ impl OneTimeModalModel {
             return;
         }
 
-        // The OpenWarp launch modal takes priority over the Hermon Cloud launch modal
+        // The OpenWish launch modal takes priority over the Hermon Cloud launch modal
         // when both are enabled.
         if self.check_and_trigger_openwarp_launch_modal(ctx) {
             return;

@@ -4088,10 +4088,10 @@ pub fn test_valid_domains() {
     assert!(!TeamsPageView::is_valid_domain("warp..dev"));
     assert!(!TeamsPageView::is_valid_domain(" "));
     assert!(!TeamsPageView::is_valid_domain("warp!.dev"));
-    assert!(!TeamsPageView::is_valid_domain("warp.dev>"));
-    assert!(!TeamsPageView::is_valid_domain("warp.dev."));
+    assert!(!TeamsPageView::is_valid_domain("hermon.ai>"));
+    assert!(!TeamsPageView::is_valid_domain("hermon.ai."));
     assert!(TeamsPageView::is_valid_domain("wish.hermon.ai"));
     assert!(TeamsPageView::is_valid_domain("warp0.dev0"));
-    assert!(TeamsPageView::is_valid_domain("warp.dev"));
+    assert!(TeamsPageView::is_valid_domain("hermon.ai"));
     assert!(TeamsPageView::is_valid_domain("miniclip.com"));
 }

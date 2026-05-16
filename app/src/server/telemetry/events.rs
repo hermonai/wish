@@ -404,7 +404,7 @@ pub enum SharingDialogSource {
     DriveIndex,
     /// The sharing dialog was auto-opened from shared session creation.
     StartedSessionShare,
-    /// The user intented into Warp with an email address to invite.
+    /// The user intented into Wish with an email address to invite.
     InviteeRequest,
     /// The user jumped from an inherited ACL to its definition on a parent object.
     InheritedPermission,
@@ -891,11 +891,11 @@ pub enum PromptSuggestionFallbackReason {
 pub enum AgentModeSetupProjectScopedRulesActionType {
     #[serde(rename = "link_from_existing")]
     LinkFromExisting(String),
-    #[serde(rename = "generate_warp_md")]
+    #[serde(rename = "generate_wish_md")]
     GenerateWarpMd,
     #[serde(rename = "skip_rules")]
     SkipRules,
-    #[serde(rename = "regenerate_warp_md")]
+    #[serde(rename = "regenerate_wish_md")]
     RegenerateWarpMd,
 }
 
@@ -1373,7 +1373,7 @@ pub enum TelemetryEvent {
     DatabaseReadError(String),
     DatabaseWriteError(String),
     AppStartup(AppStartupInfo),
-    /// The native app was opened while logged out. Since Warp requires login,
+    /// The native app was opened while logged out. Since Wish requires login,
     /// this usually means a new user.
     LoggedOutStartup,
     /// The download source, if it can be determined. Will only be sent when

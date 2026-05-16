@@ -7,7 +7,7 @@ pub(super) fn should_show_task_in_blocklist(task: &Task) -> bool {
     // All tasks are visible in the blocklist aside from CLI (long-running command),
     // Warp documentation search, and conversation search subtasks.
     !task.is_cli_subagent()
-        && !task.is_warp_documentation_search_subagent()
+        && !task.is_wish_documentation_search_subagent()
         && !task.is_conversation_search_subagent()
 }
 

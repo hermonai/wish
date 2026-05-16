@@ -149,13 +149,13 @@ impl<T: EventLoopSender> PtyController<T> {
                 me.tmux_control_mode = None;
             }
             ModelEvent::HonorPS1OutOfSync => {
-                // We force re-sync the PS1 state of Warp settings with the shell's environment variable, $WARP_HONOR_PS1, via
+                // We force re-sync the PS1 state of Wish settings with the shell's environment variable, $WARP_HONOR_PS1, via
                 // a bindkey (which triggers a shell function).
                 let honor_ps1 = *SessionSettings::as_ref(ctx).honor_ps1;
                 if honor_ps1 {
                     me.send_switch_to_ps1_bindkey(ctx);
                 } else {
-                    me.send_switch_to_warp_prompt_bindkey(ctx);
+                    me.send_switch_to_wish_prompt_bindkey(ctx);
                 }
             }
             ModelEvent::Handler(AnsiHandlerEvent::TmuxControlModeReady { primary_pane }) => {
@@ -292,7 +292,7 @@ impl<T: EventLoopSender> PtyController<T> {
     /// Sends bindkey to notify shell process to switch to Wish prompt logic for prompt
     /// with the combined prompt/command grid (we unset the PS1, but save the value for potential
     /// future restoration).
-    pub fn send_switch_to_warp_prompt_bindkey(&mut self, ctx: &mut ModelContext<Self>) {
+    pub fn send_switch_to_wish_prompt_bindkey(&mut self, ctx: &mut ModelContext<Self>) {
         self.pending_writes.push_back(PtyWrite::Bytes {
             bytes: SWITCH_TO_WARP_PROMPT_ESCAPE_SEQUENCE.into(),
         });

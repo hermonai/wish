@@ -638,7 +638,7 @@ fn test_agent_attribution_default_with_no_workspace() {
 #[test]
 fn test_agent_attribution_forced_on_by_team() {
     let mut team = team_for_test();
-    team.organization_settings.enable_warp_attribution = AdminEnablementSetting::Enable;
+    team.organization_settings.enable_wish_attribution = AdminEnablementSetting::Enable;
     let workspace = workspace_for_test(&team);
 
     App::test((), |mut app| async move {
@@ -665,7 +665,7 @@ fn test_agent_attribution_forced_on_by_team() {
 #[test]
 fn test_agent_attribution_forced_off_by_team() {
     let mut team = team_for_test();
-    team.organization_settings.enable_warp_attribution = AdminEnablementSetting::Disable;
+    team.organization_settings.enable_wish_attribution = AdminEnablementSetting::Disable;
     let workspace = workspace_for_test(&team);
 
     App::test((), |mut app| async move {
@@ -692,7 +692,7 @@ fn test_agent_attribution_forced_off_by_team() {
 #[test]
 fn test_agent_attribution_respects_user_setting() {
     let mut team = team_for_test();
-    team.organization_settings.enable_warp_attribution = AdminEnablementSetting::RespectUserSetting;
+    team.organization_settings.enable_wish_attribution = AdminEnablementSetting::RespectUserSetting;
     let workspace = workspace_for_test(&team);
 
     App::test((), |mut app| async move {

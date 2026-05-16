@@ -176,7 +176,7 @@ diesel::table! {
         id -> Integer,
         name -> Text,
         is_open -> Bool,
-        is_warp_pack -> Bool,
+        is_wish_pack -> Bool,
     }
 }
 

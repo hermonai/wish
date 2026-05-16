@@ -40,7 +40,7 @@ pub fn can_become_default_terminal() -> bool {
     }
 }
 
-pub fn is_warp_default_terminal() -> bool {
+pub fn is_wish_default_terminal() -> bool {
     unsafe {
         let unix_executable_content_type = CFString::new("public.unix-executable");
         let handler = LSCopyDefaultRoleHandlerForContentType(
@@ -52,7 +52,7 @@ pub fn is_warp_default_terminal() -> bool {
             return false;
         }
 
-        let Some(warp_bundle_id) = get_warp_bundle_id() else {
+        let Some(warp_bundle_id) = get_wish_bundle_id() else {
             return false;
         };
 
@@ -63,10 +63,10 @@ pub fn is_warp_default_terminal() -> bool {
     }
 }
 
-pub fn set_warp_as_default_terminal() -> Result<(), String> {
+pub fn set_wish_as_default_terminal() -> Result<(), String> {
     log::debug!("Setting Wish as default terminal");
 
-    let bundle_id = get_warp_bundle_id().ok_or("No bundle ID".to_string())?;
+    let bundle_id = get_wish_bundle_id().ok_or("No bundle ID".to_string())?;
 
     set_default_terminal(&bundle_id)
 }
@@ -96,7 +96,7 @@ fn set_default_terminal(bundle_id: &str) -> Result<(), String> {
 
 /// Gets Wish's bundle identifier. This may be `None` if not running as a bundle, i.e. through
 /// `cargo run` without `cargo bundle`.
-fn get_warp_bundle_id() -> Option<String> {
+fn get_wish_bundle_id() -> Option<String> {
     unsafe {
         let bundle_class = class!(NSBundle);
         let main_bundle: id = msg_send![bundle_class, mainBundle];

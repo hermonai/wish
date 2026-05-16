@@ -685,13 +685,7 @@ impl Scene {
     /// Cost is `O(line_length / width)` rectangles per call — fine
     /// for canvases up to a few thousand edges; consider batching for
     /// denser graphs.
-    pub fn draw_line(
-        &mut self,
-        from: Vector2F,
-        to: Vector2F,
-        width: f32,
-        color: ColorU,
-    ) {
+    pub fn draw_line(&mut self, from: Vector2F, to: Vector2F, width: f32, color: ColorU) {
         let dx = to.x() - from.x();
         let dy = to.y() - from.y();
         let length = (dx * dx + dy * dy).sqrt();
@@ -711,23 +705,15 @@ impl Scene {
             let y = from.y() + dy * t - half;
             // Use the no-hit variant — line segments shouldn't
             // participate in event dispatch as separate rects.
-            self.draw_rect_without_hit_recording(RectF::new(
-                vec2f(x, y),
-                vec2f(width, width),
-            ))
-            .with_background(Fill::Solid(color));
+            self.draw_rect_without_hit_recording(RectF::new(vec2f(x, y), vec2f(width, width)))
+                .with_background(Fill::Solid(color));
         }
     }
 
     /// Draw a polyline through a sequence of points, with consistent
     /// stroke `width` and `color`. Convenience wrapper around
     /// [`draw_line`].
-    pub fn draw_polyline(
-        &mut self,
-        points: &[Vector2F],
-        width: f32,
-        color: ColorU,
-    ) {
+    pub fn draw_polyline(&mut self, points: &[Vector2F], width: f32, color: ColorU) {
         for window in points.windows(2) {
             self.draw_line(window[0], window[1], width, color);
         }
@@ -779,12 +765,7 @@ impl Scene {
     /// which the rect shader rounds into a circle. This is the
     /// **least-cost circle primitive** in WishUI today — no new
     /// pipeline required.
-    pub fn draw_circle(
-        &mut self,
-        center: Vector2F,
-        radius: f32,
-        color: ColorU,
-    ) {
+    pub fn draw_circle(&mut self, center: Vector2F, radius: f32, color: ColorU) {
         if radius < 0.25 {
             return;
         }
@@ -801,12 +782,7 @@ impl Scene {
     /// `width`. Useful for selection rings, region highlights,
     /// chart-axis frames. Built from four `draw_line` calls so it
     /// shares the line primitive's improvements automatically.
-    pub fn draw_rect_outline(
-        &mut self,
-        rect: RectF,
-        width: f32,
-        color: ColorU,
-    ) {
+    pub fn draw_rect_outline(&mut self, rect: RectF, width: f32, color: ColorU) {
         let tl = rect.origin();
         let tr = vec2f(rect.max_x(), rect.min_y());
         let br = vec2f(rect.max_x(), rect.max_y());
@@ -824,34 +800,18 @@ impl Scene {
     ///
     /// Every grid line is drawn via [`draw_line`], so the same
     /// rendering improvements apply.
-    pub fn draw_grid(
-        &mut self,
-        rect: RectF,
-        cell_size: f32,
-        width: f32,
-        color: ColorU,
-    ) {
+    pub fn draw_grid(&mut self, rect: RectF, cell_size: f32, width: f32, color: ColorU) {
         if cell_size <= 0.5 || rect.width() <= 1.0 || rect.height() <= 1.0 {
             return;
         }
         let mut x = rect.min_x();
         while x <= rect.max_x() + 0.5 {
-            self.draw_line(
-                vec2f(x, rect.min_y()),
-                vec2f(x, rect.max_y()),
-                width,
-                color,
-            );
+            self.draw_line(vec2f(x, rect.min_y()), vec2f(x, rect.max_y()), width, color);
             x += cell_size;
         }
         let mut y = rect.min_y();
         while y <= rect.max_y() + 0.5 {
-            self.draw_line(
-                vec2f(rect.min_x(), y),
-                vec2f(rect.max_x(), y),
-                width,
-                color,
-            );
+            self.draw_line(vec2f(rect.min_x(), y), vec2f(rect.max_x(), y), width, color);
             y += cell_size;
         }
     }

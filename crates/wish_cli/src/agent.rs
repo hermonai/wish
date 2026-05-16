@@ -293,7 +293,7 @@ pub struct RunAgentArgs {
     /// Working directory for the agent
     #[arg(short = 'C', long = "cwd")]
     pub cwd: Option<PathBuf>,
-    /// Display agent progress in the Warp interface.
+    /// Display agent progress in the Wish interface.
     #[arg(long = "gui", hide = true)]
     pub gui: bool,
     #[command(flatten)]
@@ -358,7 +358,7 @@ pub struct RunAgentArgs {
 
     /// Execution harness for the agent run.
     ///
-    /// "hermon" (default) uses Warp's built-in agent infrastructure.
+    /// "hermon" (default) uses Wish's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
     #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Hermon, hide = true)]
     pub harness: Harness,
@@ -460,7 +460,7 @@ pub struct RunCloudArgs {
     #[arg(long = "agent", value_name = "UID")]
     pub agent_uid: Option<String>,
 
-    /// Where this job should be hosted. Setting "warp" runs it on Warp's infrastructure. Any other
+    /// Where this job should be hosted. Setting "warp" is accepted as a legacy alias for Wish-hosted infrastructure. Any other
     /// value is treated is a self-hosted job and the value will be matched with the self-hosted
     /// worker's name.
     #[arg(long = "host", value_name = "WORKER_ID")]
@@ -487,7 +487,7 @@ pub struct RunCloudArgs {
 
     /// Execution harness for the agent run.
     ///
-    /// "hermon" (default) uses Warp's built-in agent infrastructure.
+    /// "hermon" (default) uses Wish's built-in agent infrastructure.
     /// "claude" delegates to the `claude` CLI.
     #[arg(long = "harness", value_name = "HARNESS", default_value_t = Harness::Hermon, hide = true)]
     pub harness: Harness,

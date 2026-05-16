@@ -58,7 +58,7 @@ impl TypedActionView for WarpDriveSettingsPageView {
         match action {
             WarpDriveSettingsPageAction::ToggleShowWarpDrive => {
                 WarpDriveSettings::handle(ctx).update(ctx, |settings, ctx| {
-                    report_if_error!(settings.enable_warp_drive.toggle_and_save_value(ctx));
+                    report_if_error!(settings.enable_wish_drive.toggle_and_save_value(ctx));
                 });
                 ctx.notify();
             }
@@ -237,7 +237,7 @@ impl SettingsWidget for WarpDriveToggleWidget {
             appearance
                 .ui_builder()
                 .switch(self.switch_state.clone())
-                .check(*settings.enable_warp_drive && !is_anonymous_or_logged_out)
+                .check(*settings.enable_wish_drive && !is_anonymous_or_logged_out)
                 .with_disabled(is_anonymous_or_logged_out)
                 .build()
                 .on_click(move |ctx, _, _| {

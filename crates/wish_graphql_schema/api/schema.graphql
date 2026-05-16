@@ -215,9 +215,9 @@ enum AdminEnablementSetting {
 """
 The harness that produced an agent conversation.
 
-The `OZ` value is the canonical wire string for Hermon's first-party harness
+The `HERMON` value is the canonical wire string for Hermon's first-party harness
 (client-side Rust identifier is `Harness::Hermon`; see crates/wish_cli/src/agent.rs).
-The wire token stays `OZ` for round-trip safety: telemetry analytics filter on
+The wire token stays `HERMON` for round-trip safety: telemetry analytics filter on
 `harness="hermon"`, persisted user preferences carry the same string, and in-flight
 cloud agent sessions have `harness_type="hermon"` baked in. Renaming to `HERMON`
 requires a coordinated schema + server + analytics migration; recorded as a
@@ -227,7 +227,7 @@ enum AgentHarness {
   CLAUDE_CODE
   CODEX
   GEMINI
-  OZ
+  HERMON
 }
 
 """A single model available for a third-party harness."""
@@ -1217,8 +1217,8 @@ enum Experiment {
   MULTI_ARM_REVERSE_AI_TRIAL_ONE_THOUSAND_REQUESTS
   OVERLIMIT_AGENT_MODE_CONTROL
   OVERLIMIT_AGENT_MODE_GRADUAL_ROLLOUT_EXPERIMENT
-  OZ_MULTI_HARNESS_CONTROL
-  OZ_MULTI_HARNESS_EXPERIMENT
+  HERMON_MULTI_HARNESS_CONTROL
+  HERMON_MULTI_HARNESS_EXPERIMENT
   PROMPT_SUGGESTIONS_VIA_MAA_CONTROL
   PROMPT_SUGGESTIONS_VIA_MAA_EXPERIMENT
   PROMPT_SUGGESTIONS_VIA_MAA_OOB
@@ -2092,7 +2092,7 @@ union ManagedSecretsResult = ManagedSecretsOutput | UserFacingError
 input ListHarnessAuthSecretsInput {
   """
   Harness whose auth-credential secrets should be returned. Harnesses that
-  don't use auth secrets (e.g. OZ) always return an empty result.
+  don't use auth secrets (e.g. HERMON) always return an empty result.
   """
   harness: AgentHarness!
 }

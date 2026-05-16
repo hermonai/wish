@@ -30,9 +30,9 @@ use wish_managed_secrets::ManagedSecretValue;
 
 use super::terminal::{CommandHandle, TerminalDriver};
 use super::{
-    AgentDriver, AgentDriverError, LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV,
-    LEGACY_OZ_PARENT_STATE_ROOT_ENV, HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV,
-    HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
+    AgentDriver, AgentDriverError, HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV,
+    HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV, LEGACY_HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV,
+    LEGACY_HERMON_PARENT_STATE_ROOT_ENV,
 };
 
 pub(crate) mod claude_code;
@@ -276,7 +276,7 @@ fn insert_task_env_var_aliases(
 fn message_listener_state_root() -> Option<String> {
     [
         HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
-        LEGACY_OZ_PARENT_STATE_ROOT_ENV,
+        LEGACY_HERMON_PARENT_STATE_ROOT_ENV,
     ]
     .into_iter()
     .find_map(|key| std::env::var(key).ok().filter(|value| !value.is_empty()))
@@ -310,7 +310,7 @@ fn task_env_vars_for_harness_name(
                 .unwrap_or_else(|_| ChannelState::channel().cli_command_name().into()),
         ),
     );
-    // `OZ_HARNESS` is only consumed by child orchestration telemetry when the child
+    // `HERMON_HARNESS` is only consumed by child orchestration telemetry when the child
     // CLI emits `run message *` events.
     env_vars.insert(
         OsString::from(WISH_HARNESS_ENV),
@@ -321,7 +321,7 @@ fn task_env_vars_for_harness_name(
             &mut env_vars,
             &[
                 HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV,
-                LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV,
+                LEGACY_HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV,
             ],
             "1",
         );
@@ -330,7 +330,7 @@ fn task_env_vars_for_harness_name(
                 &mut env_vars,
                 &[
                     HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
-                    LEGACY_OZ_PARENT_STATE_ROOT_ENV,
+                    LEGACY_HERMON_PARENT_STATE_ROOT_ENV,
                 ],
                 &state_root,
             );

@@ -130,8 +130,12 @@ impl Tensorium {
     /// Project to a 2D plane along two named axes. Entities without
     /// a value on either axis are skipped.
     pub fn project_2d(&self, x_axis: &str, y_axis: &str) -> Vec<(SemanticId, (f32, f32))> {
-        let Some(xi) = self.axis_index(x_axis) else { return Vec::new() };
-        let Some(yi) = self.axis_index(y_axis) else { return Vec::new() };
+        let Some(xi) = self.axis_index(x_axis) else {
+            return Vec::new();
+        };
+        let Some(yi) = self.axis_index(y_axis) else {
+            return Vec::new();
+        };
         let mut out = Vec::with_capacity(self.points.len());
         for (sid_str, row) in &self.points {
             let x = row.get(xi).copied().unwrap_or(f32::NAN);
@@ -154,9 +158,15 @@ impl Tensorium {
         y_axis: &str,
         z_axis: &str,
     ) -> Vec<(SemanticId, (f32, f32, f32))> {
-        let Some(xi) = self.axis_index(x_axis) else { return Vec::new() };
-        let Some(yi) = self.axis_index(y_axis) else { return Vec::new() };
-        let Some(zi) = self.axis_index(z_axis) else { return Vec::new() };
+        let Some(xi) = self.axis_index(x_axis) else {
+            return Vec::new();
+        };
+        let Some(yi) = self.axis_index(y_axis) else {
+            return Vec::new();
+        };
+        let Some(zi) = self.axis_index(z_axis) else {
+            return Vec::new();
+        };
         let mut out = Vec::with_capacity(self.points.len());
         for (sid_str, row) in &self.points {
             let x = row.get(xi).copied().unwrap_or(f32::NAN);
@@ -268,7 +278,10 @@ mod tests {
         let names: Vec<String> = proj.iter().map(|(s, _)| s.stable_key.clone()).collect();
         assert!(names.contains(&"alpha".to_string()));
         assert!(names.contains(&"beta".to_string()));
-        assert!(!names.contains(&"gamma".to_string()), "gamma had NaN, should be skipped");
+        assert!(
+            !names.contains(&"gamma".to_string()),
+            "gamma had NaN, should be skipped"
+        );
     }
 
     #[test]

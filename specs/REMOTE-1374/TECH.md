@@ -1,10 +1,10 @@
-# Tech Spec: Filtering and JSON output for `oz run list` and `oz run get`
+# Tech Spec: Filtering and JSON output for `hermon run list` and `hermon run get`
 
 See `specs/REMOTE-1374/PRODUCT.md` for the product spec.
 
 ## 1. Problem
 
-`oz run list` and `oz run get` are wired as `TaskCommand::List` / `TaskCommand::Get` subcommands in `crates/wish_cli/src/task.rs`, and are implemented by `AmbientAgentRunner::{list_tasks,get_task_status}` in `app/src/ai/agent_sdk/ambient.rs`. Today:
+`hermon run list` and `hermon run get` are wired as `TaskCommand::List` / `TaskCommand::Get` subcommands in `crates/wish_cli/src/task.rs`, and are implemented by `AmbientAgentRunner::{list_tasks,get_task_status}` in `app/src/ai/agent_sdk/ambient.rs`. Today:
 
 - `ListTasksArgs` exposes only `--limit`.
 - `TaskGetArgs` takes only `task_id` (and `--conversation`, which is out of scope).
@@ -151,7 +151,7 @@ For JSON, the raw `serde_json::Value` is written with `serde_json::to_string_pre
 ## 4. Feature Flagging and Back-Compat
 
 - No new feature flag. These commands are already GA behind `AmbientAgentsCommandLine`, which controls the subcommand entirely; within the enabled surface, adding flags and honoring `--output-format` is safe.
-- Existing scripts that call `oz run list` or `oz run get` without `--output-format` keep the same pretty output.
+- Existing scripts that call `hermon run list` or `hermon run get` without `--output-format` keep the same pretty output.
 - The URL moves from `/api/v1/agent/tasks` to `/api/v1/agent/runs` for the CLI. Server-side both routes are supported and return the same data, but the `/runs` variant is the preferred spelling going forward (it's what the web app and openapi.yaml use) and uses the `"runs"` envelope key the product spec assumes. The typed `list_ambient_agent_tasks` should also migrate in the same change so the CLI and UI don't diverge.
 
 ## 5. Testing Plan
@@ -159,7 +159,7 @@ For JSON, the raw `serde_json::Value` is written with `serde_json::to_string_pre
 Unit tests (added as `*_tests.rs` alongside the edited files, per the repo convention):
 
 - `crates/wish_cli/src/task_tests.rs` (new):
-  - Parse a full `oz run list` command with every new flag and assert the resulting `ListTasksArgs` fields.
+  - Parse a full `hermon run list` command with every new flag and assert the resulting `ListTasksArgs` fields.
   - Confirm invalid enum values exit with a non-zero clap error.
   - Confirm RFC 3339 parsing rejects malformed timestamps.
 - `app/src/server/server_api/ai_tests.rs` (augment existing file):
@@ -170,7 +170,7 @@ Unit tests (added as `*_tests.rs` alongside the edited files, per the repo conve
 
 Manual validation against staging:
 
-- Run `oz run list` with every new flag against a known fixture of runs and compare the JSON to `curl` hitting `GET /agent/runs` directly.
+- Run `hermon run list` with every new flag against a known fixture of runs and compare the JSON to `curl` hitting `GET /agent/runs` directly.
 - Confirm `--cursor` paginates correctly for each `--sort-by` value.
 - Confirm human-readable error messages and non-zero exit codes when the server rejects the request (invalid cursor, too-old `created_after`, unknown environment ID, etc.).
 
@@ -179,7 +179,7 @@ Presubmit: run `./script/presubmit` (fmt, clippy `-D warnings`, test suite). The
 ## 6. Rollout
 
 - Single PR, no server-side changes, no schema migrations.
-- No feature flag. CHANGELOG entry: `CHANGELOG-IMPROVEMENT: oz run list and oz run get now support --output-format json and a full set of filter/sort flags`.
+- No feature flag. CHANGELOG entry: `CHANGELOG-IMPROVEMENT: hermon run list and hermon run get now support --output-format json and a full set of filter/sort flags`.
 
 ## 7. Risks and Mitigations
 
@@ -192,7 +192,7 @@ Presubmit: run `./script/presubmit` (fmt, clippy `-D warnings`, test suite). The
 
 - First-class JQ-style `--filter` support on the CLI output.
 - A terse tabular JSON-to-table renderer (`TableFormat for AmbientAgentTask`) so `--output-format text` produces one row per run instead of the card layout.
-- Mirror this work for `oz run conversation get` / `oz run get --conversation`.
+- Mirror this work for `hermon run conversation get` / `hermon run get --conversation`.
 
 ## 9. Files Changed
 

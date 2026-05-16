@@ -70,7 +70,7 @@ pub enum ReviewDestination {
     /// No terminal is available to receive comments.
     None,
     /// A Wish agent terminal is available (input box visible, not executing).
-    Warp,
+    Wish,
     /// A CLI agent (e.g. Claude Code, Gemini) is running in a terminal.
     Cli(CLIAgent),
 }
@@ -1600,7 +1600,7 @@ impl RightPanelView {
                 tv.read(ctx, |t, ctx| {
                     t.active_cli_agent(ctx)
                         .map(ReviewDestination::Cli)
-                        .unwrap_or(ReviewDestination::Warp)
+                        .unwrap_or(ReviewDestination::Wish)
                 })
             })
             .unwrap_or(ReviewDestination::None);

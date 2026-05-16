@@ -125,18 +125,18 @@ fn validate_server_config(server_name: &str, config: &Value) -> anyhow::Result<(
         anyhow::anyhow!("MCP server '{server_name}' config must be a JSON object")
     })?;
 
-    let has_warp_id = obj.contains_key("warp_id");
+    let has_wish_id = obj.contains_key("warp_id");
     let has_command = obj.contains_key("command");
     let has_url = obj.contains_key("url");
 
-    let kind_count = usize::from(has_warp_id) + usize::from(has_command) + usize::from(has_url);
+    let kind_count = usize::from(has_wish_id) + usize::from(has_command) + usize::from(has_url);
     if kind_count != 1 {
         anyhow::bail!(
             "MCP server '{server_name}' must have exactly one of: 'warp_id', 'command', or 'url'"
         );
     }
 
-    if has_warp_id {
+    if has_wish_id {
         let warp_id = obj.get("warp_id").and_then(Value::as_str).ok_or_else(|| {
             anyhow::anyhow!("MCP server '{server_name}' field 'warp_id' must be a string")
         })?;

@@ -4,15 +4,15 @@ Linear: APP-4281
 
 ## Context
 
-The prebuilt Linux `oz` CLI is built on the `namespace-profile-ubuntu-20-04` runner (`.github/workflows/create_release.yml:513`, `:668`, `:839`). That toolchain links against glibc 2.31, so the resulting binary carries glibc 2.29-era symbol versions in its dynamic table. When the install script (`crates/remote_server/src/install_remote_server.sh`) drops that binary onto a Linux host whose runtime glibc is older than ~2.29, the dynamic loader refuses to launch it:
+The prebuilt Linux `hermon` CLI is built on the `namespace-profile-ubuntu-20-04` runner (`.github/workflows/create_release.yml:513`, `:668`, `:839`). That toolchain links against glibc 2.31, so the resulting binary carries glibc 2.29-era symbol versions in its dynamic table. When the install script (`crates/remote_server/src/install_remote_server.sh`) drops that binary onto a Linux host whose runtime glibc is older than ~2.29, the dynamic loader refuses to launch it:
 
 ```
-/lib64/libm.so.6: version `GLIBC_2.29' not found (required by /home/wasp-dev/.warp-preview/remote-server/oz-preview)
+/lib64/libm.so.6: version `GLIBC_2.29' not found (required by /home/wasp-dev/.warp-preview/remote-server/hermon-preview)
 ```
 
 This affects long-lived enterprise distros — RHEL/CentOS 7 (glibc 2.17), RHEL/CentOS 8 (glibc 2.28), Amazon Linux 2 (glibc 2.26), Ubuntu 18.04 (glibc 2.27), Debian 10 (glibc 2.28) — as well as non-glibc systems like Alpine (musl) and Termux (bionic).
 
-Today the setup pipeline does not consult the remote host's capabilities. `RemoteServerController::on_binary_check_complete` (`app/src/terminal/writeable_pty/remote_server_controller.rs:202`) decides between install, auto-update, prompt, and fall-back purely from `Result<bool, String>` (binary present?) and `has_old_binary`. Once `install_binary` succeeds the controller advances to `connect_session`, the SSH proxy spawns `oz remote-server-proxy`, and the loader's `GLIBC_…` error surfaces only at connect time as an opaque `SetupFailed`. The product spec (`specs/APP-4281/PRODUCT.md`) calls for surfacing **no** install UI in that case — the user should land directly in the legacy SSH flow.
+Today the setup pipeline does not consult the remote host's capabilities. `RemoteServerController::on_binary_check_complete` (`app/src/terminal/writeable_pty/remote_server_controller.rs:202`) decides between install, auto-update, prompt, and fall-back purely from `Result<bool, String>` (binary present?) and `has_old_binary`. Once `install_binary` succeeds the controller advances to `connect_session`, the SSH proxy spawns `hermon remote-server-proxy`, and the loader's `GLIBC_…` error surfaces only at connect time as an opaque `SetupFailed`. The product spec (`specs/APP-4281/PRODUCT.md`) calls for surfacing **no** install UI in that case — the user should land directly in the legacy SSH flow.
 
 The legacy SSH/`RemoteCommandExecutor` flow is already a first-class outcome of the controller's state machine: it is reached today via `SshExtensionInstallMode::NeverInstall` and via the `Err(_)` arm of `on_binary_check_complete` (`remote_server_controller.rs:281`, `:286`), both of which call `flush_stashed_bootstrap` to release the stashed bootstrap so `Sessions::initialize_bootstrapped_session` wires up the ControlMaster-backed `RemoteCommandExecutor`. We reuse that path for unsupported hosts.
 
@@ -304,7 +304,7 @@ pub enum RemoteServerSetupState {
 
 ### 8. Stale-install cleanup
 
-Hosts that connected before this change may have an `oz` binary on disk that can no longer launch. When the controller takes the unsupported branch with `result == Ok(true)`, it asks the manager to schedule a best-effort `transport.remove_remote_server_binary()` (already implemented at `ssh_transport.rs:235`). The call is fire-and-forget: failure is logged and does not block the legacy fall-back. Without this, `check_has_old_binary` would return `true` on every reconnect and the controller would silently re-enter the auto-update path against a host that now reports `Unsupported`.
+Hosts that connected before this change may have an `hermon` binary on disk that can no longer launch. When the controller takes the unsupported branch with `result == Ok(true)`, it asks the manager to schedule a best-effort `transport.remove_remote_server_binary()` (already implemented at `ssh_transport.rs:235`). The call is fire-and-forget: failure is logged and does not block the legacy fall-back. Without this, `check_has_old_binary` would return `true` on every reconnect and the controller would silently re-enter the auto-update path against a host that now reports `Unsupported`.
 
 ### 9. Telemetry
 
@@ -408,7 +408,7 @@ The script is templated and shipped in-tree under `crates/remote_server/src/prei
 
 ### Hardcoded `required_glibc` drifts from the build environment
 
-The floor is hardcoded in `preinstall_check.sh` and documented to track the runner image in `.github/workflows/create_release.yml`. Bumping the runner means editing the script in the same PR. Follow-up: derive the value at release time from `objdump -T <oz> | grep GLIBC_ | sort -V | tail -1` and inject it into the script during `script/bundle` so the source of truth is the artifact itself.
+The floor is hardcoded in `preinstall_check.sh` and documented to track the runner image in `.github/workflows/create_release.yml`. Bumping the runner means editing the script in the same PR. Follow-up: derive the value at release time from `objdump -T <hermon> | grep GLIBC_ | sort -V | tail -1` and inject it into the script during `script/bundle` so the source of truth is the artifact itself.
 
 ### Extra round-trip on every Linux SSH connect
 

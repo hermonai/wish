@@ -81,8 +81,16 @@ fn draw_line_emits_rects_proportional_to_length() {
     );
     // Step = width * 0.6 = 1.2, n = ceil(100/1.2) = 84, so 84+1 = 85 squares.
     let layer = scene.layers().next().unwrap();
-    assert!(layer.rects.len() >= 50, "expected many rects for a 100-unit line, got {}", layer.rects.len());
-    assert!(layer.rects.len() <= 200, "rect count should be bounded, got {}", layer.rects.len());
+    assert!(
+        layer.rects.len() >= 50,
+        "expected many rects for a 100-unit line, got {}",
+        layer.rects.len()
+    );
+    assert!(
+        layer.rects.len() <= 200,
+        "rect count should be bounded, got {}",
+        layer.rects.len()
+    );
 }
 
 #[test]
@@ -101,15 +109,15 @@ fn draw_line_skips_degenerate_segments() {
 #[test]
 fn draw_polyline_chains_segments() {
     let mut scene = Scene::new(1., rendering::Config::default());
-    let pts = vec![
-        vec2f(0., 0.),
-        vec2f(50., 0.),
-        vec2f(50., 50.),
-    ];
+    let pts = vec![vec2f(0., 0.), vec2f(50., 0.), vec2f(50., 50.)];
     scene.draw_polyline(&pts, 2.0, pathfinder_color::ColorU::white());
     let layer = scene.layers().next().unwrap();
     // Two 50-unit segments should produce roughly twice the rects of one.
-    assert!(layer.rects.len() > 60, "polyline should chain segments, got {}", layer.rects.len());
+    assert!(
+        layer.rects.len() > 60,
+        "polyline should chain segments, got {}",
+        layer.rects.len()
+    );
 }
 
 #[test]
@@ -170,7 +178,10 @@ fn draw_arrow_skips_head_when_segment_too_short() {
     );
     let n = scene.layers().next().unwrap().rects.len();
     // Just the base line (no head).
-    assert!(n > 0 && n < 30, "short arrow should be just the base line, got {n}");
+    assert!(
+        n > 0 && n < 30,
+        "short arrow should be just the base line, got {n}"
+    );
 }
 
 #[test]

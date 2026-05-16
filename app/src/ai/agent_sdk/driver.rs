@@ -130,16 +130,17 @@ const AUTO_RESUME_TIMEOUT: Duration = Duration::from_secs(120);
 /// self-managed listener path so older Wish builds and standalone plugin
 /// invocations keep working.
 pub(crate) const HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV: &str =
-    "OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY";
+    "HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY";
 /// Optional root directory for the per-session Claude message-listener state
 /// that Wish and the Claude hook scripts share.
-pub(crate) const HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV: &str = "OZ_MESSAGE_LISTENER_STATE_ROOT";
-// Keep exporting the legacy `OZ_PARENT_*` names to child hooks until the
+pub(crate) const HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV: &str =
+    "HERMON_MESSAGE_LISTENER_STATE_ROOT";
+// Keep exporting the legacy `HERMON_PARENT_*` names to child hooks until the
 // external Claude plugin has fully migrated to the canonical
-// `OZ_MESSAGE_LISTENER_*` names.
-const LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV: &str =
-    "OZ_PARENT_LISTENER_MANAGED_EXTERNALLY";
-const LEGACY_OZ_PARENT_STATE_ROOT_ENV: &str = "OZ_PARENT_STATE_ROOT";
+// `HERMON_MESSAGE_LISTENER_*` names.
+const LEGACY_HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV: &str =
+    "HERMON_PARENT_LISTENER_MANAGED_EXTERNALLY";
+const LEGACY_HERMON_PARENT_STATE_ROOT_ENV: &str = "HERMON_PARENT_STATE_ROOT";
 
 /// IdleTimeoutSender is wrapper around a sender that signals when a run is done after
 /// an idle timeout. Used for both Hermon runs and third-party harnesses.
@@ -2339,7 +2340,7 @@ impl AgentDriver {
             }
         });
 
-        // Subscribe to document model events to emit artifact_created when plans sync to Warp Drive.
+        // Subscribe to document model events to emit artifact_created when plans sync to Wish Drive.
         ctx.subscribe_to_model(&AIDocumentModel::handle(ctx), move |me, event, ctx| {
             let AIDocumentModelEvent::DocumentSaveStatusUpdated(document_id) = event else {
                 return;
@@ -2359,7 +2360,7 @@ impl AgentDriver {
 
             // Get the notebook link from the document model
             let Some(notebook_link) =
-                doc_model.get_document_warp_drive_object_link(document_id, ctx)
+                doc_model.get_document_wish_drive_object_link(document_id, ctx)
             else {
                 return;
             };
@@ -2576,7 +2577,7 @@ impl AgentDriver {
         match event {
             TerminalDriverEvent::SlowBootstrap => {
                 eprintln!(
-                    "Warning: Terminal session is slow to bootstrap. See https://docs.warp.dev/support-and-community/troubleshooting-and-support/known-issues#shells to troubleshoot."
+                    "Warning: Terminal session is slow to bootstrap. See https://docs.hermon.ai/support-and-community/troubleshooting-and-support/known-issues#shells to troubleshoot."
                 );
             }
             TerminalDriverEvent::EstablishedSharedSession {

@@ -849,7 +849,7 @@ impl WorkflowView {
         self.refresh_pane_overflow_menu(ctx);
 
         if let Some(focused_folder_id) = settings.focused_folder_id.map(SyncId::ServerId) {
-            self.view_in_warp_drive(
+            self.view_in_wish_drive(
                 WarpDriveItemId::Object(CloudObjectTypeAndId::Folder(focused_folder_id)),
                 ctx,
             );
@@ -2607,7 +2607,7 @@ impl WorkflowView {
         })
     }
 
-    fn view_in_warp_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
+    fn view_in_wish_drive(&mut self, id: WarpDriveItemId, ctx: &mut ViewContext<Self>) {
         ctx.emit(WorkflowViewEvent::ViewInWarpDrive(id));
     }
 
@@ -3130,7 +3130,7 @@ impl TypedActionView for WorkflowView {
 
     fn handle_action(&mut self, action: &Self::Action, ctx: &mut ViewContext<Self>) {
         match action {
-            WorkflowAction::ViewInWarpDrive(id) => self.view_in_warp_drive(*id, ctx),
+            WorkflowAction::ViewInWarpDrive(id) => self.view_in_wish_drive(*id, ctx),
             WorkflowAction::AddArgument => self.add_argument(ctx),
             WorkflowAction::ToggleViewMode => self.toggle_view_mode(ctx),
             WorkflowAction::CloseUnsavedDialog => self.hide_unsaved_changes_dialog(ctx),

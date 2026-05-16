@@ -104,11 +104,11 @@ impl CreateDocumentsExecutor {
 
                 let profile = AIExecutionProfilesModel::as_ref(ctx)
                     .active_profile(Some(self.terminal_view_id), ctx);
-                let should_autosync = profile.data().autosync_plans_to_warp_drive;
+                let should_autosync = profile.data().autosync_plans_to_wish_drive;
 
                 if should_autosync {
                     model.update(ctx, |model, model_ctx| {
-                        model.sync_to_warp_drive(id, model_ctx);
+                        model.sync_to_wish_drive(id, model_ctx);
                     });
                 }
 

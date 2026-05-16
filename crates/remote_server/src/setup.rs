@@ -467,8 +467,8 @@ pub fn install_script(staging_tarball_path: Option<&str>) -> String {
 
 /// Construct the download URL from the server root URL.
 ///
-/// For example, given `https://app.warp.dev`, returns
-/// `https://app.warp.dev/download/cli`.
+/// For example, given `https://app.hermon.ai`, returns
+/// `https://app.hermon.ai/download/cli`.
 fn download_url() -> String {
     let base = ChannelState::server_root_url();
     let base = base.trim_end_matches('/');

@@ -238,7 +238,7 @@ pub fn test_file_tree_non_openable_files() -> Builder {
                 .expect("Should be able to convert test dir to str");
             write_all_rc_files_for_test(&test_dir, format!("cd {dir_string}"));
 
-            // Create a binary file that shouldn't be opened in Warp
+            // Create a binary file that shouldn't be opened in Wish
             std::fs::write(test_dir.join("test.bin"), vec![0u8, 1, 2, 3, 255])
                 .expect("Failed to create binary file");
         })
@@ -251,7 +251,7 @@ pub fn test_file_tree_non_openable_files() -> Builder {
             new_step_with_default_assertions("Click on binary file")
                 .with_click_on_saved_position("file_tree_item:test.bin")
                 .add_assertion(|app, window_id| {
-                    // The binary file should NOT open in a new pane in Warp
+                    // The binary file should NOT open in a new pane in Wish
                     // It should fall back to system default behavior
                     let pane_group = pane_group_view(app, window_id, 0);
                     pane_group.read(app, |pane_group, _ctx| {

@@ -10,7 +10,7 @@ use wish_multi_agent_api::{self as api};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum CommentOrigin {
-    /// Comments originally created in the Warp UI.
+    /// Comments originally created in the Wish UI.
     #[default]
     Native,
     /// Comments imported from a GitHub pull request.

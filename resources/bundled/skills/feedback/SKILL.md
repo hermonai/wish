@@ -59,7 +59,7 @@ Load the bundled reference files only when relevant:
 ### 3. Check whether the feature or capability is already supported
 
 - Before concluding that something is missing from Warp (feature requests, "it doesn't do X" complaints, "I wish it could Y" asks, or any UX complaint that could be explained by an existing setting or workflow), you **must** consult the docs first.
-- Call the `search_warp_documentation` tool with the user's own phrasing. If the first query is vague or returns nothing actionable, try one shorter variant that keeps the same user-visible problem.
+- Call the `search_wish_documentation` tool with the user's own phrasing. If the first query is vague or returns nothing actionable, try one shorter variant that keeps the same user-visible problem.
 - If the search returns a clear match, respond with a concise, direct answer that cites the docs page (title + URL) and explains how the existing functionality addresses the user's ask. Do not file an issue and do not invoke the helper script.
 - If the search returns an ambiguous or partial match, briefly summarize what does exist and ask one clarifying question about whether that satisfies the user's intent before deciding whether to file.
 - If the search turns up nothing relevant, proceed to step 4. Do not invent workarounds, and do not imply a feature is missing when the docs already answer the question.

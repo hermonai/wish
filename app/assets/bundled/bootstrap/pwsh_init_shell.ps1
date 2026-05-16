@@ -9,7 +9,7 @@ if ($PSEdition -eq 'Desktop' -or $IsWindows) {
     if ((Get-ExecutionPolicy -Scope MachinePolicy) -eq $EP::Restricted -or (Get-ExecutionPolicy -Scope UserPolicy) -eq $EP::Restricted) {
         Write-Error 'ExecutionPolicy is Restricted. Unable to Warpify this PowerShell session.'
     } elseif ((Get-ExecutionPolicy) -eq $EP::Restricted -and (Get-ExecutionPolicy -Scope MachinePolicy) -eq $EP::Undefined -and (Get-ExecutionPolicy -Scope UserPolicy) -eq $EP::Undefined) {
-        $global:_warp_PSProcessExecPolicy = $(Get-ExecutionPolicy -Scope Process)
+        $global:_wish_PSProcessExecPolicy = $(Get-ExecutionPolicy -Scope Process)
         Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
     }
 }

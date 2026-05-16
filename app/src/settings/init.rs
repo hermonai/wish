@@ -210,7 +210,7 @@ pub fn init(
         if prefs.is_settings_file() {
             ctx.subscribe_to_model(
                 &crate::user_config::WarpConfig::handle(ctx),
-                handle_warp_config_change,
+                handle_wish_config_change,
             );
         }
     }
@@ -221,7 +221,7 @@ pub fn init(
 /// Handles a `WarpConfig` change event, reloading settings from disk when
 /// the settings file is modified, created, or deleted.
 #[cfg(feature = "local_fs")]
-fn handle_warp_config_change(
+fn handle_wish_config_change(
     _: wishui::ModelHandle<crate::user_config::WarpConfig>,
     event: &crate::user_config::WarpConfigUpdateEvent,
     ctx: &mut AppContext,

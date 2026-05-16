@@ -525,7 +525,7 @@ fn test_worktree_sidecar_search_editor_enter_executes_selection() {
 /// RAII guard that removes tab config TOML files whose name starts with
 /// `prefix` from `~/.warp/tab_configs/` on drop. Because `Drop` runs even
 /// when a test panics, this prevents stale worktree configs from leaking
-/// into Warp dev.
+/// into Wish dev.
 #[cfg(feature = "local_fs")]
 struct TabConfigCleanupGuard {
     prefix: &'static str,
@@ -1570,20 +1570,20 @@ fn test_terminal_model_isnt_leaked() {
 }
 
 #[test]
-fn test_open_or_toggle_warp_drive() {
+fn test_open_or_toggle_wish_drive() {
     App::test((), |mut app| async move {
         initialize_app(&mut app);
 
         let workspace = mock_workspace(&mut app);
         workspace.update(&mut app, |workspace, ctx| {
             // First, unconditionally open Wish Drive as a system action. WD should be open and welcome tips should not have opening warp drive.
-            workspace.open_or_toggle_warp_drive(
+            workspace.open_or_toggle_wish_drive(
                 false, /* toggle */
                 false, /* explicit_user_action */
                 ctx,
             );
             assert!(
-                workspace.current_workspace_state.is_warp_drive_open,
+                workspace.current_workspace_state.is_wish_drive_open,
                 "Wish Drive should be open"
             );
             assert!(
@@ -1596,13 +1596,13 @@ fn test_open_or_toggle_warp_drive() {
             );
 
             // Next, toggle warp drive as a user action. WD should be closed and tip should not be filled out.
-            workspace.open_or_toggle_warp_drive(
+            workspace.open_or_toggle_wish_drive(
                 true, /* toggle */
                 true, /* explicit_user_action */
                 ctx,
             );
             assert!(
-                !workspace.current_workspace_state.is_warp_drive_open,
+                !workspace.current_workspace_state.is_wish_drive_open,
                 "Wish Drive should be closed"
             );
             assert!(
@@ -1615,13 +1615,13 @@ fn test_open_or_toggle_warp_drive() {
             );
 
             // Finally, toggle warp drive again as a user action. WD should be open and tip filled out.
-            workspace.open_or_toggle_warp_drive(
+            workspace.open_or_toggle_wish_drive(
                 true, /* toggle */
                 true, /* explicit_user_action */
                 ctx,
             );
             assert!(
-                workspace.current_workspace_state.is_warp_drive_open,
+                workspace.current_workspace_state.is_wish_drive_open,
                 "Wish Drive should be open"
             );
             assert!(
@@ -1857,7 +1857,7 @@ fn test_switch_focus_panels() {
 
         // Shift focus from terminal to left panel when WD is open
         workspace.update(&mut app, |view, ctx| {
-            view.current_workspace_state.is_warp_drive_open = true;
+            view.current_workspace_state.is_wish_drive_open = true;
             view.focus_left_panel(ctx);
         });
         workspace.update(&mut app, |view, ctx| {

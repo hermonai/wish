@@ -2408,7 +2408,7 @@ fn resolve_icon_with_status_variant(
             icon: typed.icon(),
             icon_color: main_text,
         },
-        // Warp Drive object types use their established index colors
+        // Wish Drive object types use their established index colors
         TypedPane::Notebook { is_plan } => IconWithStatusVariant::Neutral {
             icon: typed.icon(),
             icon_color: drive_color(DriveObjectType::Notebook {
@@ -2615,7 +2615,7 @@ impl TypedPane<'_> {
     }
 
     fn warp_drive_object_type(&self) -> Option<DriveObjectType> {
-        typed_pane_warp_drive_object_type(self)
+        typed_pane_wish_drive_object_type(self)
     }
 
     fn supports_vertical_tabs_detail_sidecar(&self) -> bool {
@@ -5789,7 +5789,7 @@ fn render_code_detail_section(
         .finish()
 }
 
-fn render_warp_drive_object_detail_section(
+fn render_wish_drive_object_detail_section(
     props: &PaneProps<'_>,
     appearance: &Appearance,
     app: &AppContext,
@@ -5824,7 +5824,7 @@ fn code_detail_kind_label(file_name: &str) -> Option<String> {
     language_by_filename(Path::new(file_name)).map(|language| language.display_name().to_string())
 }
 
-fn typed_pane_warp_drive_object_type(typed: &TypedPane<'_>) -> Option<DriveObjectType> {
+fn typed_pane_wish_drive_object_type(typed: &TypedPane<'_>) -> Option<DriveObjectType> {
     match typed {
         TypedPane::Notebook { is_plan } => Some(DriveObjectType::Notebook {
             is_ai_document: *is_plan,
@@ -5866,7 +5866,7 @@ fn render_detail_section(
         | TypedPane::Workflow { .. }
         | TypedPane::EnvVarCollection
         | TypedPane::AIFact
-        | TypedPane::AIDocument => render_warp_drive_object_detail_section(props, appearance, app),
+        | TypedPane::AIDocument => render_wish_drive_object_detail_section(props, appearance, app),
         TypedPane::CodeDiff
         | TypedPane::File
         | TypedPane::Settings

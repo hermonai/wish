@@ -7,7 +7,7 @@ use wishui::{Entity, ModelContext, SingletonEntity};
 // Does not conflict with known ports on https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
 const PORT: u16 = 9277;
 
-/// A singleton model for the small HTTP server that is run by the Warp client.
+/// A singleton model for the small HTTP server that is run by the Wish client.
 pub struct HttpServer {
     /// The tokio runtime that the HTTP server runs on.
     ///

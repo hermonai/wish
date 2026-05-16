@@ -30,7 +30,7 @@ use wish::{
 
 /// Adds a launch config to the mocked out warp config directory and verifies that
 /// the launch config appears in the launch config palette.
-pub fn test_add_launch_config_to_warp_config() -> Builder {
+pub fn test_add_launch_config_to_wish_config() -> Builder {
     new_builder()
         .with_setup(move |utils| {
             utils.set_env("WARP_CONFIG_WATCHER_DELAY_MS", Some((10).to_string()));

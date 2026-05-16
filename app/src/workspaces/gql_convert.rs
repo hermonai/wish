@@ -67,7 +67,7 @@ use wish_graphql::{
     queries::{
         get_conversation_usage as gql_usage, get_workspaces_metadata_for_user::User as GqlUser,
     },
-    subscriptions::get_warp_drive_updates::WarpDriveUpdate,
+    subscriptions::get_wish_drive_updates::WarpDriveUpdate,
     user::{DiscoverableTeamData as GqlDiscoverableTeamData, PublicUserProfile},
     workspace::{
         AdminEnablementSetting as GqlAdminEnablementSetting, AiAutonomyValue as GqlAiAutonomyValue,
@@ -168,14 +168,14 @@ impl From<GqlInviteLinkDomainRestriction> for InviteLinkDomainRestriction {
 }
 
 impl From<GqlWarpAiPolicy> for WarpAiPolicy {
-    fn from(gql_warp_ai_policy: GqlWarpAiPolicy) -> WarpAiPolicy {
+    fn from(gql_wish_ai_policy: GqlWarpAiPolicy) -> WarpAiPolicy {
         Self {
-            limit: i64::from(gql_warp_ai_policy.limit),
-            is_code_suggestions_toggleable: gql_warp_ai_policy.is_code_suggestions_toggleable,
-            is_prompt_suggestions_toggleable: gql_warp_ai_policy.is_prompt_suggestions_toggleable,
-            is_next_command_enabled: gql_warp_ai_policy.is_next_command_enabled,
-            is_git_operations_ai_enabled: gql_warp_ai_policy.is_git_operations_ai_enabled,
-            is_voice_enabled: gql_warp_ai_policy.is_voice_enabled,
+            limit: i64::from(gql_wish_ai_policy.limit),
+            is_code_suggestions_toggleable: gql_wish_ai_policy.is_code_suggestions_toggleable,
+            is_prompt_suggestions_toggleable: gql_wish_ai_policy.is_prompt_suggestions_toggleable,
+            is_next_command_enabled: gql_wish_ai_policy.is_next_command_enabled,
+            is_git_operations_ai_enabled: gql_wish_ai_policy.is_git_operations_ai_enabled,
+            is_voice_enabled: gql_wish_ai_policy.is_voice_enabled,
         }
     }
 }
@@ -829,10 +829,10 @@ impl From<GqlWorkspaceSettings> for WorkspaceSettings {
                         .map(|denylist| denylist.to_predicates()),
                 }
             }),
-            enable_warp_attribution: gql_workspace_settings
+            enable_wish_attribution: gql_workspace_settings
                 .ambient_agent_settings
                 .as_ref()
-                .map(|s| s.enable_warp_attribution.clone().into())
+                .map(|s| s.enable_wish_attribution.clone().into())
                 .unwrap_or_default(),
             default_host_slug: gql_workspace_settings
                 .ambient_agent_settings
@@ -1056,7 +1056,7 @@ impl TryFrom<wish_graphql::folder::Folder> for ServerFolder {
             Some(folder.name),
             folder.metadata.try_into()?,
             folder.permissions.try_into()?,
-            folder.is_warp_pack,
+            folder.is_wish_pack,
         )
     }
 }

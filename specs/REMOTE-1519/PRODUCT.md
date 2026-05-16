@@ -17,7 +17,7 @@ Two related rough edges in the V0 handoff flow:
 - A local "this conversation was handed off to <link>" breadcrumb on the source pane.
 ## Behavior
 ### Fork timing and hydration on chip click
-1. Clicking the "Hand off to cloud" chip (or invoking `/oz-cloud-handoff`) immediately mints a server-side fork of the source conversation. The new conversation token is returned synchronously to the client.
+1. Clicking the "Hand off to cloud" chip (or invoking `/hermon-cloud-handoff`) immediately mints a server-side fork of the source conversation. The new conversation token is returned synchronously to the client.
 2. The new cloud-mode pane opens next to the local pane and is pre-populated with the source conversation's AI exchanges, rendered with live (non-restored) appearance — visually indistinguishable from staying in the local pane.
 3. The forked conversation appears in the user's history under their account, owned by them.
 4. Subsequent edits in the local pane after chip click do **not** appear in the handoff pane. The cloud agent will work against the conversation as it was at chip-click time. Users who want a more recent snapshot must close the handoff pane and click the chip again.
@@ -26,7 +26,7 @@ Two related rough edges in the V0 handoff flow:
 6. If the server fork call fails for any reason (network, auth, source not synced to GCS), the new pane is **not** opened. The failure surfaces as the same error toast in the local window. The local conversation is unaffected and the user can retry by clicking the chip again.
 ### Cloud session replay and dedup
 7. When the cloud agent's shared session connects to the handoff pane, the agent's conversation replay rebroadcasts every exchange in the forked conversation. Because we already pre-populated the same exchanges, the replay events are suppressed at the response-stream level, identical to how cloud→cloud follow-up sessions handle stale replay (REMOTE-1290).
-8. After the replay completes, genuinely new exchanges (the cloud agent's first response to the user's follow-up prompt) are appended normally. The user sees a smooth transition from "frozen pre-handoff state" to "cloud agent answering my follow-up prompt".
+8. After the replay completes, genuinely new exchanges (the cloud agent's first response to the user's follow-up prompt) are appended normally. The user sees a smooth transition from "frhermonen pre-handoff state" to "cloud agent answering my follow-up prompt".
 ### Setup-v2 affordances during loading
 9. After the user submits, the handoff pane shows the same cloud-mode setup-v2 affordances a fresh cloud-mode run shows:
     - The submitted prompt as a queued user-query indicator (REMOTE-1454 visual treatment, no Send-now / dismiss buttons).

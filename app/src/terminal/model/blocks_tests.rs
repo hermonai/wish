@@ -591,7 +591,7 @@ pub fn test_basic_bootstrapping() {
     // overall bootstrapping script.
     command_finished_and_precmd(&mut block_list);
 
-    // We have four blocks from calling `create_warp_input_block` once and `block_finished` twice.
+    // We have four blocks from calling `create_wish_input_block` once and `block_finished` twice.
     assert_eq!(block_list.blocks.len(), 3);
     assert_lines_approx_eq!(block_list.blocks[0].height(&AgentViewState::Inactive), 0.0);
     assert_lines_approx_eq!(block_list.blocks[1].height(&AgentViewState::Inactive), 0.0);
@@ -1124,7 +1124,7 @@ fn test_removed_gap_with_banner() {
 }
 
 #[test]
-pub fn test_block_heights_combined_prompt_command_grid_warp_prompt() {
+pub fn test_block_heights_combined_prompt_command_grid_wish_prompt() {
     let mut block_list =
         new_bootstrapped_block_list(None, None, ChannelEventListener::new_for_test());
     let bootstrapped_block_list_len = block_list.blocks().len();
@@ -1595,8 +1595,10 @@ fn test_finish_startup_commands_at_block_attaches_and_unhides_command_blocks_sin
         original_conversation_length: 0,
     });
 
-    block_list
-        .finish_hermon_environment_startup_commands_at_block(&harness_block_id, Some(conversation_id));
+    block_list.finish_hermon_environment_startup_commands_at_block(
+        &harness_block_id,
+        Some(conversation_id),
+    );
 
     assert!(!block_list.is_executing_hermon_environment_startup_commands());
 

@@ -344,11 +344,11 @@ impl CloudModelType for CloudWorkflowModel {
             .await
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
+    fn renders_in_wish_drive(&self) -> bool {
         true
     }
 
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         id: SyncId,
         _appearance: &Appearance,

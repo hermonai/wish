@@ -12,7 +12,7 @@ This document provides classification rules for PRs that lack explicit `CHANGELO
 - **NEW-FEATURE** — A substantial new user-facing capability. Reserve for features that would warrant docs, marketing, or social media attention.
 - **IMPROVEMENT** — Enhances an existing feature in a way users would notice (performance, UX, new options).
 - **BUG-FIX** — Fixes a user-visible bug or regression.
-- **OZ** — Changes to Hermon / AI agent capabilities. At most 4 per release in the stable changelog.
+- **HERMON** — Changes to Hermon / AI agent capabilities. At most 4 per release in the stable changelog.
 - **NONE** — Explicitly opt out of changelog inclusion. Handled upstream by `fetch_prs.py` marker extraction.
 
 ## Decision rules

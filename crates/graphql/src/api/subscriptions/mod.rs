@@ -1,4 +1,4 @@
-pub mod get_warp_drive_updates;
+pub mod get_wish_drive_updates;
 
 use anyhow::{anyhow, Context, Result};
 use async_channel::Sender;

@@ -2,7 +2,7 @@
 Product spec: `specs/REMOTE-1519/PRODUCT.md`
 Linear: [REMOTE-1519](https://linear.app/warpdotdev/issue/REMOTE-1519/make-ui-better-for-local-cloud-handoff)
 ## Context
-REMOTE-1486 shipped V0 of the local-to-cloud handoff: a chip in the agent input footer (or `/oz-cloud-handoff`) opens a fresh cloud-mode pane next to the local pane; on submit the client snapshots the workspace and spawns a cloud agent forked from the local conversation.
+REMOTE-1486 shipped V0 of the local-to-cloud handoff: a chip in the agent input footer (or `/hermon-cloud-handoff`) opens a fresh cloud-mode pane next to the local pane; on submit the client snapshots the workspace and spawns a cloud agent forked from the local conversation.
 That V0 has two rough edges this spec addresses:
 1. **No hydration of the source conversation in the new pane.** The fork is materialized server-side at submit time only. Until the cloud agent's shared session connects and replays the conversation transcript, the new pane is blank. The cloud session's replay then re-broadcasts every exchange the user already saw in the local pane.
 2. **Setup-v2 affordances render incorrectly.** A fresh cloud-mode pane shows a "Running setup commands…" collapsible row, a queued-prompt indicator, and a loading screen during the pre-session window (gated by `FeatureFlag::CloudModeSetupV2`). Handoff panes today don't surface those affordances; the environment startup PTY output renders raw instead.

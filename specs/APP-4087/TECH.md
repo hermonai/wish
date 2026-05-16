@@ -10,7 +10,7 @@ The technical goal is to preserve centralized watching while separating three pa
 - `app/src/warp_managed_paths_watcher.rs` — singleton watcher for safe Warp-managed roots and app-local wrappers around the core helpers.
 - `app/src/lib.rs` — startup registration for the Warp watcher and watch root preparation.
 - `app/src/ai/skills/file_watchers/skill_watcher.rs` — subscribes to Warp watcher events and filters Warp home skill updates.
-- `app/src/ai/skills/resolve_skill_spec.rs` — resolves `oz --skill` specs and scans home/global skill directories on cold start.
+- `app/src/ai/skills/resolve_skill_spec.rs` — resolves `hermon --skill` specs and scans home/global skill directories on cold start.
 - `app/src/ai/skills/file_watchers/utils.rs` — classifies skill paths and detects home provider skill paths.
 - `app/src/ai/skills/skill_utils.rs` — maps changed files to `SKILL.md` paths.
 - `crates/ai/src/skills/skill_provider.rs` — defines provider paths, `home_skills_path`, provider classification, and scope classification.
@@ -89,7 +89,7 @@ The config path is `wish_core::paths::warp_home_mcp_config_file_path()`. The log
 5. `WarpConfig` filters the update for user config paths and reloads relevant config.
 6. `SkillWatcher` filters the update against the current environment’s Warp home skills directory and handles skill add/update/delete semantics.
 7. `FileMCPWatcher` checks the current environment’s Warp home MCP config path and emits user-scoped MCP events as appropriate.
-8. `oz --skill <name>` resolves from cached home skills first, then scans home/global skill paths from disk, then falls back to project/repo resolution.
+8. `hermon --skill <name>` resolves from cached home skills first, then scans home/global skill paths from disk, then falls back to project/repo resolution.
 ## Risks and mitigations
 - Risk: recursively watching `.warp*` parents reintroduces worktree events.
   - Mitigation: register the exact Skills directory for recursive watching and only watch the config directory non-recursively filtered to `.mcp.json`.
@@ -97,7 +97,7 @@ The config path is `wish_core::paths::warp_home_mcp_config_file_path()`. The log
   - Mitigation: only classify the exact current-environment Warp home skills prefix as a home path; continue using suffix matching for project provider paths.
 - Risk: `FileBasedMCPManager` stores Warp home MCP under the wrong logical root.
   - Mitigation: the managed MCP config helper carries both logical root and file path, with `root_path = home_dir`.
-- Risk: cold `oz --skill` still races async skill loading.
+- Risk: cold `hermon --skill` still races async skill loading.
   - Mitigation: resolver scans home/global skill directories directly before project fallback.
 ## Alternatives Considered
 - Use only hardcoded `~/.warp` for Skills/MCP. Rejected because it loses Dev/Local/Profile environment isolation.

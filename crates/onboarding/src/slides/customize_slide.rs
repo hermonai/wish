@@ -71,7 +71,7 @@ pub struct CustomizeUISlide {
     chip_conversation_mouse: MouseStateHandle,
     chip_file_explorer_mouse: MouseStateHandle,
     chip_global_search_mouse: MouseStateHandle,
-    chip_warp_drive_mouse: MouseStateHandle,
+    chip_wish_drive_mouse: MouseStateHandle,
     // Buttons
     back_button: button::Button,
     next_button: button::Button,
@@ -107,7 +107,7 @@ impl CustomizeUISlide {
             chip_conversation_mouse: MouseStateHandle::default(),
             chip_file_explorer_mouse: MouseStateHandle::default(),
             chip_global_search_mouse: MouseStateHandle::default(),
-            chip_warp_drive_mouse: MouseStateHandle::default(),
+            chip_wish_drive_mouse: MouseStateHandle::default(),
             back_button: button::Button::default(),
             next_button: button::Button::default(),
             scroll_state: ClippedScrollStateHandle::new(),
@@ -314,8 +314,8 @@ impl CustomizeUISlide {
 
             chips.push(ChipSpec {
                 label: "Wish Drive",
-                is_enabled: ui.show_warp_drive,
-                mouse_state: self.chip_warp_drive_mouse.clone(),
+                is_enabled: ui.show_wish_drive,
+                mouse_state: self.chip_wish_drive_mouse.clone(),
                 on_click: Box::new(|ctx, _, _| {
                     ctx.dispatch_typed_action(CustomizeSlideAction::ToggleToolsSubSetting {
                         setting: ToolsPanelSubSetting::WarpDrive,
@@ -793,8 +793,8 @@ impl TypedActionView for CustomizeUISlide {
                             model.set_show_global_search(!current, ctx);
                         }
                         ToolsPanelSubSetting::WarpDrive => {
-                            let current = model.ui_customization().show_warp_drive;
-                            model.set_show_warp_drive(!current, ctx);
+                            let current = model.ui_customization().show_wish_drive;
+                            model.set_show_wish_drive(!current, ctx);
                         }
                     });
                 ctx.notify();

@@ -14,7 +14,7 @@ APP-3918 landed the git-operations split button and wired three dialogs (Commit,
 - `app/src/settings/ai.rs:815-823` — `shared_block_title_generation_enabled_internal` setting, shape we are copying for the new `git_operations_autogen_enabled_internal`.
 - `app/src/settings/ai.rs:1536-1538` — `is_shared_block_title_generation_enabled` getter, shape we are copying for the new `is_git_operations_autogen_enabled`.
 - `app/src/terminal/share_block_modal.rs:1161-1174` — `should_send_title_gen_request`, the AI-title-gen gate we are mirroring (`is_active_ai_enabled` via per-feature getter, enterprise check with Warp-plan exception, dogfood override).
-- `app/src/workspaces/workspace.rs:562` — `BillingMetadata::is_warp_plan()` accessor used by the Warp-plan exception.
+- `app/src/workspaces/workspace.rs:562` — `BillingMetadata::is_wish_plan()` accessor used by the Warp-plan exception.
 - `app/src/workspaces/user_workspaces.rs` — `UserWorkspaces`, `current_team` accessor.
 - `crates/graphql/src/api/workspace.rs` — `CustomerType` enum definition (reached via `billing_metadata`).
 ## Current state
@@ -29,7 +29,7 @@ git_operations_autogen_enabled_internal: GitOperationsAutogenEnabled {
     supported_platforms: SupportedPlatforms::ALL,
     sync_to_cloud: SyncToCloud::Globally(RespectUserSyncSetting::Yes),
     private: false,
-    toml_path: "agents.oz.active_ai.git_operations_autogen_enabled",
+    toml_path: "agents.hermon.active_ai.git_operations_autogen_enabled",
     description: "Controls whether AI auto-generates commit messages and PR title/body in the code review dialogs.",
 }
 ```
@@ -53,7 +53,7 @@ fn should_send_git_ops_ai_request(app: &AppContext) -> bool {
             // Allow the Warp Stable team to use this.
             || UserWorkspaces::as_ref(app)
                 .current_team()
-                .is_some_and(|team| team.billing_metadata.is_warp_plan())
+                .is_some_and(|team| team.billing_metadata.is_wish_plan())
             // Override the enterprise check for dogfood builds, as our dogfood team
             // is an enterprise team.
             || ChannelState::channel().is_dogfood())

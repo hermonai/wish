@@ -16,7 +16,7 @@ After a cloud → cloud handoff, the next execution never sees those files, so a
 
 1. During a cloud Hermon run, every time the agent successfully completes a file-edit tool call that creates or modifies a file, the file's absolute path is recorded in the snapshot declarations file as a `file` entry. The entry lands in the declarations file before the end-of-run upload reads it.
 
-2. Each entry uses the existing REMOTE-1332 schema: `{"version":1,"kind":"file","path":"<absolute path>"}`. The declarations file is the same per-run file the existing pipeline reads (resolved via `$OZ_SNAPSHOT_DECLARATIONS_FILE`, otherwise `/tmp/oz/<task-id>/snapshot-declarations.jsonl`).
+2. Each entry uses the existing REMOTE-1332 schema: `{"version":1,"kind":"file","path":"<absolute path>"}`. The declarations file is the same per-run file the existing pipeline reads (resolved via `$HERMON_SNAPSHOT_DECLARATIONS_FILE`, otherwise `/tmp/hermon/<task-id>/snapshot-declarations.jsonl`).
 
 3. All recorded paths are absolute. If a tool-call result surfaces a relative path, it is resolved against the driver's `working_dir`. Paths that still cannot be made absolute are dropped with a WARN log and not recorded.
 

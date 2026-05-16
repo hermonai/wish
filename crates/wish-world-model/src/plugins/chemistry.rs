@@ -82,7 +82,10 @@ impl DomainPlugin for ChemistryPlugin {
 
 fn valence_constraint(element: &str, max: u32) -> Constraint {
     let mut expr = HashMap::new();
-    expr.insert("element".to_string(), PropertyValue::Text(element.to_string()));
+    expr.insert(
+        "element".to_string(),
+        PropertyValue::Text(element.to_string()),
+    );
     expr.insert("max_bonds".to_string(), PropertyValue::Number(max as f64));
     Constraint {
         id: chem_id("valence", element),
@@ -105,12 +108,17 @@ impl ChemistryPlugin {
     /// The instance disambiguates multiple atoms of the same element
     /// in a molecule.
     pub fn atom(element: &str, instance: u32, valence: u32) -> Object {
-        let id = chem_id("atom", format!("{element}-{instance}")).with_instance(instance.to_string());
+        let id =
+            chem_id("atom", format!("{element}-{instance}")).with_instance(instance.to_string());
         let mut o = Object::new(id, "atom", format!("{element}{instance}"));
-        o.properties
-            .insert("element".to_string(), PropertyValue::Text(element.to_string()));
-        o.properties
-            .insert("valence_max".to_string(), PropertyValue::Number(valence as f64));
+        o.properties.insert(
+            "element".to_string(),
+            PropertyValue::Text(element.to_string()),
+        );
+        o.properties.insert(
+            "valence_max".to_string(),
+            PropertyValue::Number(valence as f64),
+        );
         o
     }
 
@@ -130,8 +138,10 @@ impl ChemistryPlugin {
     /// `Ref(SemanticId)` property variant.
     pub fn molecule(name: &str, formula: &str, atoms: &[Object]) -> Object {
         let mut o = Object::new(chem_id("molecule", name), "molecule", name);
-        o.properties
-            .insert("formula".to_string(), PropertyValue::Text(formula.to_string()));
+        o.properties.insert(
+            "formula".to_string(),
+            PropertyValue::Text(formula.to_string()),
+        );
         o.properties.insert(
             "atom_count".to_string(),
             PropertyValue::Number(atoms.len() as f64),
@@ -150,7 +160,10 @@ impl ChemistryPlugin {
     /// directly comparable to a code-domain `Graph` from
     /// `to_ure_graph`. **This is the URE's universality moat.**
     pub fn bond_graph(molecule_name: &str, atoms: &[Object], bonds: &[GraphEdge]) -> Graph {
-        let mut g = Graph::new(chem_id("graph", format!("{molecule_name}-bonds")), "bond_graph");
+        let mut g = Graph::new(
+            chem_id("graph", format!("{molecule_name}-bonds")),
+            "bond_graph",
+        );
         for a in atoms {
             g.add_node(a.id.clone());
         }
@@ -206,13 +219,13 @@ mod tests {
         assert_eq!(cs.len(), 6);
         // All valence constraints are physical-severity.
         for c in &cs {
-            assert!(matches!(
-                c.severity,
-                ConstraintSeverity::Physical
-            ));
+            assert!(matches!(c.severity, ConstraintSeverity::Physical));
         }
         // Carbon's valence constraint says max 4.
-        let carbon = cs.iter().find(|c| c.predicate.starts_with("element C ")).unwrap();
+        let carbon = cs
+            .iter()
+            .find(|c| c.predicate.starts_with("element C "))
+            .unwrap();
         assert!(carbon.predicate.contains("4"));
     }
 
@@ -223,7 +236,11 @@ mod tests {
         let h2 = ChemistryPlugin::atom("H", 2, 1);
         let h3 = ChemistryPlugin::atom("H", 3, 1);
         let h4 = ChemistryPlugin::atom("H", 4, 1);
-        let methane = ChemistryPlugin::molecule("methane", "CH4", &[c.clone(), h1.clone(), h2.clone(), h3.clone(), h4.clone()]);
+        let methane = ChemistryPlugin::molecule(
+            "methane",
+            "CH4",
+            &[c.clone(), h1.clone(), h2.clone(), h3.clone(), h4.clone()],
+        );
         // The molecule's `atoms` property is a List<Ref(SemanticId)>.
         if let Some(PropertyValue::List(refs)) = methane.properties.get("atoms") {
             assert_eq!(refs.len(), 5);

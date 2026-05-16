@@ -17,7 +17,12 @@ pub fn world_to_canvas(world: &WishWorld) -> Canvas {
     let mut canvas = Canvas::new();
     canvas.layout = LayoutMode::ForceDirected;
     canvas.world_ref = Some(world.id.clone());
-    let bounds = Rect { x: 0.0, y: 0.0, w: 140.0, h: 36.0 };
+    let bounds = Rect {
+        x: 0.0,
+        y: 0.0,
+        w: 140.0,
+        h: 36.0,
+    };
 
     // Root node for the world itself.
     let world_sid = SemanticId::new(Realm::World, "world", &world.id);

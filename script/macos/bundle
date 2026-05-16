@@ -26,7 +26,7 @@
 #
 # Three passwords are read from GCP Secret Manager (or from env if --read-passwords-from-env is set) if you are codesigning.
 # 1) WARP_NOTARIZATION_PASSWORD:  This is an "app-specific password" that
-#    is tied to the zach@warp.dev account.  See https://support.apple.com/en-us/HT204397
+#    is tied to the zach@hermon.ai account.  See https://support.apple.com/en-us/HT204397
 # 2) WARP_DEVELOPER_ID_CERT_PASSWORD: This is a password tied to the private key
 #    of our cert - it is needed to use the cert to sign our binary.
 # 3) WARP_CODESIGN_KEYCHAIN_PASSWORD: This is an arbitrary password only used
@@ -701,7 +701,7 @@ fi
 ########################
 
 if [[ "$ARTIFACT" = app ]]; then
-  function create_warp_dmg() {
+  function create_wish_dmg() {
     echo "Creating $DMG_DIR/$DMG_NAME..."
     rm "$DMG_DIR/$DMG_NAME" || true
     local source_folder="$1"
@@ -746,7 +746,7 @@ if [[ "$ARTIFACT" = app ]]; then
     mkdir -p "$DMG_DIR"
     cp -R "$BUNDLE_DIR/$WARP_APP_NAME.app" "$DMG_DIR"
 
-    create_warp_dmg "$DMG_DIR"
+    create_wish_dmg "$DMG_DIR"
 
     echo "Codesigning $DMG_DIR/$DMG_NAME..."
     codesign -s "$APPLE_TEAM_ID" --timestamp "$DMG_DIR/$DMG_NAME"
@@ -760,7 +760,7 @@ if [[ "$ARTIFACT" = app ]]; then
     echo "Cleaning up any existing DMG files before creating new ones..."
     cleanup_dmg_files "$DMG_DIR"
 
-    create_warp_dmg "$BUNDLE_DIR"
+    create_wish_dmg "$BUNDLE_DIR"
   fi
 fi
 

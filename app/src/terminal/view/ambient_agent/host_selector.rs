@@ -43,14 +43,14 @@ const MENU_HEADER_LABEL: &str = "Execution host";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Host {
-    Warp,
+    Wish,
     SelfHosted { slug: String },
 }
 
 impl Host {
     fn display_name(&self) -> &str {
         match self {
-            Host::Warp => "Wish",
+            Host::Wish => "Wish",
             Host::SelfHosted { slug } => slug.as_str(),
         }
     }
@@ -58,7 +58,7 @@ impl Host {
     /// Returns the value to send as `worker_host` in the config snapshot.
     pub fn worker_host_value(&self) -> Option<String> {
         match self {
-            Host::Warp => Some("warp".to_string()),
+            Host::Wish => Some("warp".to_string()),
             Host::SelfHosted { slug } => Some(slug.clone()),
         }
     }
@@ -94,7 +94,7 @@ impl HostSelector {
         // field is exercised at construction time (not just written to on
         // `SelectHost`), so it stays out of clippy's `field is never read`
         // warning while still serving as the source of truth for the label.
-        let selected = Host::Warp;
+        let selected = Host::Wish;
         let initial_label = selected.display_name().to_string();
 
         let button = ctx.add_typed_action_view(|_ctx| {
@@ -141,7 +141,7 @@ impl HostSelector {
             .as_deref()
         {
             let restored = if saved_slug == "warp" {
-                Host::Warp
+                Host::Wish
             } else {
                 Host::SelfHosted {
                     slug: saved_slug.to_string(),
@@ -288,7 +288,7 @@ fn build_menu_items(
     if let Some(host) = default_host {
         items.push(item_for(host.clone()));
     }
-    items.push(item_for(Host::Warp));
+    items.push(item_for(Host::Wish));
     items
 }
 

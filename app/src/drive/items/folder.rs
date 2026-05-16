@@ -46,7 +46,7 @@ impl WarpDriveItem for WarpDriveFolder {
     fn icon(&self, appearance: &Appearance, color: Option<Fill>) -> Option<Box<dyn Element>> {
         let icon_fill =
             color.unwrap_or(warp_drive_icon_color(appearance, DriveObjectType::Folder).into());
-        let icon = if FeatureFlag::WarpPacks.is_enabled() && self.folder.model().is_warp_pack {
+        let icon = if FeatureFlag::WarpPacks.is_enabled() && self.folder.model().is_wish_pack {
             Icon::PackageCheck
         } else {
             Icon::from(DriveObjectType::Folder)

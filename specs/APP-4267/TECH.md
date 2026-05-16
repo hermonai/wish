@@ -14,7 +14,7 @@ Mermaid rendering is implemented as an async image asset layered on top of the r
 - `crates/wishui_core/src/elements/image.rs (316-358)` currently paints `before_load_element` for `Loading`, `Evicted`, and `FailedToLoad`; the shared image element has no separate failed-state element.
 - `crates/wishui_core/src/assets/asset_cache.rs (284-330)` stores new async assets as `Loading` and spawns the fetch future once per async asset ID.
 - `crates/wishui_core/src/assets/asset_cache.rs (415-486)` promotes async assets to `Loaded` or `FailedToLoad` only when the background future resolves.
-There is already an attached implementation branch, `origin/oz-agent/APP-4267/mermaid-failure-callout`, that adds an `Image::on_load_failure` element and a compact Mermaid failure notice for `AssetState::FailedToLoad`. That direction fits the current architecture, but it should be tightened to cover the product-level timeout behavior: a truly stuck render can remain `AssetState::Loading` forever because the asset cache only transitions when the fetch future resolves.
+There is already an attached implementation branch, `origin/hermon-agent/APP-4267/mermaid-failure-callout`, that adds an `Image::on_load_failure` element and a compact Mermaid failure notice for `AssetState::FailedToLoad`. That direction fits the current architecture, but it should be tightened to cover the product-level timeout behavior: a truly stuck render can remain `AssetState::Loading` forever because the asset cache only transitions when the fetch future resolves.
 ## Proposed changes
 ### 1. Add a Mermaid-specific failed height
 In `crates/editor/src/content/mermaid_diagram.rs`, add a compact failed-height multiplier next to the existing pending-height multiplier:

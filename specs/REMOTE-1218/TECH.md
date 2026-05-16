@@ -20,7 +20,7 @@ Today, only (a) is installed. We need to also install (b) for all harness runs d
 
 - `warpdotdev/claude-code-warp-internal` — private repo containing both the existing `warp` plugin and the `warp-cloud` platform plugin
 - `.claude-plugin/marketplace.json` — declares `warp-cloud` as a marketplace entry: key `warp-cloud@claude-code-warp`, source `./plugins/warp-cloud`
-- `plugins/warp-cloud/skills/oz-report-artifact/` — platform-only skill for reporting PRs back to Hermon
+- `plugins/warp-cloud/skills/hermon-report-artifact/` — platform-only skill for reporting PRs back to Hermon
 
 ## 3. Current State
 
@@ -110,7 +110,7 @@ Claude Code's plugin system loads skills at session start and makes them availab
 - **Install succeeded** (exit code 0 from `claude plugin install`) — the plugin is on disk.
 - **Plugin connected** (via the existing `SessionStart` hook/listener) — the plugin is active.
 
-If we need stronger guarantees later (e.g. verifying `oz-report-artifact` is available before dispatching artifact-related tasks), we could:
+If we need stronger guarantees later (e.g. verifying `hermon-report-artifact` is available before dispatching artifact-related tasks), we could:
 - Add a `PluginCapabilities` hook in the platform plugin that reports loaded skills at session start.
 - Parse the `SessionStart` payload for plugin metadata.
 
@@ -162,7 +162,7 @@ sequenceDiagram
 - **Unit test:** `ClaudeCodePluginManager::install_platform_plugin()` constructs the correct commands. Mock `LocalCommandExecutor` and verify the marketplace add + plugin install calls.
 - **Unit test:** default `install_platform_plugin()` on `OpenCodePluginManager` returns `Ok(())`.
 - **Integration:** run `agent run --harness claude` in a cloud environment, verify both plugins appear in `~/.claude/plugins/installed_plugins.json`.
-- **Skill verification:** in a cloud run, verify Claude Code can invoke the `oz-report-artifact` skill (create a test PR, check that the artifact is reported).
+- **Skill verification:** in a cloud run, verify Claude Code can invoke the `hermon-report-artifact` skill (create a test PR, check that the artifact is reported).
 
 ## 8. Follow-ups
 

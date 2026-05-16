@@ -32,15 +32,15 @@ pub struct CloudFolderModel {
     // CloudViewModel. Right now, every server folder uses CloudFolderModel, which means it
     // hardcodes a value of `false` for this property since it can't know what the local state is.
     pub is_open: bool,
-    pub is_warp_pack: bool,
+    pub is_wish_pack: bool,
 }
 
 impl CloudFolderModel {
-    pub fn new(name: &str, is_warp_pack: bool) -> Self {
+    pub fn new(name: &str, is_wish_pack: bool) -> Self {
         Self {
             name: name.to_owned(),
             is_open: false,
-            is_warp_pack,
+            is_wish_pack,
         }
     }
 }
@@ -125,7 +125,7 @@ impl CloudModelType for CloudFolderModel {
             return Some(CloudFolderModel {
                 name: server_folder.model.name.clone(),
                 is_open: self.is_open,
-                is_warp_pack: server_folder.model.is_warp_pack,
+                is_wish_pack: server_folder.model.is_wish_pack,
             });
         }
         None
@@ -158,11 +158,11 @@ impl CloudModelType for CloudFolderModel {
             .await
     }
 
-    fn renders_in_warp_drive(&self) -> bool {
+    fn renders_in_wish_drive(&self) -> bool {
         true
     }
 
-    fn to_warp_drive_item(
+    fn to_wish_drive_item(
         &self,
         id: SyncId,
         _appearance: &Appearance,

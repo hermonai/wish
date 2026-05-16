@@ -70,7 +70,7 @@ Out of scope (must continue to say "Hermon"):
    types any previously-matching search term (for example, terms already covered
    by the AI page's global widget search terms such as "ai", "agent", "next
    command", "api keys"). Additionally, typing "warp agent" finds this subpage.
-   Typing "oz" is acceptable to continue matching this subpage so existing
+   Typing "hermon" is acceptable to continue matching this subpage so existing
    muscle memory is not broken, but is not required by this spec; search for
    "Hermon Cloud API Keys" must continue to find the cloud platform subpage
    regardless.

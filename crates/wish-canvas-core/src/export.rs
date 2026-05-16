@@ -24,7 +24,15 @@ pub fn to_svg(canvas: &Canvas) -> String {
             let _ = writeln!(
                 s,
                 r#"  <line x1="{:.2}" y1="{:.2}" x2="{:.2}" y2="{:.2}" stroke="rgba({},{},{},{})" stroke-width="{:.2}" />"#,
-                ax, ay, bx, by, r, g, bl, al as f32 / 255.0, edge.style.width
+                ax,
+                ay,
+                bx,
+                by,
+                r,
+                g,
+                bl,
+                al as f32 / 255.0,
+                edge.style.width
             );
         }
     }
@@ -39,11 +47,20 @@ pub fn to_svg(canvas: &Canvas) -> String {
     <text x="{:.2}" y="{:.2}" font-family="sans-serif" font-size="11" fill="white">{}</text>
   </g>"#,
             node.semantic_id,
-            node.bounds.x, node.bounds.y, node.bounds.w, node.bounds.h, node.style.corner_radius,
-            r, g, bl,
-            br, bg, bb,
+            node.bounds.x,
+            node.bounds.y,
+            node.bounds.w,
+            node.bounds.h,
+            node.style.corner_radius,
+            r,
+            g,
+            bl,
+            br,
+            bg,
+            bb,
             node.style.border_width,
-            node.bounds.x + 6.0, node.bounds.y + node.bounds.h * 0.6,
+            node.bounds.x + 6.0,
+            node.bounds.y + node.bounds.h * 0.6,
             escape_xml(&node.label),
         );
     }

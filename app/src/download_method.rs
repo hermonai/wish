@@ -29,10 +29,10 @@ pub fn determine_and_report(auth_state: Arc<AuthState>, executor: Arc<Background
 /// 1. The default download from our website.
 /// 2. Via `homebrew`
 ///
-/// To determine if Warp was installed with Homebrew, we run `brew list --cask warp`. That command
+/// To determine if Wish was installed with Homebrew, we run `brew list --cask warp`. That command
 /// will return an failure error code if Warp was not installed with Homebrew. It will also fail
 /// to launch entirely if Homebrew isn't installed. In either of those cases, we treat the download
-/// as being from the Warp website.
+/// as being from the Wish website.
 #[cfg(target_os = "macos")]
 async fn check_download_source() -> DownloadSource {
     use std::{env, process::Stdio};

@@ -9,7 +9,7 @@ Relevant code:
 - `app/src/ai/conversation_details_panel.rs (950-1028)` — `render_skill_section`, the closest existing precedent for a single icon + label row.
 - `app/src/ai/conversation_details_panel.rs (1426-1781)` — `View::render` composes the sidebar; sections are appended to a `Flex::column` in a fixed order with `FIELD_SPACING` / `HEADER_SPACING` margins. This is where the new row is inserted.
 - `app/src/ai/ambient_agents/task.rs (57-83)` — `AgentConfigSnapshot.harness: Option<HarnessConfig>`, where `HarnessConfig { harness_type: String }` — the source of truth for a task's harness once the snapshot is loaded.
-- `crates/wish_cli/src/agent.rs (118-138)` — `Harness` enum (`Hermon` / `Claude` / `Gemini`) with `clap::ValueEnum`; `Harness::from_str` (via `ValueEnum`) is the canonical parser for `harness_type` strings (values: `oz`, `claude`, `gemini`).
+- `crates/wish_cli/src/agent.rs (118-138)` — `Harness` enum (`Hermon` / `Claude` / `Gemini`) with `clap::ValueEnum`; `Harness::from_str` (via `ValueEnum`) is the canonical parser for `harness_type` strings (values: `hermon`, `claude`, `gemini`).
 - `app/src/terminal/view/ambient_agent/harness_selector.rs (59-75)` — existing `display_name` / `icon_for` helpers used by the harness selector dropdown. We reuse and centralize these so the two surfaces cannot diverge.
 - `app/src/ai/conversation_details_panel_tests.rs` — existing unit-test harness (`App::test`) used for `ConversationDetailsData`.
 ## Proposed changes
@@ -51,7 +51,7 @@ Behavior invariants from `PRODUCT.md` map as follows:
     - `from_task_id` → `None`.
     - `from_task` with `agent_config_snapshot = None` → `None`.
     - `from_task` with `agent_config_snapshot = Some { harness: None, .. }` → `Some(Harness::Hermon)`.
-    - `from_task` with `harness_type` each of `"oz"`, `"claude"`, `"gemini"` → matching `Harness` variant.
+    - `from_task` with `harness_type` each of `"hermon"`, `"claude"`, `"gemini"` → matching `Harness` variant.
     - `from_task` with an unknown `harness_type` string → `None`.
     - Parametrize one of the above across each `AmbientAgentTaskState` variant to lock invariant 5 ("regardless of run status").
 - Invariants 2, 3 (icon + label + brand color mapping) — unit tests on the new `harness_display` module covering `parse_harness_type` edge cases. The `display_name` / `icon_for` / `brand_color` mappings are enum match arms and don't get dedicated tests; instead the harness selector's existing item rows and the details row resolve from the same shared helper so they can't drift.

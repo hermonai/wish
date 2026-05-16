@@ -32,11 +32,11 @@ Any Claude cloud run that resumes an existing conversation — whether via cloud
 warp agent run-cloud --harness claude --conversation <id> --prompt "follow-up"
 warp agent run       --harness claude --conversation <id> --prompt "follow-up"
 ```
-`--harness claude` is required when resuming a Claude conversation; the default `--harness oz` against a Claude id fails fast with an actionable error. The CLI never silently flips harness mid-flight because harness drives pre-load decisions (task config, CLI validation, server task creation).
+`--harness claude` is required when resuming a Claude conversation; the default `--harness hermon` against a Claude id fails fast with an actionable error. The CLI never silently flips harness mid-flight because harness drives pre-load decisions (task config, CLI validation, server task creation).
 The client validates `--harness` against the conversation's stored harness before any task is created, then runs the same rehydration path described above. Local runs skip step 4 (the server's rehydration prompt is a no-op because there's no prior ended execution) but still rehydrate the transcript to disk so Claude's `/resume` picker sees it.
 ### Error and edge cases
 - Non-existent or inaccessible conversation id: fail fast, no task created.
-- Harness mismatch (either direction): fail fast with a message naming both sides, e.g. `conversation X was produced by the claude harness, but --harness oz was requested`. No task created.
+- Harness mismatch (either direction): fail fast with a message naming both sides, e.g. `conversation X was produced by the claude harness, but --harness hermon was requested`. No task created.
 - Claude conversation with no stored transcript: `conversation <id> has no stored transcript for the claude harness. The prior run may have crashed before saving any state`.
 - Transient transcript fetch failures: bounded exponential backoff inside `HarnessSupportClient::fetch_transcript`; permanent 4xx fails fast.
 - `claude --resume` failing at runtime (e.g. upstream session-index desync): surface the error and exit non-zero instead of silently starting a fresh session.
