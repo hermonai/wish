@@ -136,11 +136,42 @@ impl AuthRedirectPayload {
     }
 
     /// Like [`from_url()`], except first parses the given [`raw_url`] into a [`Url`] struct.
+    ///
+    /// Accepts three input shapes so users can paste whatever the auth page
+    /// surfaced for them:
+    /// 1. A full `{scheme}://auth/desktop_redirect?refresh_token=...` URL
+    ///    (the canonical handoff payload).
+    /// 2. A bare Hermon refresh token of the form `hrmrt_<user>_<jti>`.
+    /// 3. A bare Hermon API key of the form `hrm_<...>`.
+    ///
+    /// Shapes 2 and 3 are wrapped into a synthetic redirect payload — the
+    /// downstream `initialize_user_from_auth_payload` flow exchanges the token
+    /// for an access token and learns the user's UID from the server.
     pub fn from_raw_url(raw_url: String) -> Result<Self> {
-        match Url::parse(&raw_url) {
-            Ok(parsed_url) => AuthRedirectPayload::from_url(parsed_url),
-            Err(error) => Err(anyhow!(error)),
+        let trimmed = raw_url.trim().to_owned();
+        if let Ok(parsed) = Url::parse(&trimmed) {
+            // A full scheme-based redirect URL — the canonical happy path.
+            if let Ok(payload) = AuthRedirectPayload::from_url(parsed) {
+                return Ok(payload);
+            }
         }
+
+        // Fall back to bare-token detection. Reject anything that doesn't look
+        // like a Hermon-issued credential so we don't silently accept garbage.
+        let is_refresh = trimmed.starts_with("hrmrt_");
+        let is_api_key = trimmed.starts_with("hrm_") && !is_refresh;
+        if is_refresh || is_api_key {
+            return Ok(Self {
+                refresh_token: RefreshToken::new(&trimmed),
+                user_uid: None,
+                deleted_anonymous_user: None,
+                state: None,
+            });
+        }
+
+        Err(anyhow!(
+            "pasted text is neither a Wish redirect URL nor a Hermon token (hrmrt_/hrm_)"
+        ))
     }
 }
 
