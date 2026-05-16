@@ -23,23 +23,23 @@ use wish_core::{
 };
 
 pub mod headers {
-    /// Custom Warp header indicating the version of the Warp app.
+    /// Custom Wish header indicating the version of the Wish app.
     pub const CLIENT_RELEASE_VERSION_HEADER_KEY: &str = "X-Wish-Client-Version";
 
-    /// Custom Warp header indicating the OS category the request was sent from.
+    /// Custom Wish header indicating the OS category the request was sent from.
     pub(crate) const WARP_OS_CATEGORY: &str = "X-Wish-OS-Category";
-    /// Custom Warp header indicating the OS name the request was sent from. On Linux this is the
+    /// Custom Wish header indicating the OS name the request was sent from. On Linux this is the
     /// name of the distribution. On all other platforms it should be equivalent to
     /// `WARP_OS_CATEGORY`.
     pub(crate) const WARP_OS_NAME: &str = "X-Wish-OS-Name";
-    /// Custom Warp header indicating the version of the operating system. On Linux this is the
+    /// Custom Wish header indicating the version of the operating system. On Linux this is the
     /// version of the distribution, not the Linux kernel version.
     pub(crate) const WARP_OS_VERSION: &str = "X-Wish-OS-Version";
 
-    /// Custom Warp header indicating the linux kernel version. This is only sent from Linux.
+    /// Custom Wish header indicating the linux kernel version. This is only sent from Linux.
     pub(crate) const WARP_OS_LINUX_KERNEL_VERSION: &str = "X-Wish-OS-Linux-Kernel-Version";
 
-    /// Custom Warp header indicating the client role. We don't use the User-Agent header
+    /// Custom Wish header indicating the client role. We don't use the User-Agent header
     /// because it can't be set from WASM.
     pub(crate) const WARP_CLIENT_ID: &str = "X-Wish-Client-ID";
 }
@@ -171,7 +171,7 @@ impl Client {
     fn builder(
         &self,
         wrapped: reqwest::RequestBuilder,
-        include_warp_headers: bool,
+        include_wish_headers: bool,
     ) -> RequestBuilder<'_> {
         let mut builder = RequestBuilder {
             wrapped,
@@ -180,8 +180,8 @@ impl Client {
             prevent_sleep_reason: None,
         };
 
-        if include_warp_headers {
-            builder = Self::add_warp_http_headers(builder);
+        if include_wish_headers {
+            builder = Self::add_wish_http_headers(builder);
         }
 
         builder
@@ -190,35 +190,35 @@ impl Client {
     pub fn get<U: IntoUrl + Clone>(&self, url: U) -> RequestBuilder<'_> {
         self.builder(
             self.wrapped.get(url.clone()),
-            Self::include_warp_http_headers(url),
+            Self::include_wish_http_headers(url),
         )
     }
 
     pub fn post<U: IntoUrl + Clone>(&self, url: U) -> RequestBuilder<'_> {
         self.builder(
             self.wrapped.post(url.clone()),
-            Self::include_warp_http_headers(url),
+            Self::include_wish_http_headers(url),
         )
     }
 
     pub fn put<U: IntoUrl + Clone>(&self, url: U) -> RequestBuilder<'_> {
         self.builder(
             self.wrapped.put(url.clone()),
-            Self::include_warp_http_headers(url),
+            Self::include_wish_http_headers(url),
         )
     }
 
     pub fn patch<U: IntoUrl + Clone>(&self, url: U) -> RequestBuilder<'_> {
         self.builder(
             self.wrapped.patch(url.clone()),
-            Self::include_warp_http_headers(url),
+            Self::include_wish_http_headers(url),
         )
     }
 
     pub fn delete<U: IntoUrl + Clone>(&self, url: U) -> RequestBuilder<'_> {
         self.builder(
             self.wrapped.delete(url.clone()),
-            Self::include_warp_http_headers(url),
+            Self::include_wish_http_headers(url),
         )
     }
 
@@ -226,7 +226,7 @@ impl Client {
     /// where we should include custom headers is if the request is same-origin and is targetted to our server.
     /// For example, app.warp.dev --> app.warp.dev.
     #[cfg(target_family = "wasm")]
-    fn include_warp_http_headers<U: IntoUrl + Clone>(url: U) -> bool {
+    fn include_wish_http_headers<U: IntoUrl + Clone>(url: U) -> bool {
         url.into_url().is_ok_and(|url| {
             url.host_str().is_some_and(|dest_host| {
                 let window_hostname = gloo::utils::window()
@@ -244,11 +244,11 @@ impl Client {
     }
 
     #[cfg(not(target_family = "wasm"))]
-    fn include_warp_http_headers<U: IntoUrl + Clone>(_url: U) -> bool {
+    fn include_wish_http_headers<U: IntoUrl + Clone>(_url: U) -> bool {
         true
     }
 
-    fn add_warp_http_headers(mut builder: RequestBuilder) -> RequestBuilder {
+    fn add_wish_http_headers(mut builder: RequestBuilder) -> RequestBuilder {
         // Include the client ID header.
         if let Some(client_id) = execution_mode::current_client_id() {
             builder = builder.header(headers::WARP_CLIENT_ID, client_id);
@@ -661,14 +661,14 @@ impl<'c> oauth2::AsyncHttpClient<'c> for Client {
 
     fn call(&'c self, request: oauth2::HttpRequest) -> Self::Future {
         Box::pin(async move {
-            let include_warp_headers = Self::include_warp_http_headers(request.uri().to_string());
+            let include_wish_headers = Self::include_wish_http_headers(request.uri().to_string());
             let builder = reqwest::RequestBuilder::from_parts(
                 self.wrapped.clone(),
                 request.try_into().map_err(Box::new)?,
             );
 
             let response = self
-                .builder(builder, include_warp_headers)
+                .builder(builder, include_wish_headers)
                 .send()
                 .await
                 .map_err(Box::new)?;

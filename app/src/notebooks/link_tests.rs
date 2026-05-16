@@ -218,8 +218,8 @@ fn test_resolve_valid_url() {
             url("https://wish.hermon.ai")
         );
         assert_eq!(
-            resolve(&app, &links, "mailto:test@warp.dev").await,
-            url("mailto:test@warp.dev")
+            resolve(&app, &links, "mailto:test@wish.dev").await,
+            url("mailto:test@wish.dev")
         );
     });
 }

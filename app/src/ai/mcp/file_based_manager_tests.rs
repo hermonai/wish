@@ -362,7 +362,7 @@ fn test_global_non_warp_server_respects_toggle() {
 #[test]
 fn test_project_scoped_servers_never_auto_spawn() {
     let _flag_guard = FeatureFlag::FileBasedMcp.override_enabled(true);
-    let repo_path = PathBuf::from("/tmp/warp-test-repo");
+    let repo_path = PathBuf::from("/tmp/wish-test-repo");
     let claude_parsed =
         parse_mcp_json(r#"{"proj-claude": {"command": "npx", "args": ["proj-claude"]}}"#);
     let warp_parsed = parse_mcp_json(r#"{"proj-warp": {"command": "npx", "args": ["proj-warp"]}}"#);
@@ -421,7 +421,7 @@ fn test_server_referenced_from_both_global_and_project_is_global() {
     let Some(home_dir) = dirs::home_dir() else {
         return;
     };
-    let repo_path = PathBuf::from("/tmp/warp-test-repo-shared");
+    let repo_path = PathBuf::from("/tmp/wish-test-repo-shared");
     let json = r#"{"shared-claude": {"command": "npx", "args": ["shared"]}}"#;
     let global_parsed = parse_mcp_json(json);
     let project_parsed = parse_mcp_json(json);

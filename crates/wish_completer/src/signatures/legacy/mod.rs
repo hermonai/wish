@@ -43,7 +43,7 @@ impl CommandRegistry {
             warp_command_signatures::dynamic_command_signature_data(),
         );
 
-        Self::register_warp_signatures(&registry);
+        Self::register_wish_signatures(&registry);
 
         registry
     }
@@ -52,7 +52,7 @@ impl CommandRegistry {
     ///
     /// Ideally this would be done outside of the `wish_completer` crate, but it's not currently
     /// possible to configure the shared [`Self::global_instance`].
-    fn register_warp_signatures(registry: &Self) {
+    fn register_wish_signatures(registry: &Self) {
         // We use the current instance's signature for each channel. This is not entirely accurate - for example:
         // * The user might be SSHed into a host with a different version of the CLI
         // * The user might be using Preview, which will have different features than Stable.

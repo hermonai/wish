@@ -4081,7 +4081,7 @@ impl SettingsWidget for TeamsWidget {
 #[cfg(test)]
 #[test]
 pub fn test_valid_domains() {
-    assert!(!TeamsPageView::is_valid_domain("@warp.dev"));
+    assert!(!TeamsPageView::is_valid_domain("@wish.dev"));
     assert!(!TeamsPageView::is_valid_domain("warp,"));
     assert!(!TeamsPageView::is_valid_domain("warpdev"));
     assert!(!TeamsPageView::is_valid_domain(".dev"));

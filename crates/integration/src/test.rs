@@ -323,7 +323,7 @@ pub fn test_add_workflows_to_warp_config() -> Builder {
         )
 }
 
-pub fn test_launch_warp_with_theme_in_warp_config() -> Builder {
+pub fn test_launch_wish_with_theme_in_wish_config() -> Builder {
     new_builder()
         .with_setup(move |utils| {
             utils.set_env("WARP_CONFIG_WATCHER_DELAY_MS", Some((10).to_string()));

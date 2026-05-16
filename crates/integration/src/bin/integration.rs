@@ -231,7 +231,7 @@ fn register_tests() -> HashMap<&'static str, BoxedBuilderFn> {
     register_test!(test_palette_opens_when_theme_chooser_is_open);
     #[cfg(target_os = "macos")]
     register_test!(test_preview_config_dir_migration);
-    register_test!(test_launch_warp_with_theme_in_warp_config);
+    register_test!(test_launch_wish_with_theme_in_wish_config);
     register_test!(test_add_launch_config_to_warp_config);
     register_test!(test_add_workflows_to_warp_config);
     register_test!(test_loading_project_workflows);
@@ -315,7 +315,7 @@ fn register_tests() -> HashMap<&'static str, BoxedBuilderFn> {
 
     register_test!(test_can_auto_bootstrap);
 
-    register_test!(test_ask_warp_ai_keybinding_for_selected_block);
+    register_test!(test_ask_wish_ai_keybinding_for_selected_block);
     register_test!(test_create_folder_from_command_palette);
 
     register_test!(test_tab_behavior_setting);

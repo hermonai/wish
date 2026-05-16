@@ -106,13 +106,13 @@ pub fn test_remote_server_navigate_to_repo() -> Builder {
         .with_step(record_remote_server_navigation_events())
         .with_step(execute_command_for_single_terminal_in_tab(
             0,
-            "mkdir -p /tmp/warp-test-repo && cd /tmp/warp-test-repo && git init -b main && git config user.email test@test.com && git config user.name TestUser && touch file && git add file && git commit -m init".into(),
+            "mkdir -p /tmp/wish-test-repo && cd /tmp/wish-test-repo && git init -b main && git config user.email test@test.com && git config user.name TestUser && touch file && git add file && git commit -m init".into(),
             ExpectedExitStatus::Success,
             (),
         ))
         .with_step(execute_command_for_single_terminal_in_tab(
             0,
-            "cd /tmp/warp-test-repo".into(),
+            "cd /tmp/wish-test-repo".into(),
             ExpectedExitStatus::Success,
             (),
         ))
@@ -125,7 +125,7 @@ pub fn test_remote_server_navigate_to_repo() -> Builder {
             .set_timeout(Duration::from_secs(15))
             .add_named_assertion_with_data_from_prior_step(
                 "remote server navigated to expected repo path",
-                assert_remote_server_has_navigated(0, "/tmp/warp-test-repo"),
+                assert_remote_server_has_navigated(0, "/tmp/wish-test-repo"),
             ),
         )
         // Verify the connection is still healthy after navigation.
