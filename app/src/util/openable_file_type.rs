@@ -139,7 +139,7 @@ pub fn is_runnable_shell_script(_path: &Path) -> bool {
 
 /// Determines if a file can be opened in Wish and returns its type.
 /// Returns `None` if the file is binary and should not be opened.
-pub fn is_file_openable_in_warp(path: &Path) -> Option<OpenableFileType> {
+pub fn is_file_openable_in_wish(path: &Path) -> Option<OpenableFileType> {
     if is_binary_file(path) {
         return None;
     }
@@ -158,14 +158,14 @@ pub fn is_file_openable_in_warp(path: &Path) -> Option<OpenableFileType> {
 /// Only use this for UI elements that must explicitly open a file in Wish (i.e. "Open in New Tab").
 /// Prefer `resolve_file_target` for all other cases to respect users' preferences.
 /// This would also force any binary file to be opened in Wish's Code Editor, so you should likely check
-/// `is_file_openable_in_warp` before rendering any such UI Elements.
+/// `is_file_openable_in_wish` before rendering any such UI Elements.
 #[cfg(feature = "local_fs")]
-pub fn resolve_file_target_to_open_in_warp(
+pub fn resolve_file_target_to_open_in_wish(
     path: &Path,
     settings: &EditorSettings,
     layout: Option<EditorLayout>,
 ) -> FileTarget {
-    let openable_file_type = is_file_openable_in_warp(path);
+    let openable_file_type = is_file_openable_in_wish(path);
     let is_markdown = matches!(openable_file_type, Some(OpenableFileType::Markdown));
     let layout = layout.unwrap_or(*settings.open_file_layout);
 
@@ -199,18 +199,18 @@ pub fn resolve_file_target_with_editor_choice(
     default_layout: EditorLayout,
     layout: Option<EditorLayout>,
 ) -> FileTarget {
-    let is_openable_in_warp = is_file_openable_in_warp(path);
-    let is_markdown = matches!(is_openable_in_warp, Some(OpenableFileType::Markdown));
+    let is_openable_in_wish = is_file_openable_in_wish(path);
+    let is_markdown = matches!(is_openable_in_wish, Some(OpenableFileType::Markdown));
     let layout = layout.unwrap_or(default_layout);
-    let is_openable_in_warp = is_openable_in_warp.is_some();
+    let is_openable_in_wish = is_openable_in_wish.is_some();
 
     // 1. Markdown Viewer (only if user preference specified)
     if is_markdown && prefer_markdown_viewer {
         return FileTarget::MarkdownViewer(layout);
     }
 
-    // 2. Warp Code Editor (Explicit user preference)
-    if is_openable_in_warp && matches!(editor_choice, EditorChoice::Warp) {
+    // 2. Wish Code Editor (Explicit user preference)
+    if is_openable_in_wish && matches!(editor_choice, EditorChoice::Wish) {
         return FileTarget::CodeEditor(layout);
     }
 
@@ -220,7 +220,7 @@ pub fn resolve_file_target_with_editor_choice(
     }
 
     // 4. Binary files -> System Default
-    if !is_openable_in_warp {
+    if !is_openable_in_wish {
         return FileTarget::SystemGeneric;
     }
 
@@ -228,7 +228,7 @@ pub fn resolve_file_target_with_editor_choice(
     match editor_choice {
         EditorChoice::ExternalEditor(editor) => FileTarget::ExternalEditor(editor),
         EditorChoice::SystemDefault => FileTarget::SystemDefault,
-        EditorChoice::Warp | EditorChoice::EnvEditor => unreachable!("Already matched above"),
+        EditorChoice::Wish | EditorChoice::EnvEditor => unreachable!("Already matched above"),
     }
 }
 
@@ -241,10 +241,10 @@ mod tests {
 
     #[test]
     fn test_binary_files_not_openable() {
-        assert!(is_file_openable_in_warp(Path::new("image.png")).is_none());
-        assert!(is_file_openable_in_warp(Path::new("video.mp4")).is_none());
-        assert!(is_file_openable_in_warp(Path::new("binary.exe")).is_none());
-        assert!(is_file_openable_in_warp(Path::new("archive.zip")).is_none());
+        assert!(is_file_openable_in_wish(Path::new("image.png")).is_none());
+        assert!(is_file_openable_in_wish(Path::new("video.mp4")).is_none());
+        assert!(is_file_openable_in_wish(Path::new("binary.exe")).is_none());
+        assert!(is_file_openable_in_wish(Path::new("archive.zip")).is_none());
     }
 
     #[test]
@@ -254,7 +254,7 @@ mod tests {
 
         assert_eq!(
             OpenCodePanelsFileEditor::default_value(),
-            EditorChoice::Warp
+            EditorChoice::Wish
         );
     }
 
@@ -277,7 +277,7 @@ mod tests {
     fn test_resolve_file_target_warp_uses_default_layout() {
         let target = resolve_file_target_with_editor_choice(
             Path::new("data.txt"),
-            EditorChoice::Warp,
+            EditorChoice::Wish,
             true, /* prefer_markdown_viewer */
             EditorLayout::NewTab,
             None,
@@ -291,7 +291,7 @@ mod tests {
     fn test_resolve_file_target_binary_is_system_generic() {
         let target = resolve_file_target_with_editor_choice(
             Path::new("image.png"),
-            EditorChoice::Warp,
+            EditorChoice::Wish,
             true, /* prefer_markdown_viewer */
             EditorLayout::SplitPane,
             None,
@@ -316,19 +316,19 @@ mod tests {
     #[test]
     fn test_markdown_files() {
         assert_eq!(
-            is_file_openable_in_warp(Path::new("README.md")),
+            is_file_openable_in_wish(Path::new("README.md")),
             Some(OpenableFileType::Markdown)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("doc.markdown")),
+            is_file_openable_in_wish(Path::new("doc.markdown")),
             Some(OpenableFileType::Markdown)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("README")),
+            is_file_openable_in_wish(Path::new("README")),
             Some(OpenableFileType::Markdown)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("CHANGELOG")),
+            is_file_openable_in_wish(Path::new("CHANGELOG")),
             Some(OpenableFileType::Markdown)
         );
     }
@@ -337,19 +337,19 @@ mod tests {
     #[cfg(feature = "local_fs")]
     fn test_code_files() {
         assert_eq!(
-            is_file_openable_in_warp(Path::new("main.rs")),
+            is_file_openable_in_wish(Path::new("main.rs")),
             Some(OpenableFileType::Code)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("app.js")),
+            is_file_openable_in_wish(Path::new("app.js")),
             Some(OpenableFileType::Code)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("script.py")),
+            is_file_openable_in_wish(Path::new("script.py")),
             Some(OpenableFileType::Code)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("config.json")),
+            is_file_openable_in_wish(Path::new("config.json")),
             Some(OpenableFileType::Code)
         );
     }
@@ -358,19 +358,19 @@ mod tests {
     #[cfg(not(feature = "local_fs"))]
     fn test_code_files() {
         assert_eq!(
-            is_file_openable_in_warp(Path::new("main.rs")),
+            is_file_openable_in_wish(Path::new("main.rs")),
             Some(OpenableFileType::Text)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("app.js")),
+            is_file_openable_in_wish(Path::new("app.js")),
             Some(OpenableFileType::Text)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("script.py")),
+            is_file_openable_in_wish(Path::new("script.py")),
             Some(OpenableFileType::Text)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("config.json")),
+            is_file_openable_in_wish(Path::new("config.json")),
             Some(OpenableFileType::Text)
         );
     }
@@ -379,15 +379,15 @@ mod tests {
     fn test_text_files() {
         // Files that are text but don't have language support
         assert_eq!(
-            is_file_openable_in_warp(Path::new("data.txt")),
+            is_file_openable_in_wish(Path::new("data.txt")),
             Some(OpenableFileType::Text)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("data.csv")),
+            is_file_openable_in_wish(Path::new("data.csv")),
             Some(OpenableFileType::Text)
         );
         assert_eq!(
-            is_file_openable_in_warp(Path::new("file.svg")),
+            is_file_openable_in_wish(Path::new("file.svg")),
             Some(OpenableFileType::Text)
         );
     }

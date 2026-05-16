@@ -20,6 +20,9 @@ default-members = [
   "crates/wish_completer",
   "crates/wish_terminal",
   "crates/wish_util",
+  # v0.5.0 World Model Seed — surface the `wish-world` binary from the
+  # root so `cargo run --bin wish-world …` works without `-p`.
+  "crates/wish-world-cli",
 ]
 
 [workspace.package]
@@ -93,6 +96,22 @@ wishui_core = { package = "wishui-core", path = "crates/wishui-core" }
 wishui_extras = { path = "crates/wishui_extras", default-features = false }
 watcher = { path = "crates/watcher" }
 websocket = { path = "crates/websocket" }
+
+# v0.5.0 "World Model Seed" — new crates introduced by
+# wish-design/wish-plan-20260514. UI surfaces feature-gated via
+# `wish_features`; see
+# `wish-design/wish-plan-20260514/08-v0.5.0-implementation/`.
+wish-world-model = { path = "crates/wish-world-model" }
+wish-canvas-core = { path = "crates/wish-canvas-core" }
+wish-canvas = { path = "crates/wish-canvas" }
+wish-codegraph = { path = "crates/wish-codegraph" }
+wish-agent-visualizer = { path = "crates/wish-agent-visualizer" }
+wish-provenance = { path = "crates/wish-provenance" }
+wish-hermon-bridge = { path = "crates/wish-hermon-bridge" }
+wish-cell-runtime = { path = "crates/wish-cell-runtime" }
+wish-world-studio = { path = "crates/wish-world-studio" }
+wish-world-cli = { path = "crates/wish-world-cli" }
+wish-render = { path = "crates/wish-render" }
 
 # Workspace-level dependencies used by multiple crates. Prefer adding dependencies
 # here to copying-and-pasting versions.

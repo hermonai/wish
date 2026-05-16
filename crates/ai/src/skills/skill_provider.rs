@@ -86,7 +86,7 @@ impl SkillProvider {
             | SkillProvider::Agents
             | SkillProvider::Cursor
             | SkillProvider::Copilot
-            | SkillProvider::Github => Icon::WarpLogoLight,
+            | SkillProvider::Github => Icon::WishLogo,
         }
     }
 

@@ -1,9 +1,9 @@
 use crate::appearance::Appearance;
 use crate::terminal::model::ansi::WishificationUnavailableReason;
-use crate::terminal::warpify;
-use crate::terminal::warpify::render::apply_spacing_styles;
-use crate::terminal::warpify::render::build_description_row;
-use crate::terminal::warpify::settings::WishifySettings;
+use crate::terminal::wishify;
+use crate::terminal::wishify::render::apply_spacing_styles;
+use crate::terminal::wishify::render::build_description_row;
+use crate::terminal::wishify::settings::WishifySettings;
 use crate::ui_components::icons::Icon as UiIcon;
 use markdown_parser::FormattedText;
 use markdown_parser::FormattedTextFragment;
@@ -109,10 +109,10 @@ pub enum SshErrorBlockAction {
 pub struct SshErrorBlock {
     error_reason: WishificationUnavailableReason,
     ssh_host: Option<String>,
-    warpify_without_tmux_button_mouse_state: MouseStateHandle,
+    wishify_without_tmux_button_mouse_state: MouseStateHandle,
     continue_button_mouse_state: MouseStateHandle,
     report_link_highlight_index: HighlightedHyperlink,
-    never_warpify_mouse_state_handle: MouseStateHandle,
+    never_wishify_mouse_state_handle: MouseStateHandle,
     block_mouse_state: MouseStateHandle,
     is_focused: bool,
 }
@@ -145,10 +145,10 @@ impl SshErrorBlock {
         Self {
             error_reason,
             ssh_host,
-            warpify_without_tmux_button_mouse_state: Default::default(),
+            wishify_without_tmux_button_mouse_state: Default::default(),
             continue_button_mouse_state: Default::default(),
             report_link_highlight_index: Default::default(),
-            never_warpify_mouse_state_handle: Default::default(),
+            never_wishify_mouse_state_handle: Default::default(),
             block_mouse_state: Default::default(),
             is_focused: false,
         }
@@ -173,7 +173,7 @@ impl SshErrorBlock {
         theme: &WarpTheme,
         appearance: &Appearance,
     ) -> Box<dyn Element> {
-        let header_contents = warpify::render::build_header_row(
+        let header_contents = wishify::render::build_header_row(
             "Error Wishifying session",
             Icon::new(UiIcon::AlertTriangle.into(), theme.ui_error_color()),
             theme,
@@ -182,11 +182,11 @@ impl SshErrorBlock {
         .with_margin_right(8.)
         .finish();
 
-        let right_hand_size = warpify::render::render_never_warpify_ssh_link(
+        let right_hand_size = wishify::render::render_never_wishify_ssh_link(
             &self.ssh_host,
             app,
             appearance,
-            self.never_warpify_mouse_state_handle.clone(),
+            self.never_wishify_mouse_state_handle.clone(),
             move |ctx, ssh_host| {
                 ctx.dispatch_typed_action(SshErrorBlockAction::AddSshHostToDenylist(
                     ssh_host.to_owned(),
@@ -204,7 +204,7 @@ impl SshErrorBlock {
             row.add_child(right_hand_size);
         }
 
-        warpify::render::apply_spacing_styles(Container::new(row.finish())).finish()
+        wishify::render::apply_spacing_styles(Container::new(row.finish())).finish()
     }
 }
 
@@ -227,7 +227,7 @@ impl View for SshErrorBlock {
 
         content.add_child(self.render_title_ui(app, theme, appearance));
 
-        content.add_child(warpify::render::description_row(
+        content.add_child(wishify::render::description_row(
             self.error_reason.error_message(),
             theme,
             appearance,
@@ -256,7 +256,7 @@ impl View for SshErrorBlock {
                     ui_builder
                         .button(
                             ButtonVariant::Accent,
-                            self.warpify_without_tmux_button_mouse_state.clone(),
+                            self.wishify_without_tmux_button_mouse_state.clone(),
                         )
                         .with_centered_text_label("Wishify without TMUX".into())
                         .with_style(UiComponentStyles {
@@ -342,8 +342,8 @@ impl TypedActionView for SshErrorBlock {
             }
             SshErrorBlockAction::AddSshHostToDenylist(ssh_host) => {
                 let settings = WishifySettings::handle(ctx);
-                settings.update(ctx, |warpify, ctx| {
-                    warpify.denylist_ssh_host(ssh_host, ctx);
+                settings.update(ctx, |wishify, ctx| {
+                    wishify.denylist_ssh_host(ssh_host, ctx);
                 });
                 ctx.emit(SshErrorBlockEvent::ContinueWithoutWishification);
                 ctx.notify()

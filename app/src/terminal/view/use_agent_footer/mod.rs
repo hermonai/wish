@@ -15,10 +15,10 @@ use crate::util::image::{infer_mime_type, MAX_IMAGE_SIZE_BYTES_FOR_CLI_AGENT, MI
 use base64::Engine;
 use session_sharing_protocol::sharer::SessionSourceType;
 use wishui::clipboard::{ClipboardContent, ImageData};
-mod warpify_footer;
+mod wishify_footer;
 
 pub use crate::terminal::CLIAgent;
-use warpify_footer::{WishifyFooterView, WishifyFooterViewEvent};
+use wishify_footer::{WishifyFooterView, WishifyFooterViewEvent};
 
 use std::path::Path;
 use std::sync::{Arc, LazyLock};
@@ -316,7 +316,7 @@ impl TerminalView {
         if self
             .use_agent_footer
             .as_ref(app)
-            .warpify_mode(app)
+            .wishify_mode(app)
             .is_some()
         {
             return true;
@@ -443,7 +443,7 @@ impl TerminalView {
 
         if !self.model.lock().is_alt_screen_active() {
             self.use_agent_footer.update(ctx, |footer, ctx| {
-                footer.clear_warpify_mode(ctx);
+                footer.clear_wishify_mode(ctx);
             });
             self.hide_use_agent_footer_in_blocklist(ctx);
         }
@@ -1071,7 +1071,7 @@ pub struct UseAgentToolbar {
     agent_input_footer: ViewHandle<AgentInputFooter>,
 
     // Wishify footer UI (shown when a subshell/SSH command is detected).
-    warpify_footer_view: ViewHandle<WishifyFooterView>,
+    wishify_footer_view: ViewHandle<WishifyFooterView>,
 
     // `true` if the user has dismissed the footer.
     //
@@ -1144,11 +1144,11 @@ impl UseAgentToolbar {
             me.handle_agent_input_footer_event(event, ctx);
         });
 
-        let warpify_footer_view =
+        let wishify_footer_view =
             ctx.add_typed_action_view(|ctx| WishifyFooterView::new(terminal_model.clone(), ctx));
 
-        ctx.subscribe_to_view(&warpify_footer_view, |me, _, event, ctx| {
-            me.handle_warpify_footer_event(event, ctx);
+        ctx.subscribe_to_view(&wishify_footer_view, |me, _, event, ctx| {
+            me.handle_wishify_footer_event(event, ctx);
         });
 
         ctx.subscribe_to_model(model_event_dispatcher, |me, _, event, ctx| {
@@ -1174,7 +1174,7 @@ impl UseAgentToolbar {
             dismiss_button,
             dont_show_again_button,
             agent_input_footer,
-            warpify_footer_view,
+            wishify_footer_view,
             terminal_model,
             did_user_dismiss: false,
         }
@@ -1221,7 +1221,7 @@ impl UseAgentToolbar {
         }
     }
 
-    fn handle_warpify_footer_event(
+    fn handle_wishify_footer_event(
         &mut self,
         event: &WishifyFooterViewEvent,
         ctx: &mut ViewContext<Self>,
@@ -1242,7 +1242,7 @@ impl UseAgentToolbar {
     pub(in crate::terminal) fn notify_and_notify_children(&mut self, ctx: &mut ViewContext<Self>) {
         ctx.notify();
         self.agent_input_footer.update(ctx, |_, ctx| ctx.notify());
-        self.warpify_footer_view.update(ctx, |_, ctx| ctx.notify());
+        self.wishify_footer_view.update(ctx, |_, ctx| ctx.notify());
         self.button.update(ctx, |_, ctx| ctx.notify());
         self.give_control_back_button
             .update(ctx, |_, ctx| ctx.notify());
@@ -1264,28 +1264,28 @@ impl UseAgentToolbar {
 
     /// Sets the current warpification mode. When set, the footer shows the
     /// warpify view instead of the CLI agent or regular "Use agent" views.
-    pub(in crate::terminal) fn set_warpify_mode(
+    pub(in crate::terminal) fn set_wishify_mode(
         &mut self,
         mode: WishificationMode,
         ctx: &mut ViewContext<Self>,
     ) {
-        self.warpify_footer_view.update(ctx, |view, ctx| {
+        self.wishify_footer_view.update(ctx, |view, ctx| {
             view.set_mode(mode, ctx);
         });
         ctx.notify();
     }
 
     /// Clears the warpification mode so the footer reverts to its default behavior.
-    pub(in crate::terminal) fn clear_warpify_mode(&mut self, ctx: &mut ViewContext<Self>) {
-        self.warpify_footer_view.update(ctx, |view, ctx| {
+    pub(in crate::terminal) fn clear_wishify_mode(&mut self, ctx: &mut ViewContext<Self>) {
+        self.wishify_footer_view.update(ctx, |view, ctx| {
             view.clear_mode(ctx);
         });
         ctx.notify();
     }
 
     /// Returns the current warpification mode, if set.
-    pub(in crate::terminal) fn warpify_mode(&self, app: &AppContext) -> Option<WishificationMode> {
-        self.warpify_footer_view.as_ref(app).mode().cloned()
+    pub(in crate::terminal) fn wishify_mode(&self, app: &AppContext) -> Option<WishificationMode> {
+        self.wishify_footer_view.as_ref(app).mode().cloned()
     }
 
     /// Returns whether there's a current CLI agent (like Claude Code).
@@ -1334,8 +1334,8 @@ impl View for UseAgentToolbar {
 
     fn render(&self, app: &AppContext) -> Box<dyn Element> {
         // If a warpify mode is set, delegate rendering to the warpify footer view.
-        if self.warpify_footer_view.as_ref(app).mode().is_some() {
-            return ChildView::new(&self.warpify_footer_view).finish();
+        if self.wishify_footer_view.as_ref(app).mode().is_some() {
+            return ChildView::new(&self.wishify_footer_view).finish();
         }
 
         // Hide the toolbar entirely when CLI rich input is open,

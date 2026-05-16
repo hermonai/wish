@@ -15,7 +15,7 @@ use crate::ai::persisted_workspace::PersistedWorkspace;
 use crate::ai::skills::SkillManager;
 use crate::code_review::git_status_update::GitStatusUpdateModel;
 use crate::terminal::cli_agent_sessions::CLIAgentSessionsModel;
-use crate::warp_managed_paths_watcher::WarpManagedPathsWatcher;
+use crate::wish_managed_paths_watcher::WarpManagedPathsWatcher;
 use watcher::HomeDirectoryWatcher;
 use wishui::SingletonEntity;
 use wishui::{platform::WindowStyle, App, ViewHandle, WindowId};

@@ -20,7 +20,9 @@ use settings::{
 )]
 pub enum EditorChoice {
     SystemDefault,
-    Warp,
+    /// The in-app Wish code editor. Historically serialized as `"warp"`;
+    /// the custom `Deserialize` impl below still accepts the old token.
+    Wish,
     EnvEditor,
     #[schemars(description = "A specific external code editor.")]
     ExternalEditor(super::Editor),
@@ -45,7 +47,11 @@ impl<'de> Deserialize<'de> for EditorChoice {
         #[derive(Deserialize)]
         enum EditorChoiceInner {
             SystemDefault,
-            Warp,
+            // Serde renames to `wish` in snake_case at the wrapping enum;
+            // we still accept the legacy `warp` token for users whose
+            // settings TOML was written by an older build.
+            #[serde(alias = "Warp", alias = "warp")]
+            Wish,
             EnvEditor,
             ExternalEditor(super::Editor),
         }
@@ -53,7 +59,7 @@ impl<'de> Deserialize<'de> for EditorChoice {
         match EditorChoiceCompat::deserialize(deserializer)? {
             EditorChoiceCompat::New(inner) => match inner {
                 EditorChoiceInner::SystemDefault => Ok(EditorChoice::SystemDefault),
-                EditorChoiceInner::Warp => Ok(EditorChoice::Warp),
+                EditorChoiceInner::Wish => Ok(EditorChoice::Wish),
                 EditorChoiceInner::EnvEditor => Ok(EditorChoice::EnvEditor),
                 EditorChoiceInner::ExternalEditor(editor) => {
                     Ok(EditorChoice::ExternalEditor(editor))
@@ -80,7 +86,7 @@ define_settings_group!(EditorSettings, settings: [
     },
     open_code_panels_file_editor: OpenCodePanelsFileEditor {
         type: EditorChoice,
-        default: EditorChoice::Warp,
+        default: EditorChoice::Wish,
         supported_platforms: SupportedPlatforms::ALL,
         sync_to_cloud: SyncToCloud::Never,
         private: false,

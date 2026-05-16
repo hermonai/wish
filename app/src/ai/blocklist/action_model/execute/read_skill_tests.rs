@@ -6,7 +6,7 @@ use crate::ai::agent::ReadSkillResult;
 use crate::ai::agent::{AIAgentAction, AIAgentActionId, AIAgentActionType};
 use crate::ai::blocklist::action_model::AIConversationId;
 use crate::ai::skills::SkillManager;
-use crate::warp_managed_paths_watcher::WarpManagedPathsWatcher;
+use crate::wish_managed_paths_watcher::WarpManagedPathsWatcher;
 use ai::skills::{parse_skill, SkillReference};
 use repo_metadata::{
     repositories::DetectedRepositories, watcher::DirectoryWatcher, RepoMetadataModel,

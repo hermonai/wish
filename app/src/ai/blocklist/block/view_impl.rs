@@ -673,7 +673,7 @@ pub fn render_citation(
             )
         }
         AIAgentCitation::WarpDocumentation { .. } => {
-            let icon = Icon::Warp.to_wishui_icon(theme.foreground()).finish();
+            let icon = Icon::Wish.to_wishui_icon(theme.foreground()).finish();
             let name = String::from("Wish Docs");
             (Some(icon), name)
         }

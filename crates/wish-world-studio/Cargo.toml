@@ -1,0 +1,19 @@
+[package]
+name = "wish-world-studio"
+authors = ["Hermon AI <support@hermon.ai>"]
+version = "0.1.0"
+edition = "2021"
+description = "Wish World Studio — deterministic world-builder agents and workspace mode aggregator."
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+wish-world-model.workspace = true
+wish-provenance.workspace = true
+wish-canvas-core.workspace = true

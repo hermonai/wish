@@ -1,0 +1,17 @@
+[package]
+name = "wish-canvas"
+authors = ["Hermon AI <support@hermon.ai>"]
+version = "0.1.0"
+edition = "2021"
+description = "Wish Canvas pane integration. v0.5.0 scaffold — WishUI Element wiring lands in v0.5.0-step-05."
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+wish-canvas-core.workspace = true
+wish-codegraph.workspace = true
+wish-agent-visualizer.workspace = true
+wish-world-model.workspace = true

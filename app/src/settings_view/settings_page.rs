@@ -21,8 +21,8 @@ use super::{
     referrals_page::ReferralsPageView,
     show_blocks_view::ShowBlocksView,
     teams_page::TeamsPageView,
-    warp_drive_page::WarpDriveSettingsPageView,
-    warpify_page::WishifyPageView,
+    wish_drive_page::WarpDriveSettingsPageView,
+    wishify_page::WishifyPageView,
     SettingsSection,
 };
 use crate::{

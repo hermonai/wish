@@ -576,7 +576,7 @@ fn build_bundled_skill_context() -> HashMap<String, String> {
 fn icon_for_bundled_skill(skill_id: &str) -> Icon {
     match skill_id {
         "pr-comments" => Icon::Github,
-        _ => Icon::WarpLogoLight,
+        _ => Icon::WishLogo,
     }
 }
 

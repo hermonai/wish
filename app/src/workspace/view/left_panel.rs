@@ -416,7 +416,7 @@ impl LeftPanelView {
                 ];
 
                 ToolbeltButtonConfig {
-                    icon: Icon::WarpDrive,
+                    icon: Icon::WishDrive,
                     active_icon: None,
                     tooltip_text: "Wish Drive".to_string(),
                     action: LeftPanelAction::WarpDrive,

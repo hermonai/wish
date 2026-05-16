@@ -55,7 +55,7 @@ use crate::{
             block::status_bar::BlocklistAIStatusBarAction, history_model::BlocklistAIHistoryModel,
             BlocklistAIActionModel, ShellCommandExecutor,
         },
-        loading::shimmering_warp_loading_text,
+        loading::shimmering_wish_loading_text,
     },
     terminal::{self, TerminalModel},
     util::link_detection::{add_link_detection_mouse_interactions, DetectedLinksState},
@@ -707,7 +707,7 @@ pub fn render_output_status_text(
         MaybeShimmeringText::Shimmering {
             text,
             shimmering_text_handle,
-        } => shimmering_warp_loading_text(
+        } => shimmering_wish_loading_text(
             text.to_string(),
             appearance.monospace_font_size() - 2.,
             shimmering_text_handle,

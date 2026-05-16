@@ -243,7 +243,7 @@ where
 /// - Whether this file is openable in Wish (skips binary files and directories)
 /// - Whether Wish is an OS-level default editor (skips Markdown files)
 #[cfg(feature = "local_fs")]
-pub fn should_show_open_in_warp_link(path: &Path, app: &AppContext) -> bool {
+pub fn should_show_open_in_wish_link(path: &Path, app: &AppContext) -> bool {
     use crate::{
         code::view::is_binary_file,
         notebooks::file::is_markdown_file,
@@ -253,7 +253,7 @@ pub fn should_show_open_in_warp_link(path: &Path, app: &AppContext) -> bool {
 
     let settings = EditorSettings::as_ref(app);
 
-    if matches!(*settings.open_file_editor, EditorChoice::Warp) {
+    if matches!(*settings.open_file_editor, EditorChoice::Wish) {
         return false;
     }
 
@@ -261,6 +261,6 @@ pub fn should_show_open_in_warp_link(path: &Path, app: &AppContext) -> bool {
 }
 
 #[cfg(not(feature = "local_fs"))]
-pub fn should_show_open_in_warp_link(_path: &std::path::Path, _app: &AppContext) -> bool {
+pub fn should_show_open_in_wish_link(_path: &std::path::Path, _app: &AppContext) -> bool {
     false
 }

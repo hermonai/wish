@@ -34,7 +34,7 @@ use crate::search::binding_source::BindingSource;
 use crate::search::command_palette::conversations::{self};
 use crate::search::command_palette::mixer::CommandPaletteItemAction;
 use crate::search::command_palette::new_session::{AllowedSessionKinds, NewSessionDataSource};
-use crate::search::command_palette::{launch_config, warp_drive, CommandPaletteMixer};
+use crate::search::command_palette::{launch_config, wish_drive, CommandPaletteMixer};
 use crate::search::command_search::projects::project_data_source::ProjectDataSource;
 use crate::search::command_search::projects::{ProjectSearchItem, SuggestedProjectsDataSource};
 use crate::search::data_source::QueryResult;
@@ -238,7 +238,7 @@ impl WelcomePalette {
             NewSessionDataSource::new(binding_source.clone(), ctx)
                 .with_allowed_kinds(AllowedSessionKinds::tabs_only())
         });
-        let warp_drive_data_source = ctx.add_model(warp_drive::DataSource::new);
+        let warp_drive_data_source = ctx.add_model(wish_drive::DataSource::new);
 
         let mixer = ctx.add_model(|ctx| {
             let mut mixer = CommandPaletteMixer::new();

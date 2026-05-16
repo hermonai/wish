@@ -26,7 +26,7 @@ use wish::{
     },
     terminal::{
         shell::ShellType,
-        warpify::settings::{SshExtensionInstallMode, SshExtensionInstallModeSetting},
+        wishify::settings::{SshExtensionInstallMode, SshExtensionInstallModeSetting},
     },
 };
 use wishui::integration::TestStep;

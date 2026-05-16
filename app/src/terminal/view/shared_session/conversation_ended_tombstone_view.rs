@@ -187,7 +187,7 @@ pub struct ConversationEndedTombstoneView {
     #[cfg(not(target_family = "wasm"))]
     continue_locally_button: Option<ViewHandle<ActionButton>>,
     #[cfg(target_family = "wasm")]
-    open_in_warp_button: Option<ViewHandle<ActionButton>>,
+    open_in_wish_button: Option<ViewHandle<ActionButton>>,
 }
 
 impl ConversationEndedTombstoneView {
@@ -256,12 +256,12 @@ impl ConversationEndedTombstoneView {
         // In wasm, continuing locally is impossible so we instead
         // offer to open the conversation in Wish (where you can continue locally).
         #[cfg(target_family = "wasm")]
-        let open_in_warp_button = conversation_id.map(|conv_id| {
+        let open_in_wish_button = conversation_id.map(|conv_id| {
             ctx.add_typed_action_view(move |_| {
                 ActionButton::new("Open in Wish", PrimaryTheme)
                     .with_tooltip("Open this conversation in the Wish desktop app")
                     .on_click(move |ctx| {
-                        ctx.dispatch_typed_action(ConversationEndedTombstoneAction::OpenInWarp(
+                        ctx.dispatch_typed_action(ConversationEndedTombstoneAction::OpenInWish(
                             conv_id,
                         ));
                     })
@@ -276,7 +276,7 @@ impl ConversationEndedTombstoneView {
             #[cfg(not(target_family = "wasm"))]
             continue_locally_button,
             #[cfg(target_family = "wasm")]
-            open_in_warp_button,
+            open_in_wish_button,
         };
 
         ctx.subscribe_to_view(
@@ -540,8 +540,8 @@ impl ConversationEndedTombstoneView {
         {
             // Don't show on mobile devices - they can't use the desktop app
             if !wishui::platform::wasm::is_mobile_device() {
-                if let Some(ref open_in_warp_button) = self.open_in_warp_button {
-                    row.add_child(ChildView::new(open_in_warp_button).finish());
+                if let Some(ref open_in_wish_button) = self.open_in_wish_button {
+                    row.add_child(ChildView::new(open_in_wish_button).finish());
                     has_button = true;
                 }
             }
@@ -584,7 +584,7 @@ pub enum ConversationEndedTombstoneAction {
     #[cfg(not(target_family = "wasm"))]
     ContinueLocally(AIConversationId),
     #[cfg(target_family = "wasm")]
-    OpenInWarp(AIConversationId),
+    OpenInWish(AIConversationId),
 }
 
 impl View for ConversationEndedTombstoneView {
@@ -685,8 +685,8 @@ impl TypedActionView for ConversationEndedTombstoneView {
                 });
             }
             #[cfg(target_family = "wasm")]
-            ConversationEndedTombstoneAction::OpenInWarp(conversation_id) => {
-                send_telemetry_from_ctx!(AgentManagementTelemetryEvent::TombstoneOpenInWarp, ctx);
+            ConversationEndedTombstoneAction::OpenInWish(conversation_id) => {
+                send_telemetry_from_ctx!(AgentManagementTelemetryEvent::TombstoneOpenInWish, ctx);
                 let conversation = BlocklistAIHistoryModel::handle(ctx)
                     .as_ref(ctx)
                     .conversation(conversation_id);

@@ -669,6 +669,276 @@ impl Scene {
         layer.glyphs.last_mut().unwrap()
     }
 
+    /// Draw a line segment between two points with the given stroke
+    /// `width` (in scene units) and `color`. This is a v0.5.0
+    /// **generative-UI primitive** — it lets any Element produce
+    /// arbitrary 2D graph / chart / agent-trace drawings on top of
+    /// WishUI's retained scene graph without each caller reinventing
+    /// rasterization.
+    ///
+    /// Implementation: stippled axis-aligned squares along the line
+    /// path. Visually approximates a line for v0.5.0; ships
+    /// end-to-end today without a new wgpu pipeline. A future wave
+    /// (23b in the roadmap) will swap this for a dedicated line
+    /// shader without changing the API.
+    ///
+    /// Cost is `O(line_length / width)` rectangles per call — fine
+    /// for canvases up to a few thousand edges; consider batching for
+    /// denser graphs.
+    pub fn draw_line(
+        &mut self,
+        from: Vector2F,
+        to: Vector2F,
+        width: f32,
+        color: ColorU,
+    ) {
+        let dx = to.x() - from.x();
+        let dy = to.y() - from.y();
+        let length = (dx * dx + dy * dy).sqrt();
+        if length < 0.5 {
+            return; // degenerate
+        }
+        // Step size = ~0.6 of the width so squares overlap and the
+        // line looks reasonably solid.
+        let step = (width * 0.6).max(0.5);
+        let n = (length / step).ceil() as usize;
+        let n = n.max(1);
+        let nf = n as f32;
+        let half = width * 0.5;
+        for i in 0..=n {
+            let t = i as f32 / nf;
+            let x = from.x() + dx * t - half;
+            let y = from.y() + dy * t - half;
+            // Use the no-hit variant — line segments shouldn't
+            // participate in event dispatch as separate rects.
+            self.draw_rect_without_hit_recording(RectF::new(
+                vec2f(x, y),
+                vec2f(width, width),
+            ))
+            .with_background(Fill::Solid(color));
+        }
+    }
+
+    /// Draw a polyline through a sequence of points, with consistent
+    /// stroke `width` and `color`. Convenience wrapper around
+    /// [`draw_line`].
+    pub fn draw_polyline(
+        &mut self,
+        points: &[Vector2F],
+        width: f32,
+        color: ColorU,
+    ) {
+        for window in points.windows(2) {
+            self.draw_line(window[0], window[1], width, color);
+        }
+    }
+
+    /// Draw a directed line with an arrowhead at the `to` end. The
+    /// arrowhead is constructed from two short line segments emanating
+    /// back from the tip at ±30°. Useful for dependency-graph edges,
+    /// call arrows, agent trace direction.
+    ///
+    /// `head_size` is the length of each arrowhead segment in scene
+    /// units. Pass `0.0` to suppress the arrowhead (equivalent to
+    /// [`draw_line`]).
+    pub fn draw_arrow(
+        &mut self,
+        from: Vector2F,
+        to: Vector2F,
+        width: f32,
+        color: ColorU,
+        head_size: f32,
+    ) {
+        self.draw_line(from, to, width, color);
+        if head_size <= 0.5 {
+            return;
+        }
+        let dx = to.x() - from.x();
+        let dy = to.y() - from.y();
+        let length = (dx * dx + dy * dy).sqrt();
+        if length < head_size * 1.5 {
+            return; // arrow too short to fit a head — skip
+        }
+        // Unit vector pointing FROM tip back toward base.
+        let ux = -dx / length;
+        let uy = -dy / length;
+        // Rotate ±30° to form the two head segments.
+        // cos(30°)=0.866, sin(30°)=0.5
+        let cos = 0.866_f32;
+        let sin = 0.5_f32;
+        let left_x = to.x() + (ux * cos - uy * sin) * head_size;
+        let left_y = to.y() + (ux * sin + uy * cos) * head_size;
+        let right_x = to.x() + (ux * cos + uy * sin) * head_size;
+        let right_y = to.y() + (-ux * sin + uy * cos) * head_size;
+        self.draw_line(to, vec2f(left_x, left_y), width, color);
+        self.draw_line(to, vec2f(right_x, right_y), width, color);
+    }
+
+    /// Draw a circle (or filled disc) centered at `center` with radius
+    /// `r`. Implementation: a square rect with corner-radius = r,
+    /// which the rect shader rounds into a circle. This is the
+    /// **least-cost circle primitive** in WishUI today — no new
+    /// pipeline required.
+    pub fn draw_circle(
+        &mut self,
+        center: Vector2F,
+        radius: f32,
+        color: ColorU,
+    ) {
+        if radius < 0.25 {
+            return;
+        }
+        let rect = RectF::new(
+            vec2f(center.x() - radius, center.y() - radius),
+            vec2f(radius * 2.0, radius * 2.0),
+        );
+        self.draw_rect_without_hit_recording(rect)
+            .with_background(Fill::Solid(color))
+            .with_corner_radius(CornerRadius::with_all(Radius::Pixels(radius)));
+    }
+
+    /// Draw a rectangle outline (no fill) with the given stroke
+    /// `width`. Useful for selection rings, region highlights,
+    /// chart-axis frames. Built from four `draw_line` calls so it
+    /// shares the line primitive's improvements automatically.
+    pub fn draw_rect_outline(
+        &mut self,
+        rect: RectF,
+        width: f32,
+        color: ColorU,
+    ) {
+        let tl = rect.origin();
+        let tr = vec2f(rect.max_x(), rect.min_y());
+        let br = vec2f(rect.max_x(), rect.max_y());
+        let bl = vec2f(rect.min_x(), rect.max_y());
+        self.draw_line(tl, tr, width, color);
+        self.draw_line(tr, br, width, color);
+        self.draw_line(br, bl, width, color);
+        self.draw_line(bl, tl, width, color);
+    }
+
+    /// Draw a grid of lines inside `rect` with `cell_size`-spaced
+    /// gridlines. The `cell_size` is in scene units; passing 0.0
+    /// no-ops. Useful for chart backgrounds, tensor-plot axes,
+    /// design-tool snap visualizations.
+    ///
+    /// Every grid line is drawn via [`draw_line`], so the same
+    /// rendering improvements apply.
+    pub fn draw_grid(
+        &mut self,
+        rect: RectF,
+        cell_size: f32,
+        width: f32,
+        color: ColorU,
+    ) {
+        if cell_size <= 0.5 || rect.width() <= 1.0 || rect.height() <= 1.0 {
+            return;
+        }
+        let mut x = rect.min_x();
+        while x <= rect.max_x() + 0.5 {
+            self.draw_line(
+                vec2f(x, rect.min_y()),
+                vec2f(x, rect.max_y()),
+                width,
+                color,
+            );
+            x += cell_size;
+        }
+        let mut y = rect.min_y();
+        while y <= rect.max_y() + 0.5 {
+            self.draw_line(
+                vec2f(rect.min_x(), y),
+                vec2f(rect.max_x(), y),
+                width,
+                color,
+            );
+            y += cell_size;
+        }
+    }
+
+    /// Draw a smooth quadratic Bézier curve from `p0` to `p2` with
+    /// `p1` as the control point. Approximated by [`POLYLINE_STEPS`]
+    /// straight segments via [`draw_polyline`].
+    ///
+    /// Useful for curved edges in node-graphs, hand-drawn-feel agent
+    /// annotations, smooth transitions in chart traces.
+    pub fn draw_bezier_quad(
+        &mut self,
+        p0: Vector2F,
+        p1: Vector2F,
+        p2: Vector2F,
+        width: f32,
+        color: ColorU,
+    ) {
+        const POLYLINE_STEPS: usize = 24;
+        let mut pts = Vec::with_capacity(POLYLINE_STEPS + 1);
+        for i in 0..=POLYLINE_STEPS {
+            let t = i as f32 / POLYLINE_STEPS as f32;
+            let one_minus = 1.0 - t;
+            // B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+            let a = one_minus * one_minus;
+            let b = 2.0 * one_minus * t;
+            let c = t * t;
+            pts.push(vec2f(
+                a * p0.x() + b * p1.x() + c * p2.x(),
+                a * p0.y() + b * p1.y() + c * p2.y(),
+            ));
+        }
+        self.draw_polyline(&pts, width, color);
+    }
+
+    /// Draw a cubic Bézier curve from `p0` to `p3` with two control
+    /// points `p1` and `p2`. Useful for S-shaped curves, complex
+    /// edge routing, smooth-arrow connections.
+    pub fn draw_bezier_cubic(
+        &mut self,
+        p0: Vector2F,
+        p1: Vector2F,
+        p2: Vector2F,
+        p3: Vector2F,
+        width: f32,
+        color: ColorU,
+    ) {
+        const POLYLINE_STEPS: usize = 32;
+        let mut pts = Vec::with_capacity(POLYLINE_STEPS + 1);
+        for i in 0..=POLYLINE_STEPS {
+            let t = i as f32 / POLYLINE_STEPS as f32;
+            let one_minus = 1.0 - t;
+            // B(t) = (1-t)^3 P0 + 3(1-t)^2 t P1 + 3(1-t) t^2 P2 + t^3 P3
+            let a = one_minus * one_minus * one_minus;
+            let b = 3.0 * one_minus * one_minus * t;
+            let c = 3.0 * one_minus * t * t;
+            let d = t * t * t;
+            pts.push(vec2f(
+                a * p0.x() + b * p1.x() + c * p2.x() + d * p3.x(),
+                a * p0.y() + b * p1.y() + c * p2.y() + d * p3.y(),
+            ));
+        }
+        self.draw_polyline(&pts, width, color);
+    }
+
+    /// Draw a sequence of pre-shaped glyphs in one call. Each tuple is
+    /// `(glyph_id, font_id, position)`. The `position` is where the
+    /// glyph's left edge meets the baseline. All glyphs share the
+    /// same `font_size` and `color`.
+    ///
+    /// This is the **batch glyph primitive** — callers that already
+    /// shape text (via [`crate::text_layout::TextLayoutSystem`]) can
+    /// emit many glyphs without N round-trips through `draw_glyph`.
+    /// A future wave adds a true `draw_text_run` that internally
+    /// shapes a `&str` — this primitive is the substrate that
+    /// `draw_text_run` will sit on top of.
+    pub fn draw_glyphs(
+        &mut self,
+        glyphs: impl IntoIterator<Item = (GlyphId, FontId, Vector2F)>,
+        font_size: f32,
+        color: ColorU,
+    ) {
+        for (glyph_id, font_id, position) in glyphs {
+            self.draw_glyph(position, glyph_id, font_id, font_size, color);
+        }
+    }
+
     /// Get an iterator over all layers in order, from bottom to top
     pub fn layers(&self) -> impl Iterator<Item = &Layer> {
         self.layers.iter().chain(self.overlay_layers.iter())

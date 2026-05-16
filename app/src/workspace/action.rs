@@ -221,6 +221,18 @@ pub enum WorkspaceAction {
     ViewLatestChangelog,
     ViewPrivacyPolicy,
     SendFeedback,
+    /// v0.5.0 "World Model Seed". Walk the active project with
+    /// `wish-codegraph`, render an interactive HTML canvas via
+    /// `wish-world-studio`, and open it in the system browser. Gated
+    /// by `FeatureFlag::WishCanvas2D`.
+    OpenRepoCanvas,
+    /// Top-level crate-only Mermaid architecture diagram of the
+    /// active project — the post-UML kingdom.
+    OpenArchitectureView,
+    /// Function-level multi-language codegraph (Rust + Python + TS +
+    /// JS + Go) with same-file `Calls` edges, rendered as an
+    /// interactive canvas.
+    OpenFunctionGraph,
     /// Open the log directory in the system file explorer with the current log file selected.
     #[cfg(not(target_family = "wasm"))]
     ViewLogs,
@@ -829,6 +841,9 @@ impl WorkspaceAction {
             | ViewLatestChangelog
             | ViewPrivacyPolicy
             | SendFeedback
+            | OpenRepoCanvas
+            | OpenArchitectureView
+            | OpenFunctionGraph
             | ChangeCursor(_)
             | ToggleBlockSnackbar
             | ToggleErrorUnderlining

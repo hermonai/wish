@@ -30,7 +30,7 @@ pub fn initialize_settings_for_tests_with_mode(
             general_settings::GeneralSettings, keys_settings::KeysSettings,
             ligature_settings::LigatureSettings, safe_mode_settings::SafeModeSettings,
             session_settings::SessionSettings, settings::TerminalSettings,
-            shared_session::settings::SharedSessionSettings, warpify::settings::WishifySettings,
+            shared_session::settings::SharedSessionSettings, wishify::settings::WishifySettings,
             BlockListSettings,
         },
         undo_close::UndoCloseSettings,

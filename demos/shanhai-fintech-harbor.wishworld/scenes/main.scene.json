@@ -1,0 +1,13 @@
+{
+  "id": {
+    "realm": "scene",
+    "kind": "scene",
+    "stable_key": "main"
+  },
+  "display_name": "Harbor Main Scene",
+  "entity_ids": [
+    { "realm": "scene", "kind": "sacred_architecture", "stable_key": "entity_dragon_temple" },
+    { "realm": "npc", "kind": "npc", "stable_key": "merchant_liu" },
+    { "realm": "npc", "kind": "npc", "stable_key": "banker_sun" }
+  ]
+}

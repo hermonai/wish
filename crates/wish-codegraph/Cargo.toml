@@ -1,0 +1,17 @@
+[package]
+name = "wish-codegraph"
+authors = ["Hermon AI <support@hermon.ai>"]
+version = "0.1.0"
+edition = "2021"
+description = "Extract repository structure into the Wish World Model and Canvas."
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+wish-world-model.workspace = true
+wish-canvas-core.workspace = true

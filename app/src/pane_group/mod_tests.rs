@@ -71,7 +71,7 @@ use crate::{
     },
     test_util::settings::initialize_settings_for_tests,
     undo_close::UndoCloseStack,
-    warp_managed_paths_watcher::WarpManagedPathsWatcher,
+    wish_managed_paths_watcher::WarpManagedPathsWatcher,
     workflows::local_workflows::LocalWorkflows,
     workspace::{
         sync_inputs::SyncedInputState, ActiveSession, OneTimeModalModel, WorkspaceRegistry,

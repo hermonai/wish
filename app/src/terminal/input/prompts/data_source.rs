@@ -8,7 +8,7 @@ use wishui::{AppContext, Element, Entity, ModelContext, ModelHandle, SingletonEn
 
 use crate::appearance::Appearance;
 use crate::cloud_object::model::persistence::CloudModel;
-use crate::search::command_palette::warp_drive;
+use crate::search::command_palette::wish_drive;
 use crate::search::data_source::{DataSourceSearchError, Query, QueryResult};
 use crate::search::mixer::DataSourceRunErrorWrapper;
 use crate::search::result_renderer::ItemHighlightState;
@@ -35,7 +35,7 @@ impl InlineMenuAction for AcceptPrompt {
 }
 
 pub struct PromptsMenuDataSource {
-    warp_drive_data_source: ModelHandle<warp_drive::DataSource>,
+    warp_drive_data_source: ModelHandle<wish_drive::DataSource>,
 }
 
 impl PromptsMenuDataSource {
@@ -44,7 +44,7 @@ impl PromptsMenuDataSource {
         // currently its implementation is not well-setup for async use.
         //
         // TODO(zachbai): Revert to full-text search and make this an `AsyncDataSource`.
-        let warp_drive_data_source = ctx.add_model(warp_drive::DataSource::new_fuzzy);
+        let warp_drive_data_source = ctx.add_model(wish_drive::DataSource::new_fuzzy);
         Self {
             warp_drive_data_source,
         }

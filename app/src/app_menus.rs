@@ -397,6 +397,40 @@ fn make_new_view_menu(ctx: &AppContext) -> Menu {
         updateable_custom_item_without_checkmark(CustomAction::History, ctx),
         updateable_custom_item_without_checkmark(CustomAction::CommandSearch, ctx),
         updateable_custom_item_without_checkmark(CustomAction::Workflows, ctx),
+    ];
+    // v0.5.0 "World Model Seed" — surface the three perspective
+    // actions directly in the View menu so users discover them without
+    // searching the command palette. Gated by `FeatureFlag::WishCanvas2D`.
+    if FeatureFlag::WishCanvas2D.is_enabled() {
+        items.extend([
+            MenuItem::Separator,
+            MenuItem::Custom(CustomMenuItem::new(
+                "Open Repo Canvas (Wish World Model)",
+                move |ctx| {
+                    ctx.dispatch_global_action("workspace:open_repo_canvas", &());
+                },
+                move |_p, _c| MenuItemPropertyChanges::default(),
+                None,
+            )),
+            MenuItem::Custom(CustomMenuItem::new(
+                "Open Architecture View",
+                move |ctx| {
+                    ctx.dispatch_global_action("workspace:open_architecture_view", &());
+                },
+                move |_p, _c| MenuItemPropertyChanges::default(),
+                None,
+            )),
+            MenuItem::Custom(CustomMenuItem::new(
+                "Open Function Graph",
+                move |ctx| {
+                    ctx.dispatch_global_action("workspace:open_function_graph", &());
+                },
+                move |_p, _c| MenuItemPropertyChanges::default(),
+                None,
+            )),
+        ]);
+    }
+    items.extend([
         MenuItem::Separator,
         MenuItem::Custom(CustomMenuItem::new(
             "Toggle Mouse Reporting",
@@ -444,7 +478,7 @@ fn make_new_view_menu(ctx: &AppContext) -> Menu {
             },
             None,
         )),
-    ];
+    ]);
 
     let is_compact_mode = matches!(
         TerminalSettings::handle(ctx)

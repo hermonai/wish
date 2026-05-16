@@ -1,0 +1,17 @@
+[package]
+name = "wish-canvas-core"
+authors = ["Hermon AI <support@hermon.ai>"]
+version = "0.1.0"
+edition = "2021"
+description = "2D semantic canvas — retained scene graph, layout, hit testing, exports. UI-agnostic."
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+wish-world-model.workspace = true

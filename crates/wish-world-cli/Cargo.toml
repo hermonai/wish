@@ -1,0 +1,26 @@
+[package]
+name = "wish-world-cli"
+authors = ["Hermon AI <support@hermon.ai>"]
+version = "0.1.0"
+edition = "2021"
+description = "wish-world — the v0.5.0 CLI for the Wish World Model IDE."
+publish.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "wish-world"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+wish-world-model.workspace = true
+wish-provenance.workspace = true
+wish-canvas-core.workspace = true
+wish-codegraph.workspace = true
+wish-world-studio.workspace = true
+wish-agent-visualizer.workspace = true
+wish-render.workspace = true

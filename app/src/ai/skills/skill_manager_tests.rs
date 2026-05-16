@@ -1,5 +1,5 @@
 use super::*;
-use crate::warp_managed_paths_watcher::WarpManagedPathsWatcher;
+use crate::wish_managed_paths_watcher::WarpManagedPathsWatcher;
 use ai::skills::{ParsedSkill, SkillProvider, SkillScope};
 use repo_metadata::{repositories::DetectedRepositories, DirectoryWatcher, RepoMetadataModel};
 use std::collections::{HashMap, HashSet};

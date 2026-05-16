@@ -6644,15 +6644,15 @@ impl TelemetryEventDesc for TelemetryEventDiscriminants {
             }
             Self::AgentModeRatedResponse => "User rated an Agent Mode response",
             Self::SshInteractiveSessionDetected => "An interactive SSH session was detected",
-            Self::SshTmuxWishifyBlockAccepted => "User accepted an ssh tmux warpify block",
-            Self::SshTmuxWishifyBlockDismissed => "User dismissed an ssh tmux warpify block",
+            Self::SshTmuxWishifyBlockAccepted => "User accepted an ssh tmux wishify block",
+            Self::SshTmuxWishifyBlockDismissed => "User dismissed an ssh tmux wishify block",
             Self::WishifyFooterShown => {
-                "Displayed the warpify footer for a detected subshell or SSH session"
+                "Displayed the wishify footer for a detected subshell or SSH session"
             }
             Self::AgentToolbarDismissed => "User dismissed the use-agent toolbar",
-            Self::WishifyFooterAcceptedWishify => "User clicked Wishify in the warpify footer",
-            Self::SshTmuxWishificationSuccess => "Ssh tmux warpification succeeded",
-            Self::SshTmuxWishificationErrorBlock => "Ssh tmux warpification errored out",
+            Self::WishifyFooterAcceptedWishify => "User clicked Wishify in the wishify footer",
+            Self::SshTmuxWishificationSuccess => "Ssh tmux wishification succeeded",
+            Self::SshTmuxWishificationErrorBlock => "Ssh tmux wishification errored out",
             Self::SshInstallTmuxBlockDisplayed => "Displayed an ssh install tmux block",
             Self::SshInstallTmuxBlockAccepted => "User accepted an ssh install tmux block",
             Self::SshInstallTmuxBlockDismissed => "User dismissed an ssh install tmux block",

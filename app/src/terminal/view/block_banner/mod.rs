@@ -6,9 +6,9 @@
 //! without a LayoutContext. Use the exported BLOCK_BANNER_HEIGHT const when the banner height
 //! needs to be taken into account.
 
-mod warpify;
+mod wishify;
 
-pub use warpify::*;
+pub use wishify::*;
 use wishui::{
     elements::{
         ConstrainedBox, Container, CornerRadius, Hoverable, MouseState, MouseStateHandle,
@@ -33,7 +33,7 @@ pub enum WithinBlockBanner {
 
 impl WithinBlockBanner {
     pub fn banner_height(&self) -> f32 {
-        match self.warpify_mode() {
+        match self.wishify_mode() {
             Some(WishificationMode::Ssh { .. }) => {
                 BLOCK_BANNER_HEIGHT + BLOCK_BANNER_DESCRIPTION_MAX_HEIGHT
             }
@@ -41,7 +41,7 @@ impl WithinBlockBanner {
         }
     }
 
-    pub fn warpify_mode(&self) -> Option<&WishificationMode> {
+    pub fn wishify_mode(&self) -> Option<&WishificationMode> {
         match self {
             WithinBlockBanner::WishifyBanner(state) => Some(&state.mode),
         }

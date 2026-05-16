@@ -1,9 +1,9 @@
 // Specific slide implementations
 pub mod cta_button;
-pub mod oz_launch;
+pub mod wish_launch;
 
 // Re-export slide types for convenience
-pub use oz_launch::HermonLaunchSlide;
+pub use wish_launch::HermonLaunchSlide;
 
 use crate::settings::PrivacySettings;
 use crate::ui_components::blended_colors;

@@ -1,0 +1,17 @@
+{
+  "id": {
+    "realm": "npc",
+    "kind": "npc",
+    "stable_key": "banker_sun"
+  },
+  "kind": "npc",
+  "display_name": "Banker Sun",
+  "components": [
+    { "type": "transform", "translation": [-8.0, 0.0, 6.0], "rotation": [0.0, 0.0, 0.0, 1.0], "scale": [1.0, 1.0, 1.0] },
+    { "type": "behavior_script", "reference": "scripts/behaviors/banker_sun.rs" },
+    { "type": "economic_actor", "profile": "credit_teacher" },
+    { "type": "lore_anchor", "reference": "memory/lore.md#banker-sun" }
+  ],
+  "status": "ok",
+  "agent_editable": true
+}

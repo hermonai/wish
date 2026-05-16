@@ -20,7 +20,7 @@ use crate::{
         session_settings::{SessionSettings, SessionSettingsChangedEvent},
         settings::TerminalSettings,
         shared_session::settings::SharedSessionSettings,
-        warpify::settings::WishifySettings,
+        wishify::settings::WishifySettings,
         BlockListSettings,
     },
     undo_close::UndoCloseSettings,

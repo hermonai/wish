@@ -5,7 +5,7 @@ use wish::{
         command_palette::open_command_palette_and_run_action,
         notebook::{
             assert_notebook_contents, assert_notebook_id, assert_notebook_not_open,
-            assert_notebook_open, assert_open_in_warp_banner_open, create_a_personal_notebook,
+            assert_notebook_open, assert_open_in_wish_banner_open, create_a_personal_notebook,
             enter_notebook_edit_mode_and_set_markdown, move_notebook_cursor_to_offset,
             open_notebook,
         },
@@ -147,7 +147,7 @@ pub fn test_close_notebook_window() -> Builder {
         )
 }
 
-pub fn test_open_in_warp_banner() -> Builder {
+pub fn test_open_in_wish_banner() -> Builder {
     new_builder()
         .with_setup(|utils| {
             std::fs::write(utils.test_dir().join("README.md"), "# Hello, world!")
@@ -161,7 +161,7 @@ pub fn test_open_in_warp_banner() -> Builder {
                 ExpectedExitStatus::Success,
                 (),
             )
-            .add_assertion(assert_open_in_warp_banner_open(0, 0)),
+            .add_assertion(assert_open_in_wish_banner_open(0, 0)),
         )
         .with_step(
             new_step_with_default_assertions("Click Open in Wish banner")

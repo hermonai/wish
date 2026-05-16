@@ -15,7 +15,7 @@ use super::{
 use watcher::{BulkFilesystemWatcherEvent, HomeDirectoryWatcher, HomeDirectoryWatcherEvent};
 
 use crate::server::datetime_ext::DateTimeExt;
-use crate::warp_managed_paths_watcher::{
+use crate::wish_managed_paths_watcher::{
     filter_repository_update_by_prefix, warp_managed_skill_dirs, WarpManagedPathsWatcher,
     WarpManagedPathsWatcherEvent,
 };

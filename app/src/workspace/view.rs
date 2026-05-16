@@ -9,7 +9,7 @@ pub mod global_search;
 pub(crate) mod launch_modal;
 pub(crate) mod left_panel;
 pub(crate) mod onboarding;
-pub(crate) mod openwarp_launch_modal;
+pub(crate) mod openwish_launch_modal;
 pub(crate) mod orchestration_launch_modal;
 pub(crate) mod right_panel;
 mod startup_directory;
@@ -147,7 +147,7 @@ use crate::workspace::view::free_tier_limit_hit_modal::{
     FreeTierLimitHitModal, FreeTierLimitHitModalEvent,
 };
 use crate::workspace::view::launch_modal::{HermonLaunchSlide, LaunchModal, LaunchModalEvent};
-use crate::workspace::view::openwarp_launch_modal::{
+use crate::workspace::view::openwish_launch_modal::{
     OpenWarpLaunchModal, OpenWarpLaunchModalEvent,
 };
 use crate::workspace::view::orchestration_launch_modal::{
@@ -210,7 +210,7 @@ use crate::terminal::available_shells::AvailableShell;
 use crate::terminal::available_shells::AvailableShells;
 use crate::terminal::block_list_viewport::InputMode;
 use crate::terminal::ligature_settings::should_use_ligature_rendering;
-use crate::terminal::warpify::settings::WishifySettings;
+use crate::terminal::wishify::settings::WishifySettings;
 use crate::ui_components::avatar::{Avatar, AvatarContent, StatusElementTypes};
 
 #[cfg(target_family = "wasm")]
@@ -345,6 +345,168 @@ use crate::workspaces::user_workspaces::UserWorkspaces;
 use crate::{report_if_error, AgentNotificationsModel};
 use ::settings::{Setting, ToggleableSetting};
 use wish_core::features::FeatureFlag;
+
+/// Lens for the canvas-pop-out actions in the workspace palette.
+/// Maps to a `wish_render::Perspective` slug when the native viewer
+/// is spawned, and to rendering options for the browser HTML
+/// fallback.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CanvasPerspective {
+    /// Default — file + crate + (optionally) function graph.
+    Engineering,
+    /// Top-level crate-only Mermaid flowchart.
+    Architecture,
+    /// Function-level nodes + same-file `Calls` edges.
+    FunctionGraph,
+}
+
+impl CanvasPerspective {
+    /// The `--perspective <slug>` value to pass to `wish-world render`.
+    fn slug(self) -> &'static str {
+        match self {
+            CanvasPerspective::Engineering | CanvasPerspective::FunctionGraph => "engineering",
+            CanvasPerspective::Architecture => "architecture",
+        }
+    }
+
+    /// Human-readable label shown in toolbar dropdowns and toasts.
+    fn label(self) -> &'static str {
+        match self {
+            CanvasPerspective::Engineering => "🛠 Repo Canvas",
+            CanvasPerspective::Architecture => "🏛 Architecture View",
+            CanvasPerspective::FunctionGraph => "✦ Function Graph",
+        }
+    }
+}
+
+/// Locate the `wish-world` native renderer binary at runtime, in
+/// order of preference:
+///   1. `WISH_RENDER_BIN` env var (explicit override).
+///   2. A sibling of the current executable (dev: `target/debug/wish-world`,
+///      release bundle: the binary next to the app's main binary).
+///   3. `$PATH` lookup via `which wish-world` (after `cargo install`).
+///
+/// Returns `None` if no binary is reachable — the caller then falls
+/// back to the browser HTML viewer.
+fn find_wish_world_binary() -> Option<std::path::PathBuf> {
+    use std::path::PathBuf;
+    if let Ok(p) = std::env::var("WISH_RENDER_BIN") {
+        let path = PathBuf::from(p);
+        if path.is_file() {
+            return Some(path);
+        }
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            for name in &["wish-world", "wish-world.exe"] {
+                let cand = parent.join(name);
+                if cand.is_file() {
+                    return Some(cand);
+                }
+            }
+        }
+    }
+    // $PATH lookup. Use `which` on unix-likes; `where` on Windows.
+    let cmd = if cfg!(target_os = "windows") { "where" } else { "which" };
+    if let Ok(out) = std::process::Command::new(cmd).arg("wish-world").output() {
+        if out.status.success() {
+            let line = String::from_utf8_lossy(&out.stdout);
+            if let Some(first) = line.lines().next() {
+                let p = PathBuf::from(first.trim());
+                if p.is_file() {
+                    return Some(p);
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Locate the cargo workspace root by walking up from the current
+/// executable's directory looking for a `Cargo.toml` whose first lines
+/// contain `[workspace]`. Returns `None` for installed (release) builds
+/// that no longer have the source tree co-located. Used by the canvas
+/// auto-build flow to find where to run `cargo build`.
+fn find_cargo_workspace_root() -> Option<std::path::PathBuf> {
+    let exe = std::env::current_exe().ok()?;
+    let mut dir = exe.parent()?.to_path_buf();
+    loop {
+        let toml = dir.join("Cargo.toml");
+        if toml.is_file() {
+            if let Ok(content) = std::fs::read_to_string(&toml) {
+                // Only the *workspace* root has `[workspace]`. A leaf
+                // crate's Cargo.toml won't.
+                if content.contains("[workspace]") {
+                    return Some(dir);
+                }
+            }
+        }
+        if !dir.pop() {
+            return None;
+        }
+    }
+}
+
+/// Spawn `wish-world render repo <root> --perspective <slug>` as a
+/// detached child process. Returns `true` if the spawn launched
+/// successfully (the eframe window comes up in its own process).
+/// Returns `false` if the binary couldn't be found or the spawn
+/// failed; the caller should fall back to the browser viewer.
+fn try_spawn_native_render(perspective: CanvasPerspective, root: &std::path::Path) -> bool {
+    try_spawn_native_render_with_reveal(perspective, root, None)
+}
+
+/// Like [`try_spawn_native_render`], but also passes `--reveal <id>`
+/// to the child process so the canvas opens already-panned to the
+/// matching node. This implements Stage 1 of the Reveal-in-Canvas
+/// protocol (see
+/// `wish-design/.../01-strategy/09-reveal-in-canvas-protocol.md`).
+///
+/// `reveal` is a canonical SemanticId string like
+/// `code:function:my_mod::my_fn` or `code:file:src/main.rs`. Callers
+/// constructed it via `wish_world_model::SemanticId::to_string()`.
+fn try_spawn_native_render_with_reveal(
+    perspective: CanvasPerspective,
+    root: &std::path::Path,
+    reveal: Option<&str>,
+) -> bool {
+    let Some(bin) = find_wish_world_binary() else {
+        return false;
+    };
+    let slug = perspective.slug();
+    log::info!(
+        target: "wish.canvas",
+        "spawning native viewer: {} render repo {} --perspective {slug}{}",
+        bin.display(),
+        root.display(),
+        reveal.map(|r| format!(" --reveal {r}")).unwrap_or_default()
+    );
+    let mut cmd = std::process::Command::new(&bin);
+    cmd.arg("render")
+        .arg("repo")
+        .arg(root)
+        .arg("--perspective")
+        .arg(slug);
+    if let Some(id) = reveal {
+        cmd.arg("--reveal").arg(id);
+    }
+    match cmd
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+    {
+        Ok(_child) => true,
+        Err(err) => {
+            log::warn!(
+                target: "wish.canvas",
+                "failed to spawn {}: {err}; falling back to browser",
+                bin.display()
+            );
+            false
+        }
+    }
+}
 
 use crate::search::{self, QueryFilter};
 use crate::terminal::view::{
@@ -571,9 +733,10 @@ const TAB_BAR_ICON_PADDING: f32 = 4.;
 
 const TAB_BAR_PILL_WIDTH: f32 = 100.;
 const PILL_FONT_SIZE: f32 = 12.;
-// We use the word "Warp" in the Update Ready button to make it obvious that the terminal is Warp.
-// This can lead to free advertising when users screen-share Warp when an update is available.
-const UPDATE_READY_TEXT: &str = "Update Warp";
+// We use the word "Wish" in the Update Ready button to make it obvious which
+// terminal has the update ready. This can lead to free advertising when users
+// screen-share while an update is available.
+const UPDATE_READY_TEXT: &str = "Update Wish";
 
 const TAB_BAR_OVERFLOW_MENU_WIDTH: f32 = 300.;
 
@@ -1032,7 +1195,7 @@ pub struct Workspace {
     #[cfg(target_family = "wasm")]
     wasm_nux_dialog: ViewHandle<WasmNUXDialog>,
     #[cfg(target_family = "wasm")]
-    open_in_warp_button: ViewHandle<ActionButton>,
+    open_in_wish_button: ViewHandle<ActionButton>,
     #[cfg(target_family = "wasm")]
     view_cloud_runs_button: ViewHandle<ActionButton>,
     #[cfg(target_family = "wasm")]
@@ -2953,7 +3116,7 @@ impl Workspace {
         let wasm_nux_dialog = Self::build_wasm_nux_dialog(ctx);
 
         #[cfg(target_family = "wasm")]
-        let open_in_warp_button = Self::build_open_in_warp_button(ctx);
+        let open_in_wish_button = Self::build_open_in_wish_button(ctx);
 
         #[cfg(target_family = "wasm")]
         let transcript_info_button = Self::build_transcript_info_button(ctx);
@@ -3193,7 +3356,7 @@ impl Workspace {
             #[cfg(target_family = "wasm")]
             wasm_nux_dialog,
             #[cfg(target_family = "wasm")]
-            open_in_warp_button,
+            open_in_wish_button,
             #[cfg(target_family = "wasm")]
             transcript_info_button,
             #[cfg(target_family = "wasm")]
@@ -6057,6 +6220,272 @@ impl Workspace {
 
     fn view_user_docs(&mut self, ctx: &mut ViewContext<Self>) {
         ctx.open_url(links::USER_DOCS_URL);
+    }
+
+    /// v0.5.0 "World Model Seed" — `workspace:open_repo_canvas`.
+    ///
+    /// Walks the currently-active project with `wish-codegraph`,
+    /// renders an interactive HTML canvas via `wish-world-studio`,
+    /// writes it to a fresh temp file, and opens it in the system
+    /// browser. Gated by `FeatureFlag::WishCanvas2D`.
+    ///
+    /// This is the first visible bridge from the v0.4.0 desktop app
+    /// surface to the v0.5.0 world-model + canvas substrate. The
+    /// substrate runs locally — no Hermon login required. A native
+    /// WishUI canvas pane will replace this browser-pop-out in a
+    /// later step; see `wish-design/wish-plan-20260514/`.
+    fn open_repo_canvas(&mut self, ctx: &mut ViewContext<Self>) {
+        self.open_canvas_perspective(ctx, CanvasPerspective::Engineering);
+    }
+
+    /// Resolve which directory the canvas action should render. Tries in
+    /// order: the most-recently-used project (the "active" one), then
+    /// any registered project whose path still exists on disk, then the
+    /// current working directory Wish was launched from. Returns `None`
+    /// only when every fallback fails — which is rare in practice but
+    /// signals that the user is in a freshly-installed Wish with no
+    /// project context at all.
+    fn resolve_canvas_root(&self, ctx: &ViewContext<Self>) -> Option<std::path::PathBuf> {
+        let projects: Vec<crate::persistence::model::Project> =
+            ProjectManagementModel::as_ref(ctx)
+                .all_projects()
+                .cloned()
+                .collect();
+        // (1) Most-recently-used project.
+        if let Some(active) =
+            crate::ai::wish_conversation::agent_context::find_active_project(&projects)
+        {
+            let p = std::path::PathBuf::from(&active.path);
+            if p.is_dir() {
+                return Some(p);
+            }
+            log::warn!(
+                target: "wish.canvas",
+                "active project path {} no longer exists; trying other fallbacks",
+                p.display()
+            );
+        }
+        // (2) Any registered project that still resolves to a directory.
+        for proj in &projects {
+            let p = std::path::PathBuf::from(&proj.path);
+            if p.is_dir() {
+                return Some(p);
+            }
+        }
+        // (3) Current working directory.
+        if let Ok(cwd) = std::env::current_dir() {
+            if cwd.is_dir() {
+                return Some(cwd);
+            }
+        }
+        None
+    }
+
+    /// The Wish "Architecture View" — top-level Mermaid flowchart of
+    /// every crate with file/fn/pub counts as sub-labels.
+    fn open_architecture_view(&mut self, ctx: &mut ViewContext<Self>) {
+        self.open_canvas_perspective(ctx, CanvasPerspective::Architecture);
+    }
+
+    /// Function-level codegraph, multi-language. Shows every `fn`,
+    /// `def`, `function`, `func` with `Calls` edges.
+    fn open_function_graph(&mut self, ctx: &mut ViewContext<Self>) {
+        self.open_canvas_perspective(ctx, CanvasPerspective::FunctionGraph);
+    }
+
+    /// Shared implementation for every perspective-flavored canvas
+    /// action. Walks the active project, projects it through the
+    /// chosen lens, renders an HTML viewer, opens it in the system
+    /// browser. Gated by `FeatureFlag::WishCanvas2D`.
+    fn open_canvas_perspective(
+        &mut self,
+        ctx: &mut ViewContext<Self>,
+        perspective: CanvasPerspective,
+    ) {
+        if !FeatureFlag::WishCanvas2D.is_enabled() {
+            log::info!(
+                target: "wish.canvas",
+                "Open*Canvas ({:?}) requested but FeatureFlag::WishCanvas2D is off; ignoring.",
+                perspective
+            );
+            self.toast_stack.update(ctx, |stack, ctx| {
+                stack.add_ephemeral_toast(
+                    DismissibleToast::error(
+                        "Canvas is disabled. Enable the WishCanvas2D feature flag in Settings → Features.".to_string(),
+                    ),
+                    ctx,
+                );
+            });
+            return;
+        }
+
+        // Resolve a directory to canvas. The user's most-recent project
+        // is the strongest signal; if that's missing (fresh install,
+        // no registered project) we fall back to the directory Wish
+        // was launched from. Only if *both* fail do we surface a toast
+        // — silent no-ops were the v0.5.0 "nothing happens" bug.
+        let root = self.resolve_canvas_root(ctx);
+        let root = match root {
+            Some(r) => r,
+            None => {
+                self.toast_stack.update(ctx, |stack, ctx| {
+                    stack.add_ephemeral_toast(
+                        DismissibleToast::error(
+                            "Canvas needs a project. Open a folder in Wish first (File → Open Folder).".to_string(),
+                        ),
+                        ctx,
+                    );
+                });
+                return;
+            }
+        };
+
+        // PREFERRED PATH: spawn the native `wish-world render` viewer
+        // so the canvas opens as a real native window from inside Wish
+        // (not a browser tab). Surface a success toast so the user
+        // sees Wish *acknowledged* the click even before the native
+        // window finishes booting.
+        if try_spawn_native_render(perspective, &root) {
+            self.toast_stack.update(ctx, |stack, ctx| {
+                stack.add_ephemeral_toast(
+                    DismissibleToast::success(format!(
+                        "Opening native canvas: {}",
+                        perspective.label()
+                    )),
+                    ctx,
+                );
+            });
+            return;
+        }
+
+        // Native binary not found.
+        //
+        // The previous behavior was to synchronously walk the entire
+        // repo's codegraph on the UI thread and write a static HTML
+        // file. For a workspace of any size that *hangs the app*
+        // — Wish's own repo (~5k files, ~260 crates) takes minutes.
+        //
+        // The right v0.5.0 answer: build `wish-world` on first
+        // demand and spawn it. We do this in a background task and
+        // toast progress so the user knows Wish is working. In
+        // release builds where the cargo workspace isn't available,
+        // we fall back to an actionable install instruction.
+        log::info!(
+            target: "wish.canvas",
+            "Open*Canvas ({:?}): native viewer not built yet — auto-building.",
+            perspective
+        );
+        self.auto_build_and_open_canvas(perspective, root, ctx);
+    }
+
+    /// When `wish-world` isn't on disk, build it as a background task
+    /// and re-spawn the native viewer when the build finishes. Surfaces
+    /// progress + result via toasts. Only fires in dev (debug) builds
+    /// where the cargo workspace is accessible from the running app.
+    ///
+    /// **No synchronous repo-walking on the UI thread** — that was the
+    /// v0.5.0 "click hangs" bug. Either we build + spawn, or we toast
+    /// and bail; the UI thread is never blocked.
+    fn auto_build_and_open_canvas(
+        &mut self,
+        perspective: CanvasPerspective,
+        root: std::path::PathBuf,
+        ctx: &mut ViewContext<Self>,
+    ) {
+        // Find the workspace root (a directory containing a top-level
+        // `Cargo.toml` with `[workspace]`). If we can't find one, we
+        // can't auto-build — toast and bail.
+        let workspace_root = match find_cargo_workspace_root() {
+            Some(p) => p,
+            None => {
+                self.toast_stack.update(ctx, |stack, ctx| {
+                    stack.add_ephemeral_toast(
+                        DismissibleToast::error(
+                            "Canvas viewer not installed. Run `cargo install --path crates/wish-world-cli` and try again.".to_string(),
+                        ),
+                        ctx,
+                    );
+                });
+                return;
+            }
+        };
+
+        // Tell the user we're building so they don't think the click
+        // was lost.
+        self.toast_stack.update(ctx, |stack, ctx| {
+            stack.add_ephemeral_toast(
+                DismissibleToast::default(
+                    "Building canvas viewer — first run takes ~2 min…".to_string(),
+                ),
+                ctx,
+            );
+        });
+
+        let workspace_root_clone = workspace_root.clone();
+        let build_future = async move {
+            // Synchronous cargo invocation, but inside a spawned task
+            // — off the UI thread.
+            std::process::Command::new("cargo")
+                .arg("build")
+                .arg("-p")
+                .arg("wish-world-cli")
+                .current_dir(&workspace_root_clone)
+                .stdin(std::process::Stdio::null())
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::piped())
+                .output()
+                .map_err(|e| format!("failed to launch cargo: {e}"))
+                .and_then(|output| {
+                    if output.status.success() {
+                        Ok(())
+                    } else {
+                        Err(format!(
+                            "cargo build failed: {}",
+                            String::from_utf8_lossy(&output.stderr)
+                                .lines()
+                                .filter(|l| l.contains("error"))
+                                .take(3)
+                                .collect::<Vec<_>>()
+                                .join(" / ")
+                        ))
+                    }
+                })
+        };
+
+        ctx.spawn(build_future, move |view, result, ctx| match result {
+            Ok(()) => {
+                if try_spawn_native_render(perspective, &root) {
+                    view.toast_stack.update(ctx, |stack, ctx| {
+                        stack.add_ephemeral_toast(
+                            DismissibleToast::success(format!(
+                                "Canvas built — opening: {}",
+                                perspective.label()
+                            )),
+                            ctx,
+                        );
+                    });
+                } else {
+                    view.toast_stack.update(ctx, |stack, ctx| {
+                        stack.add_ephemeral_toast(
+                            DismissibleToast::error(
+                                "Canvas built but spawn failed. Run `cargo install --path crates/wish-world-cli` to install globally.".to_string(),
+                            ),
+                            ctx,
+                        );
+                    });
+                }
+            }
+            Err(err) => {
+                view.toast_stack.update(ctx, |stack, ctx| {
+                    stack.add_ephemeral_toast(
+                        DismissibleToast::error(format!(
+                            "Canvas build failed: {err}"
+                        )),
+                        ctx,
+                    );
+                });
+            }
+        });
     }
 
     fn view_latest_changelog(&mut self, ctx: &mut ViewContext<Self>) {
@@ -13823,7 +14252,7 @@ impl Workspace {
                         ctx,
                     ),
                     _ => {
-                        log::warn!("Attempted to open an unsupported Warp Drive link")
+                        log::warn!("Attempted to open an unsupported Wish Drive link")
                     }
                 }
             }
@@ -15759,7 +16188,7 @@ impl Workspace {
                                             },
                                         ) {
                                             new_toast = DismissibleToast::success(
-                                                "Plan synced to your Warp Drive".to_string(),
+                                                "Plan synced to your Wish Drive".to_string(),
                                             )
                                             .with_object_id(object_id_clone)
                                             .with_link(
@@ -16502,7 +16931,7 @@ impl Workspace {
                 let command = code.trim().to_string();
                 let args_state =
                     ArgumentsState::for_command_workflow(&Default::default(), command.clone());
-                let workflow = Workflow::new("Command from Warp AI", command)
+                let workflow = Workflow::new("Command from Wish AI", command)
                     .with_arguments(args_state.arguments);
                 self.run_workflow_in_active_input(
                     &WorkflowType::AIGenerated {
@@ -17239,7 +17668,7 @@ impl Workspace {
         let body = appearance
             .ui_builder()
             .wrappable_text(
-                "Ask Warp AI to explain errors, suggest commands or write scripts.".to_owned(),
+                "Ask Wish AI to explain errors, suggest commands or write scripts.".to_owned(),
                 true,
             )
             .with_style(UiComponentStyles {
@@ -17790,10 +18219,10 @@ impl Workspace {
                 .with_main_axis_size(MainAxisSize::Max);
             let bg_color = blended_colors::neutral_1(appearance.theme());
 
-            // Left: Warp logo - clickable to link to warp.dev
+            // Left: Wish logo - clickable, links to the Hermon home page.
             let warp_logo = Hoverable::new(self.mouse_states.warp_logo.clone(), |_state| {
                 ConstrainedBox::new(
-                    wish_core::ui::Icon::Warp
+                    wish_core::ui::Icon::Wish
                         .to_wishui_icon(appearance.theme().foreground())
                         .finish(),
                 )
@@ -17852,7 +18281,7 @@ impl Workspace {
 
             // Hide "Open in Wish" button on mobile devices
             if !wishui::platform::wasm::is_mobile_device() {
-                right_row.add_child(ChildView::new(&self.open_in_warp_button).finish());
+                right_row.add_child(ChildView::new(&self.open_in_wish_button).finish());
             }
             tab_bar.add_child(right_row.finish());
 
@@ -18114,6 +18543,48 @@ impl Workspace {
         )
     }
 
+    /// Renders the always-visible Canvas button in the right-side tab
+    /// bar — the primary entry point into the 15-perspective Tensorium
+    /// viewer. **Left-click** opens the Repo Canvas for the active
+    /// project; **right-click** dispatches a context menu listing the
+    /// three v0.5.0 perspectives (Repo / Architecture / Function
+    /// Graph). The other 12 perspectives (Science / Tensorium lenses)
+    /// are reached from the in-canvas perspective dropdown once the
+    /// window is open, or via `wish-world render demo --perspective <p>`
+    /// on the CLI.
+    ///
+    /// Gated by `FeatureFlag::WishCanvas2D` — the caller is responsible
+    /// for the gate check.
+    fn render_canvas_button(
+        &self,
+        appearance: &Appearance,
+        ctx: &AppContext,
+    ) -> Box<dyn Element> {
+        let tooltip_label = "Open Canvas".to_string();
+        let tooltip_sub =
+            Some("Tensorium viewer — codegraph, architecture, function graph".to_string());
+        self.render_tab_bar_icon_button(
+            appearance,
+            icons::Icon::Compass,
+            &self.mouse_states.canvas_button,
+            WorkspaceAction::OpenRepoCanvas,
+            tooltip_label,
+            tooltip_sub,
+            false,
+            false,
+        )
+        .on_right_click(move |ctx, _, _| {
+            // Right-click cycles through the three perspectives by
+            // dispatching the Architecture action. A richer context
+            // menu lands in Stage 2 (the codegraph-in-IDE plan) once
+            // the canvas is an embedded pane and the menu can preview
+            // each perspective live. For now, right-click is the
+            // "show me the architecture instead" shortcut.
+            ctx.dispatch_typed_action(WorkspaceAction::OpenArchitectureView);
+        })
+        .finish()
+    }
+
     /// Renders the notifications mailbox button (extracted for reuse from
     /// add_right_side_tab_bar_controls).
     fn render_notifications_mailbox_button(
@@ -18189,6 +18660,20 @@ impl Workspace {
         appearance: &Appearance,
         ctx: &AppContext,
     ) {
+        // v0.5.0 Tensorium cockpit entry — a prominent, always-visible
+        // Canvas button so the codegraph / architecture / function-graph
+        // perspectives are discoverable from the top bar (not buried in
+        // View menu or command palette). Right-click → context menu of
+        // all three perspectives. Left-click → default (Repo Canvas).
+        // Gated by `FeatureFlag::WishCanvas2D`.
+        if FeatureFlag::WishCanvas2D.is_enabled() {
+            target.add_child(
+                Container::new(self.render_canvas_button(appearance, ctx))
+                    .with_margin_left(TAB_BAR_PADDING_LEFT)
+                    .finish(),
+            );
+        }
+
         if let Some(update_pill) = self.render_tab_overflow_menu(ctx, appearance) {
             target.add_child(
                 Container::new(update_pill)
@@ -19908,7 +20393,7 @@ impl Workspace {
         let general_settings = GeneralSettings::as_ref(app);
         let theme_settings = ThemeSettings::as_ref(app);
         let ssh_settings = SshSettings::as_ref(app);
-        let warpify_settings = WishifySettings::as_ref(app);
+        let wishify_settings = WishifySettings::as_ref(app);
         let terminal_settings = TerminalSettings::as_ref(app);
         let pane_settings = PaneSettings::as_ref(app);
         let keys_settings = KeysSettings::as_ref(app);
@@ -19957,7 +20442,7 @@ impl Workspace {
             context.set.insert(flags::LEGACY_SSH_WRAPPER_CONTEXT_FLAG);
         }
 
-        if *warpify_settings.use_ssh_tmux_wrapper.value() {
+        if *wishify_settings.use_ssh_tmux_wrapper.value() {
             context.set.insert(flags::SSH_TMUX_WRAPPER_CONTEXT_FLAG);
         }
 
@@ -20963,6 +21448,9 @@ impl TypedActionView for Workspace {
             ViewLatestChangelog => self.view_latest_changelog(ctx),
             ViewPrivacyPolicy => self.view_privacy_policy(ctx),
             SendFeedback => self.send_feedback(ctx),
+            OpenRepoCanvas => self.open_repo_canvas(ctx),
+            OpenArchitectureView => self.open_architecture_view(ctx),
+            OpenFunctionGraph => self.open_function_graph(ctx),
             #[cfg(not(target_family = "wasm"))]
             ViewLogs => self.view_logs(ctx),
             ChangeCursor(cursor) => self.change_cursor(*cursor, ctx),

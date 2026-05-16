@@ -12,7 +12,7 @@ use regex::Regex;
 use repo_metadata::{local_model::GetContentsArgs, RepoContent, RepoMetadataModel};
 use wishui::AppContext;
 
-use crate::warp_managed_paths_watcher::warp_managed_skill_dirs;
+use crate::wish_managed_paths_watcher::warp_managed_skill_dirs;
 
 /// Finds all skill directories in a repository by querying the RepoMetadataModel tree.
 ///

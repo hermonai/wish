@@ -1,0 +1,26 @@
+[approval]
+auto_approve_risk_below = 0.30
+require_human_approval_risk_above = 0.30
+require_simulation_risk_above = 0.70
+
+[actors]
+allow_agents = [
+  "wish-agent-world-architect",
+  "wish-agent-coder",
+  "wish-agent-quest",
+  "wish-agent-music",
+]
+require_signed_cell = true
+
+[finance]
+allow_transactions = false
+oeb_max_per_day_usd = 0.0
+
+[deployment]
+allow_finalverse_deploy = true
+require_dry_run = true
+
+[worldline]
+local_only = false
+hermon_team_replicate = true
+creditchain_anchor = false

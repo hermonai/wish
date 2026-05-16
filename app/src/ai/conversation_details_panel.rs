@@ -1240,7 +1240,7 @@ impl ConversationDetailsPanel {
         let ui_font_size = appearance.ui_font_size();
         let sub_color = blended_colors::text_sub(theme, theme.surface_1());
 
-        let icon = ConstrainedBox::new(Icon::Warp.to_wishui_icon(theme.foreground()).finish())
+        let icon = ConstrainedBox::new(Icon::Wish.to_wishui_icon(theme.foreground()).finish())
             .with_width(20.)
             .with_height(20.)
             .finish();

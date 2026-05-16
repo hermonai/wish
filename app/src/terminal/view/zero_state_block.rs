@@ -153,7 +153,7 @@ impl View for TerminalViewZeroStateBlock {
             .with_child(
                 Container::new(
                     ConstrainedBox::new(
-                        Icon::Warp
+                        Icon::Wish
                             .to_wishui_icon(theme.main_text_color(theme.background()))
                             .finish(),
                     )

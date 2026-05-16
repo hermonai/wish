@@ -1,0 +1,20 @@
+{
+  "id": {
+    "realm": "scene",
+    "kind": "sacred_architecture",
+    "stable_key": "entity_dragon_temple"
+  },
+  "kind": "sacred_architecture",
+  "display_name": "Dragon Temple",
+  "components": [
+    { "type": "transform", "translation": [0.0, 0.0, 0.0], "rotation": [0.0, 0.0, 0.0, 1.0], "scale": [1.0, 1.0, 1.0] },
+    { "type": "mesh_reference", "reference": "assets/models/dragon_temple.glb#root" },
+    { "type": "material_set", "reference": "assets/textures/sacred_stone/" },
+    { "type": "lighting_profile", "preset": "ancient_sacred" },
+    { "type": "quest_anchor", "quest_ref": "scripts/quests/lost_dragon.quest" },
+    { "type": "soundscape_anchor", "reference": "assets/audio/temple_ambient.ogg" },
+    { "type": "lore_anchor", "reference": "memory/lore.md#dragon-temple" }
+  ],
+  "status": "ok",
+  "agent_editable": true
+}

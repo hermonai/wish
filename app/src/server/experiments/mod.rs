@@ -12,7 +12,7 @@
 //! for a full guide on the server-side experiment framework.
 
 use crate::features::FeatureFlag;
-use crate::terminal::warpify::settings::{SshExtensionInstallMode, WishifySettings};
+use crate::terminal::wishify::settings::{SshExtensionInstallMode, WishifySettings};
 use crate::workspaces::user_workspaces::UserWorkspaces;
 use crate::workspaces::workspace::CustomerType;
 use settings::Setting;

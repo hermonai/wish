@@ -14,7 +14,7 @@ use crate::root_view::{open_new_window_get_handles, OpenLaunchConfigArg};
 use crate::server::ids::ServerId;
 use crate::server::telemetry::{LaunchConfigUiLocation, TelemetryEvent};
 use crate::util::openable_file_type::{
-    is_file_openable_in_warp, is_markdown_file, is_runnable_shell_script, starts_with_shebang,
+    is_file_openable_in_wish, is_markdown_file, is_runnable_shell_script, starts_with_shebang,
 };
 use crate::workspace::util::PaneViewLocator;
 use crate::workspace::{Workspace, WorkspaceAction, WorkspaceRegistry};
@@ -1082,10 +1082,10 @@ fn classify_open_file_action(path: &Path) -> OpenFileAction {
             return OpenFileAction::ExecuteInSession;
         }
         // Anything we can show in the editor opens there. The second branch catches
-        // shebang scripts that `is_file_openable_in_warp` rejects on extension alone
+        // shebang scripts that `is_file_openable_in_wish` rejects on extension alone
         // (e.g. an extensionless `#!/bin/sh` file without the user-execute bit) so
         // they don't fall through to the executor and produce a `permission denied`.
-        if is_file_openable_in_warp(path).is_some() || starts_with_shebang(path) {
+        if is_file_openable_in_wish(path).is_some() || starts_with_shebang(path) {
             return OpenFileAction::Editor;
         }
     }
@@ -1123,12 +1123,12 @@ fn open_file(window_id: Option<WindowId>, path: PathBuf, ctx: &mut AppContext) {
             use crate::root_view::{open_new_with_workspace_source, NewWorkspaceSource};
             use crate::util::{
                 file::external_editor::EditorSettings,
-                openable_file_type::resolve_file_target_to_open_in_warp,
+                openable_file_type::resolve_file_target_to_open_in_wish,
             };
 
             // Open text/code files in Wish's code editor, respecting the user's layout preference.
             let editor_settings = EditorSettings::as_ref(ctx);
-            let target = resolve_file_target_to_open_in_warp(&path, editor_settings, None);
+            let target = resolve_file_target_to_open_in_wish(&path, editor_settings, None);
 
             let window_id = if let Some((wid, _)) = primary_window_and_view {
                 wid

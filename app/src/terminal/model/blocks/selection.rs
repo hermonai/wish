@@ -21,7 +21,7 @@ use crate::{
             selection::{ExpandedSelectionRange, Selection, SelectionDirection},
             terminal_model::{BlockIndex, WithinBlock},
         },
-        warpify::success_block::WishifySuccessBlock,
+        wishify::success_block::WishifySuccessBlock,
         GridType,
     },
 };
@@ -957,9 +957,9 @@ impl BlockList {
                                 if let Some(ssh_block) = app
                                     .view_with_id::<WishifySuccessBlock>(active_window_id, *view_id)
                                 {
-                                    let warpify_success_block = app.view(&ssh_block);
+                                    let wishify_success_block = app.view(&ssh_block);
                                     if let Some(selected_text) =
-                                        warpify_success_block.selected_text()
+                                        wishify_success_block.selected_text()
                                     {
                                         selected_texts.push(selected_text);
                                     }
@@ -1076,8 +1076,8 @@ impl BlockList {
                         if let Some(ssh_block) =
                             app.view_with_id::<WishifySuccessBlock>(active_window_id, view_id)
                         {
-                            let warpify_success_block = app.view(&ssh_block);
-                            if let Some(selected_text) = warpify_success_block.selected_text() {
+                            let wishify_success_block = app.view(&ssh_block);
+                            if let Some(selected_text) = wishify_success_block.selected_text() {
                                 selected_texts.push(selected_text);
                             }
                         }

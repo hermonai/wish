@@ -58,7 +58,7 @@ use super::{
     env_var_collections::EnvVarCollectionDataSource,
     history::history_data_source_for_session,
     notebooks::notebooks_data_source,
-    warp_ai::WarpAIDataSource,
+    wish_ai::WarpAIDataSource,
     workflows::{cloud_workflows_data_source, WorkflowsDataSource},
     zero_state::{CommandSearchZeroStateEvent, CommandSearchZeroStateView},
 };

@@ -13,6 +13,12 @@ mod debug;
 pub mod elements;
 pub mod event;
 pub mod fonts;
+/// **Generative UI substrate** — JSON descriptors → Scene.
+///
+/// See `wish-design/.../01-strategy/10-wishui-generative-ui.md` for
+/// the strategic roadmap. This module is the wire format AI agents
+/// use to emit UI without knowing about the GPU pipeline.
+pub mod generative;
 pub mod image_cache;
 pub mod integration;
 pub mod keymap;

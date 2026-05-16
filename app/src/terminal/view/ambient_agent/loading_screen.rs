@@ -19,7 +19,7 @@ use wishui::ui_components::components::UiComponent;
 use wishui::{AppContext, ModelHandle, SingletonEntity};
 
 use crate::ai::agent_tips::{AITip, AITipModel};
-use crate::ai::loading::shimmering_warp_loading_text;
+use crate::ai::loading::shimmering_wish_loading_text;
 use crate::terminal::view::ambient_agent::CloudModeTip;
 use crate::ui_components::blended_colors;
 use crate::workspaces::user_workspaces::UserWorkspaces;
@@ -41,7 +41,7 @@ pub fn render_cloud_mode_loading_screen(
 
     // Create the shimmering warp loading text element
     let shimmer_element =
-        shimmering_warp_loading_text(message, loading_font_size, shimmer_handle.clone(), app);
+        shimmering_wish_loading_text(message, loading_font_size, shimmer_handle.clone(), app);
 
     // Get current tip from the model and render with link
     let tip_element = if let Some(tip) = tip_model.as_ref(app).current_tip() {

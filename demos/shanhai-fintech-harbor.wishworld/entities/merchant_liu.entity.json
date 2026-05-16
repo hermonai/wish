@@ -1,0 +1,17 @@
+{
+  "id": {
+    "realm": "npc",
+    "kind": "npc",
+    "stable_key": "merchant_liu"
+  },
+  "kind": "npc",
+  "display_name": "Merchant Liu",
+  "components": [
+    { "type": "transform", "translation": [12.0, 0.0, -4.0], "rotation": [0.0, 0.0, 0.0, 1.0], "scale": [1.0, 1.0, 1.0] },
+    { "type": "behavior_script", "reference": "scripts/behaviors/merchant_liu.rs" },
+    { "type": "economic_actor", "profile": "stablecoin_teacher" },
+    { "type": "lore_anchor", "reference": "memory/lore.md#merchant-liu" }
+  ],
+  "status": "ok",
+  "agent_editable": true
+}

@@ -10,7 +10,7 @@ use crate::terminal::shared_session::shared_handlers::{
     build_selected_conversation_update, RemoteUpdateGuard,
 };
 use crate::terminal::shell::ShellName;
-use crate::terminal::warpify::settings::WishifySettings;
+use crate::terminal::wishify::settings::WishifySettings;
 use crate::terminal::TerminalManager as _;
 use anyhow::Context as _;
 use async_broadcast::InactiveReceiver;

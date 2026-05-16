@@ -37,7 +37,7 @@ use crate::{
     send_telemetry_from_ctx,
     server::telemetry::TelemetryEvent,
     terminal::model::session::SessionId,
-    terminal::warpify::settings::{SshExtensionInstallMode, WishifySettings},
+    terminal::wishify::settings::{SshExtensionInstallMode, WishifySettings},
     ui_components::blended_colors,
     Appearance,
 };

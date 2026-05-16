@@ -21,7 +21,7 @@ use wishui::prelude::MouseStateHandle;
 use wishui::EventContext;
 use wishui::{AppContext, Element, SingletonEntity};
 
-use crate::warp_managed_paths_watcher::warp_managed_skill_dirs;
+use crate::wish_managed_paths_watcher::warp_managed_skill_dirs;
 
 lazy_static! {
     static ref CONTENT_HASHER: SipHasher = SipHasher::new_with_keys(0, 0);

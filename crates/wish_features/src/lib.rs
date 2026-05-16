@@ -98,6 +98,17 @@ pub enum FeatureFlag {
     /// in motion. No effect when `AgentLiveWorkspaceContext` is off.
     LogAgentWorkspaceContext,
 
+    /// v0.5.0 "World Model Seed". Surfaces the new world-model + canvas
+    /// pipeline inside the desktop app. When on, the command palette
+    /// gains `Open Repo Canvas` (workspace:open_repo_canvas), which
+    /// walks the active project with `wish-codegraph`, renders an
+    /// interactive HTML viewer via `wish-world-studio`, and opens it
+    /// in the system browser. The substrate (world model, codegraph,
+    /// provenance, missions, verifiable artifacts) is always
+    /// compiled; this flag only gates the visible action so the v0.4.0
+    /// surface stays unchanged for default users.
+    WishCanvas2D,
+
     /// Whether the user is part of the Warp Alpha Program (AI Trusted Testers).
     /// This is enabled automatically for local and dev builds.
     /// Collect conversation and input autodetection data for agent mode.
@@ -911,6 +922,7 @@ pub const DOGFOOD_FLAGS: &[FeatureFlag] = &[
     FeatureFlag::AgentModeAnalytics,
     FeatureFlag::AgentLiveWorkspaceContext,
     FeatureFlag::LogAgentWorkspaceContext,
+    FeatureFlag::WishCanvas2D,
     FeatureFlag::LazySceneBuilding,
     FeatureFlag::SshDragAndDrop,
     FeatureFlag::MultiWorkspace,

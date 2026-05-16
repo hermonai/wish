@@ -730,7 +730,20 @@ fn fetch_auth_tokens(
     token: FirebaseToken,
 ) -> BoxFuture<'static, StdResult<FirebaseAuthTokens, UserAuthenticationError>> {
     Box::pin(async move {
+        // v0.5.0 "Wish independence" — let users (and CI/dev mode) disable
+        // the inherited Firebase auth path entirely. When the API key is
+        // empty or `WISH_DISABLE_FIREBASE_AUTH=1` is set, short-circuit with
+        // a tame error so we don't hammer Firebase + the local proxy.
         let firebase_api_key = ChannelState::firebase_api_key();
+        let firebase_disabled = firebase_api_key.is_empty()
+            || std::env::var("WISH_DISABLE_FIREBASE_AUTH")
+                .map(|v| matches!(v.as_str(), "1" | "true" | "TRUE" | "yes"))
+                .unwrap_or(false);
+        if firebase_disabled {
+            return Err(UserAuthenticationError::Unexpected(anyhow!(
+                "Firebase auth disabled (no API key or WISH_DISABLE_FIREBASE_AUTH set); skipping token refresh"
+            )));
+        }
         let url = token.access_token_url(&firebase_api_key);
         let request_body = token.access_token_request_body();
         let proxy_url = token.proxy_url(&ChannelState::server_root_url(), &firebase_api_key);
@@ -744,7 +757,12 @@ fn fetch_auth_tokens(
             Ok(response) => match response.error_for_status_ref() {
                 Ok(_) => Ok(response),
                 Err(error) => {
-                    log::warn!(
+                    // Downgraded from `warn` to `debug` — when Hermon isn't
+                    // reachable (the common local-dev case) the proxy
+                    // fallback also fails, and emitting a warn every
+                    // refresh cycle drowns the log. The reauth flow surfaces
+                    // hard auth errors to the user via the UI.
+                    log::debug!(
                         "Request to firebase to fetch access token completed, but was unsuccessful: {error:?}"
                     );
 
@@ -752,7 +770,9 @@ fn fetch_auth_tokens(
                 }
             },
             Err(error) => {
-                log::warn!("Failed to make response to firebase to fetch access token: {error:?}");
+                log::debug!(
+                    "Failed to make response to firebase to fetch access token: {error:?}"
+                );
 
                 fetch_access_token_via_proxy(client, &request_body, proxy_url).await
             }

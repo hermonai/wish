@@ -22,13 +22,13 @@ use wishui::keymap::BindingId;
 use wishui::{AppContext, Entity, ModelContext, ModelHandle, SingletonEntity};
 
 use super::conversations;
-use super::warp_drive;
+use super::wish_drive;
 
 /// Store of all of the [`crate::search::DataSource`]s for the command palette.
 pub struct DataSourceStore {
     actions_data_source: ModelHandle<CommandBindingDataSource>,
     sessions_data_source: ModelHandle<navigation::DataSource>,
-    warp_drive_data_source: ModelHandle<warp_drive::DataSource>,
+    warp_drive_data_source: ModelHandle<wish_drive::DataSource>,
     launch_config_data_source: ModelHandle<launch_config::DataSource>,
     new_session_data_source: Option<ModelHandle<NewSessionDataSource>>,
     historical_conversation_data_source: ModelHandle<conversations::DataSource>,
@@ -49,7 +49,7 @@ impl DataSourceStore {
         let sessions_data_source =
             ctx.add_model(|_| navigation::DataSource::new(active_session_handle));
 
-        let warp_drive_data_source = ctx.add_model(warp_drive::DataSource::new);
+        let warp_drive_data_source = ctx.add_model(wish_drive::DataSource::new);
 
         let launch_config_data_source = ctx.add_model(launch_config::DataSource::new);
 

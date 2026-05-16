@@ -14,7 +14,7 @@ use crate::{
         ParsedTemplatableMCPServerResult,
     },
     settings::{ai::AISettings, AISettingsChangedEvent},
-    warp_managed_paths_watcher::warp_managed_mcp_config_path,
+    wish_managed_paths_watcher::warp_managed_mcp_config_path,
 };
 
 /// Singleton model to manage file-based MCP servers.

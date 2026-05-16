@@ -72,7 +72,7 @@ use crate::{
     ui_components::icons::ICON_DIMENSIONS,
     util::{
         bindings::CustomAction,
-        tooltips::{render_tooltip, should_show_open_in_warp_link, TooltipLink, TooltipRedaction},
+        tooltips::{render_tooltip, should_show_open_in_wish_link, TooltipLink, TooltipRedaction},
     },
     view_components::DismissibleToast,
 };
@@ -879,11 +879,11 @@ pub enum EditorViewAction {
     OpenEmbeddedObjectSearch,
     RemoveEmbeddingAt(CharOffset),
     MiddleClickPaste,
-    /// Open a file. If open_in_warp is true, open in Wish's code editor; otherwise use external editor.
+    /// Open a file. If open_in_wish is true, open in Wish's code editor; otherwise use external editor.
     OpenFile {
         path: PathBuf,
         line_and_column_num: Option<LineAndColumnArg>,
-        force_open_in_warp: bool,
+        force_open_in_wish: bool,
     },
     /// Signal from a Mermaid toggle view that the user changed the display mode for a block.
     MermaidDisplayModeSelected {
@@ -955,7 +955,7 @@ pub enum EditorViewEvent {
     OpenFile {
         path: PathBuf,
         line_and_column_num: Option<LineAndColumnArg>,
-        force_open_in_warp: bool,
+        force_open_in_wish: bool,
     },
     /// Emitted when the user runs a notebook workflow. The parent `NotebookView` is responsible
     /// for sending it to the active terminal.
@@ -1036,7 +1036,7 @@ struct SelectedFilePath {
 #[derive(Default)]
 struct FilePathMouseStateHandles {
     open_file_handle: MouseStateHandle,
-    open_in_warp_handle: MouseStateHandle,
+    open_in_wish_handle: MouseStateHandle,
 }
 
 pub struct RichTextEditorView {
@@ -1926,7 +1926,7 @@ impl RichTextEditorView {
                     ctx.emit(EditorViewEvent::OpenFile {
                         path: hovered_file_path.path.clone(),
                         line_and_column_num: hovered_file_path.line_and_column_num,
-                        force_open_in_warp: false,
+                        force_open_in_wish: false,
                     });
                 } else {
                     self.open_file_path = Some(hovered_file_path.clone());
@@ -2508,7 +2508,7 @@ impl RichTextEditorView {
             "Open file"
         }
         .to_string();
-        let show_open_in_warp = should_show_open_in_warp_link(&path, ctx);
+        let show_open_in_wish = should_show_open_in_wish_link(&path, ctx);
         let path_for_primary = path.clone();
         let modifier = directly_open_link_keybinding_string();
 
@@ -2518,14 +2518,14 @@ impl RichTextEditorView {
                 ctx.dispatch_typed_action(EditorViewAction::OpenFile {
                     path: path_for_primary.clone(),
                     line_and_column_num,
-                    force_open_in_warp: false,
+                    force_open_in_wish: false,
                 });
             }),
             detail: Some(format!("[{modifier} Click]")),
             mouse_state: self.file_path_mouse_states.open_file_handle.clone(),
         }];
 
-        if show_open_in_warp {
+        if show_open_in_wish {
             let path_for_warp = path.clone();
             links.push(TooltipLink {
                 text: "Open in Wish".to_string(),
@@ -2533,11 +2533,11 @@ impl RichTextEditorView {
                     ctx.dispatch_typed_action(EditorViewAction::OpenFile {
                         path: path_for_warp.clone(),
                         line_and_column_num,
-                        force_open_in_warp: true,
+                        force_open_in_wish: true,
                     });
                 }),
                 detail: None,
-                mouse_state: self.file_path_mouse_states.open_in_warp_handle.clone(),
+                mouse_state: self.file_path_mouse_states.open_in_wish_handle.clone(),
             });
         }
 
@@ -3085,12 +3085,12 @@ impl TypedActionView for RichTextEditorView {
             OpenFile {
                 path,
                 line_and_column_num,
-                force_open_in_warp,
+                force_open_in_wish,
             } => {
                 ctx.emit(EditorViewEvent::OpenFile {
                     path: path.clone(),
                     line_and_column_num: *line_and_column_num,
-                    force_open_in_warp: *force_open_in_warp,
+                    force_open_in_wish: *force_open_in_wish,
                 });
             }
         }

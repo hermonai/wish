@@ -183,7 +183,7 @@ use wish::{
     },
 };
 use wish::{
-    integration_testing::warp_drive::{
+    integration_testing::wish_drive::{
         assert_is_left_panel_open, assert_warp_drive_is_closed, assert_warp_drive_is_open,
     },
     settings::CompletionsOpenWhileTyping,

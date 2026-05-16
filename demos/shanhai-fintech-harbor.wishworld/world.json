@@ -1,0 +1,19 @@
+{
+  "schema": "wishworld/1.0",
+  "id": "world_shanhai_fintech_harbor",
+  "name": "Shan Hai Fintech Harbor",
+  "kind": "education_world",
+  "intent": "An ancient Chinese harbor city where AI merchants teach stablecoin, credit, trade, and risk management. Demo region for the MapleAI civilization stack: Wish + Hermon + Finalverse + OpeniBank + CreditChain.",
+  "created_at": "2026-05-14T20:00:00Z",
+  "entities": {},
+  "scenes": {},
+  "agents": {},
+  "assets": {},
+  "rules": [],
+  "memory": {
+    "facts": [],
+    "lore": "memory/lore.md",
+    "design_rationale": "memory/design_rationale.md"
+  },
+  "provenance": []
+}

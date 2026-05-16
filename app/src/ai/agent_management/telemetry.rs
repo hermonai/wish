@@ -119,7 +119,7 @@ pub enum AgentManagementTelemetryEvent {
     SlashCommandContinueLocally,
     /// User clicked "Open in Wish" in the tombstone (wasm)
     #[cfg(target_family = "wasm")]
-    TombstoneOpenInWarp,
+    TombstoneOpenInWish,
     /// User cancelled a cloud run
     CloudRunCancelled { task_id: String },
     /// User forked a conversation
@@ -205,7 +205,7 @@ impl TelemetryEvent for AgentManagementTelemetryEvent {
             #[cfg(not(target_family = "wasm"))]
             AgentManagementTelemetryEvent::SlashCommandContinueLocally => None,
             #[cfg(target_family = "wasm")]
-            AgentManagementTelemetryEvent::TombstoneOpenInWarp => None,
+            AgentManagementTelemetryEvent::TombstoneOpenInWish => None,
             AgentManagementTelemetryEvent::CloudRunCancelled { task_id } => {
                 Some(json!({ "task_id": task_id }))
             }
@@ -261,7 +261,7 @@ impl TelemetryEventDesc for AgentManagementTelemetryEventDiscriminants {
             #[cfg(not(target_family = "wasm"))]
             Self::SlashCommandContinueLocally => "AgentManagement.SlashCommandContinueLocally",
             #[cfg(target_family = "wasm")]
-            Self::TombstoneOpenInWarp => "AgentManagement.TombstoneOpenInWarp",
+            Self::TombstoneOpenInWish => "AgentManagement.TombstoneOpenInWish",
             Self::CloudRunCancelled => "AgentManagement.CloudRunCancelled",
             Self::ConversationForked => "AgentManagement.ConversationForked",
         }
@@ -303,7 +303,7 @@ impl TelemetryEventDesc for AgentManagementTelemetryEventDiscriminants {
                 "User invoked /continue-locally to fork a cloud conversation locally"
             }
             #[cfg(target_family = "wasm")]
-            Self::TombstoneOpenInWarp => "User clicked Open in Wish in the tombstone",
+            Self::TombstoneOpenInWish => "User clicked Open in Wish in the tombstone",
             Self::CloudRunCancelled => "User cancelled a cloud run",
             Self::ConversationForked => "User forked a conversation",
         }

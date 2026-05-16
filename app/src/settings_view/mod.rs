@@ -51,7 +51,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::str::FromStr;
 use teams_page::{TeamsPageView, TeamsPageViewEvent};
-use warpify_page::{WishifyPageAction, WishifyPageView};
+use wishify_page::{WishifyPageAction, WishifyPageView};
 use wish_core::send_telemetry_from_ctx;
 use wish_core::{
     channel::ChannelState, context_flag::ContextFlag, features::FeatureFlag,
@@ -113,8 +113,8 @@ mod teams_page;
 mod telemetry;
 mod transfer_ownership_confirmation_modal;
 pub mod update_environment_form;
-mod warp_drive_page;
-mod warpify_page;
+mod wish_drive_page;
+mod wishify_page;
 
 #[cfg(not(target_family = "wasm"))]
 pub(crate) use ai_page::cli_agent_settings_widget_id;
@@ -435,7 +435,7 @@ pub mod flags {
     pub const EXTRA_META_KEYS_LEFT_CONTEXT_FLAG: &str = "Extra_Meta_Keys_Left";
     pub const SCROLL_REPORTING_CONTEXT_FLAG: &str = "Scroll_Reporting";
     pub const FOCUS_REPORTING_CONTEXT_FLAG: &str = "Focus_Reporting";
-    #[deprecated = "Use `SSH_TMUX_WRAPPER_CONTEXT_FLAG` for new ssh warpification logic"]
+    #[deprecated = "Use `SSH_TMUX_WRAPPER_CONTEXT_FLAG` for new ssh wishification logic"]
     pub const LEGACY_SSH_WRAPPER_CONTEXT_FLAG: &str = "SSH_Wrapper";
     pub const SSH_TMUX_WRAPPER_CONTEXT_FLAG: &str = "SSH_Tmux_Wrapper";
     pub const NOTIFICATIONS_CONTEXT_FLAG: &str = "Notifications_Enabled";
@@ -553,7 +553,7 @@ pub fn init_actions_from_parent_view<T: Action + Clone>(
     main_page::init_actions_from_parent_view(app, context, builder);
     appearance_page::init_actions_from_parent_view(app, context, builder);
     features_page::init_actions_from_parent_view(app, context, builder);
-    warpify_page::init_actions_from_parent_view(app, context, builder);
+    wishify_page::init_actions_from_parent_view(app, context, builder);
     privacy_page::init_actions_from_parent_view(app, context, builder);
     ai_page::init_actions_from_parent_view(app, context, builder);
     code_page::init_actions_from_parent_view(app, context, builder);
@@ -867,7 +867,7 @@ pub enum SettingsAction {
     PrivacyPageToggle(PrivacyPageAction),
     AI(AISettingsPageAction),
     Code(CodeSettingsPageAction),
-    WarpDrive(warp_drive_page::WarpDriveSettingsPageAction),
+    WarpDrive(wish_drive_page::WarpDriveSettingsPageAction),
     WishifyPageToggle(WishifyPageAction),
     Tab,
     Split(Direction),
@@ -1167,9 +1167,9 @@ impl SettingsView {
             }
         });
 
-        let warpify_page_handle = ctx.add_typed_action_view(WishifyPageView::new);
-        ctx.subscribe_to_view(&warpify_page_handle, |me, _, event, ctx| {
-            me.handle_warpify_page_event(event, ctx);
+        let wishify_page_handle = ctx.add_typed_action_view(WishifyPageView::new);
+        ctx.subscribe_to_view(&wishify_page_handle, |me, _, event, ctx| {
+            me.handle_wishify_page_event(event, ctx);
         });
 
         // Render the privacy page only if telemetry opt-out is enabled.
@@ -1187,7 +1187,7 @@ impl SettingsView {
 
         // Wish Drive page
         let warp_drive_page_handle =
-            ctx.add_typed_action_view(warp_drive_page::WarpDriveSettingsPageView::new);
+            ctx.add_typed_action_view(wish_drive_page::WarpDriveSettingsPageView::new);
         ctx.subscribe_to_view(&warp_drive_page_handle, |me, _, event, ctx| {
             me.handle_warp_drive_page_event(event, ctx);
         });
@@ -1241,7 +1241,7 @@ impl SettingsView {
             SettingsPage::new(features_page_handle),
             SettingsPage::new(keybindings_handle),
             SettingsPage::new(platform_page_handle),
-            SettingsPage::new(warpify_page_handle),
+            SettingsPage::new(wishify_page_handle),
             SettingsPage::new(referrals_page_handle),
             SettingsPage::new(show_blocks_view_handle),
             SettingsPage::new(warp_drive_page_handle),
@@ -1741,7 +1741,7 @@ impl SettingsView {
         }
     }
 
-    fn handle_warpify_page_event(
+    fn handle_wishify_page_event(
         &mut self,
         event: &SettingsPageEvent,
         ctx: &mut ViewContext<Self>,
@@ -1844,11 +1844,11 @@ impl SettingsView {
 
     fn handle_warp_drive_page_event(
         &mut self,
-        event: &warp_drive_page::WarpDriveSettingsPageEvent,
+        event: &wish_drive_page::WarpDriveSettingsPageEvent,
         ctx: &mut ViewContext<Self>,
     ) {
         match event {
-            warp_drive_page::WarpDriveSettingsPageEvent::SignUp => {
+            wish_drive_page::WarpDriveSettingsPageEvent::SignUp => {
                 ctx.emit(SettingsViewEvent::SignupAnonymousUser)
             }
         }
@@ -2679,11 +2679,11 @@ impl TypedActionView for SettingsView {
                     }
                 }
             }
-            SettingsAction::WishifyPageToggle(warpify_action) => {
-                if let Some(warpify_page) = self.settings_page(SettingsSection::Wishify) {
-                    if let SettingsPageViewHandle::Wishify(view) = &warpify_page.view_handle {
+            SettingsAction::WishifyPageToggle(wishify_action) => {
+                if let Some(wishify_page) = self.settings_page(SettingsSection::Wishify) {
+                    if let SettingsPageViewHandle::Wishify(view) = &wishify_page.view_handle {
                         view.update(ctx, |view, ctx| {
-                            view.handle_action(warpify_action, ctx);
+                            view.handle_action(wishify_action, ctx);
                         })
                     }
                 }

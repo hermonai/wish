@@ -1,0 +1,17 @@
+{
+  "id": {
+    "realm": "agent",
+    "kind": "world_architect",
+    "stable_key": "wish-agent-world-architect"
+  },
+  "display_name": "World Architect",
+  "role": "world_architect",
+  "tools": [
+    "world.patch",
+    "scene.generate",
+    "asset.bake",
+    "quest.generate",
+    "dialogue.generate"
+  ],
+  "runtime_target": "hermon"
+}

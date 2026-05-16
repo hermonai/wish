@@ -23,7 +23,7 @@ use wishui::AppContext;
 use wishui::SingletonEntity as _;
 
 use super::SkillManager;
-use crate::warp_managed_paths_watcher::warp_managed_skill_dirs;
+use crate::wish_managed_paths_watcher::warp_managed_skill_dirs;
 
 const SKILL_FILE_NAME: &str = "SKILL.md";
 

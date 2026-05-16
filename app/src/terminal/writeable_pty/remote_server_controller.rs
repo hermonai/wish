@@ -9,7 +9,7 @@ use wishui::{Entity, ModelContext, ModelHandle, SingletonEntity, WeakModelHandle
 
 use settings::Setting;
 
-use crate::terminal::warpify::settings::{SshExtensionInstallMode, WishifySettings};
+use crate::terminal::wishify::settings::{SshExtensionInstallMode, WishifySettings};
 
 use crate::remote_server::manager::{RemoteServerManager, RemoteServerManagerEvent};
 use crate::remote_server::ssh_transport::SshTransport;
