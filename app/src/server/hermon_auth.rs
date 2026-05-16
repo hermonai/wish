@@ -18,6 +18,10 @@ use wish_core::channel::ChannelState;
 /// The production Hermon API base URL.
 const PRODUCTION_HERMON_URL: &str = "https://api.hermon.ai";
 
+/// The production Hermon dashboard URL (manage API keys, account, preferences).
+/// Hosted at the `wish` sub-path of the Hermon marketing site.
+const PRODUCTION_HERMON_DASHBOARD_URL: &str = "https://www.hermon.ai/wish";
+
 /// The local development Hermon gateway URL.
 const DEV_GATEWAY_URL: &str = "http://localhost:8080";
 
@@ -79,8 +83,8 @@ pub fn api_url() -> String {
 /// Resolution order:
 /// 1. `HERMON_DASHBOARD_URL` env var — explicit developer override
 /// 2. Channel default:
-///    - **Stable / Preview / Oss** → `https://wish.hermon.ai`
-///    - **Local / Dev / Integration** → `http://localhost:3000`
+///    - **Stable / Preview / Oss / Local** → `https://www.hermon.ai/wish`
+///    - **Dev / Integration** → `http://localhost:3000`
 pub fn dashboard_url() -> String {
     if let Ok(url) = std::env::var("HERMON_DASHBOARD_URL") {
         return url;
@@ -89,7 +93,8 @@ pub fn dashboard_url() -> String {
     match ChannelState::channel() {
         wish_core::channel::Channel::Stable
         | wish_core::channel::Channel::Preview
-        | wish_core::channel::Channel::Oss => PRODUCTION_HERMON_URL.to_string(),
+        | wish_core::channel::Channel::Oss
+        | wish_core::channel::Channel::Local => PRODUCTION_HERMON_DASHBOARD_URL.to_string(),
         _ => DEV_DASHBOARD_URL.to_string(),
     }
 }

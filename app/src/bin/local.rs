@@ -11,13 +11,19 @@ use wish_core::{
 // The `wish` (local) binary uses inline config — no external config generator needed.
 // This is the development channel with all debug + dogfood + preview features enabled.
 fn main() -> Result<()> {
+    // The `wish` binary now defaults to the production Hermon backend so that a
+    // freshly-installed copy can sign up / sign in / sign out against
+    // https://api.hermon.ai without any extra flags. Developers running a local
+    // gateway can still override via `--server-root-url http://localhost:8080`
+    // or `HERMON_API_URL=http://localhost:8080` since `Channel::Local` honors
+    // those overrides (see `Channel::allows_server_url_overrides`).
     let mut state = ChannelState::new(
         Channel::Local,
         ChannelConfig {
             app_id: AppId::new("ai", "hermon", "Wish"),
             logfile_name: "wish-local.log".into(),
-            server_config: WishServerConfig::local_dev(),
-            hermon_config: HermonConfig::local_dev(),
+            server_config: WishServerConfig::production(),
+            hermon_config: HermonConfig::production(),
             telemetry_config: None,
             crash_reporting_config: None,
             autoupdate_config: None,

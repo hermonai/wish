@@ -74,7 +74,12 @@ pub struct HermonConfig {
 impl HermonConfig {
     pub fn production() -> Self {
         Self {
-            hermon_root_url: "https://wish.hermon.ai".into(),
+            // The Hermon platform dashboard for managing API keys, account
+            // settings, and preferences for Wish lives at
+            // https://www.hermon.ai/wish (the `wish` sub-path of the marketing
+            // site). The bare `wish.hermon.ai` subdomain is still allowed as a
+            // direct alias.
+            hermon_root_url: "https://www.hermon.ai/wish".into(),
             workload_audience_url: None,
         }
     }
