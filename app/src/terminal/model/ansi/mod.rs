@@ -1106,7 +1106,7 @@ where
                             .get(2)
                             .map(|osc_data| String::from_utf8_lossy(osc_data))
                         else {
-                            log::error!("Warp OSC marker did not contain payload");
+                            log::error!("Wish OSC marker did not contain payload");
                             return;
                         };
                         safe_debug!(
@@ -1122,7 +1122,7 @@ where
                             .get(2)
                             .map(|osc_data| String::from_utf8_lossy(osc_data))
                         else {
-                            log::error!("Warp OSC marker did not contain payload");
+                            log::error!("Wish OSC marker did not contain payload");
                             return;
                         };
                         safe_debug!(
