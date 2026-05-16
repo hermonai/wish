@@ -39,7 +39,7 @@ mod parent_bridge;
 mod wake_driver;
 
 #[cfg(test)]
-use super::super::OZ_MESSAGE_LISTENER_STATE_ROOT_ENV;
+use super::super::HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV;
 #[cfg(test)]
 use parent_bridge::{
     acknowledge_parent_bridge_hook_output, ensure_parent_bridge_state_dir,
@@ -230,7 +230,7 @@ impl ClaudeHarnessRunner {
     ) -> Result<Self, AgentDriverError> {
         // Write the prompt to a temp file so we can feed it via stdin redirect,
         // avoiding shell-quoting issues with complex content (e.g. skill instructions).
-        let temp_file = write_temp_file("oz_prompt_", prompt, ".txt")?;
+        let temp_file = write_temp_file("hermon_prompt_", prompt, ".txt")?;
         let prompt_path = temp_file.path().display().to_string();
 
         let (session_id, preexisting_conversation_id) = match resume {
@@ -265,7 +265,7 @@ impl ClaudeHarnessRunner {
         };
 
         let temp_system_prompt_file = system_prompt
-            .map(|sp| write_temp_file("oz_system_prompt_", sp, ".txt"))
+            .map(|sp| write_temp_file("hermon_system_prompt_", sp, ".txt"))
             .transpose()?;
         let system_prompt_path = temp_system_prompt_file
             .as_ref()
@@ -275,7 +275,7 @@ impl ClaudeHarnessRunner {
             .then(|| {
                 let mcp_json = serialize_claude_mcp_config(resolved_mcp_servers)
                     .map_err(AgentDriverError::ConfigBuildFailed)?;
-                write_temp_file("oz_mcp_config_", &mcp_json, ".json")
+                write_temp_file("hermon_mcp_config_", &mcp_json, ".json")
             })
             .transpose()?;
         let mcp_config_path = temp_mcp_config_file

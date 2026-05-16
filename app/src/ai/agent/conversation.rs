@@ -3829,14 +3829,18 @@ impl TryFrom<String> for AIConversationId {
     }
 }
 
-/// The harness that produced an agent conversation. The `Oz` variant maps to
-/// the user-facing [`crate::ai::Harness::Hermon`] (see `Harness::config_name`);
-/// the variant name stays `Oz` here because this enum mirrors the GraphQL schema
-/// enum `AgentHarness::OZ` exposed by `hermon-server`. Renaming requires a
-/// coordinated schema change.
+/// The harness that produced an agent conversation. The `Hermon` variant is
+/// the canonical Wish agent-backend name; the conversion code in
+/// `server::server_api::ai` translates it to/from the GraphQL schema's
+/// `AgentHarness::OZ` wire-format variant. The server-schema rename is a
+/// coordinated v0.7.0 change; until then this enum reads cleanly internally
+/// while preserving the OZ wire format at the network boundary.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AIAgentHarness {
-    Oz,
+    /// The Hermon agent backend. GraphQL still emits this as `"OZ"` on the
+    /// wire until the server schema migrates (see
+    /// [`wish_graphql::ai::AgentHarness::Oz`]).
+    Hermon,
     ClaudeCode,
     Gemini,
     Codex,

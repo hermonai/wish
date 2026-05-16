@@ -1,4 +1,4 @@
-/// Adjusts resource limits applied to the Warp process (e.g.: the limit on open
+/// Adjusts resource limits applied to the Wish process (e.g.: the limit on open
 /// file descriptors) to ensure proper behavior.
 pub fn adjust_resource_limits() {
     #[cfg(target_os = "macos")]

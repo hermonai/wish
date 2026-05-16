@@ -906,7 +906,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
             launch_mode.args().as_ref(),
         ) {
             // If we were able to contact an existing application instance, quit -
-            // we only want to run a single instance of Warp at a time.
+            // we only want to run a single instance of Wish at a time.
             Ok(_) => std::process::exit(0),
             // If Wish isn't already running, we're good to go.
             Err(app_services::linux::StartupArgsForwardingError::NoExistingInstance) => {}
@@ -914,7 +914,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
             Err(app_services::linux::StartupArgsForwardingError::IgnoredAfterAutoUpdate) => {}
             // If we were unable to perform the forwarding for an unknown reason,
             // it's better to run a second instance than potentially end up in a
-            // state where Warp refuses to run even a first instance.
+            // state where Wish refuses to run even a first instance.
             Err(err) => {
                 let err = anyhow::Error::from(err).context("Failed to forward startup args");
                 log::error!("{err:#}");
@@ -929,7 +929,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
             launch_mode.args().as_ref(),
         ) {
             // If we were able to contact an existing application instance, quit -
-            // we only want to run a single instance of Warp at a time.
+            // we only want to run a single instance of Wish at a time.
             Ok(_) => std::process::exit(0),
             // If Wish isn't already running, we're good to go.
             Err(app_services::windows::StartupArgsForwardingError::NoExistingInstance) => {}
@@ -937,7 +937,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
             Err(app_services::windows::StartupArgsForwardingError::IgnoredAfterAutoUpdate) => {}
             // If we were unable to perform the forwarding for an unknown reason,
             // it's better to run a second instance than potentially end up in a
-            // state where Warp refuses to run even a first instance.
+            // state where Wish refuses to run even a first instance.
             Err(err) => {
                 let err = anyhow::Error::from(err).context("Failed to forward startup args");
                 log::error!("{err:#}");
@@ -946,7 +946,7 @@ fn run_internal(mut launch_mode: LaunchMode) -> Result<()> {
         }
     }
 
-    // Sets up a Job Object that we associate with the Warp process to handle
+    // Sets up a Job Object that we associate with the Wish process to handle
     // shared fate with its child processes. This should be called before we
     // start spawning any child processes.
     #[cfg(windows)]
@@ -1503,7 +1503,7 @@ pub(crate) fn initialize_app(
         apply_scroll_multiplier(event, ctx);
     });
 
-    // Rewrite recognized Warp web URLs (sessions, Drive, settings, home) into local
+    // Rewrite recognized Wish web URLs (sessions, Drive, settings, home) into local
     // intent URLs when possible so they open directly in the desktop app.
     ctx.set_before_open_url(|url_str, _ctx| {
         if let Ok(url) = Url::parse(url_str) {
@@ -2137,7 +2137,7 @@ pub(crate) fn app_callbacks(is_integration_test: bool) -> wishui::platform::AppC
             });
 
             // We want to tear down the terminal server before relaunching for
-            // autoupdate, to ensure we're not running any extra Warp processes
+            // autoupdate, to ensure we're not running any extra Wish processes
             // when we bring up the new process.  Additionally, this must occur
             // after terminating the persistence writer, so we don't keep track
             // of the fact that the shell sessions terminated.
@@ -3011,11 +3011,11 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::LSPAsATool,
         #[cfg(feature = "inline_profile_selector")]
         FeatureFlag::InlineProfileSelector,
-        #[cfg(feature = "oz_platform_skills")]
+        #[cfg(feature = "hermon_platform_skills")]
         FeatureFlag::HermonPlatformSkills,
-        #[cfg(feature = "oz_identity_federation")]
+        #[cfg(feature = "hermon_identity_federation")]
         FeatureFlag::HermonIdentityFederation,
-        #[cfg(feature = "oz_changelog_updates")]
+        #[cfg(feature = "hermon_changelog_updates")]
         FeatureFlag::HermonChangelogUpdates,
         #[cfg(feature = "bundled_skills")]
         FeatureFlag::BundledSkills,
@@ -3061,7 +3061,7 @@ pub fn enabled_features() -> HashSet<FeatureFlag> {
         FeatureFlag::TabConfigs,
         #[cfg(feature = "agent_harness")]
         FeatureFlag::AgentHarness,
-        #[cfg(feature = "oz_handoff")]
+        #[cfg(feature = "hermon_handoff")]
         FeatureFlag::HermonHandoff,
         #[cfg(feature = "handoff_local_cloud")]
         FeatureFlag::HandoffLocalCloud,

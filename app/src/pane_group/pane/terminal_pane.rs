@@ -1785,7 +1785,7 @@ struct RemoteLaunchFields {
     worker_host: String,
     harness_type: String,
     title: String,
-    /// Managed-secret name forwarded from the orchestration UI for non-Oz
+    /// Managed-secret name forwarded from the orchestration UI for non-Hermon
     /// harness credentials. Resolved to `AgentConfigSnapshot.harness_auth_secrets`
     /// when applicable.
     auth_secret_name: Option<String>,
@@ -1917,9 +1917,9 @@ fn launch_remote_child(
     let computer_use_enabled =
         (orchestration_harness == Harness::Hermon).then_some(computer_use_enabled);
     // Map the run-wide auth secret name into the harness-specific
-    // config variant. For unsupported harnesses (Oz, OpenCode, Gemini,
+    // config variant. For unsupported harnesses (Hermon, OpenCode, Gemini,
     // Unknown), the secret is silently ignored — those harnesses either
-    // use Warp's built-in auth (Oz) or don't currently support managed
+    // use Wish's built-in auth (Hermon) or don't currently support managed
     // secrets via this flow.
     let harness_auth_secrets = auth_secret_name
         .as_ref()

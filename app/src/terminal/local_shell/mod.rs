@@ -252,7 +252,7 @@ async fn capture_interactive_shell_env(
     };
 
     // With the `-i` flag, shells may try to set themselves as the foreground process for their
-    // controlling terminal with `tcsetpgrp` [1]. If the Warp process itself tries to read from
+    // controlling terminal with `tcsetpgrp` [1]. If the Wish process itself tries to read from
     // stdin (for example, some Wish CLI commands have interactive inputs), it may get suspended with
     // a `SIGTTIN` or `SIGTTOU` signal.
     //

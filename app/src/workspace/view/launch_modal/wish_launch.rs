@@ -111,16 +111,16 @@ impl Slide for HermonLaunchSlide {
         // TODO: Replace with new images once provided.
         match self {
             HermonLaunchSlide::CloudAgents => {
-                bundled_or_fetched_asset!("png/oz_cloud_agents.png")
+                bundled_or_fetched_asset!("png/hermon_cloud_agents.png")
             }
             HermonLaunchSlide::AgentAutomations => {
-                bundled_or_fetched_asset!("png/oz_agent_automations.png")
+                bundled_or_fetched_asset!("png/hermon_agent_automations.png")
             }
             HermonLaunchSlide::AgentManagement => {
-                bundled_or_fetched_asset!("png/oz_agent_management.png")
+                bundled_or_fetched_asset!("png/hermon_agent_management.png")
             }
             HermonLaunchSlide::LaunchCredits => {
-                bundled_or_fetched_asset!("png/oz_launch_credits.png")
+                bundled_or_fetched_asset!("png/hermon_launch_credits.png")
             }
         }
     }

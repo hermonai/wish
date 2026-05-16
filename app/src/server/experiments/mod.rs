@@ -51,8 +51,8 @@ pub enum ServerExperiment {
     PromptSuggestionsViaMaaOutOfBandExperiment,
     FreeUserNoAiControl,
     FreeUserNoAiExperiment,
-    OzMultiHarnessControl,
-    OzMultiHarnessExperiment,
+    HermonMultiHarnessControl,
+    HermonMultiHarnessExperiment,
     SshRemoteServerControl,
     SshRemoteServerExperiment,
     /// A test-only experiment.
@@ -148,10 +148,10 @@ impl ServerExperiment {
             Self::FreeUserNoAiExperiment => {
                 FeatureFlag::FreeUserNoAi.set_enabled(true);
             }
-            Self::OzMultiHarnessControl => {
+            Self::HermonMultiHarnessControl => {
                 FeatureFlag::AgentHarness.set_enabled(false);
             }
-            Self::OzMultiHarnessExperiment => {
+            Self::HermonMultiHarnessExperiment => {
                 FeatureFlag::AgentHarness.set_enabled(true);
             }
             Self::SshRemoteServerControl => {

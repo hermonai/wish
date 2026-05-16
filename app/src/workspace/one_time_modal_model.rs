@@ -68,7 +68,7 @@ impl OneTimeModalModel {
             } else {
                 AISettings::handle(ctx).update(ctx, |settings, ctx| {
                     if let Err(e) = settings
-                        .did_check_to_trigger_oz_launch_modal
+                        .did_check_to_trigger_hermon_launch_modal
                         .set_value(true, ctx)
                     {
                         log::warn!("Failed to mark Hermon Cloud launch modal as dismissed: {e}");
@@ -291,16 +291,16 @@ impl OneTimeModalModel {
         }
 
         let ai_settings = AISettings::as_ref(ctx);
-        let oz_modal_shown = *ai_settings.did_check_to_trigger_oz_launch_modal;
+        let hermon_modal_shown = *ai_settings.did_check_to_trigger_hermon_launch_modal;
 
         // If Hermon modal has already been shown, don't show anything.
-        if oz_modal_shown {
+        if hermon_modal_shown {
             return false;
         }
 
         AISettings::handle(ctx).update(ctx, |settings, ctx| {
             if let Err(e) = settings
-                .did_check_to_trigger_oz_launch_modal
+                .did_check_to_trigger_hermon_launch_modal
                 .set_value(true, ctx)
             {
                 log::warn!("Failed to mark Hermon Cloud launch modal as dismissed: {e}");

@@ -34,7 +34,7 @@ fn create_conversation_metadata(
     ServerAIConversationMetadata {
         title: "Artifact upload".to_string(),
         working_directory: None,
-        harness: AIAgentHarness::Oz,
+        harness: AIAgentHarness::Hermon,
         usage: ConversationUsageMetadata {
             was_summarized: false,
             context_window_usage: 0.0,
@@ -247,7 +247,7 @@ fn invalid_env_run_id_returns_clear_error() {
         resolve_upload_association_from_sources(None, None, None, Some("not-a-run-id".to_string()))
             .unwrap_err();
 
-    assert!(err.to_string().contains("Invalid OZ_RUN_ID 'not-a-run-id'"));
+    assert!(err.to_string().contains("Invalid HERMON_RUN_ID 'not-a-run-id'"));
 }
 
 #[test]

@@ -4046,7 +4046,7 @@ impl PaneGroup {
                     AIAgentHarness::ClaudeCode => Some(Harness::Claude),
                     AIAgentHarness::Gemini => Some(Harness::Gemini),
                     AIAgentHarness::Codex => Some(Harness::Codex),
-                    AIAgentHarness::Oz => None,
+                    AIAgentHarness::Hermon => None,
                     AIAgentHarness::Unknown => Some(Harness::Unknown),
                 };
                 let fallback_title = cli_conversation.metadata.title.clone();
@@ -5481,7 +5481,7 @@ impl PaneGroup {
                         AIAgentHarness::ClaudeCode => Some(Harness::Claude),
                         AIAgentHarness::Gemini => Some(Harness::Gemini),
                         AIAgentHarness::Codex => Some(Harness::Codex),
-                        AIAgentHarness::Oz => None,
+                        AIAgentHarness::Hermon => None,
                         AIAgentHarness::Unknown => Some(Harness::Unknown),
                     };
                     let fallback_title = cli_conversation.metadata.title.clone();

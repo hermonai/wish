@@ -92,7 +92,7 @@ pub struct OrchestrationEditState {
     pub harness_type: String,
     pub execution_mode: RunAgentsExecutionMode,
     /// Managed-secret name selected for the active harness, when the
-    /// harness is non-Oz and the execution mode is Cloud.
+    /// harness is non-Hermon and the execution mode is Cloud.
     /// Persisted side-channel via `CloudAgentSettings.last_selected_auth_secret`
     /// and propagated onto `RunAgentsRequest.harness_auth_secret_name` at
     /// dispatch time. The proto does NOT carry this field.
@@ -368,10 +368,10 @@ pub fn new_standard_picker_dropdown<A: OrchestrationControlAction, V: View>(
 
 /// Populates the model picker based on the active harness.
 ///
-/// - **Oz / empty**: shows the Warp LLM catalog (existing behavior).
+/// - **Hermon / empty**: shows the Warp LLM catalog (existing behavior).
 /// - **Local Codex**: shows only a "Default model" entry (no model delivery
 ///   possible for local Codex children).
-/// - **Other non-Oz harnesses**: shows "Default model" at the top, followed
+/// - **Other non-Hermon harnesses**: shows "Default model" at the top, followed
 ///   by the server-provided harness model catalog from
 ///   `HarnessAvailabilityModel::models_for()`.
 pub fn populate_model_picker_for_harness<A: OrchestrationControlAction, V: View>(
@@ -387,7 +387,7 @@ pub fn populate_model_picker_for_harness<A: OrchestrationControlAction, V: View>
         let harness = Harness::parse_orchestration_harness(&harness_type);
         match harness {
             Some(Harness::Hermon) | None => {
-                // Oz / unset: current behavior — Warp LLM catalog.
+                // Hermon / unset: current behavior — Warp LLM catalog.
                 let llm_prefs = LLMPreferences::as_ref(ctx_dropdown);
                 let choices: Vec<_> = llm_prefs
                     .get_base_llm_choices_for_agent_mode(ctx_dropdown)
@@ -499,7 +499,7 @@ pub fn is_model_in_filtered_choices<V: View>(
 
 /// Returns the default model_id for the given harness.
 ///
-/// For Oz this is the first Warp LLM; for non-Oz harnesses it is an empty
+/// For Oz this is the first Warp LLM; for non-Hermon harnesses it is an empty
 /// string (the "Default model" entry).
 pub fn first_filtered_model_id<V: View>(
     harness_type: &str,
@@ -742,10 +742,10 @@ pub fn persist_environment_selection<V: View>(environment_id: &str, ctx: &mut Vi
 /// Returns `true` when the orchestration UI should expose the auth
 /// secret picker for the given edit state. Currently gated on:
 /// - execution mode is `Remote` (Cloud), AND
-/// - harness is non-Oz, AND
+/// - harness is non-Hermon, AND
 /// - the harness has at least one supported auth-secret type.
 ///
-/// Local non-Oz children inherit auth from the user's shell environment,
+/// Local non-Hermon children inherit auth from the user's shell environment,
 /// matching cloud-mode's `AuthSecretSelector` gating.
 pub fn should_show_auth_secret_picker(state: &OrchestrationEditState) -> bool {
     if !state.execution_mode.is_remote() {
@@ -938,7 +938,7 @@ pub fn apply_harness_change<A: OrchestrationControlAction, V: View>(
         state.model_id = saved_id;
     } else if !is_model_in_filtered_choices(&state.model_id, new_harness_type, is_local, ctx) {
         // No saved model — fall back to conversation base model
-        // for Oz, or default for non-Oz.
+        // for Oz, or default for non-Hermon.
         let reset_id = fallback_base_model_id(ctx)
             .filter(|id| is_model_in_filtered_choices(id, new_harness_type, is_local, ctx))
             .or_else(|| first_filtered_model_id(new_harness_type, ctx))

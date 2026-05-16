@@ -662,7 +662,7 @@ fn create_server_conversation_metadata(
     ServerAIConversationMetadata {
         title: title.to_string(),
         working_directory: None,
-        harness: AIAgentHarness::Oz,
+        harness: AIAgentHarness::Hermon,
         usage: ConversationUsageMetadata {
             was_summarized: false,
             context_window_usage: 0.0,

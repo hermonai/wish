@@ -195,7 +195,7 @@ impl CodexHarnessRunner {
         terminal_driver: ModelHandle<TerminalDriver>,
         resume: Option<CodexResumeInfo>,
     ) -> Result<Self, AgentDriverError> {
-        let temp_file = write_temp_file("oz_prompt_", prompt, ".txt")?;
+        let temp_file = write_temp_file("hermon_prompt_", prompt, ".txt")?;
         let prompt_path = temp_file.path().display().to_string();
 
         let (session_id, preexisting_conversation_id, transcript_path) = match resume {

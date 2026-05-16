@@ -19,7 +19,7 @@ use crate::{
 pub struct ChangelogModel {
     pub changelog: ChangelogState,
     pub parsed_changelog: HashMap<String, FormattedText>,
-    pub oz_updates: Vec<FormattedText>,
+    pub hermon_updates: Vec<FormattedText>,
     pub server_api: Arc<ServerApi>,
     pub image: Option<AssetSource>,
 }
@@ -29,7 +29,7 @@ impl ChangelogModel {
         Self {
             changelog: ChangelogState::None,
             parsed_changelog: HashMap::new(),
-            oz_updates: Vec::new(),
+            hermon_updates: Vec::new(),
             server_api,
             image: None,
         }
@@ -79,8 +79,8 @@ impl ChangelogModel {
         match changelog {
             Ok(Some(changelog)) => {
                 if FeatureFlag::HermonChangelogUpdates.is_enabled() {
-                    self.oz_updates = changelog
-                        .oz_updates
+                    self.hermon_updates = changelog
+                        .hermon_updates
                         .iter()
                         .filter_map(|update_markdown| parse_markdown(update_markdown).ok())
                         .collect();

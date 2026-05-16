@@ -67,7 +67,7 @@ const NO_RESULTS_LABEL: &str = "No results";
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ModelSelectorAction {
     ToggleMenu,
-    /// Select an Oz Agent Mode model.
+    /// Select an Hermon Agent Mode model.
     SelectModel(LLMId),
     /// Select a model for a third-party harness, identified by the harness config name and
     /// opaque model id (e.g. `"opus"`).
@@ -89,7 +89,8 @@ pub struct HarnessSelection {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ModelSelection {
-    Oz(LLMId),
+    /// The Hermon agent backend (was named `Oz` pre-v0.5.0).
+    Hermon(LLMId),
     Harness(HarnessSelection),
 }
 
@@ -103,7 +104,7 @@ pub struct ModelSelector {
     terminal_view_id: EntityId,
     /// Optional handle to the ambient agent view model, used to determine the
     /// active execution harness in cloud mode v2 and to read/write the user's
-    /// harness model selection. When `None`, the selector always renders Oz
+    /// harness model selection. When `None`, the selector always renders Hermon
     /// Agent Mode models.
     ambient_agent_model: Option<ModelHandle<AmbientAgentViewModel>>,
 }
@@ -387,7 +388,7 @@ impl ModelSelector {
         let query = self.search_query.trim().to_lowercase();
 
         // Branch on harness: third-party harnesses show their own model list (e.g. opus,
-        // sonnet, haiku), while Oz / no-harness fall back to the Agent Mode LLM list.
+        // sonnet, haiku), while Hermon / no-harness fall back to the Agent Mode LLM list.
         let (mut items, selected_action): (
             Vec<MenuItem<ModelSelectorAction>>,
             ModelSelectorAction,
@@ -422,7 +423,7 @@ impl ModelSelector {
         });
     }
 
-    /// Builds menu items for the Oz Agent Mode model list and the action that should be
+    /// Builds menu items for the Hermon Agent Mode model list and the action that should be
     /// pre-selected for the current view's active model.
     fn build_oz_menu_items(
         &self,

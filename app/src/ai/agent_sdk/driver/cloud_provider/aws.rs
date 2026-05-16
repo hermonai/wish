@@ -36,7 +36,7 @@ impl AwsCloudProvider {
     pub fn new(config: &AwsProviderConfig, run_id: &str) -> Result<Self> {
         // The `tempfile` crate defaults to creating temporary files with user-only permissions.
         let token_file = Builder::new()
-            .prefix(&format!("oz_aws_oidc_{run_id}_"))
+            .prefix(&format!("hermon_aws_oidc_{run_id}_"))
             .suffix(".token")
             .tempfile()
             .context("Failed to create temporary AWS OIDC token file")

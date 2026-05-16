@@ -31,8 +31,8 @@ use wish_managed_secrets::ManagedSecretValue;
 use super::terminal::{CommandHandle, TerminalDriver};
 use super::{
     AgentDriver, AgentDriverError, LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV,
-    LEGACY_OZ_PARENT_STATE_ROOT_ENV, OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV,
-    OZ_MESSAGE_LISTENER_STATE_ROOT_ENV,
+    LEGACY_OZ_PARENT_STATE_ROOT_ENV, HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV,
+    HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
 };
 
 pub(crate) mod claude_code;
@@ -275,7 +275,7 @@ fn insert_task_env_var_aliases(
 
 fn message_listener_state_root() -> Option<String> {
     [
-        OZ_MESSAGE_LISTENER_STATE_ROOT_ENV,
+        HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
         LEGACY_OZ_PARENT_STATE_ROOT_ENV,
     ]
     .into_iter()
@@ -320,7 +320,7 @@ fn task_env_vars_for_harness_name(
         insert_task_env_var_aliases(
             &mut env_vars,
             &[
-                OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV,
+                HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV,
                 LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV,
             ],
             "1",
@@ -329,7 +329,7 @@ fn task_env_vars_for_harness_name(
             insert_task_env_var_aliases(
                 &mut env_vars,
                 &[
-                    OZ_MESSAGE_LISTENER_STATE_ROOT_ENV,
+                    HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
                     LEGACY_OZ_PARENT_STATE_ROOT_ENV,
                 ],
                 &state_root,

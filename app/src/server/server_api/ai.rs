@@ -2582,7 +2582,7 @@ impl From<wish_graphql::workspace::DisableReason> for DisableReason {
 
 fn convert_harness(harness: wish_graphql::ai::AgentHarness) -> AIAgentHarness {
     match harness {
-        wish_graphql::ai::AgentHarness::Oz => AIAgentHarness::Oz,
+        wish_graphql::ai::AgentHarness::Oz => AIAgentHarness::Hermon,
         wish_graphql::ai::AgentHarness::ClaudeCode => AIAgentHarness::ClaudeCode,
         wish_graphql::ai::AgentHarness::Gemini => AIAgentHarness::Gemini,
         wish_graphql::ai::AgentHarness::Codex => AIAgentHarness::Codex,

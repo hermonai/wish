@@ -14,11 +14,11 @@ use watcher::{BulkFilesystemWatcher, BulkFilesystemWatcherEvent};
 use wishui::ModelHandle;
 use wishui::{Entity, ModelContext, SingletonEntity};
 
-/// Duration between filesystem watch events for the Warp managed paths watcher, in milliseconds.
+/// Duration between filesystem watch events for the Wish managed paths watcher, in milliseconds.
 #[cfg(not(target_family = "wasm"))]
 const WARP_MANAGED_PATHS_WATCHER_DEBOUNCE_MILLI_SECS: u64 = 500;
 
-pub(crate) fn warp_data_dir() -> PathBuf {
+pub(crate) fn wish_data_dir() -> PathBuf {
     wish_core::paths::data_dir()
 }
 
@@ -27,7 +27,7 @@ pub(crate) fn ensure_warp_watch_roots_exist() {}
 
 #[cfg(not(target_family = "wasm"))]
 pub(crate) fn ensure_warp_watch_roots_exist() {
-    let data_dir = warp_data_dir();
+    let data_dir = wish_data_dir();
     if let Err(err) = fs::create_dir_all(&data_dir) {
         log::warn!(
             "Failed to create Wish data directory {}: {err}",
@@ -242,7 +242,7 @@ impl WarpManagedPathsWatcher {
         ctx.subscribe_to_model(&watcher, Self::handle_fs_event);
 
         if should_register_watcher {
-            let data_dir = warp_data_dir();
+            let data_dir = wish_data_dir();
             let config_local_dir = wish_core::paths::config_local_dir();
             let should_register_config_local_dir = config_local_dir != data_dir;
             let worktrees_dir = data_dir.join("worktrees");

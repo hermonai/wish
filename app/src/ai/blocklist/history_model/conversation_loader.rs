@@ -115,7 +115,7 @@ pub async fn load_conversation_from_server(
     {
         Ok((conversation_data, server_metadata)) => {
             match server_metadata.harness {
-                AIAgentHarness::Oz => {
+                AIAgentHarness::Hermon => {
                     // Convert Oz conversations to an AIConversation.
                     match convert_conversation_data_to_ai_conversation(
                         conversation_id,

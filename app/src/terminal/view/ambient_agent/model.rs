@@ -966,7 +966,7 @@ impl AmbientAgentViewModel {
     pub(crate) fn build_default_spawn_config(&self, ctx: &AppContext) -> AgentConfigSnapshot {
         let selected_harness = self.selected_harness();
         let computer_use_enabled = if selected_harness == Harness::Hermon {
-            // If the harness is Oz, determine computer use based on workspace AI autonomy settings.
+            // If the harness is Hermon, determine computer use based on workspace AI autonomy settings.
             let CloudAgentComputerUseState { enabled, .. } =
                 ComputerUsePermission::resolve_cloud_agent_state(ctx);
             Some(enabled)
@@ -974,7 +974,7 @@ impl AmbientAgentViewModel {
             None
         };
 
-        let oz_model = (selected_harness == Harness::Hermon).then(|| {
+        let hermon_model = (selected_harness == Harness::Hermon).then(|| {
             LLMPreferences::as_ref(ctx)
                 .get_active_base_model(ctx, Some(self.terminal_view_id))
                 .id
@@ -1002,7 +1002,7 @@ impl AmbientAgentViewModel {
 
         AgentConfigSnapshot {
             environment_id: self.environment_id.as_ref().map(|id| id.to_string()),
-            model_id: oz_model,
+            model_id: hermon_model,
             computer_use_enabled,
             worker_host: self.worker_host.clone(),
             harness: third_party_harness,

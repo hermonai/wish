@@ -55,7 +55,7 @@ use crate::{
 
 const CLOUD_AGENT_DOCS_URL: &str =
     "https://wish.hermon.ai/docs/agent-platform/cloud-agents/overview";
-const OZ_UPDATES_SECTION_HEADER: &str = "What's new in Hermon Agent";
+const HERMON_UPDATES_SECTION_HEADER: &str = "What's new in Hermon Agent";
 
 // The maximum number of Hermon Agent updates from the changelog rendered in-line in the 'What's new in Hermon Agent section'.
 const MAX_OZ_UPDATE_COUNT: usize = 4;
@@ -69,7 +69,7 @@ struct StateHandles {
     switch_model: MouseStateHandle,
     exit: MouseStateHandle,
     init_callout: MouseStateHandle,
-    oz_updates: MouseStateHandle,
+    hermon_updates: MouseStateHandle,
     changelog_link: MouseStateHandle,
     recent_conversations: [MouseStateHandle; MAX_RECENT_CONVERSATION_COUNT],
     update_hyperlinks: Vec<HighlightedHyperlink>,
@@ -220,7 +220,7 @@ impl AgentViewZeroStateBlock {
             if let changelog_model::Event::ChangelogRequestComplete { .. } = event {
                 let oz_update_count = changelog_model
                     .as_ref(ctx)
-                    .oz_updates
+                    .hermon_updates
                     .len()
                     .min(MAX_OZ_UPDATE_COUNT);
                 if oz_update_count != me.state_handles.update_hyperlinks.len() {
@@ -237,7 +237,7 @@ impl AgentViewZeroStateBlock {
                     AISettingsChangedEvent::ShouldShowHermonUpdatesInZeroState { .. }
                 )
                 && FeatureFlag::HermonChangelogUpdates.is_enabled()
-                && !ChangelogModel::as_ref(ctx).oz_updates.is_empty();
+                && !ChangelogModel::as_ref(ctx).hermon_updates.is_empty();
             if should_rerender_for_oz_updates_visibility {
                 ctx.notify();
             }
@@ -247,7 +247,7 @@ impl AgentViewZeroStateBlock {
         state_handles.update_hyperlinks.resize(
             changelog_model
                 .as_ref(ctx)
-                .oz_updates
+                .hermon_updates
                 .len()
                 .min(MAX_OZ_UPDATE_COUNT),
             Default::default(),
@@ -1009,7 +1009,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
     if !should_render_oz_updates_section(
         FeatureFlag::HermonChangelogUpdates.is_enabled(),
         should_show_oz_updates,
-        !changelog_model.oz_updates.is_empty(),
+        !changelog_model.hermon_updates.is_empty(),
     ) {
         return None;
     }
@@ -1055,7 +1055,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
                         .with_child(
                             Container::new(
                                 Text::new(
-                                    OZ_UPDATES_SECTION_HEADER,
+                                    HERMON_UPDATES_SECTION_HEADER,
                                     appearance.ui_font_family(),
                                     appearance.monospace_font_size() - 2.,
                                 )
@@ -1069,13 +1069,13 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
                         .with_child(
                             Container::new(
                                 Text::new(
-                                    if changelog_model.oz_updates.len() == 1 {
+                                    if changelog_model.hermon_updates.len() == 1 {
                                         "1 update".to_owned()
                                     } else {
                                         format!(
                                             "{} updates",
                                             changelog_model
-                                                .oz_updates
+                                                .hermon_updates
                                                 .len()
                                                 .min(MAX_OZ_UPDATE_COUNT)
                                         )
@@ -1168,7 +1168,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
 
     if is_expanded {
         for (i, update) in changelog_model
-            .oz_updates
+            .hermon_updates
             .iter()
             .enumerate()
             .take(MAX_OZ_UPDATE_COUNT)
@@ -1193,7 +1193,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
             .with_line_height_ratio(1.2)
             .finish();
 
-            if i < changelog_model.oz_updates.len().min(MAX_OZ_UPDATE_COUNT) - 1 {
+            if i < changelog_model.hermon_updates.len().min(MAX_OZ_UPDATE_COUNT) - 1 {
                 text = Container::new(text).with_margin_bottom(8.).finish();
             }
             body.add_child(text);
@@ -1201,7 +1201,7 @@ fn render_oz_updates(props: OzUpdatesProps<'_>, app: &AppContext) -> Option<Box<
     }
 
     Some(
-        Hoverable::new(state_handles.oz_updates.clone(), |_| {
+        Hoverable::new(state_handles.hermon_updates.clone(), |_| {
             Container::new(body.finish())
                 .with_vertical_padding(8.)
                 .with_horizontal_padding(12.)

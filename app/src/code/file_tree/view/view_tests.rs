@@ -616,7 +616,7 @@ fn click_on_file_under_absorbed_descendant_keeps_file_selected() {
                 )]);
             let code = dirs.tests().join("code");
             let wish_server = code.join("wish-server");
-            let main_rs = warp_server.join("main.rs");
+            let main_rs = wish_server.join("main.rs");
 
             App::test((), |mut app| async move {
                 let _ = initialize_app(&mut app);
@@ -628,7 +628,7 @@ fn click_on_file_under_absorbed_descendant_keeps_file_selected() {
                 file_tree_view.update(&mut app, |view, ctx| {
                     view.set_is_active(true, ctx);
                     view.set_root_directories(vec![code.clone()], ctx);
-                    view.toggle_folder_expansion(&std_path(&code), &std_path(&warp_server), ctx);
+                    view.toggle_folder_expansion(&std_path(&code), &std_path(&wish_server), ctx);
                 });
 
                 // Simulate a click on main.rs (select_id is what the click
@@ -652,7 +652,7 @@ fn click_on_file_under_absorbed_descendant_keeps_file_selected() {
                 // opening in a code view — the working-directories-model adds
                 // the file's repo/parent (warp-server) to the active set.
                 file_tree_view.update(&mut app, |view, ctx| {
-                    view.set_root_directories(vec![warp_server.clone(), code.clone()], ctx);
+                    view.set_root_directories(vec![wish_server.clone(), code.clone()], ctx);
                 });
 
                 file_tree_view.read(&app, |view, _ctx| {
@@ -690,7 +690,7 @@ fn pending_focus_target_does_not_re_scroll_after_first_apply() {
 
             file_tree_view.update(&mut app, |view, ctx| {
                 view.set_is_active(true, ctx);
-                view.set_root_directories(vec![warp_server.clone(), tree.clone()], ctx);
+                view.set_root_directories(vec![wish_server.clone(), tree.clone()], ctx);
             });
 
             // Initial apply should have scrolled once.
@@ -711,7 +711,7 @@ fn pending_focus_target_does_not_re_scroll_after_first_apply() {
                 let selected = view.selected_item.clone().expect("selection");
                 let root_dir = view.root_directories.get(&std_path(&tree)).unwrap();
                 let path = root_dir.items.get(selected.index).unwrap().path();
-                assert_eq!(path, &std_path(&warp_server));
+                assert_eq!(path, &std_path(&wish_server));
                 let pending = view.pending_focus_target.as_ref().expect("pending");
                 assert!(pending.scrolled, "scrolled flag stays set after re-apply");
             });
@@ -739,7 +739,7 @@ fn focus_follows_absorbed_descendant_once_its_item_is_materialized() {
             // selected as the focus-follow target.
             file_tree_view.update(&mut app, |view, ctx| {
                 view.set_is_active(true, ctx);
-                view.set_root_directories(vec![warp_server.clone(), tree.clone()], ctx);
+                view.set_root_directories(vec![wish_server.clone(), tree.clone()], ctx);
             });
 
             file_tree_view.read(&app, |view, _ctx| {
@@ -753,7 +753,7 @@ fn focus_follows_absorbed_descendant_once_its_item_is_materialized() {
                     .items
                     .get(selected.index)
                     .expect("selected index in range");
-                assert_eq!(selected_item.path(), &std_path(&warp_server));
+                assert_eq!(selected_item.path(), &std_path(&wish_server));
                 // Pending target is preserved across rebuilds so later
                 // repo-metadata updates don't override the cwd-follow
                 // selection. It clears when the user interacts explicitly
@@ -763,7 +763,7 @@ fn focus_follows_absorbed_descendant_once_its_item_is_materialized() {
                     .as_ref()
                     .expect("pending target preserved");
                 assert_eq!(pending.root, std_path(&tree));
-                assert_eq!(pending.path, std_path(&warp_server));
+                assert_eq!(pending.path, std_path(&wish_server));
                 // The initial apply scrolled; later applies must not
                 // re-scroll so user scrolling is respected.
                 assert!(pending.scrolled, "initial apply scrolls the tree");
@@ -780,7 +780,7 @@ fn focus_follows_absorbed_descendant_once_its_item_is_materialized() {
                 // Sanity: the first item is the root header, not warp-server.
                 assert_ne!(
                     root_dir.items.first().unwrap().path(),
-                    &std_path(&warp_server)
+                    &std_path(&wish_server)
                 );
                 view.select_id(&id, ctx);
             });

@@ -243,7 +243,7 @@ enum TerminalPrimaryLineFont {
     Monospace,
 }
 
-fn oz_icon_fill(theme: &WarpTheme) -> WarpThemeFill {
+fn hermon_icon_fill(theme: &WarpTheme) -> WarpThemeFill {
     theme.main_text_color(theme.background())
 }
 
@@ -1322,7 +1322,7 @@ fn render_detail_kind_badge_icon(
                 WarpIcon::Terminal
             };
             let color = match icon {
-                WarpIcon::Hermon | WarpIcon::HermonCloud => oz_icon_fill(theme),
+                WarpIcon::Hermon | WarpIcon::HermonCloud => hermon_icon_fill(theme),
                 WarpIcon::Terminal => disabled_text,
                 _ => sub_text,
             };
@@ -3882,7 +3882,7 @@ fn render_summary_pane_kind_icon_circle(
     let (icon_element, background): (Box<dyn Element>, ElementFill) = match kind {
         SummaryPaneKind::HermonAgent { .. } => (
             WarpIcon::Hermon
-                .to_wishui_icon(oz_icon_fill(theme))
+                .to_wishui_icon(hermon_icon_fill(theme))
                 .finish(),
             theme.background().into(),
         ),

@@ -81,7 +81,7 @@ pub fn icon_fill_on_circle(harness: Harness, theme: &WarpTheme) -> WarpThemeFill
 impl From<AIAgentHarness> for Harness {
     fn from(harness: AIAgentHarness) -> Self {
         match harness {
-            AIAgentHarness::Oz => Harness::Hermon,
+            AIAgentHarness::Hermon => Harness::Hermon,
             AIAgentHarness::ClaudeCode => Harness::Claude,
             AIAgentHarness::Gemini => Harness::Gemini,
             AIAgentHarness::Codex => Harness::Codex,

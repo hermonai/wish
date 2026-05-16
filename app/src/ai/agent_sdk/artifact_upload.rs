@@ -293,7 +293,7 @@ fn parse_run_id(run_id: &str, error_prefix: &str) -> Result<AmbientAgentTaskId> 
 }
 
 fn load_env_run_id() -> Result<Option<String>> {
-    // Prefer the new env var; fall back to the legacy `OZ_RUN_ID` for CI
+    // Prefer the new env var; fall back to the legacy `HERMON_RUN_ID` for CI
     // configs and harness invocations that predate the rename.
     for name in [WISH_RUN_ID_ENV_VAR, LEGACY_RUN_ID_ENV_VAR] {
         match env::var(name) {
@@ -312,7 +312,7 @@ fn resolve_env_run_id(env_run_id: Option<String>) -> Result<AmbientAgentTaskId> 
         bail!("{WISH_RUN_ID_ENV_VAR} is not set");
     };
 
-    parse_run_id(&run_id, "Invalid OZ_RUN_ID")
+    parse_run_id(&run_id, "Invalid HERMON_RUN_ID")
 }
 
 fn resolve_upload_association_from_sources(
@@ -324,8 +324,8 @@ fn resolve_upload_association_from_sources(
     // Precedence is deliberate:
     // 1. An explicit run ID is authoritative and must not silently fall back.
     // 2. A conversation ID stays attached to the artifact even if we have to borrow the ambient
-    //    task ID from `OZ_RUN_ID` because the conversation lacks cloud-task metadata.
-    // 3. `OZ_RUN_ID` becomes the sole source of truth only when the caller supplied nothing else.
+    //    task ID from `HERMON_RUN_ID` because the conversation lacks cloud-task metadata.
+    // 3. `HERMON_RUN_ID` becomes the sole source of truth only when the caller supplied nothing else.
     if let Some(run_id) = explicit_run_id {
         let ambient_task_id = run_id;
         return Ok(ResolvedUploadAssociation {

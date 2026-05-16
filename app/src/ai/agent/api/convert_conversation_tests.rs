@@ -19,7 +19,7 @@ fn test_server_metadata(
     ServerAIConversationMetadata {
         title: "test conversation".to_string(),
         working_directory: None,
-        harness: AIAgentHarness::Oz,
+        harness: AIAgentHarness::Hermon,
         usage: ConversationUsageMetadata {
             was_summarized: false,
             context_window_usage: 0.0,

@@ -212,5 +212,5 @@ fn task_id_from_oz_run_id_env_rejects_invalid_value() {
     let err = task_id_from_oz_run_id_env().expect_err("invalid task id");
     std::env::remove_var(wish_cli::WISH_RUN_ID_ENV);
 
-    assert!(err.to_string().contains("Invalid OZ_RUN_ID"));
+    assert!(err.to_string().contains("Invalid HERMON_RUN_ID"));
 }

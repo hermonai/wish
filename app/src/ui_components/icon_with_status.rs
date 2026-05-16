@@ -165,7 +165,7 @@ pub(crate) fn render_icon_with_status(
             // In ambient/cloud mode use the combined `HermonCloud` silhouette (Hermon Agent + cloud),
             // matching the treatment used in the agent view header. Non-ambient runs
             // continue to use the plain `Hermon` glyph.
-            let oz_glyph = if is_ambient {
+            let hermon_glyph = if is_ambient {
                 WarpIcon::HermonCloud
             } else {
                 WarpIcon::Hermon
@@ -178,7 +178,7 @@ pub(crate) fn render_icon_with_status(
                 theme.main_text_color(theme.background())
             };
             let circle = render_circle(
-                oz_glyph.to_wishui_icon(glyph_color).finish(),
+                hermon_glyph.to_wishui_icon(glyph_color).finish(),
                 circle_background,
                 total_size,
             );

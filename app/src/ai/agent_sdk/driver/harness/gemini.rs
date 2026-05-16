@@ -128,7 +128,7 @@ impl GeminiHarnessRunner {
         client: Arc<dyn HarnessSupportClient>,
         terminal_driver: ModelHandle<TerminalDriver>,
     ) -> Result<Self, AgentDriverError> {
-        let temp_file = write_temp_file("oz_prompt_", prompt, ".txt")?;
+        let temp_file = write_temp_file("hermon_prompt_", prompt, ".txt")?;
         let prompt_path = temp_file.path().display().to_string();
 
         Ok(Self {
@@ -300,7 +300,7 @@ fn prepare_gemini_trusted_folders(trusted_path: &Path, working_dir: &Path) -> Re
 const GEMINI_CONFIG_DIR: &str = ".gemini";
 const GEMINI_SETTINGS_FILE_NAME: &str = "settings.json";
 const GEMINI_TRUSTED_FOLDERS_FILE_NAME: &str = "trustedFolders.json";
-const GEMINI_SYSTEM_PROMPT_FILE_NAME: &str = "OZ_SYSTEM_PROMPT.md";
+const GEMINI_SYSTEM_PROMPT_FILE_NAME: &str = "HERMON_SYSTEM_PROMPT.md";
 /// Auth-type discriminant for API-key auth — matches `AuthType.USE_GEMINI` in
 /// Gemini's `packages/core/src/core/contentGenerator.ts`.
 const GEMINI_API_KEY_AUTH_TYPE: &str = "gemini-api-key";

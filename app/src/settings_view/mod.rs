@@ -381,7 +381,7 @@ impl FromStr for SettingsSection {
             "Wishify" => Ok(Self::Wishify),
             "WarpDrive" | "Wish Drive" => Ok(Self::WarpDrive),
             // This page was called "Hermon" at one point, keep for backward compatibility.
-            "Oz" | "Wish Agent" => Ok(Self::WarpAgent),
+            "Hermon" | "Oz" | "Wish Agent" => Ok(Self::WarpAgent),
             "Profiles" | "AgentProfiles" => Ok(Self::AgentProfiles),
             "MCP servers" | "AgentMCPServers" => Ok(Self::AgentMCPServers),
             "Knowledge" => Ok(Self::Knowledge),

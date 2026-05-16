@@ -233,7 +233,7 @@ fn is_opencode_on_remote(request: &RunAgentsRequest) -> bool {
 /// for the picker display and should NOT run before auto-launch
 /// matching.
 ///
-/// 1. Defaults the Oz model to the conversation's base model.
+/// 1. Defaults the Hermon model to the conversation's base model.
 /// 2. Defaults Remote worker_host to "warp".
 /// 3. Defaults a Remote environment from settings / recency.
 fn resolve_interactive_defaults(
@@ -408,7 +408,7 @@ impl RunAgentsCardView {
         });
 
         // Repopulate the model picker when available Warp LLMs change.
-        // Only relevant for Oz harness — non-Oz harnesses get their
+        // Only relevant for Hermon harness — non-Hermon harnesses get their
         // model catalog from HarnessAvailabilityModel, not LLMPreferences.
         ctx.subscribe_to_model(&LLMPreferences::handle(ctx), |me, _, event, ctx| {
             if let LLMPreferencesEvent::UpdatedAvailableLLMs = event {

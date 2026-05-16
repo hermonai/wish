@@ -353,7 +353,7 @@ fn build_merged_config_and_task(
         model_id: harness_model_id,
     });
 
-    let oz_model = if args.harness == Harness::Hermon {
+    let hermon_model = if args.harness == Harness::Hermon {
         args.model.model.clone().or(file_merged.model_id)
     } else {
         None
@@ -363,7 +363,7 @@ fn build_merged_config_and_task(
         // CLI name > skill name > file name
         name: args.name.clone().or(skill_name).or(file_merged.name),
         environment_id: args.environment.clone().or(file_merged.environment_id),
-        model_id: oz_model,
+        model_id: hermon_model,
         // Skill base_prompt takes precedence over file base_prompt
         base_prompt: runtime_base_prompt.clone().or(file_merged.base_prompt),
         mcp_servers: config_file::merge_mcp_servers(file_merged.mcp_servers, cli_mcp_servers),

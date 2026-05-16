@@ -27,7 +27,7 @@ use crate::ai::agent_events::{
     run_agent_event_driver, AgentEventConsumer, AgentEventConsumerControlFlow,
     AgentEventDriverConfig, MessageHydrator, ServerApiAgentEventSource,
 };
-use crate::ai::agent_sdk::driver::{AgentDriver, OZ_MESSAGE_LISTENER_STATE_ROOT_ENV};
+use crate::ai::agent_sdk::driver::{AgentDriver, HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV};
 use crate::ai::ambient_agents::AmbientAgentTaskId;
 use crate::server::server_api::ai::AIClient;
 use crate::server::server_api::ai::AgentRunEvent;
@@ -247,7 +247,7 @@ impl MessageBridge {
 
 pub(super) fn parent_bridge_root() -> Result<PathBuf> {
     for env_name in [
-        OZ_MESSAGE_LISTENER_STATE_ROOT_ENV,
+        HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV,
         LEGACY_MESSAGE_LISTENER_STATE_ROOT_ENV,
     ] {
         if let Ok(dir) = std::env::var(env_name) {

@@ -122,18 +122,18 @@ const SETUP_FAILED_IDLE_TIMEOUT: Duration = Duration::from_secs(120);
 /// If no follow-up status arrives within this window, the driver terminates with the
 /// original error so the CLI does not hang indefinitely.
 const AUTO_RESUME_TIMEOUT: Duration = Duration::from_secs(120);
-/// Signals to Claude child-harness hooks that Warp already owns the background
+/// Signals to Claude child-harness hooks that Wish already owns the background
 /// message-listener lifecycle, so the plugin should reuse the shared state
 /// files instead of spawning and cleaning up its own listener.
 ///
 /// When this variable is absent, the Claude plugin falls back to its legacy
-/// self-managed listener path so older Warp builds and standalone plugin
+/// self-managed listener path so older Wish builds and standalone plugin
 /// invocations keep working.
-pub(crate) const OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV: &str =
+pub(crate) const HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV: &str =
     "OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY";
 /// Optional root directory for the per-session Claude message-listener state
-/// that Warp and the Claude hook scripts share.
-pub(crate) const OZ_MESSAGE_LISTENER_STATE_ROOT_ENV: &str = "OZ_MESSAGE_LISTENER_STATE_ROOT";
+/// that Wish and the Claude hook scripts share.
+pub(crate) const HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV: &str = "OZ_MESSAGE_LISTENER_STATE_ROOT";
 // Keep exporting the legacy `OZ_PARENT_*` names to child hooks until the
 // external Claude plugin has fully migrated to the canonical
 // `OZ_MESSAGE_LISTENER_*` names.
@@ -142,7 +142,7 @@ const LEGACY_OZ_PARENT_LISTENER_MANAGED_EXTERNALLY_ENV: &str =
 const LEGACY_OZ_PARENT_STATE_ROOT_ENV: &str = "OZ_PARENT_STATE_ROOT";
 
 /// IdleTimeoutSender is wrapper around a sender that signals when a run is done after
-/// an idle timeout. Used for both Oz runs and third-party harnesses.
+/// an idle timeout. Used for both Hermon runs and third-party harnesses.
 ///
 /// We use a generation-based approach to cancel timers instead of storing timer handles:
 ///
@@ -245,7 +245,7 @@ pub struct AgentDriverOptions {
     pub environment: Option<AmbientAgentEnvironment>,
     /// Selected execution harness for this run.
     pub selected_harness: Harness,
-    /// Model ID for the selected harness. Only used for non-Oz harnesses.
+    /// Model ID for the selected harness. Only used for non-Hermon harnesses.
     pub third_party_harness_model_id: Option<String>,
     /// Whether to skip end-of-run snapshot upload.
     pub snapshot_disabled: Option<bool>,
@@ -281,7 +281,7 @@ pub struct AgentDriver {
     /// Harness adapter for the running agent. This is only set if:
     /// - The harness has started successfully.
     /// - We're using a third-party harness.
-    /// In the future, we _may_ use the harness abstraction for the Oz agent as well.
+    /// In the future, we _may_ use the harness abstraction for the Hermon agent as well.
     harness: Option<Arc<dyn HarnessRunner>>,
 
     // Optional idle timeout after completion. If set, the process will stay alive for follow-ups

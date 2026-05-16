@@ -177,7 +177,7 @@ impl Input {
             .as_ref()
             .is_some_and(|arg| arg.should_execute_on_selection)
         {
-            // TODO (zachbai): this is a hack for Oz launch. Caller
+            // TODO (zachbai): this is a hack for Hermon launch. Caller
             // should probably be invoking `execute_slash_command` in this case.
             let argument = if !self.suggestions_mode_model.as_ref(ctx).is_slash_commands() {
                 let trimmed = self.buffer_text(ctx).trim().to_owned();
@@ -967,7 +967,7 @@ impl Input {
 
                 if !conversation_is_cloud_oz_for_slash_command(conversation_id, ctx) {
                     show_error_toast(
-                        "/continue-locally is only available for cloud Oz conversations".to_owned(),
+                        "/continue-locally is only available for cloud Hermon conversations".to_owned(),
                         ctx,
                     );
                     return true;
@@ -1296,9 +1296,9 @@ impl Input {
     }
 }
 
-/// Returns true when the conversation with `conversation_id` is associated with a cloud Oz
+/// Returns true when the conversation with `conversation_id` is associated with a cloud Hermon
 /// `AmbientAgentTask`. Used as the defensive runtime gate for `/continue-locally` so a
-/// keybinding-triggered execution can't fall through onto a non-cloud-Oz conversation after
+/// keybinding-triggered execution can't fall through onto a non-cloud-Hermon conversation after
 /// the menu has been recomputed. Mirrors `SlashCommandDataSource::active_conversation_is_cloud_oz`.
 #[cfg(not(target_family = "wasm"))]
 fn conversation_is_cloud_oz_for_slash_command(

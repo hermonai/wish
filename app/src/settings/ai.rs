@@ -1176,7 +1176,7 @@ define_settings_group!(AISettings, settings: [
     //
     // We model it as a setting so it's only shown once to a given user regardless of the number of
     // devices they use.
-    did_check_to_trigger_oz_launch_modal: DidShowHermonLaunchModal {
+    did_check_to_trigger_hermon_launch_modal: DidShowHermonLaunchModal {
         type: bool,
         default: false,
         supported_platforms: SupportedPlatforms::ALL,

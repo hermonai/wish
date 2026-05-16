@@ -11,7 +11,7 @@ use wish_cli::{WISH_HARNESS_ENV, WISH_PARENT_RUN_ID_ENV, WISH_RUN_ID_ENV};
 use super::*;
 use crate::ai::agent_events::MessageHydrator;
 use crate::ai::agent_sdk::driver::harness::claude_transcript::encode_cwd;
-use crate::ai::agent_sdk::driver::OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV;
+use crate::ai::agent_sdk::driver::HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV;
 use crate::server::server_api::ai::{MockAIClient, ReadAgentMessageResponse};
 use crate::server::server_api::ServerApiProvider;
 
@@ -211,9 +211,9 @@ fn serialize_claude_mcp_config_sse_server() {
 #[serial_test::serial]
 fn parent_bridge_root_prefers_environment_override() {
     let tmp = TempDir::new().unwrap();
-    std::env::set_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV, tmp.path());
+    std::env::set_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV, tmp.path());
     let root = parent_bridge_root().unwrap();
-    std::env::remove_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV);
+    std::env::remove_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV);
 
     assert_eq!(root, tmp.path());
 }
@@ -261,7 +261,7 @@ async fn parent_bridge_event_cursor_round_trips() {
 #[serial_test::serial]
 fn message_bridge_cleanup_preserves_state_for_wakeable_runs() {
     let tmp = TempDir::new().unwrap();
-    std::env::set_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV, tmp.path());
+    std::env::set_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV, tmp.path());
 
     let session_id = Uuid::new_v4();
     let bridge = MessageBridge::new("run-123".to_string(), session_id).unwrap();
@@ -274,7 +274,7 @@ fn message_bridge_cleanup_preserves_state_for_wakeable_runs() {
     bridge
         .cleanup(MessageBridgeCleanupDisposition::PreserveState)
         .unwrap();
-    std::env::remove_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV);
+    std::env::remove_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV);
 
     assert!(state_dir.exists());
     assert!(parent_bridge_staged_message_path(&state_dir, 42, "msg-123").exists());
@@ -285,7 +285,7 @@ fn message_bridge_cleanup_preserves_state_for_wakeable_runs() {
 #[serial_test::serial]
 fn message_bridge_cleanup_removes_state_for_non_wakeable_runs() {
     let tmp = TempDir::new().unwrap();
-    std::env::set_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV, tmp.path());
+    std::env::set_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV, tmp.path());
 
     let session_id = Uuid::new_v4();
     let bridge = MessageBridge::new("run-123".to_string(), session_id).unwrap();
@@ -301,7 +301,7 @@ fn message_bridge_cleanup_removes_state_for_non_wakeable_runs() {
     bridge
         .cleanup(MessageBridgeCleanupDisposition::RemoveState)
         .unwrap();
-    std::env::remove_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV);
+    std::env::remove_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV);
 
     assert!(!state_dir.exists());
 }
@@ -703,7 +703,7 @@ fn prepare_local_wake_command_rehydrates_transcript_with_self_managed_listener()
 
     std::env::set_var("HOME", home_dir.path());
     std::env::set_var("CLAUDE_CONFIG_DIR", claude_config_dir.path());
-    std::env::set_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV, bridge_state_root.path());
+    std::env::set_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV, bridge_state_root.path());
 
     let session_id = Uuid::new_v4();
     let remote = ClaudeWakeRemoteContext {
@@ -746,7 +746,7 @@ fn prepare_local_wake_command_rehydrates_transcript_with_self_managed_listener()
         shell_quote(&parent_run_id)
     )));
     assert!(command.contains(&format!("{WISH_HARNESS_ENV}={}", shell_quote("claude"))));
-    assert!(!command.contains(OZ_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV));
+    assert!(!command.contains(HERMON_MESSAGE_LISTENER_MANAGED_EXTERNALLY_ENV));
     assert!(!command.contains("OZ_PARENT_LISTENER_MANAGED_EXTERNALLY"));
     assert_eq!(
         fs::read_to_string(&prompt_path).unwrap(),
@@ -769,7 +769,7 @@ fn prepare_local_wake_command_rehydrates_transcript_with_self_managed_listener()
 
     std::env::remove_var("HOME");
     std::env::remove_var("CLAUDE_CONFIG_DIR");
-    std::env::remove_var(OZ_MESSAGE_LISTENER_STATE_ROOT_ENV);
+    std::env::remove_var(HERMON_MESSAGE_LISTENER_STATE_ROOT_ENV);
 }
 
 #[test]

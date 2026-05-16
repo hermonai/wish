@@ -583,8 +583,8 @@ default = [
     "cloud_mode_from_local_session",
     "cloud_mode_image_context",
     "agent_mode_computer_use",
-    "oz_platform_skills",
-    "oz_identity_federation",
+    "hermon_platform_skills",
+    "hermon_identity_federation",
     "sync_ambient_plans",
     "conversation_artifacts",
     "agent_view",
@@ -599,7 +599,7 @@ default = [
     "richtext_multiselect",
     "inline_profile_selector",
     "web_fetch_ui",
-    "oz_changelog_updates",
+    "hermon_changelog_updates",
     "skill_arguments",
     "incremental_auto_reload",
     "active_conversation_requires_interaction",
@@ -733,7 +733,8 @@ mcp_server = []
 mcp_oauth = []
 mcp_debugging_ids = []
 notebook_parameter = []
-oz_changelog_updates = []
+hermon_changelog_updates = []
+oz_changelog_updates = ["hermon_changelog_updates"]
 personal_cloud_objects = []
 # Remote-backed tty that connects to a PTY-like interface via a server.
 remote_tty = []
@@ -903,8 +904,11 @@ summarization_via_message_replacement = []
 lsp_as_a_tool = []
 inline_model_selector = ["agent_view"]
 inline_profile_selector = ["agent_view"]
-oz_platform_skills = []
-oz_identity_federation = []
+hermon_platform_skills = []
+# Legacy alias for back-compat — depends on the canonical name.
+oz_platform_skills = ["hermon_platform_skills"]
+hermon_identity_federation = []
+oz_identity_federation = ["hermon_identity_federation"]
 hermon_launch_modal = []
 open_warp_launch_modal = []
 new_tab_styling = []
@@ -925,7 +929,8 @@ vertical_tabs = []
 vertical_tabs_summary_mode = []
 tab_configs = []
 agent_harness = []
-oz_handoff = []
+hermon_handoff = []
+oz_handoff = ["hermon_handoff"]
 handoff_local_cloud = []
 hoa_notifications = []
 open_code_notifications = []

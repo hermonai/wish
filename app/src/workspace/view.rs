@@ -2879,8 +2879,8 @@ impl Workspace {
 
         let suggested_rule_modal = Self::build_suggested_rule_modal(ctx);
 
-        let oz_launch_view = ctx.add_typed_action_view(LaunchModal::<HermonLaunchSlide>::new);
-        ctx.subscribe_to_view(&oz_launch_view, |me, _, event, ctx| {
+        let hermon_launch_view = ctx.add_typed_action_view(LaunchModal::<HermonLaunchSlide>::new);
+        ctx.subscribe_to_view(&hermon_launch_view, |me, _, event, ctx| {
             me.handle_oz_launch_modal_event(event, ctx);
         });
 
@@ -3365,7 +3365,7 @@ impl Workspace {
             transcript_details_panel,
             tab_fixed_width: None,
             hermon_launch_modal: ModalWithTab {
-                view: oz_launch_view,
+                view: hermon_launch_view,
                 tab_pane_group_id: None,
             },
             openwarp_launch_modal: openwarp_launch_view,
@@ -22719,16 +22719,16 @@ impl TypedActionView for Workspace {
             #[cfg(debug_assertions)]
             ResetHermonLaunchModalState => {
                 // Reset the Hermon launch modal dismissed state for debugging
-                let old_value = *AISettings::as_ref(ctx).did_check_to_trigger_oz_launch_modal;
+                let old_value = *AISettings::as_ref(ctx).did_check_to_trigger_hermon_launch_modal;
                 AISettings::handle(ctx).update(ctx, |ai_settings, ctx| {
                     if let Err(e) = ai_settings
-                        .did_check_to_trigger_oz_launch_modal
+                        .did_check_to_trigger_hermon_launch_modal
                         .set_value(false, ctx)
                     {
                         log::warn!("Failed to reset Hermon launch modal dismissed setting: {e}");
                     }
                 });
-                let new_value = *AISettings::as_ref(ctx).did_check_to_trigger_oz_launch_modal;
+                let new_value = *AISettings::as_ref(ctx).did_check_to_trigger_hermon_launch_modal;
                 log::info!(
                     "Hermon launch modal state: old={}, new={}, feature_flag_enabled={}",
                     old_value,

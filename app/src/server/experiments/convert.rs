@@ -34,8 +34,8 @@ impl Display for ServerExperiment {
             }
             Self::FreeUserNoAiControl => "FREE_USER_NO_AI_CONTROL",
             Self::FreeUserNoAiExperiment => "FREE_USER_NO_AI_EXPERIMENT",
-            Self::OzMultiHarnessControl => "OZ_MULTI_HARNESS_CONTROL",
-            Self::OzMultiHarnessExperiment => "OZ_MULTI_HARNESS_EXPERIMENT",
+            Self::HermonMultiHarnessControl => "OZ_MULTI_HARNESS_CONTROL",
+            Self::HermonMultiHarnessExperiment => "OZ_MULTI_HARNESS_EXPERIMENT",
             Self::SshRemoteServerControl => "SSH_REMOTE_SERVER_CONTROL",
             Self::SshRemoteServerExperiment => "SSH_REMOTE_SERVER_EXPERIMENT",
             #[cfg(test)]
@@ -69,8 +69,8 @@ impl ServerExperiment {
             "PROMPT_SUGGESTIONS_VIA_MAA_EXPERIMENT" => Ok(Self::PromptSuggestionsViaMaaExperiment),
             "FREE_USER_NO_AI_CONTROL" => Ok(Self::FreeUserNoAiControl),
             "FREE_USER_NO_AI_EXPERIMENT" => Ok(Self::FreeUserNoAiExperiment),
-            "OZ_MULTI_HARNESS_CONTROL" => Ok(Self::OzMultiHarnessControl),
-            "OZ_MULTI_HARNESS_EXPERIMENT" => Ok(Self::OzMultiHarnessExperiment),
+            "OZ_MULTI_HARNESS_CONTROL" => Ok(Self::HermonMultiHarnessControl),
+            "OZ_MULTI_HARNESS_EXPERIMENT" => Ok(Self::HermonMultiHarnessExperiment),
             "SSH_REMOTE_SERVER_CONTROL" => Ok(Self::SshRemoteServerControl),
             "SSH_REMOTE_SERVER_EXPERIMENT" => Ok(Self::SshRemoteServerExperiment),
             s => Err(anyhow::anyhow!(
@@ -110,8 +110,10 @@ impl TryFrom<Experiment> for ServerExperiment {
             }
             Experiment::FreeUserNoAiControl => Ok(Self::FreeUserNoAiControl),
             Experiment::FreeUserNoAiExperiment => Ok(Self::FreeUserNoAiExperiment),
-            Experiment::OzMultiHarnessControl => Ok(Self::OzMultiHarnessControl),
-            Experiment::OzMultiHarnessExperiment => Ok(Self::OzMultiHarnessExperiment),
+            // `wish_graphql::Experiment::Oz*` is the wire-format name from the
+            // server; locally we map to the canonical Hermon-named variant.
+            Experiment::OzMultiHarnessControl => Ok(Self::HermonMultiHarnessControl),
+            Experiment::OzMultiHarnessExperiment => Ok(Self::HermonMultiHarnessExperiment),
             Experiment::SshRemoteServerControl => Ok(Self::SshRemoteServerControl),
             Experiment::SshRemoteServerExperiment => Ok(Self::SshRemoteServerExperiment),
             // Experiments that we no longer support on the client.
