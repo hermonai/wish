@@ -38,6 +38,8 @@ pub(super) enum CliTelemetryEvent {
     MCPList,
     /// Executing  `wish model list`
     ModelList,
+    /// Executing any `wish project …` subcommand
+    Project,
     /// Executing  `wish task list`
     TaskList,
     /// Executing  `wish task get`
@@ -147,6 +149,7 @@ impl TelemetryEvent for CliTelemetryEvent {
             CliTelemetryEvent::EnvironmentImageList => None,
             CliTelemetryEvent::MCPList => None,
             CliTelemetryEvent::ModelList => None,
+            CliTelemetryEvent::Project => None,
             CliTelemetryEvent::TaskList => None,
             CliTelemetryEvent::TaskGet => None,
             CliTelemetryEvent::ConversationGet => None,
@@ -228,6 +231,7 @@ impl TelemetryEventDesc for CliTelemetryEventDiscriminants {
             }
             CliTelemetryEventDiscriminants::MCPList => "CLI.Execute.MCP.List",
             CliTelemetryEventDiscriminants::ModelList => "CLI.Execute.Model.List",
+            CliTelemetryEventDiscriminants::Project => "CLI.Execute.Project",
             CliTelemetryEventDiscriminants::TaskList => "CLI.Execute.Task.List",
             CliTelemetryEventDiscriminants::TaskGet => "CLI.Execute.Task.Get",
             CliTelemetryEventDiscriminants::ConversationGet => "CLI.Execute.Conversation.Get",
@@ -313,6 +317,7 @@ impl TelemetryEventDesc for CliTelemetryEventDiscriminants {
             }
             CliTelemetryEventDiscriminants::MCPList => "Listed MCP servers from the Wish CLI",
             CliTelemetryEventDiscriminants::ModelList => "Listed models from the Wish CLI",
+            CliTelemetryEventDiscriminants::Project => "Executed a Wish project command",
             CliTelemetryEventDiscriminants::TaskList => "Listed tasks from the Wish CLI",
             CliTelemetryEventDiscriminants::TaskGet => "Got status of task from the Wish CLI",
             CliTelemetryEventDiscriminants::ConversationGet => {

@@ -30,6 +30,7 @@ pub mod integration;
 pub mod json_filter;
 pub mod mcp;
 pub mod model;
+pub mod project;
 pub mod provider;
 pub mod schedule;
 pub mod secret;
@@ -764,6 +765,11 @@ pub enum CliCommand {
     /// Manage available models.
     #[command(subcommand)]
     Model(crate::model::ModelCommand),
+
+    /// Manage project bookmarks (IDE entries with build / test / run / lint
+    /// commands). Backed by the Hermon gateway's `/v1/projects` surface.
+    #[command(subcommand)]
+    Project(crate::project::ProjectCommand),
 
     /// Log in to Wish.
     Login(LoginArgs),
