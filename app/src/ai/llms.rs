@@ -132,6 +132,15 @@ pub enum LLMModelHost {
     DirectApi,
     AwsBedrock,
     LocalOllama,
+    /// Standalone Hermon inference engine (`~/ClaudeProjects/hermon`),
+    /// OpenAI-compatible on `http://localhost:11435/v1`. Treated as a
+    /// local-first sibling of `LocalOllama` — no credentials required,
+    /// distinct port so both engines can coexist.
+    HermonLocal,
+    /// Hermon cloud gateway (`https://api.hermon.ai`). The gateway's own
+    /// routing rules dispatch the request to whichever upstream provider
+    /// owns the model. Requires a `HERMON_API_KEY` Bearer credential.
+    HermonCloud,
     CustomEndpoint,
     #[serde(other)]
     Unknown,
@@ -505,6 +514,53 @@ pub(crate) fn ollama_base_url() -> String {
         .unwrap_or_else(|_| DEFAULT_OLLAMA_BASE_URL.to_owned())
 }
 
+/// Convert a model id returned by a Hermon-routed `/v1/models` call
+/// into an `LLMInfo` the picker can show. `host` distinguishes the
+/// local engine (port 11435) from the cloud gateway (api.hermon.ai)
+/// so the chat dispatcher picks the right endpoint later.
+fn hermon_llm_info(model_name: String, host: LLMModelHost) -> LLMInfo {
+    let (id_prefix, description, provider) = match host {
+        LLMModelHost::HermonLocal => (
+            "hermon-local",
+            "Hermon (local engine)",
+            // No first-class enum slot for the local engine — fall back
+            // to Unknown so the picker still shows it without an icon.
+            LLMProvider::Unknown,
+        ),
+        _ => ("hermon", "Hermon (cloud)", LLMProvider::Unknown),
+    };
+    let mut host_configs = HashMap::new();
+    host_configs.insert(
+        host.clone(),
+        RoutingHostConfig {
+            enabled: true,
+            model_routing_host: host,
+        },
+    );
+    LLMInfo {
+        display_name: model_name.clone(),
+        base_model_name: model_name.clone(),
+        id: format!("{id_prefix}:{model_name}").into(),
+        reasoning_level: None,
+        usage_metadata: LLMUsageMetadata {
+            request_multiplier: 1,
+            credit_multiplier: None,
+        },
+        description: Some(description.to_owned()),
+        disable_reason: None,
+        vision_supported: false,
+        spec: Some(LLMSpec {
+            cost: 0.0,
+            quality: 0.75,
+            speed: 0.7,
+        }),
+        provider,
+        host_configs,
+        discount_percentage: None,
+        context_window: LLMContextWindow::default(),
+    }
+}
+
 fn ollama_llm_info(model_name: String) -> LLMInfo {
     let mut host_configs = HashMap::new();
     host_configs.insert(
@@ -572,6 +628,116 @@ fn local_ollama_models_from_names(
         cli_agent: Some(cli_agent),
         computer_use: Some(computer_use),
     })
+}
+
+/// Hit an OpenAI-compatible `/v1/models` endpoint and convert the result
+/// into a `ModelsByFeature` keyed by the given `host`. Returns `Ok(None)`
+/// when the endpoint isn't reachable so callers can treat absence as a
+/// soft failure (the user might just not have HERMON_API_KEY set).
+async fn fetch_openai_models(
+    base_url: String,
+    auth_header: Option<String>,
+    host: LLMModelHost,
+) -> anyhow::Result<Option<ModelsByFeature>> {
+    let url = format!("{base_url}/v1/models");
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_millis(1500))
+        .build()?;
+    let mut req = client.get(&url);
+    if let Some(auth) = auth_header.as_deref() {
+        req = req.header("Authorization", auth);
+    }
+    let response = match req.send().await {
+        Ok(r) => r,
+        Err(err) => {
+            log::info!("LLM federation: {url} unreachable: {err}");
+            return Ok(None);
+        }
+    };
+    if !response.status().is_success() {
+        log::info!(
+            "LLM federation: {url} returned HTTP {}",
+            response.status().as_u16()
+        );
+        return Ok(None);
+    }
+    #[derive(serde::Deserialize)]
+    struct OaiModel {
+        id: String,
+    }
+    #[derive(serde::Deserialize)]
+    struct OaiList {
+        #[serde(default)]
+        data: Vec<OaiModel>,
+    }
+    let parsed: OaiList = match response.json().await {
+        Ok(p) => p,
+        Err(err) => {
+            log::warn!("LLM federation: {url} parse failed: {err}");
+            return Ok(None);
+        }
+    };
+    let mut names: Vec<String> = parsed
+        .data
+        .into_iter()
+        .map(|m| m.id.trim().to_owned())
+        .filter(|s| !s.is_empty())
+        .collect();
+    names.sort();
+    names.dedup();
+    let infos: Vec<LLMInfo> = names
+        .into_iter()
+        .map(|n| hermon_llm_info(n, host.clone()))
+        .collect();
+    let Some(first) = infos.first() else {
+        return Ok(None);
+    };
+    let default_id = first.id.clone();
+    let preferred_codex_model_id = Some(default_id.clone());
+    let agent_mode = AvailableLLMs::new(
+        default_id.clone(),
+        infos.clone(),
+        preferred_codex_model_id.clone(),
+    )
+    .ok();
+    let coding = AvailableLLMs::new(
+        default_id.clone(),
+        infos.clone(),
+        preferred_codex_model_id,
+    )
+    .ok();
+    let cli_agent =
+        AvailableLLMs::new(default_id.clone(), infos.clone(), Some(default_id.clone())).ok();
+    let computer_use = AvailableLLMs::new(default_id, infos, None).ok();
+    let (Some(agent_mode), Some(coding)) = (agent_mode, coding) else {
+        return Ok(None);
+    };
+    Ok(Some(ModelsByFeature {
+        agent_mode,
+        coding,
+        cli_agent,
+        computer_use,
+    }))
+}
+
+async fn fetch_hermon_local_models() -> anyhow::Result<Option<ModelsByFeature>> {
+    let base = std::env::var("HERMON_LOCAL_BASE_URL")
+        .unwrap_or_else(|_| "http://localhost:11435".to_owned());
+    fetch_openai_models(base, None, LLMModelHost::HermonLocal).await
+}
+
+async fn fetch_hermon_cloud_models() -> anyhow::Result<Option<ModelsByFeature>> {
+    let api_key = match std::env::var("HERMON_API_KEY") {
+        Ok(k) if !k.is_empty() => k,
+        _ => return Ok(None), // No key, no cloud federation
+    };
+    let base = crate::server::hermon_auth::api_url();
+    fetch_openai_models(
+        base,
+        Some(format!("Bearer {api_key}")),
+        LLMModelHost::HermonCloud,
+    )
+    .await
 }
 
 async fn fetch_local_ollama_models() -> anyhow::Result<Option<ModelsByFeature>> {
@@ -1243,22 +1409,41 @@ impl LLMPreferences {
     }
 
     /// No auth required (i.e. to populate the pre-login onboarding picker).
+    /// Probes every local-first source in parallel (Ollama, Hermon local
+    /// engine, Hermon cloud gateway if a HERMON_API_KEY is set) and merges
+    /// whatever responds.
     fn refresh_public_models(&self, ctx: &mut ModelContext<Self>) {
         ctx.spawn(
-            async move { fetch_local_ollama_models().await },
-            |me, result, ctx| match result {
-                Ok(Some(update)) => {
-                    if update != me.models_by_feature {
-                        me.on_server_update(update, ctx);
+            async move {
+                futures::join!(
+                    fetch_local_ollama_models(),
+                    fetch_hermon_local_models(),
+                    fetch_hermon_cloud_models(),
+                )
+            },
+            |me, (ollama, hermon_local, hermon_cloud), ctx| {
+                let mut anchored = false;
+                // Use the first non-empty source to replace the stale
+                // default; subsequent sources get merged on top so users
+                // see every available model in one picker.
+                for source in [ollama, hermon_local, hermon_cloud] {
+                    match source {
+                        Ok(Some(models)) => {
+                            if !anchored {
+                                me.on_server_update(models, ctx);
+                                anchored = true;
+                            } else {
+                                me.merge_local_models(models, ctx);
+                            }
+                        }
+                        Ok(None) => {}
+                        Err(e) => log::warn!("LLM source discovery failed: {e:#}"),
                     }
                 }
-                Ok(None) => {
+                if !anchored {
                     log::info!(
-                        "No local Ollama models discovered; keeping existing local model choices"
+                        "No local Ollama/Hermon models discovered; keeping existing choices"
                     );
-                }
-                Err(e) => {
-                    log::warn!("Failed to discover local Ollama models: {e:#}");
                 }
             },
         );
@@ -1277,13 +1462,23 @@ impl LLMPreferences {
             let ai_api_client = ServerApiProvider::as_ref(ctx).get_ai_client();
             ctx.spawn(
                 async move {
-                    let (server_result, ollama_result) = futures::join!(
-                        ai_api_client.get_feature_model_choices(),
-                        fetch_local_ollama_models(),
-                    );
-                    (server_result, ollama_result)
+                    let (server_result, ollama_result, hermon_local_result, hermon_cloud_result) =
+                        futures::join!(
+                            ai_api_client.get_feature_model_choices(),
+                            fetch_local_ollama_models(),
+                            fetch_hermon_local_models(),
+                            fetch_hermon_cloud_models(),
+                        );
+                    (
+                        server_result,
+                        ollama_result,
+                        hermon_local_result,
+                        hermon_cloud_result,
+                    )
                 },
-                |me, (server_result, ollama_result), ctx| {
+                |me,
+                 (server_result, ollama_result, hermon_local_result, hermon_cloud_result),
+                 ctx| {
                     // Three cases:
                     //   1. Server reachable: take server's model list as the
                     //      primary; merge local Ollama on top so locals still
@@ -1298,39 +1493,57 @@ impl LLMPreferences {
                     //   3. Server unreachable + no locals: leave the existing
                     //      models alone so a transient outage doesn't wipe
                     //      the user's last-good list.
-                    match (server_result, ollama_result) {
-                        (Ok(server_models), ollama_outcome) => {
-                            me.on_server_update(server_models, ctx);
-                            match ollama_outcome {
-                                Ok(Some(ollama_models)) => {
-                                    me.merge_local_models(ollama_models, ctx);
-                                }
-                                Ok(None) => {
-                                    log::info!("No local Ollama models discovered");
-                                }
-                                Err(e) => {
-                                    log::warn!(
-                                        "Failed to discover local Ollama models: {e:#}"
-                                    );
-                                }
+                    // Helper to flatten Result<Option<_>> sources and log
+                    // soft failures without losing the value when present.
+                    fn unwrap_source(
+                        name: &str,
+                        r: anyhow::Result<Option<ModelsByFeature>>,
+                    ) -> Option<ModelsByFeature> {
+                        match r {
+                            Ok(Some(m)) => Some(m),
+                            Ok(None) => {
+                                log::info!("{name}: no models discovered");
+                                None
+                            }
+                            Err(e) => {
+                                log::warn!("{name} discovery failed: {e:#}");
+                                None
                             }
                         }
-                        (Err(server_err), Ok(Some(ollama_models))) => {
-                            log::warn!(
-                                "Server LLM fetch failed ({server_err:#}); falling back to local Ollama models"
-                            );
-                            me.on_server_update(ollama_models, ctx);
+                    }
+                    let ollama = unwrap_source("ollama", ollama_result);
+                    let hermon_local = unwrap_source("hermon-local", hermon_local_result);
+                    let hermon_cloud = unwrap_source("hermon-cloud", hermon_cloud_result);
+
+                    // Anchor on the legacy server's list when it succeeds
+                    // — that one carries entitlements and paid-tier
+                    // routing. Otherwise the first responding local
+                    // source becomes the anchor, falling through to the
+                    // last-good cached list as a final fallback (the
+                    // P0 from the 0.4.0 release notes).
+                    let mut anchored = false;
+                    match server_result {
+                        Ok(server_models) => {
+                            me.on_server_update(server_models, ctx);
+                            anchored = true;
                         }
-                        (Err(server_err), Ok(None)) => {
+                        Err(server_err) => {
                             log::warn!(
-                                "Server LLM fetch failed ({server_err:#}) and no local Ollama models discovered; keeping existing choices"
+                                "Server LLM fetch failed ({server_err:#}); using local sources only"
                             );
                         }
-                        (Err(server_err), Err(ollama_err)) => {
-                            log::warn!(
-                                "Server LLM fetch failed ({server_err:#}) and local Ollama discovery failed ({ollama_err:#}); keeping existing choices"
-                            );
+                    }
+                    for source in [ollama, hermon_local, hermon_cloud] {
+                        let Some(models) = source else { continue };
+                        if !anchored {
+                            me.on_server_update(models, ctx);
+                            anchored = true;
+                        } else {
+                            me.merge_local_models(models, ctx);
                         }
+                    }
+                    if !anchored {
+                        log::warn!("No model sources reachable — keeping cached choices");
                     }
                 },
             );
