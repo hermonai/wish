@@ -68,14 +68,24 @@ impl LocalLlmAdapter {
 
 impl ConversationAdapter for LocalLlmAdapter {
     fn send(&self, conversation: &Conversation, new_user_message: &str, sink: ChunkSink) {
+        // Pick the per-conversation config: if the conversation's primary
+        // agent slug encodes a model id with a recognized routing prefix
+        // (`hermon-local:`, `hermon:`, `ollama:` — see
+        // `local_llm::provider_config_for_model`), use that. Otherwise
+        // fall back to the adapter's statically-configured Ollama
+        // endpoint, which is the legacy default.
+        let routed_config = crate::ai::local_llm::provider_config_for_model(
+            &conversation.primary_agent_slug,
+        );
+        let active_config = routed_config.as_ref().unwrap_or(&self.config);
         let request = build_chat_request(
-            self.config.default_model().to_string(),
+            active_config.default_model().to_string(),
             conversation,
             new_user_message,
         );
-        let url = chat_completions_url(self.config.base_url());
-        let timeout = self.config.http_timeout();
-        let api_key = match &self.config {
+        let url = chat_completions_url(active_config.base_url());
+        let timeout = active_config.http_timeout();
+        let api_key = match active_config {
             LocalLlmProviderConfig::OpenAiCompatible { api_key, .. } => api_key.clone(),
         };
 

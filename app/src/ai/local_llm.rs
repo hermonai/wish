@@ -125,6 +125,131 @@ impl LocalLlmProviderConfig {
     }
 }
 
+/// Resolve a `LocalLlmProviderConfig` from a model id whose prefix
+/// identifies the routing host. Mirrors the prefixes embedded by
+/// `crate::ai::llms::hermon_llm_info` + `ollama_llm_info`:
+///
+/// | Prefix             | Host                          | Default URL                           |
+/// |--------------------|-------------------------------|---------------------------------------|
+/// | `ollama:<m>`       | Ollama                        | `http://localhost:11434/v1`           |
+/// | `hermon-local:<m>` | Hermon local engine           | `http://localhost:11435/v1`           |
+/// | `hermon:<m>`       | Hermon cloud gateway          | `https://api.hermon.ai/v1` + `HERMON_API_KEY` |
+///
+/// Returns `None` when the id has no recognized prefix (the caller
+/// should fall back to its statically-configured Ollama adapter,
+/// which is the legacy default and exactly what user has wired today).
+///
+/// The returned config's `default_model` is the suffix after the
+/// prefix — so a model id of `hermon-local:llama3.2:3b` yields
+/// `default_model = "llama3.2:3b"` and the OpenAI request body
+/// carries the unprefixed name the upstream actually understands.
+pub fn provider_config_for_model(model_id: &str) -> Option<LocalLlmProviderConfig> {
+    if let Some(rest) = model_id.strip_prefix("hermon-local:") {
+        let base_url = std::env::var("HERMON_LOCAL_BASE_URL")
+            .unwrap_or_else(|_| "http://localhost:11435".into())
+            .trim_end_matches('/')
+            .to_string();
+        return Some(LocalLlmProviderConfig::OpenAiCompatible {
+            base_url: format!("{base_url}/v1"),
+            // Bearer is required by the OpenAI spec; the engine
+            // accepts any non-empty string and rejects empties.
+            api_key: "hermon-local".to_string(),
+            default_model: rest.to_string(),
+            timeout_secs: None,
+        });
+    }
+    if let Some(rest) = model_id.strip_prefix("hermon:") {
+        // Cloud routing requires the user's HERMON_API_KEY. Returning
+        // None when it's absent lets the caller surface a clear error
+        // ("create a key at https://www.hermon.ai/wish/settings/api-keys")
+        // instead of sending to api.hermon.ai with a placeholder Bearer.
+        let api_key = std::env::var("HERMON_API_KEY").ok().filter(|k| !k.is_empty())?;
+        let base_url = std::env::var("HERMON_API_URL")
+            .unwrap_or_else(|_| "https://api.hermon.ai".into())
+            .trim_end_matches('/')
+            .to_string();
+        return Some(LocalLlmProviderConfig::OpenAiCompatible {
+            base_url: format!("{base_url}/v1"),
+            api_key,
+            default_model: rest.to_string(),
+            timeout_secs: None,
+        });
+    }
+    if let Some(rest) = model_id.strip_prefix("ollama:") {
+        let base_url = std::env::var("WISH_OLLAMA_URL")
+            .or_else(|_| std::env::var("OLLAMA_HOST"))
+            .unwrap_or_else(|_| "http://127.0.0.1:11434".into())
+            .trim_end_matches('/')
+            .to_string();
+        // Some users include /v1 in their override, some don't.
+        let base_with_v1 = if base_url.ends_with("/v1") {
+            base_url
+        } else {
+            format!("{base_url}/v1")
+        };
+        return Some(LocalLlmProviderConfig::OpenAiCompatible {
+            base_url: base_with_v1,
+            api_key: std::env::var("WISH_OLLAMA_API_KEY").unwrap_or_else(|_| "ollama".into()),
+            default_model: rest.to_string(),
+            timeout_secs: None,
+        });
+    }
+    None
+}
+
+#[cfg(test)]
+mod provider_resolution_tests {
+    use super::*;
+
+    #[test]
+    fn hermon_local_prefix_resolves_to_port_11435() {
+        let cfg = provider_config_for_model("hermon-local:llama3.2:3b").unwrap();
+        match cfg {
+            LocalLlmProviderConfig::OpenAiCompatible {
+                base_url,
+                default_model,
+                ..
+            } => {
+                assert!(
+                    base_url.contains("11435"),
+                    "expected port 11435, got {base_url}"
+                );
+                assert_eq!(default_model, "llama3.2:3b");
+            }
+        }
+    }
+
+    #[test]
+    fn ollama_prefix_resolves_to_port_11434() {
+        // Clear env in case the test runner has WISH_OLLAMA_URL set.
+        std::env::remove_var("WISH_OLLAMA_URL");
+        std::env::remove_var("OLLAMA_HOST");
+        let cfg = provider_config_for_model("ollama:phi3.5:3.8b").unwrap();
+        match cfg {
+            LocalLlmProviderConfig::OpenAiCompatible {
+                base_url,
+                default_model,
+                ..
+            } => {
+                assert!(base_url.contains("11434"));
+                assert_eq!(default_model, "phi3.5:3.8b");
+            }
+        }
+    }
+
+    #[test]
+    fn hermon_cloud_without_key_returns_none() {
+        std::env::remove_var("HERMON_API_KEY");
+        assert!(provider_config_for_model("hermon:claude-sonnet-4-6").is_none());
+    }
+
+    #[test]
+    fn unknown_prefix_returns_none() {
+        assert!(provider_config_for_model("claude-sonnet-4-6").is_none());
+        assert!(provider_config_for_model("gpt-4o").is_none());
+    }
+}
+
 /// Wire-shape for a single chat message in the OpenAI-compatible
 /// schema.
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -58,6 +58,7 @@ fn test_serialize_persisted_user() {
             expiration_time,
         },
         refresh_token: String::new(),
+        hermon_bearer_token: String::new(),
         local_id: UserUid::new("test-uid"),
         metadata: UserMetadata {
             email: "test@example.com".to_string(),
