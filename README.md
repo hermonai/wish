@@ -89,6 +89,84 @@ WishUI is the native UI foundation for Wish:
 
 The current WishUI scope is terminal/editor/agent workspace UI. It does not include 3D or spatial UI.
 
+## Authentication
+
+Wish desktop signs in against a Hermon gateway. The default production URL
+is `https://api.hermon.ai`; override with `--server-root-url` or
+`HERMON_API_URL`. The dashboard for managing API keys lives at
+`https://www.hermon.ai/wish`.
+
+Three sign-in paths, in order of speed:
+
+1. **CLI / headless** — POSTs directly to `/v1/auth/login`:
+
+   ```bash
+   wish login --email admin@hermon.ai
+   # → prompts for password, persists tokens, exits
+   wish signup --email new@example.com --name "Display"
+   # → creates the account and signs in in one shot
+   wish whoami
+   wish logout
+   ```
+
+2. **Browser auto-handoff** — the modal/onboarding "Sign in your browser"
+   button opens `api.hermon.ai/signup/remote?state=...`. Wish polls
+   `GET /v1/auth/pickup?state=...` every 2 s and signs the user in as
+   soon as the form is submitted in the browser — **no `wish://`
+   URL-scheme handler required.** Sequence diagram:
+
+   ```
+   Wish                  api.hermon.ai                  user's browser
+    │                         │                                │
+    │ generate state=UUID     │                                │
+    │ open https://api.../signup/remote?state=UUID ───────────►│
+    │ poll /v1/auth/pickup?state=UUID every 2s                 │
+    │ ◄──── 204 ──── (until form submitted) ────               │
+    │                         │ POST /v1/auth/register{state}  │
+    │                         │ deposit{state → refresh_token} │
+    │ ◄──── 200 {refresh_token, user_id} ────                  │
+    │ initialize_user_from_auth_payload(...)                   │
+    │ AuthComplete; modal closes                               │
+   ```
+
+3. **Manual paste** — the modal also accepts a bare refresh token
+   (`hrmrt_<user>_<jti>`) or API key (`hrm_…`) so anyone with the value
+   in their clipboard can finish sign-in.
+
+### Bootstrap admin
+
+A fresh Hermon gateway always seeds `admin@hermon.ai / admin12345`
+(override via `HERMON_BOOTSTRAP_ADMIN_PASSWORD`). Sign in once with
+`wish login --email admin@hermon.ai` and you're done.
+
+### Dev knobs
+
+| Var | Effect |
+|---|---|
+| `WISH_RESET_AUTH=1` | Wipe persisted credentials on launch → onboarding always fires. |
+| `WISH_GUEST_MODE=1` or `WISH_OFFLINE=1` | Skip Hermon entirely; use local LLMs only. |
+| `WISH_API_KEY=hrm_…` | Authenticate via a Hermon API key. |
+| `HERMON_API_URL=…` | Point at a non-default gateway (local, staging, etc.). |
+
+### `/usr/bin/wish` conflict
+
+macOS ships **Tcl/Tk's `wish`** at `/usr/bin/wish`. If your shell picks
+that up (`which wish` shows `/usr/bin/wish`) the Wish desktop binary
+won't launch — you'll see something like:
+
+```
+/usr/bin/wish: line 2: 64719 Killed: 9  ".../Wish.app/Contents/MacOS/Wish" "$@"
+```
+
+That's Apple's wrapper for Tcl/Tk being killed by a different launch
+attempt. Either invoke our binary by path (`./target/debug/wish` after
+`cargo build`, or the `.app` from `script/run`), or shadow it via an
+alias / earlier `PATH` entry — for example:
+
+```bash
+alias wish="$HOME/ClaudeProjects/wish/target/debug/wish"
+```
+
 ## Hermon Backend
 
 Hermon is the backend and control plane for Wish. It is responsible for:

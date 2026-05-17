@@ -716,6 +716,18 @@ pub struct LoginArgs {
     /// The key can be provided via WISH_API_KEY or entered interactively.
     #[clap(long)]
     pub hermon: bool,
+
+    /// Email of an existing Hermon account. When provided, password-based
+    /// auth is used (no browser handoff). Prompts for the password unless
+    /// `--password` is also given.
+    #[clap(long)]
+    pub email: Option<String>,
+
+    /// Password for password-based login. Avoid passing on the command line
+    /// in shared environments — prefer the interactive prompt or set the
+    /// `WISH_PASSWORD` env var.
+    #[clap(long, env = "WISH_PASSWORD")]
+    pub password: Option<String>,
 }
 
 /// Arguments for the `wish signup` command.

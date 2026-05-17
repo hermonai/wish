@@ -12,10 +12,14 @@ use crate::auth::user::PrincipalType;
 use crate::auth::AuthStateProvider;
 use crate::workspaces::user_workspaces::UserWorkspaces;
 
-/// Kick off a login flow — either device auth (default) or Hermon API key.
+/// Kick off a login flow — either password (when `--email` is provided),
+/// device auth (default), or Hermon API key (`--hermon`).
 pub fn login(ctx: &mut AppContext, args: LoginArgs) -> Result<()> {
     if args.hermon {
         return login_hermon(ctx);
+    }
+    if let Some(email) = args.email.clone() {
+        return login_password(ctx, email, args.password);
     }
     let auth_state = AuthStateProvider::as_ref(ctx).get();
     let has_cached_credentials = auth_state.is_logged_in();
@@ -356,6 +360,157 @@ pub fn signup(ctx: &mut AppContext, args: SignupArgs) -> Result<()> {
 
     ctx.terminate_app(TerminationMode::ForceTerminate, None);
     Ok(())
+}
+
+/// Password-based login that talks directly to the Hermon gateway and
+/// persists the resulting refresh token via the same `AuthManager` path the
+/// browser handoff uses. No `wish://` scheme handler is required.
+///
+/// Designed for headless / dev environments where opening a browser would
+/// hurt the loop, and for the bootstrap `admin@hermon.ai` account.
+fn login_password(
+    ctx: &mut AppContext,
+    email: String,
+    cli_password: Option<String>,
+) -> Result<()> {
+    use crate::auth::auth_view_modal::AuthRedirectPayload;
+    use crate::auth::credentials::RefreshToken;
+    use crate::auth::UserUid;
+    use crate::server::hermon_auth;
+    use std::io::{self, Write};
+
+    let password = match cli_password {
+        Some(p) if !p.is_empty() => p,
+        _ => read_password_from_tty("Password: "),
+    };
+    if password.is_empty() {
+        println!("Password is required.");
+        ctx.terminate_app(TerminationMode::ForceTerminate, None);
+        return Ok(());
+    }
+
+    let api_url = hermon_auth::api_url();
+    println!("Signing in as {email} on {api_url}...");
+
+    // We block on the HTTP call before handing the resulting tokens to the
+    // AuthManager. The AuthManager is on the model context so persistence
+    // happens via the same path the desktop UI uses.
+    let rt = tokio::runtime::Runtime::new().context("create tokio runtime")?;
+    let client = reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(20))
+        .build()
+        .context("build http client")?;
+    let _ = rt; // The blocking client doesn't need the runtime; keep for parity.
+
+    #[derive(serde::Serialize)]
+    struct LoginBody<'a> {
+        email: &'a str,
+        password: &'a str,
+    }
+    #[derive(serde::Deserialize)]
+    struct LoginResponse {
+        user_id: String,
+        email: String,
+        display_name: String,
+        refresh_token: String,
+    }
+    #[derive(serde::Deserialize)]
+    struct ErrorResponse {
+        error: String,
+    }
+
+    let resp = client
+        .post(format!("{api_url}/v1/auth/login"))
+        .json(&LoginBody {
+            email: &email,
+            password: &password,
+        })
+        .send()
+        .context("send login request")?;
+    if !resp.status().is_success() {
+        let status = resp.status();
+        let body = resp.text().unwrap_or_default();
+        let parsed: Option<ErrorResponse> = serde_json::from_str(&body).ok();
+        let msg = parsed
+            .map(|e| e.error)
+            .unwrap_or_else(|| body.clone());
+        println!("Login failed ({status}): {msg}");
+        let _ = io::stdout().flush();
+        ctx.terminate_app(
+            TerminationMode::ForceTerminate,
+            Some(Err(anyhow::anyhow!("login failed"))),
+        );
+        return Ok(());
+    }
+    let payload: LoginResponse = resp.json().context("parse login response")?;
+
+    // Hand the refresh token to the AuthManager so persistence + downstream
+    // event wiring matches the browser-handoff path exactly.
+    let auth_payload = AuthRedirectPayload {
+        refresh_token: RefreshToken::new(payload.refresh_token),
+        user_uid: Some(UserUid::new(&payload.user_id)),
+        deleted_anonymous_user: None,
+        state: None,
+    };
+
+    let label_email = payload.email.clone();
+    let label_name = payload.display_name.clone();
+    ctx.subscribe_to_model(&AuthManager::handle(ctx), move |_, event, ctx| {
+        match event {
+            AuthManagerEvent::AuthComplete => {
+                println!("Logged in as {label_name} ({label_email}).");
+                ctx.terminate_app(TerminationMode::ForceTerminate, None);
+            }
+            AuthManagerEvent::AuthFailed(err) => {
+                let msg = format!("Authentication failed: {err:#}");
+                ctx.terminate_app(
+                    TerminationMode::ForceTerminate,
+                    Some(Err(anyhow::anyhow!(msg))),
+                );
+            }
+            _ => {}
+        }
+    });
+
+    AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
+        auth_manager.initialize_user_from_auth_payload(auth_payload, false, ctx);
+    });
+
+    Ok(())
+}
+
+/// Read a password from the TTY with echo suppressed on Unix. Falls back to
+/// a normal stdin read on Windows.
+fn read_password_from_tty(prompt: &str) -> String {
+    use std::io::{self, Write};
+    #[cfg(unix)]
+    {
+        use std::os::unix::io::AsRawFd;
+        let fd = io::stdin().as_raw_fd();
+        let mut termios = unsafe {
+            let mut t = std::mem::zeroed::<libc::termios>();
+            libc::tcgetattr(fd, &mut t);
+            t
+        };
+        let old = termios;
+        termios.c_lflag &= !libc::ECHO;
+        unsafe { libc::tcsetattr(fd, libc::TCSANOW, &termios) };
+        print!("{prompt}");
+        io::stdout().flush().ok();
+        let mut buf = String::new();
+        io::stdin().read_line(&mut buf).ok();
+        println!();
+        unsafe { libc::tcsetattr(fd, libc::TCSANOW, &old) };
+        buf.trim().to_string()
+    }
+    #[cfg(not(unix))]
+    {
+        print!("{prompt}");
+        io::stdout().flush().ok();
+        let mut buf = String::new();
+        io::stdin().read_line(&mut buf).ok();
+        buf.trim().to_string()
+    }
 }
 
 /// Login using a Hermon API key.

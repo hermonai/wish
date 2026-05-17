@@ -152,6 +152,21 @@ impl AuthState {
             return state;
         }
 
+        // Developer override: `WISH_RESET_AUTH=1` wipes any persisted user
+        // before we read it, so the onboarding / sign-in slide always fires
+        // on launch. Handy when iterating on the auth UX — no Keychain
+        // archaeology required.
+        if std::env::var("WISH_RESET_AUTH")
+            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+            .unwrap_or(false)
+        {
+            log::info!("WISH_RESET_AUTH=1 — clearing persisted user before load");
+            let _ = PersistedUser::remove_from_secure_storage(ctx).map_err(|err| {
+                log::warn!("WISH_RESET_AUTH could not clear secure storage: {err:?}");
+            });
+            return state;
+        }
+
         // Try reading from secure storage.
         match PersistedUser::from_secure_storage(ctx) {
             Ok(persisted) => {
