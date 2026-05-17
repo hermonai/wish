@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="5 5 57 57">
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <defs>
     <style>
-      .cls-1 {
-        fill: #2e7d32;
-        fill-rule: evenodd;
-      }
+      .cls-1 { fill: none; }
+      .cls-2 { fill: #fff; }
+      .cls-3 { fill: #4f2683; fill-rule: evenodd; }
     </style>
   </defs>
-  <g id="Layer_1-2" data-name="Layer 1">
-    <polygon class="cls-1" points="27.6 39.5 7.56 59.54 15.18 27.07 27.6 39.5"/>
-    <polygon class="cls-1" points="27.61 39.48 47.65 59.53 60.08 7.01 27.61 39.48"/>
-  </g>
+  <rect class="cls-1" width="1024" height="1024"/>
+  <path class="cls-2" d="M101.13,300.94c1.84-118.03,98.57-212.23,216.04-210.4l401.9,6.26c117.48,1.83,211.22,99,209.38,217.03l-6.39,410.19c-1.84,118.03-98.57,212.23-216.04,210.4l-401.9-6.26c-117.48-1.83-211.22-99-209.38-217.03l6.39-410.19Z"/>
+  <polygon class="cls-3" points="455.33 543.73 241.61 754.92 326.89 408.65 455.33 543.73"/>
+  <polygon class="cls-3" points="455.39 543.57 662.55 761.45 801.61 201.45 455.39 543.57"/>
 </svg>
