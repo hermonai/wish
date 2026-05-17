@@ -60,8 +60,13 @@ pub fn create_client() -> Option<HermonClient> {
 /// Resolution order:
 /// 1. `HERMON_API_URL` or `WISH_API_URL` env var — explicit developer override, highest priority
 /// 2. Channel default:
-///    - **Stable / Preview / Oss** → `https://wish.hermon.ai`  (production)
-///    - **Local / Dev / Integration** → `http://localhost:8080` (local gateway)
+///    - **Stable / Preview / Oss / Local** → `https://api.hermon.ai` (production)
+///    - **Dev / Integration**              → `http://localhost:8080` (local gateway)
+///
+/// The Local channel (the default `wish` binary) now points at production
+/// by default so a fresh `cargo run --bin wish` works end-to-end. Set
+/// `HERMON_API_URL=http://localhost:8080` to point at a locally-running
+/// gateway during backend development.
 pub fn api_url() -> String {
     if let Ok(url) = std::env::var("HERMON_API_URL") {
         return url;
@@ -73,7 +78,8 @@ pub fn api_url() -> String {
     match ChannelState::channel() {
         wish_core::channel::Channel::Stable
         | wish_core::channel::Channel::Preview
-        | wish_core::channel::Channel::Oss => PRODUCTION_HERMON_URL.to_string(),
+        | wish_core::channel::Channel::Oss
+        | wish_core::channel::Channel::Local => PRODUCTION_HERMON_URL.to_string(),
         _ => DEV_GATEWAY_URL.to_string(),
     }
 }

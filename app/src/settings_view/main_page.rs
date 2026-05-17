@@ -131,6 +131,10 @@ pub enum MainPageAction {
         team_uid: ServerId,
     },
     SignupAnonymousUser,
+    /// Open the browser sign-in flow for a user who already has a Hermon
+    /// account — kicks the auth-manager handoff (which also starts polling
+    /// `GET /v1/auth/pickup` so the desktop signs in automatically).
+    SignInExistingUser,
     OpenUrl(String),
 }
 
@@ -236,6 +240,12 @@ impl TypedActionView for MainSettingsPageView {
             MainPageAction::SignupAnonymousUser => {
                 ctx.emit(MainSettingsPageEvent::SignupAnonymousUser);
             }
+            MainPageAction::SignInExistingUser => {
+                AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
+                    let url = auth_manager.sign_in_url(ctx);
+                    ctx.open_url(&url);
+                });
+            }
             MainPageAction::OpenUrl(url) => {
                 ctx.open_url(url);
             }
@@ -305,6 +315,7 @@ impl MainSettingsPageView {
 struct AccountWidgetStateHandles {
     upgrade_link: MouseStateHandle,
     anonymous_user_sign_up_button: MouseStateHandle,
+    anonymous_user_sign_in_button: MouseStateHandle,
     enterprise_contact_us_link: MouseStateHandle,
     stripe_billing_portal_link: MouseStateHandle,
 }
@@ -333,18 +344,48 @@ impl AccountWidget {
             ..Default::default()
         };
 
-        let user_info = appearance
+        let sign_up_button = appearance
             .ui_builder()
             .button(
                 ButtonVariant::Accent,
                 self.ui_state_handles.anonymous_user_sign_up_button.clone(),
             )
-            .with_style(button_styles)
+            .with_style(button_styles.clone())
             .with_text_label("Sign up".to_owned())
             .build()
             .on_click(move |ctx, _, _| {
                 ctx.dispatch_typed_action(MainPageAction::SignupAnonymousUser);
             })
+            .finish();
+
+        // "Sign in" entry next to "Sign up" for users who already have a
+        // Hermon account. Triggers the browser handoff with auto-pickup —
+        // when the user finishes the form in the browser, Wish polls
+        // `/v1/auth/pickup` and signs in without a `wish://` scheme handler.
+        let sign_in_button = Container::new(
+            appearance
+                .ui_builder()
+                .button(
+                    ButtonVariant::Secondary,
+                    self.ui_state_handles
+                        .anonymous_user_sign_in_button
+                        .clone(),
+                )
+                .with_style(button_styles)
+                .with_text_label("Sign in".to_owned())
+                .build()
+                .on_click(move |ctx, _, _| {
+                    ctx.dispatch_typed_action(MainPageAction::SignInExistingUser);
+                })
+                .finish(),
+        )
+        .with_margin_left(8.)
+        .finish();
+
+        let user_info = Flex::row()
+            .with_cross_axis_alignment(CrossAxisAlignment::Center)
+            .with_child(sign_up_button)
+            .with_child(sign_in_button)
             .finish();
 
         let mut plan_info = Flex::column()
