@@ -373,9 +373,6 @@ fn login_password(
     email: String,
     cli_password: Option<String>,
 ) -> Result<()> {
-    use crate::auth::auth_view_modal::AuthRedirectPayload;
-    use crate::auth::credentials::RefreshToken;
-    use crate::auth::UserUid;
     use crate::server::hermon_auth;
     use std::io::{self, Write};
 
@@ -444,15 +441,9 @@ fn login_password(
     }
     let payload: LoginResponse = resp.json().context("parse login response")?;
 
-    // Hand the refresh token to the AuthManager so persistence + downstream
-    // event wiring matches the browser-handoff path exactly.
-    let auth_payload = AuthRedirectPayload {
-        refresh_token: RefreshToken::new(payload.refresh_token),
-        user_uid: Some(UserUid::new(&payload.user_id)),
-        deleted_anonymous_user: None,
-        state: None,
-    };
-
+    // Hand the tokens to the AuthManager via the Hermon-native path so we
+    // bypass the legacy Firebase/GraphQL `fetch_user` flow (which would
+    // fail to deserialize `globalSkills` against the Hermon gateway).
     let label_email = payload.email.clone();
     let label_name = payload.display_name.clone();
     ctx.subscribe_to_model(&AuthManager::handle(ctx), move |_, event, ctx| {
@@ -473,7 +464,13 @@ fn login_password(
     });
 
     AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
-        auth_manager.initialize_user_from_auth_payload(auth_payload, false, ctx);
+        auth_manager.sign_in_with_hermon_account(
+            payload.refresh_token,
+            payload.user_id,
+            payload.email,
+            payload.display_name,
+            ctx,
+        );
     });
 
     Ok(())

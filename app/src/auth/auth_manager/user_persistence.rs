@@ -48,6 +48,14 @@ pub struct PersistedUser {
     /// Whether or not this user is on what we consider a "work" domain.
     #[serde(default)]
     pub is_on_work_domain: bool,
+
+    /// Hermon-native bearer token (refresh token prefix `hrmrt_…` or API
+    /// key prefix `hrm_…`). Set when the user signed in via the Hermon
+    /// gateway rather than legacy Firebase, so the session survives an
+    /// app restart. Empty Firebase `auth_tokens` plus a non-empty value
+    /// here drives a Bearer credential rehydration in `apply_persisted_user`.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub hermon_bearer_token: String,
 }
 
 #[derive(Debug, thiserror::Error)]

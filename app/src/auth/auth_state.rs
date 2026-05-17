@@ -152,17 +152,14 @@ impl AuthState {
             return state;
         }
 
-        // Developer override: `WISH_RESET_AUTH=1` wipes any persisted user
-        // before we read it, so the onboarding / sign-in slide always fires
-        // on launch. Handy when iterating on the auth UX — no Keychain
-        // archaeology required.
-        if std::env::var("WISH_RESET_AUTH")
-            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
-            .unwrap_or(false)
-        {
-            log::info!("WISH_RESET_AUTH=1 — clearing persisted user before load");
+        // Developer override: wipe any persisted user before we read it, so
+        // the onboarding / sign-in slide always fires on launch. Debug builds
+        // default to this behavior for auth UX work; set WISH_KEEP_AUTH=1 to
+        // opt back into normal persistence while developing.
+        if Self::should_reset_persisted_auth_for_dev() {
+            log::info!("clearing persisted user before load for development auth flow");
             let _ = PersistedUser::remove_from_secure_storage(ctx).map_err(|err| {
-                log::warn!("WISH_RESET_AUTH could not clear secure storage: {err:?}");
+                log::warn!("could not clear persisted auth from secure storage: {err:?}");
             });
             return state;
         }
@@ -193,6 +190,19 @@ impl AuthState {
         cfg!(any(test, feature = "skip_login")) || ChannelState::channel() == Channel::Integration
     }
 
+    fn should_reset_persisted_auth_for_dev() -> bool {
+        if std::env::var("WISH_KEEP_AUTH")
+            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+            .unwrap_or(false)
+        {
+            return false;
+        }
+
+        std::env::var("WISH_RESET_AUTH")
+            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+            .unwrap_or(cfg!(debug_assertions))
+    }
+
     /// Determines the appropriate persistence action based on the current auth state.
     pub(super) fn persist_action(&self) -> PersistAction {
         let user = self.user.read().clone();
@@ -216,6 +226,40 @@ impl AuthState {
                     linked_at,
                     personal_object_limits,
                     is_on_work_domain: user.is_on_work_domain,
+                    hermon_bearer_token: String::new(),
+                };
+                PersistAction::Persist(Box::new(persisted))
+            }
+            // Hermon-native sign-in: persist the bearer token so the user
+            // doesn't have to re-sign-in after a restart.
+            (Some(user), Some(Credentials::Bearer(bearer))) => {
+                let anonymous_user_type = user.anonymous_user_type();
+                let linked_at = user.linked_at();
+                let personal_object_limits = user.personal_object_limits();
+
+                #[allow(deprecated)]
+                let persisted = PersistedUser {
+                    auth_tokens: FirebaseAuthTokens {
+                        id_token: String::new(),
+                        refresh_token: String::new(),
+                        // Far-past expiration so any code that does inspect
+                        // the legacy Firebase tokens treats them as expired.
+                        // Hermon-native sessions don't use these fields.
+                        expiration_time: chrono::DateTime::parse_from_rfc3339(
+                            "1970-01-01T00:00:00+00:00",
+                        )
+                        .expect("epoch literal parses"),
+                    },
+                    refresh_token: String::new(),
+                    local_id: user.local_id,
+                    metadata: user.metadata,
+                    is_onboarded: user.is_onboarded,
+                    needs_sso_link: user.needs_sso_link,
+                    anonymous_user_type,
+                    linked_at,
+                    personal_object_limits,
+                    is_on_work_domain: user.is_on_work_domain,
+                    hermon_bearer_token: bearer,
                 };
                 PersistAction::Persist(Box::new(persisted))
             }
@@ -223,7 +267,6 @@ impl AuthState {
             (None, None) => PersistAction::Remove,
             // Do not persist if using API keys, session cookies, guest mode, or test credentials.
             (Some(_), Some(Credentials::ApiKey { .. })) => PersistAction::DoNothing,
-            (Some(_), Some(Credentials::Bearer(_))) => PersistAction::DoNothing,
             (Some(_), Some(Credentials::SessionCookie)) => PersistAction::DoNothing,
             (Some(_), Some(Credentials::Guest)) => PersistAction::DoNothing,
             #[cfg(any(test, feature = "integration_tests", feature = "skip_login"))]
@@ -250,11 +293,17 @@ impl AuthState {
         };
         *self.user.write() = Some(user);
 
-        if persisted.auth_tokens.refresh_token.is_empty() {
-            log::warn!("Skipping credentials update due to empty refresh token");
-            return;
+        // Prefer the legacy Firebase refresh token when present, otherwise
+        // rehydrate the Hermon bearer credential. New installs always go
+        // through the Hermon path; old keychain entries still load.
+        if !persisted.auth_tokens.refresh_token.is_empty() {
+            *self.credentials.write() = Some(Credentials::Firebase(persisted.auth_tokens));
+        } else if !persisted.hermon_bearer_token.is_empty() {
+            *self.credentials.write() =
+                Some(Credentials::Bearer(persisted.hermon_bearer_token));
+        } else {
+            log::warn!("Skipping credentials update due to empty refresh + bearer tokens");
         }
-        *self.credentials.write() = Some(Credentials::Firebase(persisted.auth_tokens));
     }
 
     /// Sets the user. This should only be called by the AuthManager, to ensure

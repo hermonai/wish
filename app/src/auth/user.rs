@@ -187,6 +187,35 @@ impl User {
         }
     }
 
+    /// Create a User from a successful Hermon `/v1/auth/login` or
+    /// `/v1/auth/register` response. Bypasses the legacy Firebase/GraphQL
+    /// fetch path — the Hermon gateway doesn't expose a `globalSkills`
+    /// shape, so we trust the login response and skip the GraphQL round
+    /// trip entirely.
+    pub fn hermon_account(user_id: &str, email: String, display_name: String) -> Self {
+        let display_name = if display_name.trim().is_empty() {
+            None
+        } else {
+            Some(display_name)
+        };
+        Self {
+            local_id: UserUid::new(user_id),
+            metadata: UserMetadata {
+                email,
+                display_name,
+                photo_url: None,
+            },
+            is_onboarded: true,
+            needs_sso_link: false,
+            anonymous_user_type: None,
+            is_on_work_domain: false,
+            linked_at: None,
+            personal_object_limits: None,
+            principal_type: PrincipalType::User,
+            global_skills: Vec::new(),
+        }
+    }
+
     /// Create a guest user for local/offline mode.
     /// All terminal features work normally; AI uses local providers.
     pub fn guest() -> Self {

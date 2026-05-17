@@ -730,6 +730,28 @@ fn fetch_auth_tokens(
     token: FirebaseToken,
 ) -> BoxFuture<'static, StdResult<FirebaseAuthTokens, UserAuthenticationError>> {
     Box::pin(async move {
+        let proxy_url = token.proxy_url(&ChannelState::server_root_url(), "");
+        if token.is_hermon_token() {
+            let request_body = token.access_token_request_body();
+            let response = fetch_access_token_via_proxy(client, &request_body, proxy_url).await?;
+            let response = response
+                .json::<FetchAccessTokenResponse>()
+                .await
+                .map_err(anyhow::Error::from)?;
+            return match response {
+                FetchAccessTokenResponse::Success {
+                    id_token,
+                    expires_in,
+                    refresh_token,
+                } => Ok(FirebaseAuthTokens::from_response(
+                    id_token,
+                    refresh_token,
+                    expires_in,
+                )?),
+                FetchAccessTokenResponse::Error { error } => Err(error.into()),
+            };
+        }
+
         // v0.5.0 "Wish independence" — let users (and CI/dev mode) disable
         // the inherited Firebase auth path entirely. When the API key is
         // empty or `WISH_DISABLE_FIREBASE_AUTH=1` is set, short-circuit with

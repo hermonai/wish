@@ -280,9 +280,38 @@ impl AuthView {
         self.set_auth_token_input_editable(false, ctx);
         match AuthRedirectPayload::from_raw_url(pasted_url) {
             Ok(redirect_payload) => {
-                AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
-                    auth_manager.initialize_user_from_auth_payload(redirect_payload, true, ctx);
-                });
+                let refresh_str = redirect_payload.refresh_token.get().to_string();
+                let is_hermon_token =
+                    refresh_str.starts_with("hrmrt_") || refresh_str.starts_with("hrm_");
+                if is_hermon_token {
+                    // Hermon-native sign-in: skip the Firebase / GraphQL
+                    // `fetch_user` path that would 500 on the gateway's
+                    // shape (no `globalSkills` field). The display name
+                    // and email come back later via `/v1/auth/me` calls
+                    // on first authenticated request.
+                    let user_id = redirect_payload
+                        .user_uid
+                        .as_ref()
+                        .map(|u| u.as_string().to_string())
+                        .unwrap_or_else(|| "hermon-user".to_string());
+                    AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
+                        auth_manager.sign_in_with_hermon_account(
+                            refresh_str,
+                            user_id,
+                            String::new(),
+                            String::new(),
+                            ctx,
+                        );
+                    });
+                } else {
+                    AuthManager::handle(ctx).update(ctx, |auth_manager, ctx| {
+                        auth_manager.initialize_user_from_auth_payload(
+                            redirect_payload,
+                            true,
+                            ctx,
+                        );
+                    });
+                }
             }
             Err(error) => {
                 log::error!("Failed to parse AuthRedirectPayload from redirect URL: {error:#}");

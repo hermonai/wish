@@ -1577,11 +1577,28 @@ const HAS_COMPLETED_ONBOARDING_KEY: &str = "HasCompletedOnboarding";
 
 /// Returns whether the user has completed the onboarding slides locally (before login).
 pub(crate) fn has_completed_local_onboarding(ctx: &AppContext) -> bool {
+    if should_force_first_run_onboarding_for_dev() {
+        return false;
+    }
+
     ctx.private_user_preferences()
         .read_value(HAS_COMPLETED_ONBOARDING_KEY)
         .unwrap_or_default()
         .and_then(|s| serde_json::from_str::<bool>(&s).ok())
         .unwrap_or(false)
+}
+
+fn should_force_first_run_onboarding_for_dev() -> bool {
+    if std::env::var("WISH_KEEP_ONBOARDING_STATE")
+        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+        .unwrap_or(false)
+    {
+        return false;
+    }
+
+    std::env::var("WISH_ALWAYS_SHOW_ONBOARDING")
+        .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+        .unwrap_or(cfg!(debug_assertions))
 }
 
 /// Persists the local onboarding-completed flag so we don't show onboarding again.

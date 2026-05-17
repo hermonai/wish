@@ -218,6 +218,39 @@ impl AuthManager {
         );
     }
 
+    /// Hermon-native sign-in: skip the legacy Firebase/GraphQL `fetch_user`
+    /// path and persist the tokens directly. The Hermon gateway returns the
+    /// `user_id`, `email`, and `display_name` in the login response, so we
+    /// trust them and bypass the GraphQL round trip that expects fields like
+    /// `globalSkills` that Hermon doesn't serve.
+    ///
+    /// Used by `wish login --email …`, the in-app sign-in modal, and the
+    /// `/v1/auth/pickup` polling path. After this returns, downstream code
+    /// sees the user as logged in and any persistent-storage hooks fire.
+    pub fn sign_in_with_hermon_account(
+        &mut self,
+        refresh_token: String,
+        user_id: String,
+        email: String,
+        display_name: String,
+        ctx: &mut ModelContext<Self>,
+    ) {
+        let user = User::hermon_account(&user_id, email, display_name);
+        // Treat the refresh token as a bearer credential so other Wish
+        // surfaces (workspace sync, telemetry, etc.) attach it to outbound
+        // requests. The Hermon gateway accepts the `hrmrt_<user>_<jti>`
+        // refresh token shape on its authenticated endpoints.
+        self.auth_state.set_user(Some(user));
+        self.auth_state
+            .set_credentials(Some(Credentials::Bearer(refresh_token)));
+        // Persist immediately — losing this on the next launch would
+        // confuse the user since they just typed their password.
+        self.persist(ctx);
+        self.pending_auth_state = None;
+        ctx.emit(AuthManagerEvent::AuthComplete);
+        ctx.notify();
+    }
+
     pub fn resume_interrupted_auth_payload(
         &mut self,
         auth_payload: AuthRedirectPayload,
@@ -859,14 +892,18 @@ impl AuthManager {
                     return;
                 }
                 log::info!("auth pickup succeeded; signing in user {}", payload.user_id);
-                me.pending_auth_state = None;
-                let auth_payload = AuthRedirectPayload {
-                    refresh_token: super::credentials::RefreshToken::new(payload.refresh_token),
-                    user_uid: Some(UserUid::new(&payload.user_id)),
-                    deleted_anonymous_user: None,
-                    state: Some(state),
-                };
-                me.initialize_user_from_auth_payload(auth_payload, false, ctx);
+                // Hand off through the Hermon-native path — the legacy
+                // initialize_user_from_auth_payload runs a Firebase /
+                // GraphQL `fetch_user` that doesn't match the Hermon
+                // gateway shape and would 500 on `globalSkills`.
+                let _ = state; // already cleared by sign_in_with_hermon_account
+                me.sign_in_with_hermon_account(
+                    payload.refresh_token,
+                    payload.user_id,
+                    payload.email,
+                    payload.display_name,
+                    ctx,
+                );
             },
         );
     }
