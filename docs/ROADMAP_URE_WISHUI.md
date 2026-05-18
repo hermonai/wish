@@ -51,7 +51,8 @@ sessions assume the substrate from earlier ones.
 |---|---|---|---|---|
 | **1** | **Tensor substrate** | `wish-canvas-core` | `TensorSpec`, `TensorDType`, `TensorRef`, slicing math, `CanvasNodeKind::Tensor`. Pure data + tests, no UI. | ✅ shipped |
 | **2** | **Tensor sampling + golden constructors** | `wish-canvas-core` | `read_f32`, bilinear `sample_2d_bilinear`, `stats` / `stats_for_slice`, `zeros_f32` / `linspace_f32` / `eye_f32` / `from_fn_f32`. Renderer-ready data layer. | ✅ shipped |
-| 3 | URE canvas pane | `wish-canvas`, `wish-app` | New `PaneContent::UreCanvas` that hosts a `Canvas` in a Wish pane (not a separate OS window). |   |
+| **3** | **Tensor-aware canvas rendering** | `wish/app::canvas_pane` | `WishCanvasElement` renders `CanvasNodeKind::Tensor` as an inline heatmap — rank-1 row / rank-2 grid / rank-≥3 first plane, color-mapped through min/max stats, capped at 32×32 cells with nearest-neighbor downsample. | ✅ shipped |
+| 4 | URE canvas pane (proper PaneContent) | `wish-canvas`, `wish-app` | New `PaneContent::UreCanvas` that hosts a `Canvas` in a Wish pane (not just an embedded element). |   |
 | 4 | 3D toggle on canvas pane | `wish-render`, `wish-canvas`, `wish-app` | `View → 3D` projects canvas nodes via `scene3d::Camera3D`. Force-directed layout in 3D. |   |
 | 5 | Tensor view pane | new `wish-tensor-view`, `wish-app` | `PaneContent::Tensor` — 1D line, 2D heatmap, 3D voxel slices over a `TensorRef`. |   |
 | 6 | Wish Projects pane | `wish-app` (per `DESIGN_PROJECTS_PANE.md`) | `PaneContent::Projects`, runs SDLC into adjacent terminal panes. |   |
