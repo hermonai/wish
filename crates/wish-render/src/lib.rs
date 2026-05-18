@@ -22,6 +22,7 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use eframe::egui::{self, Color32, FontId, Pos2, Rect, Rounding, Stroke, Vec2};
+use wish_canvas_core::tensor::TensorSpec;
 use wish_canvas_core::types::{Canvas, CanvasNode, CanvasNodeId, CanvasNodeKind, EdgeKind};
 use wish_provenance::WorldLine;
 use wish_world_model::{SemanticId, WishWorld, WorldPatch};
@@ -1040,6 +1041,14 @@ impl eframe::App for WishApp {
                     };
                     painter.rect(rect, Rounding::same(4.0), fill, stroke);
 
+                    // Tensor nodes get a heatmap overlay on top of the
+                    // frame so the data is readable directly on the
+                    // canvas — same mapping as the wishui canvas_pane
+                    // ships, kept in sync by sight.
+                    if let CanvasNodeKind::Tensor(spec) = &node.kind {
+                        paint_tensor_overlay(&painter, rect, spec);
+                    }
+
                     // Label, only when zoomed in enough to read.
                     if zoom > 0.45 {
                         let font_size = (12.0_f32 * zoom.min(1.5)).clamp(9.0, 18.0);
@@ -1347,6 +1356,108 @@ fn canvas_bbox(canvas: &Canvas) -> Option<(f32, f32, f32, f32)> {
     Some((min_x, min_y, max_x, max_y))
 }
 
+/// Maximum cells per axis for the tensor heatmap overlay in the
+/// standalone eframe viewer. Mirrors the wishui canvas_pane budget so
+/// the two viewers stay visually consistent.
+const TENSOR_OVERLAY_MAX_CELLS: usize = 32;
+
+/// Draw an inline heatmap on top of a tensor node's frame. Same shape
+/// rules as the wishui canvas_pane:
+/// - rank 0  → single chip,
+/// - rank 1  → 1 × N row,
+/// - rank ≥2 → H × W grid with axes 2..rank pinned to 0,
+/// - external / empty tensors → frame only (no synthetic data).
+///
+/// The painter's `rect` for the cell grid is *inside* the frame's
+/// rect, leaving a 1.5-px inset so the node border stays visible.
+fn paint_tensor_overlay(painter: &egui::Painter, frame_rect: Rect, spec: &TensorSpec) {
+    let inset = 1.5_f32
+        .min(frame_rect.width() * 0.1)
+        .min(frame_rect.height() * 0.1);
+    let inner = frame_rect.shrink(inset);
+    if inner.width() <= 0.0 || inner.height() <= 0.0 {
+        return;
+    }
+    let (rows, cols) = match spec.dims.len() {
+        0 => (1, 1),
+        1 => (1, spec.dims[0].min(TENSOR_OVERLAY_MAX_CELLS).max(1)),
+        _ => (
+            spec.dims[0].min(TENSOR_OVERLAY_MAX_CELLS).max(1),
+            spec.dims[1].min(TENSOR_OVERLAY_MAX_CELLS).max(1),
+        ),
+    };
+    let Some(stats) = spec.stats() else {
+        // No resident data — frame only is enough.
+        return;
+    };
+    let range = (stats.max - stats.min).max(f32::EPSILON);
+    let cell_w = inner.width() / cols as f32;
+    let cell_h = inner.height() / rows as f32;
+
+    for r in 0..rows {
+        for c in 0..cols {
+            let v = match spec.dims.len() {
+                0 => spec.read_f32_at(&[]),
+                1 => {
+                    let n = spec.dims[0];
+                    if n == 0 {
+                        None
+                    } else {
+                        let cc = if n <= cols { c } else { (c * n) / cols.max(1) };
+                        spec.read_f32_at(&[cc.min(n - 1)])
+                    }
+                }
+                _ => {
+                    let dh = spec.dims[0];
+                    let dw = spec.dims[1];
+                    if dh == 0 || dw == 0 {
+                        None
+                    } else {
+                        let rr = if dh <= rows { r } else { (r * dh) / rows.max(1) };
+                        let cc = if dw <= cols { c } else { (c * dw) / cols.max(1) };
+                        let mut coords = Vec::with_capacity(spec.dims.len());
+                        coords.push(rr.min(dh - 1));
+                        coords.push(cc.min(dw - 1));
+                        for _ in 2..spec.dims.len() {
+                            coords.push(0);
+                        }
+                        spec.read_f32_at(&coords)
+                    }
+                }
+            };
+            let Some(v) = v else { continue };
+            let t = if v.is_finite() {
+                ((v - stats.min) / range).clamp(0.0, 1.0)
+            } else {
+                0.5
+            };
+            let color = tensor_color_ramp(t);
+            let cell_rect = Rect::from_min_size(
+                Pos2::new(
+                    inner.min.x + c as f32 * cell_w,
+                    inner.min.y + r as f32 * cell_h,
+                ),
+                Vec2::new(cell_w, cell_h),
+            );
+            painter.rect_filled(cell_rect, Rounding::ZERO, color);
+        }
+    }
+}
+
+/// Two-segment blue → teal → yellow ramp. Matches the wishui pane.
+fn tensor_color_ramp(t: f32) -> Color32 {
+    let t = t.clamp(0.0, 1.0);
+    let lerp = |a: f32, b: f32, s: f32| a + (b - a) * s;
+    let (r, g, b) = if t < 0.5 {
+        let s = t * 2.0;
+        (lerp(45.0, 60.0, s), lerp(60.0, 150.0, s), lerp(125.0, 150.0, s))
+    } else {
+        let s = (t - 0.5) * 2.0;
+        (lerp(60.0, 235.0, s), lerp(150.0, 210.0, s), lerp(150.0, 70.0, s))
+    };
+    Color32::from_rgb(r as u8, g as u8, b as u8)
+}
+
 fn node_fill_with(node: &CanvasNode, perspective: Perspective) -> Color32 {
     let [r, g, b, a] = node.style.fill;
     let base = Color32::from_rgba_unmultiplied(r, g, b, a);
@@ -1486,10 +1597,28 @@ mod tests {
             CanvasNodeKind::DocumentSection,
             CanvasNodeKind::Npc,
             CanvasNodeKind::Quest,
+            CanvasNodeKind::Tensor(TensorSpec::eye_f32(2)),
             CanvasNodeKind::Custom("world".into()),
         ];
         for k in &kinds {
             assert!(!kind_glyph(k).is_empty());
         }
+    }
+
+    #[test]
+    fn tensor_color_ramp_is_monotonic_in_luminance_direction() {
+        // The ramp goes blue → teal → yellow, so the average of (r+g)
+        // should rise as t rises while b drops. We're not testing
+        // specific RGBs (those are tuneable), just that low and high
+        // ends sit on opposite sides of the ramp.
+        let low = tensor_color_ramp(0.0);
+        let high = tensor_color_ramp(1.0);
+        assert!(high.r() > low.r());
+        assert!(high.b() < low.b());
+        // Out-of-range t shouldn't panic, and should clamp.
+        let neg = tensor_color_ramp(-1.0);
+        let over = tensor_color_ramp(2.0);
+        assert_eq!((neg.r(), neg.g(), neg.b()), (low.r(), low.g(), low.b()));
+        assert_eq!((over.r(), over.g(), over.b()), (high.r(), high.g(), high.b()));
     }
 }

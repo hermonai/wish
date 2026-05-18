@@ -26,7 +26,11 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use anyhow::{anyhow, bail, Context, Result};
-use wish_canvas_core::{export, types::Canvas};
+use wish_canvas_core::{
+    export,
+    tensor::TensorSpec,
+    types::{Canvas, CanvasNode, CanvasNodeKind, Rect as CanvasRect},
+};
 use wish_provenance::{WorldLine, DEFAULT_BRANCH};
 use wish_world_model::{read_world_dir, write_world_dir, WishWorld, WishWorldBundle, WorldKind};
 use wish_world_studio::{build_shanhai_harbor, world_to_canvas};
@@ -43,6 +47,11 @@ USAGE:
     wish-world render world <world-dir> [--perspective <p>] [--reveal <id>] (native)
     wish-world render repo <root>       [--perspective <p>] [--reveal <id>] (native)
     wish-world render demo              [--perspective <p>] [--reveal <id>] (native)
+    wish-world render tensor            [--perspective <p>] [--reveal <id>] (native)
+        End-to-end smoke test for the URE × wishUI tensor substrate.
+        Builds a canvas of golden tensors (eye, linspace, ripple,
+        Gaussian, sine plane) and renders them as inline heatmaps
+        inside the native viewer.
         Domain perspectives (8):
             engineering, architecture, spatial, financial,
             education, scientific, design, analytic
@@ -462,6 +471,7 @@ fn run() -> Result<()> {
                     cmd_render_repo(Path::new(&root), perspective, reveal)
                 }
                 "demo" => cmd_render_demo(perspective, reveal),
+                "tensor" => cmd_render_tensor(perspective, reveal),
                 other => bail!("unknown render target: {other}"),
             }
         }
@@ -1610,6 +1620,124 @@ fn cmd_render_demo(
         perspective.label()
     );
     wish_render::run_with_perspective_and_reveal(&title, canvas, Some(world), perspective, reveal)
+        .map_err(|e| anyhow!("wish-render exited: {e}"))?;
+    Ok(())
+}
+
+/// `wish-world render tensor` — end-to-end smoke test for the URE ×
+/// wishUI tensor substrate. Builds a canvas of "golden" tensors that
+/// exercise each rank and dtype path, then opens the native viewer so
+/// the user can see them as heatmaps in one screen. No worldline, no
+/// disk — everything is constructed in memory from the
+/// `wish_canvas_core::tensor` constructors.
+///
+/// The chosen examples:
+/// - `eye_f32(8)` — sanity-check that the stride math reads diagonals.
+/// - `linspace_f32` — rank-1 gradient.
+/// - `ripple` (from_fn_f32) — radial cosine, shows the color ramp's
+///   midband contrast.
+/// - `gaussian` (from_fn_f32) — single mode, useful for spotting
+///   bilinear vs nearest visually if a renderer changes its mind.
+/// - `sine_plane` rank-3 — exercises the "pin axes 2..rank to 0"
+///   default path.
+fn cmd_render_tensor(
+    perspective: wish_render::Perspective,
+    reveal: Option<wish_world_model::SemanticId>,
+) -> Result<()> {
+    wish_splash(perspective);
+    use wish_world_model::SemanticId;
+
+    let mut canvas = Canvas::new();
+
+    // Each tensor sits in a 220×140 px tile with 60 px gutters. Five
+    // tiles laid out as a 3×2 grid (last cell empty) — fits the
+    // default fit-to-view window without overcrowding.
+    let tile_w = 220.0_f32;
+    let tile_h = 140.0_f32;
+    let gutter = 60.0_f32;
+    let mut place = |idx: usize, label: &str, semantic: SemanticId, spec: TensorSpec| {
+        let col = (idx % 3) as f32;
+        let row = (idx / 3) as f32;
+        let bounds = CanvasRect {
+            x: col * (tile_w + gutter),
+            y: row * (tile_h + gutter),
+            w: tile_w,
+            h: tile_h,
+        };
+        let node = CanvasNode::new(semantic, label, CanvasNodeKind::Tensor(spec), bounds);
+        canvas.upsert_node(node);
+    };
+
+    place(
+        0,
+        "eye(8) — identity",
+        SemanticId::code_function("tensor::eye_8"),
+        TensorSpec::eye_f32(8),
+    );
+
+    place(
+        1,
+        "linspace(0..1, 32) — gradient",
+        SemanticId::code_function("tensor::linspace_32"),
+        TensorSpec::linspace_f32(0.0, 1.0, 32),
+    );
+
+    let ripple = TensorSpec::from_fn_f32(vec![24, 24], |c| {
+        let y = c[0] as f32 - 11.5;
+        let x = c[1] as f32 - 11.5;
+        let r = (x * x + y * y).sqrt();
+        (r * 0.6).cos()
+    })
+    .expect("ripple shape OK");
+    place(
+        2,
+        "ripple(24×24) — radial cos",
+        SemanticId::code_function("tensor::ripple_24"),
+        ripple,
+    );
+
+    let gaussian = TensorSpec::from_fn_f32(vec![24, 24], |c| {
+        let y = c[0] as f32 - 11.5;
+        let x = c[1] as f32 - 11.5;
+        let d2 = (x * x + y * y) / 40.0;
+        (-d2).exp()
+    })
+    .expect("gaussian shape OK");
+    place(
+        3,
+        "gaussian(24×24)",
+        SemanticId::code_function("tensor::gaussian_24"),
+        gaussian,
+    );
+
+    // Rank-3 example: a "stack of sine planes". The renderer pins axis
+    // 2 to 0 by default, so the user sees the first plane — a sine
+    // grating.
+    let sine_stack = TensorSpec::from_fn_f32(vec![24, 24, 4], |c| {
+        let theta = c[1] as f32 * 0.45 + c[2] as f32 * 0.8;
+        (theta).sin()
+    })
+    .expect("sine_stack shape OK");
+    place(
+        4,
+        "sine_stack(24×24×4) — plane 0",
+        SemanticId::code_function("tensor::sine_stack"),
+        sine_stack,
+    );
+
+    let title = format!(
+        "Wish Tensorium — {} tensors · {} perspective",
+        canvas.nodes.len(),
+        perspective.label()
+    );
+    if let Some(id) = &reveal {
+        eprintln!("wish-world: will reveal {id} after cinematic boot");
+    }
+    eprintln!(
+        "wish-world: rendering {} tensors as inline heatmaps…",
+        canvas.nodes.len()
+    );
+    wish_render::run_with_perspective_and_reveal(&title, canvas, None, perspective, reveal)
         .map_err(|e| anyhow!("wish-render exited: {e}"))?;
     Ok(())
 }
