@@ -29,6 +29,7 @@ pub mod harness_support;
 pub mod integration;
 pub mod json_filter;
 pub mod mcp;
+pub mod i18n;
 pub mod model;
 pub mod project;
 pub mod provider;
@@ -770,6 +771,13 @@ pub enum CliCommand {
     /// commands). Backed by the Hermon gateway's `/v1/projects` surface.
     #[command(subcommand)]
     Project(crate::project::ProjectCommand),
+
+    /// Language-pack tooling: list / get / install / uninstall locales,
+    /// plus `translate` which asks the gateway's LLM router to generate
+    /// a pack for a target locale on the fly. Backed by the Hermon
+    /// gateway's `/v1/i18n*` surface.
+    #[command(subcommand)]
+    I18n(crate::i18n::I18nCommand),
 
     /// Log in to Wish.
     Login(LoginArgs),

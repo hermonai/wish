@@ -91,6 +91,7 @@ mod integration_output;
 mod mcp;
 mod mcp_config;
 mod model;
+mod i18n;
 mod oauth_flow;
 pub mod output;
 mod profiles;
@@ -148,6 +149,7 @@ fn dispatch_command(
         CliCommand::Run(task_cmd) => run_task(ctx, global_options, task_cmd),
         CliCommand::Model(model_cmd) => model::run(ctx, global_options, model_cmd),
         CliCommand::Project(project_cmd) => project::run(ctx, project_cmd),
+        CliCommand::I18n(i18n_cmd) => i18n::run(ctx, i18n_cmd),
         CliCommand::Login(args) => admin::login(ctx, args),
         CliCommand::Signup(args) => admin::signup(ctx, args),
         CliCommand::Logout => admin::logout(ctx),
@@ -1379,6 +1381,7 @@ fn command_requires_auth(command: &CliCommand) -> bool {
             ModelCommand::List => true,
         },
         CliCommand::Project(_) => true,
+        CliCommand::I18n(_) => true,
         CliCommand::Login(_) => false,
         CliCommand::Signup(_) => false,
         CliCommand::Logout => false,
@@ -1571,6 +1574,7 @@ fn command_to_telemetry_event(command: &CliCommand) -> CliTelemetryEvent {
         },
         CliCommand::Model(ModelCommand::List) => CliTelemetryEvent::ModelList,
         CliCommand::Project(_) => CliTelemetryEvent::Project,
+        CliCommand::I18n(_) => CliTelemetryEvent::I18n,
         CliCommand::Login(_) => CliTelemetryEvent::Login,
         CliCommand::Signup(_) => CliTelemetryEvent::Login, // signup is a form of login
         CliCommand::Logout => CliTelemetryEvent::Logout,
