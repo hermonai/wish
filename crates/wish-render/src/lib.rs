@@ -1384,6 +1384,7 @@ fn kind_glyph(kind: &CanvasNodeKind) -> &'static str {
         CanvasNodeKind::DocumentSection => "¶",
         CanvasNodeKind::Npc => "👤",
         CanvasNodeKind::Quest => "✦",
+        CanvasNodeKind::Tensor(_) => "▦",
         CanvasNodeKind::Custom(_) => "◆",
     }
 }

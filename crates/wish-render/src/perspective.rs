@@ -407,6 +407,10 @@ pub fn default_tint(kind: &CanvasNodeKind) -> Color32 {
         CanvasNodeKind::DocumentSection => Color32::from_rgb(80, 90, 100),
         CanvasNodeKind::Npc => Color32::from_rgb(160, 110, 130),
         CanvasNodeKind::Quest => Color32::from_rgb(130, 120, 70),
+        // Tensors get a desaturated indigo — they're "data substrate",
+        // not first-class entities in the code/world ontology, so the
+        // tint reads as quieter than e.g. a Function or Agent.
+        CanvasNodeKind::Tensor(_) => Color32::from_rgb(100, 110, 150),
         CanvasNodeKind::Custom(_) => Color32::from_rgb(90, 100, 110),
     }
 }

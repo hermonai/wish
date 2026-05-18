@@ -1,5 +1,6 @@
 //! Canvas types.
 
+use crate::tensor::TensorSpec;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use wish_world_model::SemanticId;
@@ -73,6 +74,11 @@ pub enum CanvasNodeKind {
     DocumentSection,
     Npc,
     Quest,
+    /// A tensor entity — embedding matrix, attention head, layer
+    /// activation, etc. The `TensorSpec` carries shape + dtype + data
+    /// handle; the renderer (`wish-canvas` / `wish-tensor-view`) decides
+    /// whether to draw it as a tile, a sparkline, or a heatmap.
+    Tensor(TensorSpec),
     Custom(String),
 }
 
