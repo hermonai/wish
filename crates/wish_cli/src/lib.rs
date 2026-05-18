@@ -32,6 +32,7 @@ pub mod mcp;
 pub mod i18n;
 pub mod model;
 pub mod project;
+pub mod tensor;
 pub mod provider;
 pub mod schedule;
 pub mod secret;
@@ -771,6 +772,13 @@ pub enum CliCommand {
     /// commands). Backed by the Hermon gateway's `/v1/projects` surface.
     #[command(subcommand)]
     Project(crate::project::ProjectCommand),
+
+    /// Manage tensors stored on the Hermon gateway — the URE × wishUI
+    /// substrate's data plane. Push raw bytes from a file, list /
+    /// show / pull / delete, or open a tensor in the native viewer
+    /// as a heatmap. Backed by `/v1/tensors`.
+    #[command(subcommand)]
+    Tensor(crate::tensor::TensorCommand),
 
     /// Language-pack tooling: list / get / install / uninstall locales,
     /// plus `translate` which asks the gateway's LLM router to generate

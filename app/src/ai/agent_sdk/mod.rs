@@ -97,6 +97,7 @@ pub mod output;
 mod profiles;
 mod project;
 mod provider;
+mod tensor;
 pub(crate) mod retry;
 mod schedule;
 mod secret;
@@ -149,6 +150,7 @@ fn dispatch_command(
         CliCommand::Run(task_cmd) => run_task(ctx, global_options, task_cmd),
         CliCommand::Model(model_cmd) => model::run(ctx, global_options, model_cmd),
         CliCommand::Project(project_cmd) => project::run(ctx, project_cmd),
+        CliCommand::Tensor(tensor_cmd) => tensor::run(ctx, tensor_cmd),
         CliCommand::I18n(i18n_cmd) => i18n::run(ctx, i18n_cmd),
         CliCommand::Login(args) => admin::login(ctx, args),
         CliCommand::Signup(args) => admin::signup(ctx, args),
@@ -1381,6 +1383,7 @@ fn command_requires_auth(command: &CliCommand) -> bool {
             ModelCommand::List => true,
         },
         CliCommand::Project(_) => true,
+        CliCommand::Tensor(_) => true,
         CliCommand::I18n(_) => true,
         CliCommand::Login(_) => false,
         CliCommand::Signup(_) => false,
@@ -1574,6 +1577,7 @@ fn command_to_telemetry_event(command: &CliCommand) -> CliTelemetryEvent {
         },
         CliCommand::Model(ModelCommand::List) => CliTelemetryEvent::ModelList,
         CliCommand::Project(_) => CliTelemetryEvent::Project,
+        CliCommand::Tensor(_) => CliTelemetryEvent::Tensor,
         CliCommand::I18n(_) => CliTelemetryEvent::I18n,
         CliCommand::Login(_) => CliTelemetryEvent::Login,
         CliCommand::Signup(_) => CliTelemetryEvent::Login, // signup is a form of login
