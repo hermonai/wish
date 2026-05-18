@@ -14,7 +14,7 @@ pub mod views;
 pub use patch::{CanvasPatch, CanvasPatchOp, NodeDelta};
 pub use tensor::{
     SliceAxisPin, TensorDType, TensorError, TensorRef, TensorSlice, TensorSliceProjection,
-    TensorSpec, TENSOR_INLINE_MAX_BYTES,
+    TensorSpec, TensorStats, TENSOR_INLINE_MAX_BYTES,
 };
 pub use types::{
     Canvas, CanvasEdge, CanvasEdgeId, CanvasId, CanvasNode, CanvasNodeId, CanvasNodeKind,

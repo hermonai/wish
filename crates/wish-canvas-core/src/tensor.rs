@@ -346,6 +346,267 @@ impl TensorSliceProjection {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// Session 2 — sampling, scanning, golden constructors
+// ─────────────────────────────────────────────────────────────────────
+//
+// Future tensor renderers need three things from us beyond shape and
+// slicing:
+//
+// 1. **Read elements as f32.** A heatmap doesn't care whether the
+//    underlying dtype is u8 or f32 — it wants a normalized number. We
+//    expose `read_f32` that lifts each supported dtype into f32 with
+//    integer-to-float coercion (i32/i64 → f32, u8 → f32, bool → 0/1).
+//
+// 2. **Min / max over a slice.** Heatmap color mapping needs the value
+//    range to choose a domain. Computing it on every frame is fine for
+//    inline tensors (< 1 MiB cap); external tensors are the renderer's
+//    problem.
+//
+// 3. **Golden constructors** — `linspace`, `eye`, `from_fn`, `zeros`.
+//    Both for tests and for the "look at this synthetic tensor" demo
+//    panes the future Tensor view ships with.
+//
+// All of this stays pure-CPU and dependency-free. No GPU, no rand,
+// no ndarray — the renderer will glue to wgpu in a separate crate.
+
+/// Stats over (a slice of) a tensor. Used by views to pick a color
+/// domain or label a sparkline.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct TensorStats {
+    pub min: f32,
+    pub max: f32,
+    pub mean: f32,
+    pub count: usize,
+}
+
+impl TensorStats {
+    /// `true` when `max - min` is so small the range is effectively
+    /// degenerate — useful for renderers that want to fall back to a
+    /// neutral tint rather than divide by ~0.
+    pub fn is_degenerate(&self) -> bool {
+        (self.max - self.min).abs() < f32::EPSILON
+    }
+}
+
+impl TensorSpec {
+    /// Read element `i` as `f32`. Returns `None` if the tensor has no
+    /// resident data (`TensorRef::External` / `Empty`) or if the index
+    /// is out of range. This is the "give me a number for color
+    /// mapping" entrypoint; renderers can call it inside a tight loop.
+    pub fn read_f32(&self, flat: usize) -> Option<f32> {
+        match &self.data {
+            TensorRef::InlineF32 { data } => data.get(flat).copied(),
+            TensorRef::InlineU8 { data } => data.get(flat).map(|&b| b as f32),
+            TensorRef::External { .. } | TensorRef::Empty => None,
+        }
+    }
+
+    /// Convenience: `read_f32` indexed by N-D coords.
+    pub fn read_f32_at(&self, coords: &[usize]) -> Option<f32> {
+        let i = self.flat_index(coords)?;
+        self.read_f32(i)
+    }
+
+    /// Scan every resident element and return min / max / mean / count.
+    /// Returns `None` if the data isn't resident or the tensor is empty.
+    pub fn stats(&self) -> Option<TensorStats> {
+        let n = self.element_count()?;
+        if n == 0 {
+            return None;
+        }
+        let mut min = f32::INFINITY;
+        let mut max = f32::NEG_INFINITY;
+        let mut sum = 0.0f64;
+        let mut count = 0usize;
+        for i in 0..n {
+            let v = self.read_f32(i)?;
+            // NaN poisons the stats — skip it rather than propagate,
+            // mirroring how matplotlib / numpy heatmaps behave by default.
+            if !v.is_finite() {
+                continue;
+            }
+            if v < min {
+                min = v;
+            }
+            if v > max {
+                max = v;
+            }
+            sum += v as f64;
+            count += 1;
+        }
+        if count == 0 {
+            return None;
+        }
+        Some(TensorStats {
+            min,
+            max,
+            mean: (sum / count as f64) as f32,
+            count,
+        })
+    }
+
+    /// Stats over a `TensorSlice` projection. Same semantics as
+    /// `stats()`, but only walks the sub-elements.
+    pub fn stats_for_slice(&self, slice: &TensorSlice) -> Option<TensorStats> {
+        let proj = slice.project(self).ok()?;
+        let n = proj.element_count()?;
+        if n == 0 {
+            return None;
+        }
+        let mut min = f32::INFINITY;
+        let mut max = f32::NEG_INFINITY;
+        let mut sum = 0.0f64;
+        let mut count = 0usize;
+        // Walk the sub-shape in row-major order, mapping each sub
+        // coord to its parent flat index via the projection.
+        let mut coords = vec![0usize; proj.sub_dims.len()];
+        loop {
+            let parent_idx = proj.flat_index_in_parent(&coords)?;
+            let v = self.read_f32(parent_idx)?;
+            if v.is_finite() {
+                if v < min {
+                    min = v;
+                }
+                if v > max {
+                    max = v;
+                }
+                sum += v as f64;
+                count += 1;
+            }
+            if !next_coord(&mut coords, &proj.sub_dims) {
+                break;
+            }
+        }
+        if count == 0 {
+            return None;
+        }
+        Some(TensorStats {
+            min,
+            max,
+            mean: (sum / count as f64) as f32,
+            count,
+        })
+    }
+
+    /// Bilinearly sample a rank-2 tensor at fractional coordinates
+    /// `(y, x)` in `[0, dims[0]-1] × [0, dims[1]-1]`. Returns `None` if
+    /// the rank isn't 2 or the coords are out of range. Useful when
+    /// rendering a small tensor into a larger pane: instead of nearest-
+    /// neighbor blocky output, the view can resample.
+    pub fn sample_2d_bilinear(&self, y: f32, x: f32) -> Option<f32> {
+        if self.dims.len() != 2 {
+            return None;
+        }
+        let (h, w) = (self.dims[0], self.dims[1]);
+        if h == 0 || w == 0 {
+            return None;
+        }
+        if !y.is_finite() || !x.is_finite() {
+            return None;
+        }
+        let y = y.clamp(0.0, (h - 1) as f32);
+        let x = x.clamp(0.0, (w - 1) as f32);
+        let y0 = y.floor() as usize;
+        let x0 = x.floor() as usize;
+        let y1 = (y0 + 1).min(h - 1);
+        let x1 = (x0 + 1).min(w - 1);
+        let ty = y - y0 as f32;
+        let tx = x - x0 as f32;
+        let v00 = self.read_f32_at(&[y0, x0])?;
+        let v01 = self.read_f32_at(&[y0, x1])?;
+        let v10 = self.read_f32_at(&[y1, x0])?;
+        let v11 = self.read_f32_at(&[y1, x1])?;
+        let v0 = v00 + (v01 - v00) * tx;
+        let v1 = v10 + (v11 - v10) * tx;
+        Some(v0 + (v1 - v0) * ty)
+    }
+}
+
+/// Advance row-major coordinates in `coords` over `dims` in place.
+/// Returns `false` once the coords have wrapped past the last cell —
+/// the standard "carry-from-right" odometer over an N-D shape. Empty
+/// `dims` is treated as a single scalar position (returns `false` on
+/// the first call, since the lone coord can't advance).
+fn next_coord(coords: &mut [usize], dims: &[usize]) -> bool {
+    debug_assert_eq!(coords.len(), dims.len());
+    for i in (0..coords.len()).rev() {
+        coords[i] += 1;
+        if coords[i] < dims[i] {
+            return true;
+        }
+        coords[i] = 0;
+    }
+    false
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Golden constructors — small builders the tensor view ships demos with.
+// All produce `InlineF32` tensors, so they're always self-contained.
+// ─────────────────────────────────────────────────────────────────────
+
+impl TensorSpec {
+    /// Dense zeros of the given shape, f32. Panics only on shape
+    /// overflow (caller's fault — pass a sane shape).
+    pub fn zeros_f32(dims: Vec<usize>) -> Self {
+        let n = dims.iter().product::<usize>();
+        Self::new(
+            dims,
+            TensorDType::F32,
+            TensorRef::InlineF32 { data: vec![0.0; n] },
+        )
+    }
+
+    /// `len`-element evenly-spaced values from `start` to `end`
+    /// inclusive. `len == 0` returns an empty f32 tensor; `len == 1`
+    /// returns `[start]`.
+    pub fn linspace_f32(start: f32, end: f32, len: usize) -> Self {
+        let data: Vec<f32> = if len == 0 {
+            Vec::new()
+        } else if len == 1 {
+            vec![start]
+        } else {
+            let step = (end - start) / (len - 1) as f32;
+            (0..len).map(|i| start + step * i as f32).collect()
+        };
+        Self::new(vec![len], TensorDType::F32, TensorRef::InlineF32 { data })
+    }
+
+    /// `n × n` identity matrix. Useful as a "is your renderer actually
+    /// reading the right strides?" sanity test.
+    pub fn eye_f32(n: usize) -> Self {
+        let mut data = vec![0.0f32; n * n];
+        for i in 0..n {
+            data[i * n + i] = 1.0;
+        }
+        Self::new(vec![n, n], TensorDType::F32, TensorRef::InlineF32 { data })
+    }
+
+    /// Build a tensor from a closure indexed by N-D coordinates. The
+    /// closure is called in row-major order. Returns `None` on shape
+    /// overflow.
+    pub fn from_fn_f32<F: FnMut(&[usize]) -> f32>(dims: Vec<usize>, mut f: F) -> Option<Self> {
+        let n = dims.iter().try_fold(1usize, |acc, &d| acc.checked_mul(d))?;
+        let mut data = Vec::with_capacity(n);
+        if dims.is_empty() {
+            data.push(f(&[]));
+        } else {
+            let mut coords = vec![0usize; dims.len()];
+            loop {
+                data.push(f(&coords));
+                if !next_coord(&mut coords, &dims) {
+                    break;
+                }
+            }
+        }
+        Some(Self::new(
+            dims,
+            TensorDType::F32,
+            TensorRef::InlineF32 { data },
+        ))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -544,6 +805,173 @@ mod tests {
         let json = serde_json::to_string(&s).unwrap();
         let back: TensorSpec = serde_json::from_str(&json).unwrap();
         assert_eq!(s, back);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Session 2 — sampling, stats, golden constructors
+    // ─────────────────────────────────────────────────────────────
+
+    #[test]
+    fn read_f32_inline_f32_and_u8() {
+        let f = spec_2d();
+        assert_eq!(f.read_f32_at(&[1, 2]), Some(6.0));
+        let u = TensorSpec::new(
+            vec![3],
+            TensorDType::U8,
+            TensorRef::InlineU8 { data: vec![0, 128, 255] },
+        );
+        assert_eq!(u.read_f32(0), Some(0.0));
+        assert_eq!(u.read_f32(1), Some(128.0));
+        assert_eq!(u.read_f32(2), Some(255.0));
+        // External tensors don't carry data — readers must resolve them.
+        let ext = TensorSpec::new(
+            vec![3],
+            TensorDType::F32,
+            TensorRef::External { uri: "x".into() },
+        );
+        assert_eq!(ext.read_f32(0), None);
+    }
+
+    #[test]
+    fn stats_over_inline_matrix() {
+        // [3,4] tensor with values 0..12.
+        let s = spec_2d();
+        let st = s.stats().unwrap();
+        assert_eq!(st.min, 0.0);
+        assert_eq!(st.max, 11.0);
+        assert!((st.mean - 5.5).abs() < 1e-5);
+        assert_eq!(st.count, 12);
+        assert!(!st.is_degenerate());
+    }
+
+    #[test]
+    fn stats_skip_nan_and_inf() {
+        let s = TensorSpec::new(
+            vec![4],
+            TensorDType::F32,
+            TensorRef::InlineF32 {
+                data: vec![1.0, f32::NAN, 3.0, f32::INFINITY],
+            },
+        );
+        let st = s.stats().unwrap();
+        assert_eq!(st.count, 2);
+        assert_eq!(st.min, 1.0);
+        assert_eq!(st.max, 3.0);
+    }
+
+    #[test]
+    fn stats_for_slice_only_walks_slice() {
+        // 3×4 matrix with row 1 = [4,5,6,7]. Pin axis 0 = 1, expect
+        // stats over those 4 values.
+        let s = spec_2d();
+        let slice = TensorSlice::new().pin(0, 1);
+        let st = s.stats_for_slice(&slice).unwrap();
+        assert_eq!(st.min, 4.0);
+        assert_eq!(st.max, 7.0);
+        assert_eq!(st.count, 4);
+        assert!((st.mean - 5.5).abs() < 1e-5);
+    }
+
+    #[test]
+    fn stats_degenerate_when_all_equal() {
+        let s = TensorSpec::new(
+            vec![5],
+            TensorDType::F32,
+            TensorRef::InlineF32 { data: vec![3.0; 5] },
+        );
+        let st = s.stats().unwrap();
+        assert!(st.is_degenerate());
+    }
+
+    #[test]
+    fn bilinear_sample_at_integer_grid_matches_read() {
+        let s = TensorSpec::from_fn_f32(vec![3, 3], |c| (c[0] * 10 + c[1]) as f32).unwrap();
+        // At integer coords, bilinear should exactly match read_f32_at.
+        for y in 0..3 {
+            for x in 0..3 {
+                let exact = s.read_f32_at(&[y, x]).unwrap();
+                let bilin = s.sample_2d_bilinear(y as f32, x as f32).unwrap();
+                assert!((exact - bilin).abs() < 1e-5, "({y},{x}): {exact} vs {bilin}");
+            }
+        }
+    }
+
+    #[test]
+    fn bilinear_sample_midpoint_averages_neighbors() {
+        // 2×2 with corners 0,1,2,3 → middle should be (0+1+2+3)/4 = 1.5.
+        let s = TensorSpec::new(
+            vec![2, 2],
+            TensorDType::F32,
+            TensorRef::InlineF32 { data: vec![0.0, 1.0, 2.0, 3.0] },
+        );
+        let v = s.sample_2d_bilinear(0.5, 0.5).unwrap();
+        assert!((v - 1.5).abs() < 1e-5);
+    }
+
+    #[test]
+    fn bilinear_sample_rejects_non_2d() {
+        let s = TensorSpec::linspace_f32(0.0, 1.0, 5);
+        assert_eq!(s.sample_2d_bilinear(0.0, 0.0), None);
+    }
+
+    #[test]
+    fn bilinear_sample_clamps_to_edge() {
+        let s = TensorSpec::from_fn_f32(vec![2, 2], |c| (c[0] + c[1]) as f32).unwrap();
+        // Way outside the grid — should clamp to the (1,1) corner = 2.
+        let v = s.sample_2d_bilinear(99.0, 99.0).unwrap();
+        assert!((v - 2.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn zeros_constructor_shape_and_data() {
+        let s = TensorSpec::zeros_f32(vec![2, 3]);
+        s.validate().unwrap();
+        assert_eq!(s.element_count(), Some(6));
+        for i in 0..6 {
+            assert_eq!(s.read_f32(i), Some(0.0));
+        }
+    }
+
+    #[test]
+    fn linspace_endpoints_and_length() {
+        let s = TensorSpec::linspace_f32(0.0, 1.0, 5);
+        s.validate().unwrap();
+        assert_eq!(s.read_f32(0), Some(0.0));
+        assert_eq!(s.read_f32(4), Some(1.0));
+        assert!((s.read_f32(2).unwrap() - 0.5).abs() < 1e-5);
+        // Single-element and zero-element corners.
+        let one = TensorSpec::linspace_f32(7.0, 9.0, 1);
+        assert_eq!(one.read_f32(0), Some(7.0));
+        let none = TensorSpec::linspace_f32(0.0, 1.0, 0);
+        assert_eq!(none.element_count(), Some(0));
+    }
+
+    #[test]
+    fn eye_matrix_has_diagonal_ones() {
+        let s = TensorSpec::eye_f32(4);
+        s.validate().unwrap();
+        for i in 0..4 {
+            for j in 0..4 {
+                let expected = if i == j { 1.0 } else { 0.0 };
+                assert_eq!(s.read_f32_at(&[i, j]), Some(expected));
+            }
+        }
+    }
+
+    #[test]
+    fn from_fn_walks_row_major() {
+        // Each cell carries its row-major flat index, so we can confirm
+        // the iteration order matches our flat_index math.
+        let dims = vec![2, 3, 4];
+        let s = TensorSpec::from_fn_f32(dims.clone(), |c| {
+            (c[0] * 12 + c[1] * 4 + c[2]) as f32
+        })
+        .unwrap();
+        let probe = TensorSpec::new(dims, TensorDType::F32, TensorRef::Empty);
+        for i in 0..24 {
+            assert_eq!(s.read_f32(i), Some(i as f32), "flat={i}");
+        }
+        assert_eq!(probe.flat_index(&[1, 2, 3]), Some(23));
     }
 
     #[test]
