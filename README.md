@@ -135,9 +135,10 @@ Three sign-in paths, in order of speed:
 
 ### Bootstrap admin
 
-A fresh Hermon gateway always seeds `admin@hermon.ai / admin12345`
-(override via `HERMON_BOOTSTRAP_ADMIN_PASSWORD`). Sign in once with
-`wish login --email admin@hermon.ai` and you're done.
+A production Hermon gateway does not create a default administrator. Operators
+must supply a strong `HERMON_BOOTSTRAP_ADMIN_PASSWORD` and explicitly include
+the account in `HERMON_ADMIN_EMAILS` before first boot. Development-only demo
+accounts remain opt-in.
 
 ### Dev knobs
 
